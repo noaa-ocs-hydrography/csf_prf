@@ -1,5 +1,7 @@
 import os
 
+from .ENCReaderEngine import ENCReaderEngine
+
 
 class CompositeSourceCreatorException(Exception):
     """Custom exception for tool"""
@@ -104,10 +106,14 @@ class CompositeSourceCreatorEngine:
 
     def convert_enc_files(self):
         """Process the ENC files input parameter"""
+
+        enc_engine = ENCReaderEngine(self.param_lookup)
+        enc_engine.start()
+        enc_engine.perform_spatial_filter(self.make_sheets_layer())
+
         # TODO load ENC files
         # make sure they are CCW right hand rule
-        # sort sheets layer by scale ascending
-        # Use projected Sheets layer to spatial query all ENC files (Intersects, Crosses, Overlaps, Contains, Within)
+        
         # if selected
             # merge all selected layers into 1
             # (FME sets CCW right hand rule again.  Probably not needed)
