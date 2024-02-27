@@ -1,7 +1,5 @@
 import os
 
-from .ENCReaderEngine import ENCReaderEngine
-
 
 class CompositeSourceCreatorException(Exception):
     """Custom exception for tool"""
@@ -51,37 +49,52 @@ class CompositeSourceCreatorEngine:
         else:
             print(message)
 
-    def convert_sheets(self):
+    def convert_sheets(self) -> None:
         """Process the Sheets input parameter"""
 
         if self.param_lookup['sheets'].valueAsText:
             self.add_message('converting sheets')
             layer = self.make_sheets_layer()
-            expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
+            expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) \
+            + ', Name: ' + str(!sub_locali!)"
             self.add_column_and_constant(layer, 'invreq', expression)
             outer_features, inner_features = self.split_inner_polygons(layer)
             self.write_features_to_shapefile('sheets', layer, outer_features + inner_features, 'output_sheets.shp')
 
-    def convert_junctions(self):
+    def convert_junctions(self) -> None:
         """Process the Junctions input parameter"""
 
-        self.add_message('converting junctions')
-        # layer = self.arcpy.management.MakeFeatureLayer(self.param_lookup['junctions'].valueAsText)
-
-    def convert_bottom_samples(self):
+        if self.param_lookup['junctions'].valueAsText:
+            self.add_message('converting junctions')
+            layer = self.make_junctions_layer()
+            expression = "'Survey: ' + str(!survey!) + ', Platform: ' + str(!field_unit!) + \
+            ', Year: ' + str(!year!) + ', Scale: ' + str(!scale!)"
+            self.add_column_and_constant(layer, 'invreq', expression)
+            self.add_column_and_constant(layer, 'TRAFIC', 2)
+            self.add_column_and_constant(layer, 'ORIENT', 45)
+            self.write_features_to_shapefile('junctions', layer, 'output_junctions.shp')
+    
+    def convert_bottom_samples(self) -> None:
         """Process the Bottom Samples input parameter"""
 
         return
 
-    def convert_maritime_datasets(self):
+    def convert_maritime_datasets(self) -> None:
         """Process the 3 Maritime input parameters"""
 
-        self.add_message('converting maritime boundary files')
-        self.convert_maritime_boundary_baselines()
-        self.convert_maritime_boundary_points_and_features()
+        # TODO can we process with only certain maritime files?
+        points = self.param_lookup['maritime_boundary_pts'].valueAsText
+        features = self.param_lookup['maritime_boundary_features'].valueAsText
+        baselines = self.param_lookup['maritime_boundary_baselines'].valueAsText
+        if points and baselines and features:
+            self.add_message('converting maritime boundary files')
+            self.convert_maritime_boundary_baselines()
+            self.convert_maritime_boundary_points_and_features()
 
-    def convert_maritime_boundary_points_and_features(self):
-        layer = self.merge_maritime_baselines_and_features()
+    def convert_maritime_boundary_points_and_features(self) -> None:
+        """Merge and process maritime files"""
+
+        layer = self.merge_maritime_pts_and_features()
         self.add_column_and_constant(layer, 'invreq', "'Verify the existence of the furthest offshore feature that is dry at MLLW. \
                                      See Baseline Priorities.doc and section 8.1.4 Descriptive Report of the HSSD for further \
                                      information. NOAA units, see FPM section 3.5.6 Maritime Boundary Delineation.'")
@@ -89,31 +102,27 @@ class CompositeSourceCreatorEngine:
         self.add_column_and_constant(layer, 'sftype', 4, 'SHORT')
         self.copy_layer_to_shapefile('maritime_boundary_features', layer, 'output_maritime_features.shp')
 
-    def convert_maritime_boundary_baselines(self):
+    def convert_maritime_boundary_baselines(self) -> None:
         """Process the maritime boundary baselines input parameter"""
 
         layer = self.make_maritime_boundary_pts_layer()
         self.add_column_and_constant(layer, 'invreq', "'Current baseline point. See Baseline Priorities.doc for further \
-                                     information. NOAA units, see FPM section 3.5.6 Maritime Boundary Delineation.'")
+                                    information. NOAA units, see FPM section 3.5.6 Maritime Boundary Delineation.'")
         self.add_column_and_constant(layer, 'asgnment', 3, 'SHORT')
         self.add_column_and_constant(layer, 'sftype', 4, 'SHORT')
         self.copy_layer_to_shapefile('maritime_boundary_baselines', layer, 'output_maritime_baselines.shp')
 
-    def convert_tides(self):
+    def convert_tides(self) -> None:
         """Process the Tides input parameter"""
 
         return
 
-    def convert_enc_files(self):
+    def convert_enc_files(self) -> None:
         """Process the ENC files input parameter"""
-
-        enc_engine = ENCReaderEngine(self.param_lookup)
-        enc_engine.start()
-        enc_engine.perform_spatial_filter(self.make_sheets_layer())
-
         # TODO load ENC files
         # make sure they are CCW right hand rule
-        
+        # sort sheets layer by scale ascending
+        # Use projected Sheets layer to spatial query all ENC files (Intersects, Crosses, Overlaps, Contains, Within)
         # if selected
             # merge all selected layers into 1
             # (FME sets CCW right hand rule again.  Probably not needed)
@@ -136,7 +145,7 @@ class CompositeSourceCreatorEngine:
 
         return
     
-    def copy_layer_to_shapefile(self, output_data_type, layer, shapefile_name):
+    def copy_layer_to_shapefile(self, output_data_type, layer, shapefile_name) -> None:
         """
         Store processed layer as an output shapefile
         :param str output_data_type: Name of input parameter type being stored; see param_lookup
@@ -211,15 +220,31 @@ class CompositeSourceCreatorEngine:
         layer = self.arcpy.management.CopyFeatures(sheet_layer, r'memory\sheets_layer')
         return layer
     
-    def merge_maritime_baselines_and_features(self):
+    def merge_maritime_pts_and_features(self):
         """
         Merge the point maritime boundary datasets and create a layer
         :return arcpy.FeatureLayer: In memory layer used for processing
         """
 
-        maritime_baselines = self.param_lookup['maritime_boundary_pts'].valueAsText
+        maritime_pts = self.param_lookup['maritime_boundary_pts'].valueAsText
         maritime_features = self.param_lookup['maritime_boundary_features'].valueAsText
-        layer = self.arcpy.management.Merge([maritime_baselines, maritime_features], r'memory\maritime_features_layer')
+        layer = self.arcpy.management.Merge([maritime_pts, maritime_features], r'memory\maritime_features_layer')
+        return layer
+
+    def make_junctions_layer(self):
+        """
+        Create in memory layer for processing.
+        This copies the input Junctions shapefile to not corrupt it.
+        :return arcpy.FeatureLayer: In memory layer used for processing
+        """
+
+        field_info = self.arcpy.FieldInfo()
+        input_fields = self.arcpy.ListFields(self.param_lookup['junctions'].valueAsText)
+        for field in input_fields:
+            field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
+        junctions_layer = self.arcpy.management.MakeFeatureLayer(self.param_lookup['junctions'].valueAsText,
+                                                             field_info=field_info)
+        layer = self.arcpy.management.CopyFeatures(junctions_layer, r'memory\junctions_layer')
         return layer
 
     def reverse(self, geom_list):
@@ -313,7 +338,6 @@ class CompositeSourceCreatorEngine:
                                                 template=template_layer,
                                                 spatial_reference=self.arcpy.SpatialReference(4326))
 
-        # ['SHAPE@', 'snm', 'priority', 'scale', 'sub_locali', 'registry_n', 'invreq']
         fields = []
         for field in self.arcpy.ListFields(template_layer):
             if field.name != 'OBJECTID':
