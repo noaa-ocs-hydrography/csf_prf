@@ -1,7 +1,5 @@
 import os
 
-from .ENCReaderEngine import ENCReaderEngine
-
 
 class CompositeSourceCreatorException(Exception):
     """Custom exception for tool"""
@@ -57,7 +55,8 @@ class CompositeSourceCreatorEngine:
         if self.param_lookup['sheets'].valueAsText:
             self.add_message('converting sheets')
             layer = self.make_sheets_layer()
-            expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
+            expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) \
+            + ', Name: ' + str(!sub_locali!)"
             self.add_column_and_constant(layer, 'invreq', expression)
             outer_features, inner_features = self.split_inner_polygons(layer)
             self.write_features_to_shapefile('sheets', layer, outer_features + inner_features, 'output_sheets.shp')
@@ -65,9 +64,16 @@ class CompositeSourceCreatorEngine:
     def convert_junctions(self):
         """Process the Junctions input parameter"""
 
-        self.add_message('converting junctions')
-        # layer = self.arcpy.management.MakeFeatureLayer(self.param_lookup['junctions'].valueAsText)
-
+        if self.param_lookup['junctions'].valueAsText:
+            self.add_message('converting junctions')
+            layer = self.make_junctions_layer()
+            expression = "'Survey: ' + str(!survey!) + ', Platform: ' + str(!field_unit!) + \
+            ', Year: ' + str(!year!) + ', Scale: ' + str(!scale!)"
+            self.add_column_and_constant(layer, 'invreq', expression)
+            self.add_column_and_constant(layer, 'TRAFIC', 2)
+            self.add_column_and_constant(layer, 'ORIENT', 45)
+            self.write_features_to_shapefile('junctions', layer, 'output_junctions.shp')
+    
     def convert_bottom_samples(self):
         """Process the Bottom Samples input parameter"""
 
@@ -106,14 +112,10 @@ class CompositeSourceCreatorEngine:
 
     def convert_enc_files(self):
         """Process the ENC files input parameter"""
-
-        enc_engine = ENCReaderEngine(self.param_lookup)
-        enc_engine.start()
-        enc_engine.perform_spatial_filter(self.make_sheets_layer())
-
         # TODO load ENC files
         # make sure they are CCW right hand rule
-        
+        # sort sheets layer by scale ascending
+        # Use projected Sheets layer to spatial query all ENC files (Intersects, Crosses, Overlaps, Contains, Within)
         # if selected
             # merge all selected layers into 1
             # (FME sets CCW right hand rule again.  Probably not needed)
@@ -220,6 +222,33 @@ class CompositeSourceCreatorEngine:
         maritime_baselines = self.param_lookup['maritime_boundary_pts'].valueAsText
         maritime_features = self.param_lookup['maritime_boundary_features'].valueAsText
         layer = self.arcpy.management.Merge([maritime_baselines, maritime_features], r'memory\maritime_features_layer')
+        return layer
+
+    def make_junctions_layer(self):
+        """
+        Create in memory layer for processing.
+        This copies the input Junctions shapefile to not corrupt it.
+        :return arcpy.FeatureLayer: In memory layer used for processing
+        """
+
+        fields = {  # Use for information.  FME used these 6 fields. Might be different sometimes.
+            9: 'snm',
+            16: 'priority',
+            17: 'scale',
+            19: 'sub_locali',
+            20: 'registry_n',
+            23: 'invreq'
+        }
+        field_info = self.arcpy.FieldInfo()
+        input_fields = self.arcpy.ListFields(self.param_lookup['junctions'].valueAsText)
+        for field in input_fields:
+            if field.name in fields.values():
+                field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
+            else:
+                field_info.addField(field.name, field.name, 'HIDDEN', 'NONE')
+        junctions_layer = self.arcpy.management.MakeFeatureLayer(self.param_lookup['junctions'].valueAsText,
+                                                             field_info=field_info)
+        layer = self.arcpy.management.CopyFeatures(junctions_layer, r'memory\junctions_layer')
         return layer
 
     def reverse(self, geom_list):
