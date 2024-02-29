@@ -77,8 +77,9 @@ class ENCReaderEngine:
                 field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
             else:
                 field_info.addField(field.name, field.name, 'HIDDEN', 'NONE')
-        sheets_layer = arcpy.management.MakeFeatureLayer(self.param_lookup['sheets'].valueAsText, field_info=field_info)
-        return sheets_layer
+        sheet_layer = arcpy.management.MakeFeatureLayer(self.param_lookup['sheets'].valueAsText, field_info=field_info)
+        layer = arcpy.management.CopyFeatures(sheet_layer, r'memory\sheets_layer')
+        return layer
     
     def open_file(self):
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON"
@@ -144,6 +145,9 @@ class ENCReaderEngine:
         points = arcpy.management.GetCount(self.geometries['Point']['layers']['passed'])
         lines = arcpy.management.GetCount(self.geometries['LineString']['layers']['passed'])
         polygons = arcpy.management.GetCount(self.geometries['Polygon']['layers']['passed'])
+        print('Points:', points)
+        print('Lines:', lines)
+        print('Polygons:', polygons)
         print('Total passed:', int(points[0]) + int(lines[0]) + int(polygons[0]))
         points = arcpy.management.GetCount(self.geometries['Point']['layers']['failed'])
         lines = arcpy.management.GetCount(self.geometries['LineString']['layers']['failed'])

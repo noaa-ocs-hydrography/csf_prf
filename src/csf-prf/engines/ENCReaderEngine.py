@@ -80,6 +80,7 @@ class ENCReaderEngine:
             point_failed = arcpy.management.SelectLayerByLocation(points_passed_layer, selection_type='SWITCH_SELECTION')
             self.geometries['Point']['layers']['passed'] = points_passed
             self.geometries['Point']['layers']['failed'] = point_failed
+            arcpy.AddMessage(f'Points: {len(point_list)}, {arcpy.management.GetCount(points_passed)}')
 
         # LINES
         lines_list = []
@@ -94,6 +95,7 @@ class ENCReaderEngine:
             line_failed = arcpy.management.SelectLayerByLocation(lines_passed_layer, selection_type='SWITCH_SELECTION')
             self.geometries['LineString']['layers']['passed'] = lines_passed
             self.geometries['LineString']['layers']['failed'] = line_failed
+            arcpy.AddMessage(f'Lines: {len(lines_list)}, {arcpy.management.GetCount(lines_passed)}')
 
         # POLYGONS
         polygons_list = []
@@ -114,6 +116,14 @@ class ENCReaderEngine:
             polygon_failed = arcpy.management.SelectLayerByLocation(polygons_passed_layer, selection_type='SWITCH_SELECTION')
             self.geometries['Polygon']['layers']['passed'] = polygons_passed
             self.geometries['Polygon']['layers']['failed'] = polygon_failed
+            arcpy.AddMessage(f'Polygons: {len(polygons_list)}, {arcpy.management.GetCount(polygons_passed)}')
+
+            # Points: 5109, 373
+            # Lines: 1857, 282
+            # Polygons: 1660, 309
+            # Points: 372
+            # Lines: 286
+            # Polygons: 309
 
     def print_geometries(self):
         for feature_type in self.geometries.keys():

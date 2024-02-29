@@ -120,7 +120,7 @@ class CompositeSourceCreatorEngine:
         """Process the ENC files input parameter"""
 
         self.add_message('converting ENC files')
-        enc_engine = ENCReaderEngine(self.param_lookup, r'memory\sheets_layer')
+        enc_engine = ENCReaderEngine(self.param_lookup, self.make_sheets_layer())
         enc_engine.start()
         # if selected
             # merge all selected layers into 1
