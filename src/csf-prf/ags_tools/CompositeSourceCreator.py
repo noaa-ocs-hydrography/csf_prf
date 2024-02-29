@@ -99,7 +99,7 @@ class CompositeSourceCreator:
         enc_file = arcpy.Parameter(
             displayName="ENC File(s):",
             name="enc_files",
-            datatype="GPFeatureLayer",
+            datatype="DEFile",
             parameterType="Required",
             direction="Input"
         )

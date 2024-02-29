@@ -1,4 +1,5 @@
 import os
+from engines.ENCReaderEngine import ENCReaderEngine
 
 
 class CompositeSourceCreatorException(Exception):
@@ -49,26 +50,13 @@ class CompositeSourceCreatorEngine:
         else:
             print(message)
 
-    def convert_sheets(self) -> None:
-        """Process the Sheets input parameter"""
-
-        if self.param_lookup['sheets'].valueAsText:
-            self.add_message('converting sheets')
-            layer = self.make_sheets_layer()
-            expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) \
-            + ', Name: ' + str(!sub_locali!)"
-            self.add_column_and_constant(layer, 'invreq', expression)
-            outer_features, inner_features = self.split_inner_polygons(layer)
-            self.write_features_to_shapefile('sheets', layer, outer_features + inner_features, 'output_sheets.shp')
-
     def convert_junctions(self) -> None:
         """Process the Junctions input parameter"""
 
         if self.param_lookup['junctions'].valueAsText:
             self.add_message('converting junctions')
             layer = self.make_junctions_layer()
-            expression = "'Survey: ' + str(!survey!) + ', Platform: ' + str(!field_unit!) + \
-            ', Year: ' + str(!year!) + ', Scale: ' + str(!scale!)"
+            expression = "'Survey: ' + str(!survey!) + ', Platform: ' + str(!field_unit!) + ', Year: ' + str(!year!) + ', Scale: ' + str(!scale!)"
             self.add_column_and_constant(layer, 'invreq', expression)
             self.add_column_and_constant(layer, 'TRAFIC', 2)
             self.add_column_and_constant(layer, 'ORIENT', 45)
@@ -112,6 +100,17 @@ class CompositeSourceCreatorEngine:
         self.add_column_and_constant(layer, 'sftype', 4, 'SHORT')
         self.copy_layer_to_shapefile('maritime_boundary_baselines', layer, 'output_maritime_baselines.shp')
 
+    def convert_sheets(self) -> None:
+        """Process the Sheets input parameter"""
+
+        if self.param_lookup['sheets'].valueAsText:
+            self.add_message('converting sheets')
+            layer = self.make_sheets_layer()
+            expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
+            self.add_column_and_constant(layer, 'invreq', expression)
+            outer_features, inner_features = self.split_inner_polygons(layer)
+            self.write_features_to_shapefile('sheets', layer, outer_features + inner_features, 'output_sheets.shp')
+
     def convert_tides(self) -> None:
         """Process the Tides input parameter"""
 
@@ -119,10 +118,10 @@ class CompositeSourceCreatorEngine:
 
     def convert_enc_files(self) -> None:
         """Process the ENC files input parameter"""
-        # TODO load ENC files
-        # make sure they are CCW right hand rule
-        # sort sheets layer by scale ascending
-        # Use projected Sheets layer to spatial query all ENC files (Intersects, Crosses, Overlaps, Contains, Within)
+
+        self.add_message('converting ENC files')
+        enc_engine = ENCReaderEngine(self.param_lookup, r'memory\sheets_layer')
+        enc_engine.start()
         # if selected
             # merge all selected layers into 1
             # (FME sets CCW right hand rule again.  Probably not needed)
@@ -311,6 +310,7 @@ class CompositeSourceCreatorEngine:
     def start(self) -> None:
         """Main method to begin process"""
 
+        self.is_esri
         self.convert_sheets()
         self.convert_junctions()
         self.convert_bottom_samples()
@@ -347,6 +347,7 @@ class CompositeSourceCreatorEngine:
                     fields.append(field.name)
 
         with self.arcpy.da.InsertCursor(output_name, fields) as cursor:
+            # TODO update for points, lines, and polygons
             for feature in features:
                 vertices = [(point.X, point.Y) for point in feature['geometry']]
                 polygon = list(vertices)

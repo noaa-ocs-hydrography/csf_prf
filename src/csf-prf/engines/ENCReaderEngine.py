@@ -1,56 +1,141 @@
+import pathlib
 import json
+import arcpy
+import os
+arcpy.env.overwriteOutput = True
 
 from osgeo import ogr
 
 
+INPUTS = pathlib.Path(__file__).parents[1] / 'inputs'
+OUTPUTS = pathlib.Path(__file__).parents[1] / 'outputs'
+
 class ENCReaderEngine:
-    def __init__(self, param_lookup: dict):
+    def __init__(self, param_lookup: dict, sheets_layer) -> None:
         self.param_lookup = param_lookup
+        self.sheets_layer = sheets_layer
         self.driver = None
         self.geometries = {
-            'Point': [],
-            'LineString': [],
-            'Polygon': [],
-            'other': []
+            'Point': {'features': [], 'layers': {'passed': None, 'failed': None}},
+            'LineString': {'features': [], 'layers': {'passed': None, 'failed': None}},
+            'Polygon': {'features': [], 'layers': {'passed': None, 'failed': None}}
         }
-        
-    def start(self):
-        self.set_driver()
-        self.filter_enc_geometries()
 
-    def filter_enc_geometries(self):
+    def read_enc_features(self):
         """"""
 
+        arcpy.AddMessage(' - reading ENC features')
         enc_file = self.open_file()
-        for i, row in enumerate(range(0, enc_file.GetLayerCount())):
-            layer = enc_file.GetLayer(row)
-            enc_geom_type = layer.GetGeomType()
-            for i in range(layer.GetFeatureCount()):
-                feature = layer.GetFeature(i)
+        for layer in enc_file:
+            for feature in layer:
                 if feature:
                     feature_json = json.loads(feature.ExportToJson())
-                    geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
-                    if geom_type in ['Point', 'LineString', 'Polygon']:
-                        self.geometries[geom_type].append({'type': enc_geom_type, 'geojson': feature_json})
-                    # else: # TODO do we need the others? geometry: None types
-                    #     self.geometries['other'].append({'type': enc_geom_type, 'geojson': feature_json})
+                    geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
 
+                    if geom_type in ['Point', 'LineString', 'Polygon']:
+                        self.geometries[geom_type]['features'].append({'geojson': feature_json})
+                    elif geom_type == 'MultiPoint':
+                        # Create individual points for soundings
+                        feature_template = json.loads(feature.ExportToJson())
+                        feature_template['geometry']['type'] = 'Point'
+                        for point in feature.geometry():
+                            feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
+                            self.geometries['Point']['features'].append({'geojson': feature_template})     
+                    else:
+                        if geom_type:
+                            print(f'Unknown feature type: {geom_type}')
+
+    def get_polygon_types(self):
+        foids = {}
+        rcids = {}
+        for feature in self.geometries['Polygon']:
+            foid = (feature['geojson']['properties']['FIDN'], feature['geojson']['properties']['FIDS'])
+            rcid = feature['geojson']['properties']['RCID']
+            foids.setdefault(foid, 0)
+            foids[foid] += 1
+            rcids[rcid] = None
+        print(foids.values())
+        print(len(foids.keys()), '\n', len(rcids.keys()))
+        print(len(self.geometries['Polygon']))
+    
     def open_file(self):
+        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON"
         enc_file_path = self.param_lookup['enc_files'].valueAsText
         enc_file = self.driver.Open(enc_file_path, 0)
         return enc_file
-    
-    def perform_spatial_filter(self, sheets_layer):
-        # sort sheets layer by scale ascending
-        # Use projected Sheets layer to spatial query all ENC files (Intersects, Crosses, Overlaps, Contains, Within)
-        # 1. copy features management of geometry to in memory layer
-        # 2. arcpy intersects, etc. 
-        pass
-    
+
+    def perform_spatial_filter(self):
+
+        arcpy.AddMessage(' - filtering features against sheets')
+        # sorted_sheets = arcpy.management.Sort(sheets_layer, r'memory\sorted_sheets', [["scale", "ASCENDING"]])
+        # POINTS
+        point_list = []
+        for feature in self.geometries['Point']['features']:
+            coords = feature['geojson']['geometry']['coordinates']
+            point_list.append(arcpy.PointGeometry(arcpy.Point(X=coords[0], Y=coords[1]), arcpy.SpatialReference(4326)))
+        if point_list:
+            points_layer = arcpy.management.CopyFeatures(point_list, r'memory\points_layer')
+            points_passed = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', self.sheets_layer)
+            points_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(points_passed)
+            point_failed = arcpy.management.SelectLayerByLocation(points_passed_layer, selection_type='SWITCH_SELECTION')
+            self.geometries['Point']['layers']['passed'] = points_passed
+            self.geometries['Point']['layers']['failed'] = point_failed
+
+        # LINES
+        lines_list = []
+        for feature in self.geometries['LineString']['features']:
+            points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates']]
+            coord_array = arcpy.Array(points)
+            lines_list.append(arcpy.Polyline(coord_array, arcpy.SpatialReference(4326)))
+        if lines_list:
+            lines_layer = arcpy.management.CopyFeatures(lines_list, r'memory\lines_layer')
+            lines_passed = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', self.sheets_layer)
+            lines_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(lines_passed)
+            line_failed = arcpy.management.SelectLayerByLocation(lines_passed_layer, selection_type='SWITCH_SELECTION')
+            self.geometries['LineString']['layers']['passed'] = lines_passed
+            self.geometries['LineString']['layers']['failed'] = line_failed
+
+        # POLYGONS
+        polygons_list = []
+        for feature in self.geometries['Polygon']['features']:
+            polygons = feature['geojson']['geometry']['coordinates']
+            if len(polygons) > 1:
+                points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
+                coord_array = arcpy.Array(points)
+                polygons_list.append(arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))) 
+            else:
+                points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates'][0]]
+                coord_array = arcpy.Array(points)
+                polygons_list.append(arcpy.Polygon(coord_array, arcpy.SpatialReference(4326)))
+        if polygons_list:
+            polygons_layer = arcpy.management.CopyFeatures(polygons_list, r'memory\polygons_layer')
+            polygons_passed = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', self.sheets_layer)
+            polygons_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(polygons_passed)
+            polygon_failed = arcpy.management.SelectLayerByLocation(polygons_passed_layer, selection_type='SWITCH_SELECTION')
+            self.geometries['Polygon']['layers']['passed'] = polygons_passed
+            self.geometries['Polygon']['layers']['failed'] = polygon_failed
+
     def print_geometries(self):
         for feature_type in self.geometries.keys():
             for feature in self.geometries[feature_type]:
                 print('\n', feature['type'], ':', feature['geojson'])
+    
+    def print_feature_total(self):
+        points = arcpy.management.GetCount(self.geometries['Point']['layers']['passed'])
+        lines = arcpy.management.GetCount(self.geometries['LineString']['layers']['passed'])
+        polygons = arcpy.management.GetCount(self.geometries['Polygon']['layers']['passed'])
+        arcpy.AddMessage(f'Total passed: {int(points[0]) + int(lines[0]) + int(polygons[0])}')
+        points = arcpy.management.GetCount(self.geometries['Point']['layers']['failed'])
+        lines = arcpy.management.GetCount(self.geometries['LineString']['layers']['failed'])
+        polygons = arcpy.management.GetCount(self.geometries['Polygon']['layers']['failed'])
+        arcpy.AddMessage(f'Total failed: {int(points[0]) + int(lines[0]) + int(polygons[0])}')
 
     def set_driver(self):
+        arcpy.AddMessage(' - setting S57 driver')
         self.driver = ogr.GetDriverByName('S57')
+
+    def start(self):
+        self.set_driver()
+        self.read_enc_features()
+        self.perform_spatial_filter()
+        self.print_feature_total()
