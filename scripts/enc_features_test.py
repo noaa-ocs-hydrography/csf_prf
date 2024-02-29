@@ -93,10 +93,10 @@ class ENCReaderEngine:
         point_list = []
         for feature in self.geometries['Point']:
             coords = feature['geojson']['geometry']['coordinates']
-            point_list.append(arcpy.PointGeometry(arcpy.Point(X=coords[0], Y=coords[1])))
+            point_list.append(arcpy.PointGeometry(arcpy.Point(X=coords[0], Y=coords[1]), arcpy.SpatialReference(4326)))
         if point_list:
             points_layer = arcpy.management.CopyFeatures(point_list, r'memory\points_layer')
-            point_intersect = arcpy.management.SelectLayerByLocation(points_layer, 'WITHIN', sheets_layer)
+            point_intersect = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', sheets_layer)
             print('Points:', len(point_list), arcpy.management.GetCount(point_intersect)) 
         
         # LINES
@@ -104,7 +104,7 @@ class ENCReaderEngine:
         for feature in self.geometries['LineString']:
             points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates']]
             coord_array = arcpy.Array(points)
-            lines_list.append(arcpy.Polyline(coord_array))
+            lines_list.append(arcpy.Polyline(coord_array, arcpy.SpatialReference(4326)))
         if lines_list:
             lines_layer = arcpy.management.CopyFeatures(lines_list, r'memory\lines_layer')
             line_intersect = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', sheets_layer)
@@ -117,11 +117,11 @@ class ENCReaderEngine:
             if len(polygons) > 1:
                 points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
                 coord_array = arcpy.Array(points)
-                polygons_list.append(arcpy.Polygon(coord_array)) 
+                polygons_list.append(arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))) 
             else:
                 points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates'][0]]
                 coord_array = arcpy.Array(points)
-                polygons_list.append(arcpy.Polygon(coord_array))
+                polygons_list.append(arcpy.Polygon(coord_array, arcpy.SpatialReference(4326)))
         if polygons_list:
             polygons_layer = arcpy.management.CopyFeatures(polygons_list, r'memory\polygons_layer')
             polygon_intersect = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', sheets_layer)
