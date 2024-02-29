@@ -97,7 +97,9 @@ class ENCReaderEngine:
         if point_list:
             points_layer = arcpy.management.CopyFeatures(point_list, r'memory\points_layer')
             point_intersect = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', sheets_layer)
-            print('Points:', len(point_list), arcpy.management.GetCount(point_intersect)) 
+            points_features = arcpy.arcpy.management.MakeFeatureLayer(point_intersect)
+            point_failed = arcpy.management.SelectLayerByLocation(points_features, selection_type='SWITCH_SELECTION')
+            print('Points:', len(point_list), arcpy.management.GetCount(point_intersect), arcpy.management.GetCount(point_failed)) 
         
         # LINES
         lines_list = []
@@ -108,7 +110,9 @@ class ENCReaderEngine:
         if lines_list:
             lines_layer = arcpy.management.CopyFeatures(lines_list, r'memory\lines_layer')
             line_intersect = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', sheets_layer)
-            print('Lines:', len(lines_list), arcpy.management.GetCount(line_intersect))
+            lines_features = arcpy.arcpy.management.MakeFeatureLayer(line_intersect)
+            line_failed = arcpy.management.SelectLayerByLocation(lines_features, selection_type='SWITCH_SELECTION')
+            print('Lines:', len(lines_list), arcpy.management.GetCount(line_intersect), arcpy.management.GetCount(line_failed))
 
         # POLYGONS
         polygons_list = []
@@ -125,7 +129,9 @@ class ENCReaderEngine:
         if polygons_list:
             polygons_layer = arcpy.management.CopyFeatures(polygons_list, r'memory\polygons_layer')
             polygon_intersect = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', sheets_layer)
-            print('Polygons:', len(polygons_list), arcpy.management.GetCount(polygon_intersect))    
+            polygons_features = arcpy.arcpy.management.MakeFeatureLayer(polygon_intersect)
+            polygon_failed = arcpy.management.SelectLayerByLocation(polygons_features, selection_type='SWITCH_SELECTION')
+            print('Polygons:', len(polygons_list), arcpy.management.GetCount(polygon_intersect), arcpy.management.GetCount(polygon_failed))    
 
     def print_geometries(self):
         for feature_type in self.geometries.keys():
