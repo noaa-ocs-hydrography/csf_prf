@@ -2,6 +2,7 @@ import pathlib
 import json
 import arcpy
 import os
+import time
 arcpy.env.overwriteOutput = True
 
 from osgeo import ogr
@@ -19,6 +20,13 @@ class ENCReaderEngine:
             'LineString': {'features': [], 'layers': {'passed': None, 'failed': None}},
             'Polygon': {'features': [], 'layers': {'passed': None, 'failed': None}}
         }
+
+    def get_all_fields(self, features):
+        fields = set()
+        for feature in features:
+            for field in feature['geojson']['properties'].keys():
+                fields.add(field)
+        return fields
 
     def get_enc_geometries(self):
         """"""
@@ -90,51 +98,122 @@ class ENCReaderEngine:
     def perform_spatial_filter(self, sheets_layer):
         # sorted_sheets = arcpy.management.Sort(sheets_layer, r'memory\sorted_sheets', [["scale", "ASCENDING"]])
         # POINTS
-        point_list = []
+        point_fields = self.get_all_fields(self.geometries['Point']['features'])
+        points_layer = arcpy.management.CreateFeatureclass('memory', 'points_layer', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
+        for field in point_fields:
+            arcpy.management.AddField(points_layer, field, 'TEXT')
+
+        print('Building point features')
+        # start = time.time()
         for feature in self.geometries['Point']['features']:
-            coords = feature['geojson']['geometry']['coordinates']
-            point_list.append(arcpy.PointGeometry(arcpy.Point(X=coords[0], Y=coords[1]), arcpy.SpatialReference(4326)))
-        if point_list:
-            points_layer = arcpy.management.CopyFeatures(point_list, r'memory\points_layer')
-            points_passed = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', sheets_layer)
-            points_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(points_passed)
-            point_failed = arcpy.management.SelectLayerByLocation(points_passed_layer, selection_type='SWITCH_SELECTION')
-            self.geometries['Point']['layers']['passed'] = points_passed
-            self.geometries['Point']['layers']['failed'] = point_failed
+            current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
+            # TODO this is slow to open new every time, but field names change
+            # Another option might be to have lookup by index and fill missing values to None
+            with arcpy.da.InsertCursor(points_layer, current_fields, explicit=True) as point_cursor: 
+                coords = feature['geojson']['geometry']['coordinates']
+                geometry = arcpy.PointGeometry(arcpy.Point(X=coords[0], Y=coords[1]), arcpy.SpatialReference(4326))
+                attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
+                point_cursor.insertRow([geometry] + attribute_values)
+        print('Finished Point features')
+        # print(f'Seconds: {time.time() - start}')  # 5109 points takes 56 seconds
+        points_passed = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', sheets_layer)
+        points_passed_layer = arcpy.management.MakeFeatureLayer(points_passed)
+        point_failed = arcpy.management.SelectLayerByLocation(points_passed_layer, selection_type='SWITCH_SELECTION')
+        self.geometries['Point']['layers']['passed'] = points_passed
+        self.geometries['Point']['layers']['failed'] = point_failed
+
+        # point_list = []
+        # for feature in self.geometries['Point']['features']:
+        #     coords = feature['geojson']['geometry']['coordinates']
+        #     point_list.append(arcpy.PointGeometry(arcpy.Point(X=coords[0], Y=coords[1]), arcpy.SpatialReference(4326)))
+        # if point_list:
+        #     points_layer = arcpy.management.CopyFeatures(point_list, r'memory\points_layer')
+        #     points_passed = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', sheets_layer)
+        #     points_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(points_passed)
+        #     point_failed = arcpy.management.SelectLayerByLocation(points_passed_layer, selection_type='SWITCH_SELECTION')
+        #     self.geometries['Point']['layers']['passed'] = points_passed
+        #     self.geometries['Point']['layers']['failed'] = point_failed
 
         # LINES
-        lines_list = []
+        line_fields = self.get_all_fields(self.geometries['LineString']['features'])
+        lines_layer = arcpy.management.CreateFeatureclass('memory', 'lines_layer', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
+        for field in line_fields:
+            arcpy.management.AddField(lines_layer, field, 'TEXT')
+
+        print('Building line features')
         for feature in self.geometries['LineString']['features']:
-            points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates']]
-            coord_array = arcpy.Array(points)
-            lines_list.append(arcpy.Polyline(coord_array, arcpy.SpatialReference(4326)))
-        if lines_list:
-            lines_layer = arcpy.management.CopyFeatures(lines_list, r'memory\lines_layer')
-            lines_passed = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', sheets_layer)
-            lines_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(lines_passed)
-            line_failed = arcpy.management.SelectLayerByLocation(lines_passed_layer, selection_type='SWITCH_SELECTION')
-            self.geometries['LineString']['layers']['passed'] = lines_passed
-            self.geometries['LineString']['layers']['failed'] = line_failed
+            current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
+            with arcpy.da.InsertCursor(lines_layer, current_fields, explicit=True) as line_cursor: 
+                points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates']]
+                coord_array = arcpy.Array(points)
+                geometry = arcpy.Polyline(coord_array, arcpy.SpatialReference(4326))
+                attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
+                line_cursor.insertRow([geometry] + attribute_values)
+        print('Finished Line features')
+        lines_passed = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', sheets_layer)
+        lines_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(lines_passed)
+        line_failed = arcpy.management.SelectLayerByLocation(lines_passed_layer, selection_type='SWITCH_SELECTION')
+        self.geometries['LineString']['layers']['passed'] = lines_passed
+        self.geometries['LineString']['layers']['failed'] = line_failed
+
+        # lines_list = []
+        # for feature in self.geometries['LineString']['features']:
+        #     points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates']]
+        #     coord_array = arcpy.Array(points)
+        #     lines_list.append(arcpy.Polyline(coord_array, arcpy.SpatialReference(4326)))
+        # if lines_list:
+            # lines_layer = arcpy.management.CopyFeatures(lines_list, r'memory\lines_layer')
+            # lines_passed = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', sheets_layer)
+            # lines_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(lines_passed)
+            # line_failed = arcpy.management.SelectLayerByLocation(lines_passed_layer, selection_type='SWITCH_SELECTION')
+            # self.geometries['LineString']['layers']['passed'] = lines_passed
+            # self.geometries['LineString']['layers']['failed'] = line_failed
 
         # POLYGONS
-        polygons_list = []
+        polygons_fields = self.get_all_fields(self.geometries['Polygon']['features'])
+        polygons_layer = arcpy.management.CreateFeatureclass('memory', 'polygons_layer', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
+        for field in polygons_fields:
+            arcpy.management.AddField(polygons_layer, field, 'TEXT')
+
+        print('Building Polygon features')
         for feature in self.geometries['Polygon']['features']:
-            polygons = feature['geojson']['geometry']['coordinates']
-            if len(polygons) > 1:
-                points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
+            current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
+            with arcpy.da.InsertCursor(polygons_layer, current_fields, explicit=True) as polygons_cursor: 
+                polygons = feature['geojson']['geometry']['coordinates']
+                if len(polygons) > 1:
+                    points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
+                else:
+                    points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates'][0]]
                 coord_array = arcpy.Array(points)
-                polygons_list.append(arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))) 
-            else:
-                points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates'][0]]
-                coord_array = arcpy.Array(points)
-                polygons_list.append(arcpy.Polygon(coord_array, arcpy.SpatialReference(4326)))
-        if polygons_list:
-            polygons_layer = arcpy.management.CopyFeatures(polygons_list, r'memory\polygons_layer')
-            polygons_passed = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', sheets_layer)
-            polygons_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(polygons_passed)
-            polygon_failed = arcpy.management.SelectLayerByLocation(polygons_passed_layer, selection_type='SWITCH_SELECTION')
-            self.geometries['Polygon']['layers']['passed'] = polygons_passed
-            self.geometries['Polygon']['layers']['failed'] = polygon_failed
+                geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
+                attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
+                polygons_cursor.insertRow([geometry] + attribute_values)
+        print('Finished Polygon features')
+        polygons_passed = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', sheets_layer)
+        polygons_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(polygons_passed)
+        polygon_failed = arcpy.management.SelectLayerByLocation(polygons_passed_layer, selection_type='SWITCH_SELECTION')
+        self.geometries['Polygon']['layers']['passed'] = polygons_passed
+        self.geometries['Polygon']['layers']['failed'] = polygon_failed
+
+
+        # polygons_list = []
+        # for feature in self.geometries['Polygon']['features']:
+        #     polygons = feature['geojson']['geometry']['coordinates']
+        #     if len(polygons) > 1:
+        #         points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
+        #         coord_array = arcpy.Array(points)
+        #         polygons_list.append(arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))) 
+        #     else:
+        #         points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates'][0]]
+        #         coord_array = arcpy.Array(points)
+        #         polygons_list.append(arcpy.Polygon(coord_array, arcpy.SpatialReference(4326)))
+        # if polygons_list:
+        #     polygons_layer = arcpy.management.CopyFeatures(polygons_list, r'memory\polygons_layer')
+        #     polygons_passed = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', sheets_layer)
+        #     polygons_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(polygons_passed)
+        #     polygon_failed = arcpy.management.SelectLayerByLocation(polygons_passed_layer, selection_type='SWITCH_SELECTION')
+        #     self.geometries['Polygon']['layers']['passed'] = polygons_passed
+        #     self.geometries['Polygon']['layers']['failed'] = polygon_failed
 
     def print_geometries(self):
         for feature_type in self.geometries.keys():

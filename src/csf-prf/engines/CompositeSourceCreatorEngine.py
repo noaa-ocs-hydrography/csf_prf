@@ -1,4 +1,6 @@
 import os
+
+from engines.Engine import Engine
 from engines.ENCReaderEngine import ENCReaderEngine
 
 
@@ -8,7 +10,7 @@ class CompositeSourceCreatorException(Exception):
     pass
 
 
-class CompositeSourceCreatorEngine:
+class CompositeSourceCreatorEngine(Engine):
     """
     Class to hold the logic for transforming the 
     Composite Source Creator process into an ArcGIS Python Tool
@@ -31,16 +33,6 @@ class CompositeSourceCreatorEngine:
             self.load_arcpy()
             return True
         return False
-    
-    def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT') -> None:
-        """
-        Add the asgnment column and 
-        :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
-        """
-
-        self.arcpy.management.CalculateField(
-            layer, column, expression, expression_type="PYTHON3", field_type=field_type
-        )
 
     def add_message(self, message: str) -> None:
         """Wrap the Esri message option for open-source use"""
@@ -245,16 +237,6 @@ class CompositeSourceCreatorEngine:
                                                              field_info=field_info)
         layer = self.arcpy.management.CopyFeatures(junctions_layer, r'memory\junctions_layer')
         return layer
-
-    def reverse(self, geom_list):
-        """
-        Reverse all the inner polygon geometries
-        - Esri inner polygons are supposed to be counterclockwise
-        - Shapely.is_ccw() could be used to properly test
-        :return list[arcpy.Geometry]: List of reversed inner polygon geometry
-        """
-
-        return list(reversed(geom_list))
 
     def split_inner_polygons(self, layer):
         """
