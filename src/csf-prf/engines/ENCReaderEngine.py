@@ -2,14 +2,15 @@ import pathlib
 import json
 import arcpy
 import os
+import yaml
 arcpy.env.overwriteOutput = True
 
 from osgeo import ogr
 from engines.Engine import Engine
 
 
-INPUTS = pathlib.Path(__file__).parents[1] / 'inputs'
-OUTPUTS = pathlib.Path(__file__).parents[1] / 'outputs'
+INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
+OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 
 
 class ENCReaderEngine(Engine):
@@ -31,10 +32,10 @@ class ENCReaderEngine(Engine):
             # Failed layers
             self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'asgnmt', 1)
 
-            # TODO For Info Only layers?
-        with arcpy.da.SearchCursor(self.geometries['Point']['layers']['passed'], ["*"]) as searchCursor:
-            for row in searchCursor:
-                arcpy.AddMessage(row)
+            # TODO For Info Only layers? Need to make copies of passed/failed layers and add asgnmt = 3
+        # with arcpy.da.SearchCursor(self.geometries['Point']['layers']['passed'], ["*"]) as searchCursor:
+        #     for row in searchCursor:
+        #         arcpy.AddMessage(row)
 
     
     def add_columns(self):
@@ -42,8 +43,18 @@ class ENCReaderEngine(Engine):
         self.add_invreq_column()
 
     def add_invreq_column(self):
-        #  for feature_type in self.geometries.keys():
-        pass
+        # read YAML
+        with open(os.path.join(INPUTS, 'invreq_lookup.yml'), 'r') as lookup:
+            invreq_lookup = yaml.safe_load(lookup)
+        text_options = invreq_lookup['OPTIONS']
+
+        # add invreq blank column
+        self.add_column_and_constant(self.geometries['Point']['layers']['passed'], 'invreq', None)
+        self.add_column_and_constant(self.geometries['Point']['layers']['failed'], 'invreq', None)
+        # update cursor to set invreq column
+        with arcpy.da.UpdateCursor(self.geometries['Point']['layers']['passed'], ["*"]) as updateCursor:
+            for row in updateCursor:
+                arcpy.AddMessage(row)
 
     def get_all_fields(self, features):
         fields = set()

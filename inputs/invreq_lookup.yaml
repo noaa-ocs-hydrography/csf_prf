@@ -1,0 +1,308 @@
+OPTIONS:
+  1: "Visually confirm feature object existence. If feature exists, include in FFF with descrp = retain. If feature does not exist, contact PM/COR before conducting a feature disproval."
+  2: "See HSSD Section 7.3.5 for ATON guidance.  If located on station and serving intended purpose, include ATON in FFF with descrp = retain."
+  3: "Visually confirm feature object existence. If discrepancy, discuss in DR (see HSSD Section 8.1.4). Do not include feature in FFF."
+  4: "Visually confirm feature object existence. If feature exists, include in FFF with descrp=retain. If feature is not visible, conduct a feature disproval (Section 7.3.4)"
+  5: "Investigate per HSSD Section 7.3.1 and use appropriate attribution, Section 7.5"
+  6: "Visually confirm feature object existence and capture height to confirm or update LNDELV. Note that an islet may become a UWTROC based on WATLEV; reference Appendix F"
+  7: "Investigate per HSSD Section 7.3.1 (read the assigned submerged rock guidance)"
+  8: "If less than authorized minimum depth, investigation per HSSD Section 7.3.1, use attribution per Section 7.5, and include in FFF. If not less than authorized minimum depth, include permitted area feature in FFF (not individual featuers within) with descrp=retain."
+  9: "Investigate per HSSD section 7.3.1 and reference Section 7.5.1 PILPNT entry."
+  10: "Investigate per HSSD Section 7.3.1 and use appropriate attribution, Section 7.5. Note that sumberged dolphins may become snag/stump OBSTRN features based on the surveyed WATLEV (see MORFAC entry in Section 7.5.1 and Appendix F)."
+  11: "See HSSD Section 1.6.2 for Elevated Pipeline guidance or Section 1.7 for Non-DTON Exposed Pipeline guidance. If pipeline is not elevated or exposed, include in FFF with descrp = retain."
+  12: "See wellhead investigation guidance in OBSTRN entry of Section 7.5.1"
+  13: "Visually confirm feature object existence. If feature exists, include in FFF with descrp=retain. If applicable, follow descrp guidance #4 in HSSD Section 7.5.2 if extensive geometry changes are needed."
+AGEN:
+  invreq: ""
+BCNCAR:
+  invreq: 2
+BCNISD:
+  invreq: 2
+BCNLAT:
+  invreq: 2
+BCNSAW:
+  invreq: 2
+BCNSHP:
+  invreq: ""
+BCNSPP:
+  invreq: 2
+BOTINB:
+  invreq: 2
+BOYCAR:
+  invreq: 2
+BOYISD:
+  invreq: 2
+BOYLAT:
+  invreq: 2
+BOYSAW:
+  invreq: 2
+BOYSHP:
+  invreq: ""
+BOYSPP:
+  invreq: 2
+BRIDGE:
+  invreq: 3
+BUISHP:
+  invreq: ""
+CATBUA:
+  invreq: ""
+CATDPG:
+  invreq: ""
+CATFIF:
+  invreq: ""
+CATFOG:
+  invreq: ""
+CATLAM:
+  invreq: ""
+CATLIT:
+  invreq: ""
+CATLMK:
+  invreq: ""
+CATLND:
+  invreq: ""
+CATOBS:
+  invreq: ""
+CATPIL:
+  invreq: ""
+CATPLE:
+  invreq: ""
+CATSIL:
+  invreq: ""
+CATSLC:
+  invreq: ""
+CATSPM:
+  invreq: ""
+CATWAT:
+  invreq: ""
+CATWED:
+  invreq: ""
+CATWRK:
+  invreq: ""
+CBLOHD:
+  invreq: 3
+CBLSUB:
+  invreq: 3
+COLOUR:
+  invreq: ""
+COLPAT:
+  invreq: ""
+COMCHA:
+  invreq: ""
+CONDTN:
+  invreq: ""
+CONRAD:
+  invreq: ""
+CONVIS:
+  invreq: ""
+DATEND:
+  invreq: ""
+DATSTA:
+  invreq: ""
+DAYMAR:
+  invreq: 3
+DRGARE:
+  invreq: 3
+ELEVAT:
+  invreq: ""
+EXCLIT:
+  invreq: ""
+EXPSOU:
+  invreq: ""
+FERYRT:
+  invreq: 3
+FFPT_RIND:
+  invreq: ""
+FID:
+  invreq: ""
+FIDN:
+  invreq: ""
+FIDS:
+  invreq: ""
+FLODOC:
+  invreq: 1
+FOGSIG:
+  invreq: 2
+FSHFAC:
+  invreq: 1
+FUNCTN:
+  invreq: ""
+GRIDRN:
+  invreq: 1
+GRUP:
+  invreq: ""
+HEIGHT:
+  invreq: ""
+HORACC:
+  invreq: ""
+HORCLR:
+  invreq: ""
+HORLEN:
+  invreq: ""
+HORWID:
+  invreq: ""
+HULKES:
+  invreq: 1
+INFORM:
+  invreq: ""
+LIGHTS:
+  invreq: 2
+LITCHR:
+  invreq: ""
+LITFLT:
+  invreq: 2
+LITVES:
+  invreq: 2
+LITVIS:
+  invreq: ""
+LNAM:
+  invreq: ""
+LNAM_REFS:
+  invreq: ""
+LNDARE:
+  invreq: 6
+LNDELV:
+  invreq: 5
+LNDMRK:
+  invreq: 1
+LOGPON:
+  invreq: 1
+MARCUL:
+  invreq: 1
+MARSYS:
+  invreq: ""
+MLTYLT:
+  invreq: ""
+MORFAC:
+  invreq: None
+NATCON:
+  invreq: ""
+NATQUA:
+  invreq: ""
+NATSUR:
+  invreq: ""
+NINFOM:
+  invreq: ""
+NOBJNM:
+  invreq: ""
+NPLDST:
+  invreq: ""
+NTXTDS:
+  invreq: ""
+OBJL:
+  invreq: ""
+OBJNAM:
+  invreq: ""
+OBSTRN:
+  invreq: None
+OFSPLF:
+  invreq: 4
+ORIENT:
+  invreq: ""
+PEREND:
+  invreq: ""
+PERSTA:
+  invreq: ""
+PICREP:
+  invreq: ""
+PILDST:
+  invreq: ""
+PILPNT:
+  invreq: 9
+PIPOHD:
+  invreq: 3
+PIPSOL:
+  invreq: 11
+PONTON:
+  invreq: 1
+PRIM:
+  invreq: ""
+PRODCT:
+  invreq: ""
+PYLONS:
+  invreq: 1
+QUASOU:
+  invreq: ""
+RCID:
+  invreq: ""
+RECDAT:
+  invreq: ""
+RECIND:
+  invreq: ""
+RESTRN:
+  invreq: ""
+RETRFL:
+  invreq: 2
+RVER:
+  invreq: ""
+RYRMGV:
+  invreq: ""
+SBDARE:
+  invreq: None
+SLCONS:
+  invreq: None
+SCAMAX:
+  invreq: ""
+SCAMIN:
+  invreq: ""
+SECTR1:
+  invreq: ""
+SECTR2:
+  invreq: ""
+SIGFRQ:
+  invreq: ""
+SIGGEN:
+  invreq: ""
+SIGGRP:
+  invreq: ""
+SIGPER:
+  invreq: ""
+SIGSEQ:
+  invreq: ""
+SNDWAV:
+  invreq: 13
+SORDAT:
+  invreq: ""
+SORIND:
+  invreq: ""
+SOUACC:
+  invreq: ""
+STATUS:
+  invreq: ""
+TECSOU:
+  invreq: ""
+TOPMAR:
+  invreq: 2
+TOPSHP:
+  invreq: ""
+TUNNEL:
+  invreq: 3
+TXTDSC:
+  invreq: ""
+UWTROC:
+  invreq: None
+VALACM:
+  invreq: ""
+VALMAG:
+  invreq: ""
+VALMXR:
+  invreq: ""
+VALNMR:
+  invreq: ""
+VALSOU:
+  invreq: ""
+VERACC:
+  invreq: ""
+VERDAT:
+  invreq: ""
+VERLEN:
+  invreq: ""
+WATLEV:
+  invreq: ""
+WATTUR:
+  invreq: 13
+WEDKLP:
+  invreq: 13
+WRECKS:
+  invreq: 5
+OTHER:
+  invreq: ""

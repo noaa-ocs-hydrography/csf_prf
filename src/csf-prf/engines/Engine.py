@@ -5,15 +5,18 @@ class Engine:
     def __init__(self) -> None:
         pass
 
-    def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT') -> None:
+    def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT', nullable=False) -> None:
         """
         Add the asgnment column and 
         :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
         """
 
-        arcpy.management.CalculateField(
-            layer, column, expression, expression_type="PYTHON3", field_type=field_type
-        )
+        if nullable:
+            arcpy.management.AddField(layer, column, field_type, field_is_nullable='NULLABLE')
+        else:
+            arcpy.management.CalculateField(
+                layer, column, expression, expression_type="PYTHON3", field_type=field_type
+            )
 
     def reverse(self, geom_list):
         """

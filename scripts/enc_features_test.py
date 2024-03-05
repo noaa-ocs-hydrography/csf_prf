@@ -2,16 +2,18 @@ import pathlib
 import json
 import arcpy
 import os
+import yaml
 import time
 arcpy.env.overwriteOutput = True
 
 from osgeo import ogr
-
+from engines.Engine import Engine
+from engines.class_code_lookup import class_codes as CLASS_CODES
 
 INPUTS = pathlib.Path(__file__).parents[1] / 'inputs'
 OUTPUTS = pathlib.Path(__file__).parents[1] / 'outputs'
 
-class ENCReaderEngine:
+class ENCReaderEngine(Engine):
     def __init__(self, param_lookup: dict):
         self.param_lookup = param_lookup
         self.driver = None
@@ -20,6 +22,78 @@ class ENCReaderEngine:
             'LineString': {'features': [], 'layers': {'passed': None, 'failed': None}},
             'Polygon': {'features': [], 'layers': {'passed': None, 'failed': None}}
         }
+
+    def add_columns(self):
+        self.add_objl_string()
+        self.add_asgnmt_column()
+        self.add_invreq_column()
+
+    def add_asgnmt_column(self):
+        for feature_type in self.geometries.keys():
+            # Passed layers
+            self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'asgnmt', 2)
+            
+            # Failed layers
+            self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'asgnmt', 1)
+
+        # TODO For Info Only layers? Need to make copies of passed/failed layers and add asgnmt = 3
+        # with arcpy.da.SearchCursor(self.geometries['Point']['layers']['passed'], ["*"]) as searchCursor:
+        #     for row in searchCursor:
+        #         arcpy.AddMessage(row)
+            
+    def add_invreq_column(self):
+        """Add and populate the investigation required column for allowed features"""
+
+        with open(str(INPUTS / 'invreq_lookup.yaml'), 'r') as lookup:
+            objl_lookup = yaml.safe_load(lookup)
+        invreq_options = objl_lookup['OPTIONS']
+
+        for feature_type in self.geometries.keys():
+            print(f'Adding invreq column to: {feature_type}')
+            self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'invreq', nullable=True)
+            self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'invreq', nullable=True)
+            with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['passed'], ["SHAPE@", "*"]) as updateCursor:
+                # Have to use * because columns are missing in certain ENCs
+                indx = {
+                    'OBJL_NAME': updateCursor.fields.index('OBJL_NAME'),
+                    'CATOBS': updateCursor.fields.index('CATOBS') if 'CATOBS' in updateCursor.fields else False,
+                    'invreq': updateCursor.fields.index('invreq'),
+                    'SHAPE@': updateCursor.fields.index('SHAPE@')
+                }
+                for row in updateCursor:
+                    if row[indx['OBJL_NAME']] == 'LNDARE':
+                        if feature_type == 'Polygon':
+                            area = row[indx['SHAPE@']].projectAs(arcpy.SpatialReference(102008)).area  # project to NA Albers Equal Area
+                            if area < 3775:
+                                invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
+                                row[indx['invreq']] = invreq_options.get(invreq, '')
+                    # CATOBS column needed for OBSTRN
+                    elif row[indx['OBJL_NAME']] == 'OBSTRN':
+                        if indx['CATOBS']:
+                            catobs = row[indx["CATOBS"]]
+                            if catobs == 2:
+                                row[indx['invreq']] = invreq_options.get(12, '')
+                            if catobs == 5:
+                                row[indx['invreq']] = invreq_options.get(8, '')
+                            if catobs in [None, 1, 3, 4, 6, 7, 8, 9, 10]:
+                                row[indx['invreq']] = invreq_options.get(5, '')
+                    else:
+                        invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
+                        row[indx['invreq']] = invreq_options.get(invreq, '')
+                    updateCursor.updateRow(row)
+
+    def add_objl_string(self):
+        """Convert OBJL number to string name"""
+
+        for feature_type in self.geometries.keys():
+            self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'OBJL_NAME', nullable=True)
+            self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'OBJL_NAME', nullable=True)
+            
+            with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['passed'], ["OBJL", "OBJL_NAME"]) as updateCursor:
+                for row in updateCursor:
+                    row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
+                    updateCursor.updateRow(row)
+
 
     def get_all_fields(self, features):
         fields = set()
@@ -96,6 +170,7 @@ class ENCReaderEngine:
         return enc_file
 
     def perform_spatial_filter(self, sheets_layer):
+        # TODO make new functions for each feature type
         # sorted_sheets = arcpy.management.Sort(sheets_layer, r'memory\sorted_sheets', [["scale", "ASCENDING"]])
         # POINTS
         point_fields = self.get_all_fields(self.geometries['Point']['features'])
@@ -221,6 +296,7 @@ class ENCReaderEngine:
                 print('\n', feature['type'], ':', feature['geojson'])
     
     def print_feature_total(self):
+        # TODO add logic for no data found
         points = arcpy.management.GetCount(self.geometries['Point']['layers']['passed'])
         lines = arcpy.management.GetCount(self.geometries['LineString']['layers']['passed'])
         polygons = arcpy.management.GetCount(self.geometries['Polygon']['layers']['passed'])
@@ -243,6 +319,7 @@ class ENCReaderEngine:
         # self.get_polygon_types()
         self.perform_spatial_filter(self.make_sheets_layer())
         self.print_feature_total()
+        self.add_columns()
 
 
 if __name__ == "__main__":
