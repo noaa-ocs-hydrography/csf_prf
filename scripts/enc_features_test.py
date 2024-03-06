@@ -53,7 +53,7 @@ class ENCReaderEngine(Engine):
             self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'invreq', nullable=True)
             self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'invreq', nullable=True)
             with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['passed'], ["SHAPE@", "*"]) as updateCursor:
-                # Have to use * because columns are missing in certain ENCs
+                # Have to use * because some columns(CATOBS) may be missing in point, line, or polygon feature layers
                 indx = {
                     'OBJL_NAME': updateCursor.fields.index('OBJL_NAME'),
                     'CATOBS': updateCursor.fields.index('CATOBS') if 'CATOBS' in updateCursor.fields else False,
@@ -61,6 +61,7 @@ class ENCReaderEngine(Engine):
                     'SHAPE@': updateCursor.fields.index('SHAPE@')
                 }
                 for row in updateCursor:
+                    # TODO proccess other OBJL_NAME values that are set to None, MORFAC, SBDARE, SLCONS, UWTROC
                     if row[indx['OBJL_NAME']] == 'LNDARE':
                         if feature_type == 'Polygon':
                             area = row[indx['SHAPE@']].projectAs(arcpy.SpatialReference(102008)).area  # project to NA Albers Equal Area
