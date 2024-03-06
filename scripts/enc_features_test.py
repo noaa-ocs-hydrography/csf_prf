@@ -57,27 +57,55 @@ class ENCReaderEngine(Engine):
                 indx = {
                     'OBJL_NAME': updateCursor.fields.index('OBJL_NAME'),
                     'CATOBS': updateCursor.fields.index('CATOBS') if 'CATOBS' in updateCursor.fields else False,
+                    'CATMOR': updateCursor.fields.index('CATMOR') if 'CATMOR' in updateCursor.fields else False,
+                    'CONDTN': updateCursor.fields.index('CONDTN') if 'CONDTN' in updateCursor.fields else False,
+                    'WATLEV': updateCursor.fields.index('WATLEV') if 'WATLEV' in updateCursor.fields else False,
                     'invreq': updateCursor.fields.index('invreq'),
                     'SHAPE@': updateCursor.fields.index('SHAPE@')
                 }
                 for row in updateCursor:
-                    # TODO proccess other OBJL_NAME values that are set to None, MORFAC, SBDARE, SLCONS, UWTROC
                     if row[indx['OBJL_NAME']] == 'LNDARE':
                         if feature_type == 'Polygon':
                             area = row[indx['SHAPE@']].projectAs(arcpy.SpatialReference(102008)).area  # project to NA Albers Equal Area
-                            if area < 3775:
+                            if area < 3775:  # FME polygon size check 
                                 invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
                                 row[indx['invreq']] = invreq_options.get(invreq, '')
+                    # CATMOR column needed for MORFAC
+                    elif row[indx['OBJL_NAME']] == 'MORFAC':
+                        if indx['CATMOR']:
+                            catmor = row[indx["CATMOR"]]
+                            if catmor == 1:
+                                row[indx['invreq']] = invreq_options.get(10, '')
+                            elif catmor in [2, 3, 4, 5, 6, 7]:
+                                row[indx['invreq']] = invreq_options.get(1, '')
                     # CATOBS column needed for OBSTRN
                     elif row[indx['OBJL_NAME']] == 'OBSTRN':
                         if indx['CATOBS']:
                             catobs = row[indx["CATOBS"]]
                             if catobs == 2:
                                 row[indx['invreq']] = invreq_options.get(12, '')
-                            if catobs == 5:
+                            elif catobs == 5:
                                 row[indx['invreq']] = invreq_options.get(8, '')
-                            if catobs in [None, 1, 3, 4, 6, 7, 8, 9, 10]:
+                            elif catobs in [None, 1, 3, 4, 6, 7, 8, 9, 10]:
                                 row[indx['invreq']] = invreq_options.get(5, '')
+                    elif row[indx['OBJL_NAME']] == 'SBDARE':
+                        row[indx['invreq']] = invreq_options.get(13, '')
+                    # CONDTN column needed for SLCONS
+                    elif row[indx['OBJL_NAME']] == 'SLCONS':
+                        if indx['CONDTN']:
+                            condtn = row[indx["CONDTN"]]
+                            if condtn in [1, 3, 4, 5]:
+                                row[indx['invreq']] = invreq_options.get(1, '')
+                            elif condtn == 2:
+                                row[indx['invreq']] = invreq_options.get(5, '')
+                    # WATLEV column needed for UWTROC
+                    elif row[indx['OBJL_NAME']] == 'UWTROC':
+                        if indx['WATLEV']:
+                            condtn = row[indx["WATLEV"]]
+                            if condtn in [1, 2, 4, 5, 6, 7]:
+                                row[indx['invreq']] = invreq_options.get(5, '')
+                            elif condtn == 3:
+                                row[indx['invreq']] = invreq_options.get(7, '')
                     else:
                         invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
                         row[indx['invreq']] = invreq_options.get(invreq, '')

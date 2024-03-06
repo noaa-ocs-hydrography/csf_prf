@@ -173,7 +173,7 @@ MARSYS:
 MLTYLT:
   invreq: ""
 MORFAC:
-  invreq: None
+  invreq: ""
 NATCON:
   invreq: ""
 NATQUA:
@@ -193,7 +193,7 @@ OBJL:
 OBJNAM:
   invreq: ""
 OBSTRN:
-  invreq: None
+  invreq: ""
 OFSPLF:
   invreq: 4
 ORIENT:
@@ -237,9 +237,9 @@ RVER:
 RYRMGV:
   invreq: ""
 SBDARE:
-  invreq: None
+  invreq: ""
 SLCONS:
-  invreq: None
+  invreq: ""
 SCAMAX:
   invreq: ""
 SCAMIN:
@@ -279,7 +279,7 @@ TUNNEL:
 TXTDSC:
   invreq: ""
 UWTROC:
-  invreq: None
+  invreq: ""
 VALACM:
   invreq: ""
 VALMAG:
