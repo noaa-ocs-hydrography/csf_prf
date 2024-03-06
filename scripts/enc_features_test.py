@@ -52,64 +52,8 @@ class ENCReaderEngine(Engine):
             print(f'Adding invreq column to: {feature_type}')
             self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'invreq', nullable=True)
             self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'invreq', nullable=True)
-            with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['passed'], ["SHAPE@", "*"]) as updateCursor:
-                # Have to use * because some columns(CATOBS) may be missing in point, line, or polygon feature layers
-                indx = {
-                    'OBJL_NAME': updateCursor.fields.index('OBJL_NAME'),
-                    'CATOBS': updateCursor.fields.index('CATOBS') if 'CATOBS' in updateCursor.fields else False,
-                    'CATMOR': updateCursor.fields.index('CATMOR') if 'CATMOR' in updateCursor.fields else False,
-                    'CONDTN': updateCursor.fields.index('CONDTN') if 'CONDTN' in updateCursor.fields else False,
-                    'WATLEV': updateCursor.fields.index('WATLEV') if 'WATLEV' in updateCursor.fields else False,
-                    'invreq': updateCursor.fields.index('invreq'),
-                    'SHAPE@': updateCursor.fields.index('SHAPE@')
-                }
-                for row in updateCursor:
-                    if row[indx['OBJL_NAME']] == 'LNDARE':
-                        if feature_type == 'Polygon':
-                            area = row[indx['SHAPE@']].projectAs(arcpy.SpatialReference(102008)).area  # project to NA Albers Equal Area
-                            if area < 3775:  # FME polygon size check 
-                                invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
-                                row[indx['invreq']] = invreq_options.get(invreq, '')
-                    # CATMOR column needed for MORFAC
-                    elif row[indx['OBJL_NAME']] == 'MORFAC':
-                        if indx['CATMOR']:
-                            catmor = row[indx["CATMOR"]]
-                            if catmor == 1:
-                                row[indx['invreq']] = invreq_options.get(10, '')
-                            elif catmor in [2, 3, 4, 5, 6, 7]:
-                                row[indx['invreq']] = invreq_options.get(1, '')
-                    # CATOBS column needed for OBSTRN
-                    elif row[indx['OBJL_NAME']] == 'OBSTRN':
-                        if indx['CATOBS']:
-                            catobs = row[indx["CATOBS"]]
-                            if catobs == 2:
-                                row[indx['invreq']] = invreq_options.get(12, '')
-                            elif catobs == 5:
-                                row[indx['invreq']] = invreq_options.get(8, '')
-                            elif catobs in [None, 1, 3, 4, 6, 7, 8, 9, 10]:
-                                row[indx['invreq']] = invreq_options.get(5, '')
-                    elif row[indx['OBJL_NAME']] == 'SBDARE':
-                        row[indx['invreq']] = invreq_options.get(13, '')
-                    # CONDTN column needed for SLCONS
-                    elif row[indx['OBJL_NAME']] == 'SLCONS':
-                        if indx['CONDTN']:
-                            condtn = row[indx["CONDTN"]]
-                            if condtn in [1, 3, 4, 5]:
-                                row[indx['invreq']] = invreq_options.get(1, '')
-                            elif condtn == 2:
-                                row[indx['invreq']] = invreq_options.get(5, '')
-                    # WATLEV column needed for UWTROC
-                    elif row[indx['OBJL_NAME']] == 'UWTROC':
-                        if indx['WATLEV']:
-                            condtn = row[indx["WATLEV"]]
-                            if condtn in [1, 2, 4, 5, 6, 7]:
-                                row[indx['invreq']] = invreq_options.get(5, '')
-                            elif condtn == 3:
-                                row[indx['invreq']] = invreq_options.get(7, '')
-                    else:
-                        invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
-                        row[indx['invreq']] = invreq_options.get(invreq, '')
-                    updateCursor.updateRow(row)
+            self.set_passed_invreq(feature_type, objl_lookup, invreq_options)
+            self.set_failed_invreq(feature_type, objl_lookup, invreq_options)
 
     def add_objl_string(self):
         """Convert OBJL number to string name"""
@@ -118,11 +62,11 @@ class ENCReaderEngine(Engine):
             self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'OBJL_NAME', nullable=True)
             self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'OBJL_NAME', nullable=True)
             
-            with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['passed'], ["OBJL", "OBJL_NAME"]) as updateCursor:
-                for row in updateCursor:
-                    row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
-                    updateCursor.updateRow(row)
-
+            for value in ['passed', 'failed']:
+                with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers'][value], ["OBJL", "OBJL_NAME"]) as updateCursor:
+                    for row in updateCursor:
+                        row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
+                        updateCursor.updateRow(row)
 
     def get_all_fields(self, features):
         fields = set()
@@ -338,8 +282,104 @@ class ENCReaderEngine(Engine):
         polygons = arcpy.management.GetCount(self.geometries['Polygon']['layers']['failed'])
         print('Total failed:', int(points[0]) + int(lines[0]) + int(polygons[0]))
 
+    def save_feature_layers(self):
+        """Write out passed and failed layers to output folder"""
+
+        for feature_type in self.geometries.keys():
+            print(f'Saving {feature_type} layers')
+            arcpy.management.CopyFeatures(self.geometries[feature_type]['layers']['passed'], str(OUTPUTS / f'{feature_type}-passed.shp'))
+            arcpy.management.CopyFeatures(self.geometries[feature_type]['layers']['failed'], str(OUTPUTS / f'{feature_type}-failed.shp'))
+
     def set_driver(self):
         self.driver = ogr.GetDriverByName('S57')
+
+    def set_failed_invreq(self, feature_type, objl_lookup, invreq_options):
+        """Isolate logic for setting failed layer 'invreq' column"""
+
+        with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['failed'], ['OBJL_NAME', 'invreq']) as updateCursor:
+            for row in updateCursor:
+                objl_found = row[0] in objl_lookup.keys()
+                if objl_found:
+                    if row[0] == 'SBDARE':
+                        if feature_type != 'Point':
+                            row[1] = invreq_options.get(14)
+                        else:
+                            continue
+                    else:
+                        row[1] = invreq_options.get(14)
+                    updateCursor.updateRow(row)
+
+    def set_passed_invreq(self, feature_type, objl_lookup, invreq_options):
+        """Isolate logic for setting passed layer 'invreq' column"""
+
+        with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['passed'], ["SHAPE@", "*"]) as updateCursor:
+            # Have to use * because some columns(CATOBS, etc) may be missing in point, line, or polygon feature layers
+            indx = {
+                'OBJL_NAME': updateCursor.fields.index('OBJL_NAME'),
+                'CATOBS': updateCursor.fields.index('CATOBS') if 'CATOBS' in updateCursor.fields else False,
+                'CATMOR': updateCursor.fields.index('CATMOR') if 'CATMOR' in updateCursor.fields else False,
+                'CONDTN': updateCursor.fields.index('CONDTN') if 'CONDTN' in updateCursor.fields else False,
+                'WATLEV': updateCursor.fields.index('WATLEV') if 'WATLEV' in updateCursor.fields else False,
+                'invreq': updateCursor.fields.index('invreq'),
+                'SHAPE@': updateCursor.fields.index('SHAPE@')
+            }
+            for row in updateCursor:
+                if row[indx['OBJL_NAME']] == 'LNDARE':
+                    if feature_type == 'Polygon':
+                        area = row[indx['SHAPE@']].projectAs(arcpy.SpatialReference(102008)).area  # project to NA Albers Equal Area
+                        if area < 3775:  # FME polygon size check 
+                            invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
+                            row[indx['invreq']] = invreq_options.get(invreq, '')
+                        else:
+                            continue
+                # CATMOR column needed for MORFAC
+                elif row[indx['OBJL_NAME']] == 'MORFAC':
+                    if indx['CATMOR']:
+                        catmor = row[indx["CATMOR"]]
+                        if catmor == 1:
+                            row[indx['invreq']] = invreq_options.get(10, '')
+                        elif catmor in [2, 3, 4, 5, 6, 7]:
+                            row[indx['invreq']] = invreq_options.get(1, '')
+                        else:
+                            continue
+                # CATOBS column needed for OBSTRN
+                elif row[indx['OBJL_NAME']] == 'OBSTRN':
+                    if indx['CATOBS']:
+                        catobs = row[indx["CATOBS"]]
+                        if catobs == 2:
+                            row[indx['invreq']] = invreq_options.get(12, '')
+                        elif catobs == 5:
+                            row[indx['invreq']] = invreq_options.get(8, '')
+                        elif catobs in [None, 1, 3, 4, 6, 7, 8, 9, 10]:
+                            row[indx['invreq']] = invreq_options.get(5, '')
+                        else:
+                            continue
+                elif row[indx['OBJL_NAME']] == 'SBDARE':
+                    row[indx['invreq']] = invreq_options.get(13, '')
+                # CONDTN column needed for SLCONS
+                elif row[indx['OBJL_NAME']] == 'SLCONS':
+                    if indx['CONDTN']:
+                        condtn = row[indx["CONDTN"]]
+                        if condtn in [1, 3, 4, 5]:
+                            row[indx['invreq']] = invreq_options.get(1, '')
+                        elif condtn == 2:
+                            row[indx['invreq']] = invreq_options.get(5, '')
+                        else:
+                            continue
+                # WATLEV column needed for UWTROC
+                elif row[indx['OBJL_NAME']] == 'UWTROC':
+                    if indx['WATLEV']:
+                        condtn = row[indx["WATLEV"]]
+                        if condtn in [1, 2, 4, 5, 6, 7]:
+                            row[indx['invreq']] = invreq_options.get(5, '')
+                        elif condtn == 3:
+                            row[indx['invreq']] = invreq_options.get(7, '')
+                        else:
+                            continue
+                else:
+                    invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
+                    row[indx['invreq']] = invreq_options.get(invreq, '')
+                updateCursor.updateRow(row)
 
     def start(self):
         self.set_driver()
@@ -349,6 +389,7 @@ class ENCReaderEngine(Engine):
         self.perform_spatial_filter(self.make_sheets_layer())
         self.print_feature_total()
         self.add_columns()
+        self.save_feature_layers()
 
 
 if __name__ == "__main__":

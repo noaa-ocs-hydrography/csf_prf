@@ -12,6 +12,7 @@ OPTIONS:
   11: "See HSSD Section 1.6.2 for Elevated Pipeline guidance or Section 1.7 for Non-DTON Exposed Pipeline guidance. If pipeline is not elevated or exposed, include in FFF with descrp = retain."
   12: "See wellhead investigation guidance in OBSTRN entry of Section 7.5.1"
   13: "Visually confirm feature object existence. If feature exists, include in FFF with descrp=retain. If applicable, follow descrp guidance #4 in HSSD Section 7.5.2 if extensive geometry changes are needed."
+  14: "See HSSD Section 7.3.1, Unassigned Features"
 AGEN:
   invreq: ""
 BCNCAR:

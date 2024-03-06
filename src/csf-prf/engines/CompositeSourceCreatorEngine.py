@@ -114,27 +114,6 @@ class CompositeSourceCreatorEngine(Engine):
         self.add_message('converting ENC files')
         enc_engine = ENCReaderEngine(self.param_lookup, self.make_sheets_layer())
         enc_engine.start()
-        # if selected
-            # merge all selected layers into 1
-            # (FME sets CCW right hand rule again.  Probably not needed)
-            # Add asgnment field = 2
-            # query by attribute for ENC type
-                # some results are multiple integers that need to be filtered again
-            # set invreq column for specific ENC types
-            # filter and write out to speciific S57 type
-        # else not selected
-            # TODO merge all not selected layers into 1
-            # TODO (FME sets CCW right hand rule again.  Probably not needed)
-            # Add asgnment field = 1
-            # query by attribute
-                # if SBDARE, select all different geometry types
-            # set invreq column for specific ENC types
-            # filter features
-                # if SBDARE, select all different geometry types
-            # set invreq column for asgnment = 3 
-            # filter and write out to speciific S57 type
-
-        return
     
     def copy_layer_to_shapefile(self, output_data_type, layer, shapefile_name) -> None:
         """
