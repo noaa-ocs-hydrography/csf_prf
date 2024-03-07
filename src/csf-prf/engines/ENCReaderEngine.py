@@ -35,7 +35,7 @@ class ENCReaderEngine(Engine):
     def add_asgnmt_column(self):
         """Populate the 'asgnmt' column for all feature layers"""
 
-        arcpy.AddMessage("Adding 'asgnmt' column")
+        arcpy.AddMessage(" - Adding 'asgnmt' column")
         for feature_type in self.geometries.keys():
             # Passed layers
             self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'asgnmt', 2)

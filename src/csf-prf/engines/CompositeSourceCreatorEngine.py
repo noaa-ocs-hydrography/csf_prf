@@ -290,7 +290,7 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.AddMessage('Writing to geopackage database')
         for output_name, data in self.output_data.items():
             if data:
-                arcpy.AddMessage(f'Exporting: {output_name}')
+                arcpy.AddMessage(f' - Exporting: {output_name}')
                 try:
                     arcpy.conversion.ExportFeatures(data, os.path.join(self.output_db_path + '.gpkg', output_name))
                 except CompositeSourceCreatorException as e:
