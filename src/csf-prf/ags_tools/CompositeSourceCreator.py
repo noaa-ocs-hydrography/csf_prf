@@ -52,7 +52,8 @@ class CompositeSourceCreator:
             name="sheets",
             datatype="GPFeatureLayer",
             parameterType="Optional",
-            direction="Input"
+            direction="Input",
+            # multiValue=True # TODO add multiValue to all params
         )
         junctions_shapefile = arcpy.Parameter(
             displayName="Junctions in shp format (expected input as an export from SURDEX for invreg to map):",
@@ -99,7 +100,7 @@ class CompositeSourceCreator:
         enc_file = arcpy.Parameter(
             displayName="ENC File(s):",
             name="enc_files",
-            datatype="GPFeatureLayer",
+            datatype="DEFile",
             parameterType="Required",
             direction="Input"
         )

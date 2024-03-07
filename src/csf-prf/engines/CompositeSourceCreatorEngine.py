@@ -1,4 +1,9 @@
 import os
+import arcpy
+
+from engines.Engine import Engine
+from engines.ENCReaderEngine import ENCReaderEngine
+arcpy.env.overwriteOutput = True
 
 
 class CompositeSourceCreatorException(Exception):
@@ -7,68 +12,25 @@ class CompositeSourceCreatorException(Exception):
     pass
 
 
-class CompositeSourceCreatorEngine:
+class CompositeSourceCreatorEngine(Engine):
     """
     Class to hold the logic for transforming the 
     Composite Source Creator process into an ArcGIS Python Tool
     """
-    def __init__(self, param_lookup: dict, tool_type: str = 'esri') -> None:
+    def __init__(self, param_lookup: dict) -> None:
         self.param_lookup = param_lookup
-        self.tool_type = tool_type
         self.output_name = 'csf_prf_geopackage'
-        self.loaded_arcpy = False
         self.output_db = False
         self.split_features = []
         self.output_data = {key: None for key in list(self.param_lookup.keys())[:-1]} # skip output_folder
-
-    @property
-    def is_esri(self) -> bool:
-        """Property to check if process is an Esri tool or other type"""
-
-        is_esri = self.tool_type == 'esri'
-        if is_esri:
-            self.load_arcpy()
-            return True
-        return False
-    
-    def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT') -> None:
-        """
-        Add the asgnment column and 
-        :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
-        """
-
-        self.arcpy.management.CalculateField(
-            layer, column, expression, expression_type="PYTHON3", field_type=field_type
-        )
-
-    def add_message(self, message: str) -> None:
-        """Wrap the Esri message option for open-source use"""
-
-        if self.is_esri:
-            self.arcpy.AddMessage(message)
-        else:
-            print(message)
-
-    def convert_sheets(self) -> None:
-        """Process the Sheets input parameter"""
-
-        if self.param_lookup['sheets'].valueAsText:
-            self.add_message('converting sheets')
-            layer = self.make_sheets_layer()
-            expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) \
-            + ', Name: ' + str(!sub_locali!)"
-            self.add_column_and_constant(layer, 'invreq', expression)
-            outer_features, inner_features = self.split_inner_polygons(layer)
-            self.write_features_to_shapefile('sheets', layer, outer_features + inner_features, 'output_sheets.shp')
 
     def convert_junctions(self) -> None:
         """Process the Junctions input parameter"""
 
         if self.param_lookup['junctions'].valueAsText:
-            self.add_message('converting junctions')
+            arcpy.AddMessage('converting junctions')
             layer = self.make_junctions_layer()
-            expression = "'Survey: ' + str(!survey!) + ', Platform: ' + str(!field_unit!) + \
-            ', Year: ' + str(!year!) + ', Scale: ' + str(!scale!)"
+            expression = "'Survey: ' + str(!survey!) + ', Platform: ' + str(!field_unit!) + ', Year: ' + str(!year!) + ', Scale: ' + str(!scale!)"
             self.add_column_and_constant(layer, 'invreq', expression)
             self.add_column_and_constant(layer, 'TRAFIC', 2)
             self.add_column_and_constant(layer, 'ORIENT', 45)
@@ -87,7 +49,7 @@ class CompositeSourceCreatorEngine:
         features = self.param_lookup['maritime_boundary_features'].valueAsText
         baselines = self.param_lookup['maritime_boundary_baselines'].valueAsText
         if points and baselines and features:
-            self.add_message('converting maritime boundary files')
+            arcpy.AddMessage('converting maritime boundary files')
             self.convert_maritime_boundary_baselines()
             self.convert_maritime_boundary_points_and_features()
 
@@ -112,6 +74,17 @@ class CompositeSourceCreatorEngine:
         self.add_column_and_constant(layer, 'sftype', 4, 'SHORT')
         self.copy_layer_to_shapefile('maritime_boundary_baselines', layer, 'output_maritime_baselines.shp')
 
+    def convert_sheets(self) -> None:
+        """Process the Sheets input parameter"""
+
+        if self.param_lookup['sheets'].valueAsText:
+            arcpy.AddMessage('converting sheets')
+            layer = self.make_sheets_layer()
+            expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
+            self.add_column_and_constant(layer, 'invreq', expression)
+            outer_features, inner_features = self.split_inner_polygons(layer)
+            self.write_features_to_shapefile('sheets', layer, outer_features + inner_features, 'output_sheets.shp')
+
     def convert_tides(self) -> None:
         """Process the Tides input parameter"""
 
@@ -119,31 +92,10 @@ class CompositeSourceCreatorEngine:
 
     def convert_enc_files(self) -> None:
         """Process the ENC files input parameter"""
-        # TODO load ENC files
-        # make sure they are CCW right hand rule
-        # sort sheets layer by scale ascending
-        # Use projected Sheets layer to spatial query all ENC files (Intersects, Crosses, Overlaps, Contains, Within)
-        # if selected
-            # merge all selected layers into 1
-            # (FME sets CCW right hand rule again.  Probably not needed)
-            # Add asgnment field = 2
-            # query by attribute for ENC type
-                # some results are multiple integers that need to be filtered again
-            # set invreq column for specific ENC types
-            # filter and write out to speciific S57 type
-        # else not selected
-            # TODO merge all not selected layers into 1
-            # TODO (FME sets CCW right hand rule again.  Probably not needed)
-            # Add asgnment field = 1
-            # query by attribute
-                # if SBDARE, select all different geometry types
-            # set invreq column for specific ENC types
-            # filter features
-                # if SBDARE, select all different geometry types
-            # set invreq column for asgnment = 3 
-            # filter and write out to speciific S57 type
 
-        return
+        arcpy.AddMessage('converting ENC files')
+        enc_engine = ENCReaderEngine(self.param_lookup, self.make_sheets_layer())
+        enc_engine.start()
     
     def copy_layer_to_shapefile(self, output_data_type, layer, shapefile_name) -> None:
         """
@@ -154,29 +106,20 @@ class CompositeSourceCreatorEngine:
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        self.add_message(f'Writing output shapefile: {shapefile_name}')
-        self.arcpy.conversion.FeatureClassToFeatureClass(layer, output_folder, shapefile_name)
+        arcpy.AddMessage(f'Writing output shapefile: {shapefile_name}')
+        arcpy.conversion.FeatureClassToFeatureClass(layer, output_folder, shapefile_name)
         self.output_data[output_data_type] = os.path.join(output_folder, shapefile_name)
 
     def create_output_db(self) -> None:
         """Build the output SQLite Geopackage database"""
 
         if not self.output_db:
-            self.add_message('Creating output GeoPackage')
             self.output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.output_name)
-            self.arcpy.management.CreateSQLiteDatabase(self.output_db_path, spatial_type='GEOPACKAGE')
+            arcpy.AddMessage(f'Creating output GeoPackage in {self.output_db_path}')
+            arcpy.management.CreateSQLiteDatabase(self.output_db_path, spatial_type='GEOPACKAGE')
             self.output_db = True
         else:
-            self.add_message(f'Output GeoPackage already exists')
-
-    def load_arcpy(self) -> None:
-        """Load arcpy only if needed"""
-
-        if not self.loaded_arcpy:
-            import arcpy
-            arcpy.env.overwriteOutput = True
-            self.arcpy = arcpy
-            self.loaded_arcpy = True
+            arcpy.AddMessage(f'Output GeoPackage already exists')
 
     def make_maritime_boundary_pts_layer(self):
         """
@@ -186,12 +129,12 @@ class CompositeSourceCreatorEngine:
         """
 
         maritime_pts_path = self.param_lookup['maritime_boundary_pts'].valueAsText
-        field_info = self.arcpy.FieldInfo()
-        input_fields = self.arcpy.ListFields(maritime_pts_path)
+        field_info = arcpy.FieldInfo()
+        input_fields = arcpy.ListFields(maritime_pts_path)
         for field in input_fields:
             field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
-        maritime_boundary_pts_layer = self.arcpy.management.MakeFeatureLayer(maritime_pts_path, field_info=field_info)
-        layer = self.arcpy.management.CopyFeatures(maritime_boundary_pts_layer, r'memory\maritime_pts_layer')
+        maritime_boundary_pts_layer = arcpy.management.MakeFeatureLayer(maritime_pts_path, field_info=field_info)
+        layer = arcpy.management.CopyFeatures(maritime_boundary_pts_layer, r'memory\maritime_pts_layer')
         return layer
 
     def make_sheets_layer(self):
@@ -209,15 +152,15 @@ class CompositeSourceCreatorEngine:
             20: 'registry_n',
             23: 'invreq'
         }
-        field_info = self.arcpy.FieldInfo()
-        input_fields = self.arcpy.ListFields(self.param_lookup['sheets'].valueAsText)
+        field_info = arcpy.FieldInfo()
+        input_fields = arcpy.ListFields(self.param_lookup['sheets'].valueAsText)
         for field in input_fields:
             if field.name in fields.values():
                 field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
             else:
                 field_info.addField(field.name, field.name, 'HIDDEN', 'NONE')
-        sheet_layer = self.arcpy.management.MakeFeatureLayer(self.param_lookup['sheets'].valueAsText, field_info=field_info)
-        layer = self.arcpy.management.CopyFeatures(sheet_layer, r'memory\sheets_layer')
+        sheet_layer = arcpy.management.MakeFeatureLayer(self.param_lookup['sheets'].valueAsText, field_info=field_info)
+        layer = arcpy.management.CopyFeatures(sheet_layer, r'memory\sheets_layer')
         return layer
     
     def merge_maritime_pts_and_features(self):
@@ -228,7 +171,7 @@ class CompositeSourceCreatorEngine:
 
         maritime_pts = self.param_lookup['maritime_boundary_pts'].valueAsText
         maritime_features = self.param_lookup['maritime_boundary_features'].valueAsText
-        layer = self.arcpy.management.Merge([maritime_pts, maritime_features], r'memory\maritime_features_layer')
+        layer = arcpy.management.Merge([maritime_pts, maritime_features], r'memory\maritime_features_layer')
         return layer
 
     def make_junctions_layer(self):
@@ -238,24 +181,14 @@ class CompositeSourceCreatorEngine:
         :return arcpy.FeatureLayer: In memory layer used for processing
         """
 
-        field_info = self.arcpy.FieldInfo()
-        input_fields = self.arcpy.ListFields(self.param_lookup['junctions'].valueAsText)
+        field_info = arcpy.FieldInfo()
+        input_fields = arcpy.ListFields(self.param_lookup['junctions'].valueAsText)
         for field in input_fields:
             field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
-        junctions_layer = self.arcpy.management.MakeFeatureLayer(self.param_lookup['junctions'].valueAsText,
+        junctions_layer = arcpy.management.MakeFeatureLayer(self.param_lookup['junctions'].valueAsText,
                                                              field_info=field_info)
-        layer = self.arcpy.management.CopyFeatures(junctions_layer, r'memory\junctions_layer')
+        layer = arcpy.management.CopyFeatures(junctions_layer, r'memory\junctions_layer')
         return layer
-
-    def reverse(self, geom_list):
-        """
-        Reverse all the inner polygon geometries
-        - Esri inner polygons are supposed to be counterclockwise
-        - Shapely.is_ccw() could be used to properly test
-        :return list[arcpy.Geometry]: List of reversed inner polygon geometry
-        """
-
-        return list(reversed(geom_list))
 
     def split_inner_polygons(self, layer):
         """
@@ -267,7 +200,7 @@ class CompositeSourceCreatorEngine:
         inner_features = []
         outer_features = []
         total_nones = 0
-        with self.arcpy.da.SearchCursor(layer, ['SHAPE@'] + ["*"]) as searchCursor:
+        with arcpy.da.SearchCursor(layer, ['SHAPE@'] + ["*"]) as searchCursor:
             for row in searchCursor:
                 geom_num = 0
                 row_geom = row[0]
@@ -303,9 +236,6 @@ class CompositeSourceCreatorEngine:
 
                     geom_num += 1
 
-        # self.add_message(f'outer: {len(outer_features)}')
-        # self.add_message(f'inner: {len(inner_features)}')
-
         return outer_features, inner_features
 
     def start(self) -> None:
@@ -319,7 +249,7 @@ class CompositeSourceCreatorEngine:
         self.convert_enc_files()
         self.create_output_db()
         self.write_to_geopackage()
-        self.add_message('Done')
+        arcpy.AddMessage('Done')
 
     def write_features_to_shapefile(self, output_data_type, template_layer, features, shapefile_name) -> None:
         """
@@ -331,22 +261,23 @@ class CompositeSourceCreatorEngine:
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        self.add_message(f'Writing output shapefile: {shapefile_name}')
+        arcpy.AddMessage(f'Writing output shapefile: {shapefile_name}')
         output_name = os.path.join(output_folder, shapefile_name)
-        self.arcpy.management.CreateFeatureclass(output_folder, shapefile_name, 
+        arcpy.management.CreateFeatureclass(output_folder, shapefile_name, 
                                                 geometry_type='POLYGON', 
                                                 template=template_layer,
-                                                spatial_reference=self.arcpy.SpatialReference(4326))
+                                                spatial_reference=arcpy.SpatialReference(4326))
 
         fields = []
-        for field in self.arcpy.ListFields(template_layer):
+        for field in arcpy.ListFields(template_layer):
             if field.name != 'OBJECTID':
                 if field.name == 'Shape':
                     fields.append('SHAPE@')
                 else:
                     fields.append(field.name)
 
-        with self.arcpy.da.InsertCursor(output_name, fields) as cursor:
+        with arcpy.da.InsertCursor(output_name, fields) as cursor:
+            # TODO update for points, lines, and polygons
             for feature in features:
                 vertices = [(point.X, point.Y) for point in feature['geometry']]
                 polygon = list(vertices)
@@ -356,11 +287,11 @@ class CompositeSourceCreatorEngine:
     def write_to_geopackage(self) -> None:
         """Copy the output shapefiles to Geopackage"""
 
-        self.add_message('Writing to geopackage database')
+        arcpy.AddMessage('Writing to geopackage database')
         for output_name, data in self.output_data.items():
             if data:
-                self.add_message(f'{output_name}')
+                arcpy.AddMessage(f' - Exporting: {output_name}')
                 try:
-                    self.arcpy.conversion.ExportFeatures(data, os.path.join(self.output_db_path + '.gpkg', output_name))
+                    arcpy.conversion.ExportFeatures(data, os.path.join(self.output_db_path + '.gpkg', output_name))
                 except CompositeSourceCreatorException as e:
-                    self.add_message(f'Error writing {output_name} to {self.output_db_path} : \n{e}')
+                    arcpy.AddMessage(f'Error writing {output_name} to {self.output_db_path} : \n{e}')
