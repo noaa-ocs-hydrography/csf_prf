@@ -53,56 +53,62 @@ class CompositeSourceCreator:
             datatype="GPFeatureLayer",
             parameterType="Optional",
             direction="Input",
-            # multiValue=True # TODO add multiValue to all params
+            multiValue=True
         )
         junctions_shapefile = arcpy.Parameter(
             displayName="Junctions in shp format (expected input as an export from SURDEX for invreg to map):",
             name="junctions",
             datatype="GPFeatureLayer",
             parameterType="Optional",
-            direction="Input"
+            direction="Input",
+            multiValue=True
         )
         bottom_sample_shapefile = arcpy.Parameter(
             displayName="Bottom Sample Esri Shape File(s) (Use Null_Point.shp if not assigned):",
             name="bottom_samples",
             datatype="GPFeatureLayer",
             parameterType="Optional",
-            direction="Input"
+            direction="Input",
+            multiValue=True
         )
         boundary_pts_shapefile = arcpy.Parameter(
             displayName="Maritime Boundary Points Rocks Esri Shape File(s) (Use Null_Point.shp if not assigned):",
             name="maritime_boundary_pts",
             datatype="GPFeatureLayer",
             parameterType="Optional",
-            direction="Input"
+            direction="Input",
+            multiValue=True
         )
         boundary_features_shapefile = arcpy.Parameter(
             displayName="Maritime Boundary Additional Features Esri Shape File(s) (Use Null_Point.shp if not assigned):",
             name="maritime_boundary_features",
             datatype="GPFeatureLayer",
             parameterType="Optional",
-            direction="Input"
+            direction="Input",
+            multiValue=True
         )
         boundary_baseline_shapefile = arcpy.Parameter(
             displayName="Maritime Boundary Baseline Esri Shape File(s) (Use Null_Point.shp if not assigned):",
             name="maritime_boundary_baselines",
             datatype="GPFeatureLayer",
             parameterType="Optional",
-            direction="Input"
+            direction="Input",
+            multiValue=True
         )
-        tides_mapinfo_tab = arcpy.Parameter(
-            displayName="Tides CORP Source MapInfo TAB File:",
-            name="tides",
-            datatype="GPFeatureLayer",
-            parameterType="Optional",
-            direction="Input"
-        )
+        # tides_mapinfo_tab = arcpy.Parameter(
+        #     displayName="Tides CORP Source MapInfo TAB File:",
+        #     name="tides",
+        #     datatype="GPFeatureLayer",
+        #     parameterType="Optional",
+        #     direction="Input"
+        # )
         enc_file = arcpy.Parameter(
             displayName="ENC File(s):",
             name="enc_files",
             datatype="DEFile",
             parameterType="Required",
-            direction="Input"
+            direction="Input",
+            multiValue=True
         )
         csf_prf_output_file = arcpy.Parameter(
             displayName="CSF, PRF & Tide .000 Output File Folder:",
@@ -119,7 +125,7 @@ class CompositeSourceCreator:
             boundary_pts_shapefile,
             boundary_features_shapefile,
             boundary_baseline_shapefile,
-            tides_mapinfo_tab,
+            # tides_mapinfo_tab,
             enc_file,
             csf_prf_output_file
         ]
@@ -146,7 +152,7 @@ class CompositeSourceCreator:
             'maritime_boundary_pts',
             'maritime_boundary_features',
             'maritime_boundary_baselines',
-            'tides',
+            # 'tides',
             'enc_files',
             'output_folder'
         ]
