@@ -303,8 +303,6 @@ class ENCReaderEngine(Engine):
                     if row[0] == 'SBDARE':
                         if feature_type != 'Point':
                             row[1] = invreq_options.get(14)
-                        else:
-                            continue
                     else:
                         row[1] = invreq_options.get(14)
                     updateCursor.updateRow(row)
@@ -330,8 +328,6 @@ class ENCReaderEngine(Engine):
                         if area < 3775:  # FME polygon size check 
                             invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
                             row[indx['invreq']] = invreq_options.get(invreq, '')
-                        else:
-                            continue
                 # CATMOR column needed for MORFAC
                 elif row[indx['OBJL_NAME']] == 'MORFAC':
                     if indx['CATMOR']:
@@ -340,8 +336,6 @@ class ENCReaderEngine(Engine):
                             row[indx['invreq']] = invreq_options.get(10, '')
                         elif catmor in [2, 3, 4, 5, 6, 7]:
                             row[indx['invreq']] = invreq_options.get(1, '')
-                        else:
-                            continue
                 # CATOBS column needed for OBSTRN
                 elif row[indx['OBJL_NAME']] == 'OBSTRN':
                     if indx['CATOBS']:
@@ -352,8 +346,6 @@ class ENCReaderEngine(Engine):
                             row[indx['invreq']] = invreq_options.get(8, '')
                         elif catobs in [None, 1, 3, 4, 6, 7, 8, 9, 10]:
                             row[indx['invreq']] = invreq_options.get(5, '')
-                        else:
-                            continue
                 elif row[indx['OBJL_NAME']] == 'SBDARE':
                     row[indx['invreq']] = invreq_options.get(13, '')
                 # CONDTN column needed for SLCONS
@@ -364,8 +356,6 @@ class ENCReaderEngine(Engine):
                             row[indx['invreq']] = invreq_options.get(1, '')
                         elif condtn == 2:
                             row[indx['invreq']] = invreq_options.get(5, '')
-                        else:
-                            continue
                 # WATLEV column needed for UWTROC
                 elif row[indx['OBJL_NAME']] == 'UWTROC':
                     if indx['WATLEV']:
@@ -374,9 +364,8 @@ class ENCReaderEngine(Engine):
                             row[indx['invreq']] = invreq_options.get(5, '')
                         elif condtn == 3:
                             row[indx['invreq']] = invreq_options.get(7, '')
-                        else:
-                            continue
                 else:
+                    # Set to OTHER value if missing
                     invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
                     row[indx['invreq']] = invreq_options.get(invreq, '')
                 updateCursor.updateRow(row)
