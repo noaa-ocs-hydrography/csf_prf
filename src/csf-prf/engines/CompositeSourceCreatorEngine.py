@@ -34,7 +34,7 @@ class CompositeSourceCreatorEngine(Engine):
             self.add_column_and_constant(layer, 'invreq', expression)
             self.add_column_and_constant(layer, 'TRAFIC', 2)
             self.add_column_and_constant(layer, 'ORIENT', 45)
-            self.write_features_to_shapefile('junctions', layer, 'output_junctions.shp')
+            self.export_to_shapefile('junctions', layer, 'output_junctions.shp')
     
     def convert_bottom_samples(self) -> None:
         """Process the Bottom Samples input parameter"""
@@ -120,6 +120,22 @@ class CompositeSourceCreatorEngine(Engine):
             self.output_db = True
         else:
             arcpy.AddMessage(f'Output GeoPackage already exists')
+
+    def export_to_shapefile(self, output_data_type, template_layer, shapefile_name):
+        """
+        Store processed layer as an output shapefile
+        :param str output_data_type: Name of input parameter type being stored; see param_lookup
+        :param arcpy.FeatureLayer template_layer: Layer used as a schema template
+        :param str shapefile_name: Name for output shapefile
+        """
+
+        output_folder = str(self.param_lookup['output_folder'].valueAsText)
+        arcpy.AddMessage(f'Writing output shapefile: {shapefile_name}')
+        output_name = os.path.join(output_folder, shapefile_name)
+        copied_layer = arcpy.management.CopyFeatures(template_layer, output_name)
+        arcpy.arcpy.management.DefineProjection(copied_layer, arcpy.SpatialReference(4326))
+
+        self.output_data[output_data_type] = output_name
 
     def make_maritime_boundary_pts_layer(self):
         """
