@@ -102,8 +102,12 @@ class CompositeSourceCreatorEngine(Engine):
         """Process the ENC files input parameter"""
 
         arcpy.AddMessage('converting ENC files')
-        enc_engine = ENCReaderEngine(self.param_lookup, self.make_sheets_layer())
+        sheets = self.param_lookup['sheets'].valueAsText.replace("'", "").split(';')
+        layers = [self.make_sheets_layer(sheets_file) for sheets_file in sheets]
+        layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
+        enc_engine = ENCReaderEngine(self.param_lookup, layer)
         enc_engine.start()
+        self.export_enc_layers(enc_engine)
     
     def copy_layer_to_shapefile(self, output_data_type, layer, shapefile_name) -> None:
         """
@@ -128,6 +132,26 @@ class CompositeSourceCreatorEngine(Engine):
             self.output_db = True
         else:
             arcpy.AddMessage(f'Output GeoPackage already exists')
+
+    def export_enc_layers(self, enc_engine) -> None:
+        """
+        Write out passed and failed layers to output folder
+        :param ENCReaderEngine enc_engine: ENCReaderEngine object
+        """
+
+        output_folder = str(self.param_lookup['output_folder'].valueAsText)
+        for feature_type in enc_engine.geometries.keys():
+            passed_name = f'{feature_type}_passed.shp'
+            arcpy.AddMessage(f' - Writing output shapefile: {passed_name}')
+            output_name = os.path.join(output_folder, passed_name)
+            arcpy.management.CopyFeatures(enc_engine.geometries[feature_type]['layers']['passed'], output_name)
+            self.output_data[f'enc_{feature_type}_passed'] = output_name
+            
+            failed_name = f'{feature_type}_failed.shp'
+            arcpy.AddMessage(f' - Writing output shapefile: {failed_name}')
+            output_name = os.path.join(output_folder, failed_name)
+            arcpy.management.CopyFeatures(enc_engine.geometries[feature_type]['layers']['failed'], output_name)
+            self.output_data[f'enc_{feature_type}_failed'] = output_name
 
     def export_to_shapefile(self, output_data_type, template_layer, shapefile_name):
         """
@@ -197,7 +221,7 @@ class CompositeSourceCreatorEngine(Engine):
         layer = arcpy.management.Merge(maritime_pts + maritime_features, r'memory\maritime_features_layer')
         return layer
 
-    def make_junctions_layer(self):
+    def make_junctions_layer(self, junctions):
         """
         Create in memory layer for processing.
         This copies the input Junctions shapefile to not corrupt it.
@@ -205,11 +229,10 @@ class CompositeSourceCreatorEngine(Engine):
         """
 
         field_info = arcpy.FieldInfo()
-        input_fields = arcpy.ListFields(self.param_lookup['junctions'].valueAsText)
+        input_fields = arcpy.ListFields(junctions)
         for field in input_fields:
             field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
-        layer = arcpy.management.MakeFeatureLayer(self.param_lookup['junctions'].valueAsText,
-                                                             field_info=field_info)
+        layer = arcpy.management.MakeFeatureLayer(junctions, field_info=field_info)
         return layer
 
     def split_inner_polygons(self, layer):

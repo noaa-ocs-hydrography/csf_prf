@@ -86,35 +86,36 @@ class ENCReaderEngine(Engine):
     def get_enc_geometries(self) -> None:
         """Read and store all features from ENC file"""
 
-        enc_file = self.open_file()
-        for layer in enc_file:
-            for feature in layer:
-                if feature:
-                    feature_json = json.loads(feature.ExportToJson())
-                    geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
+        enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        for enc_path in enc_files:
+            enc_file = self.open_file(enc_path)
+            for layer in enc_file:
+                for feature in layer:
+                    if feature:
+                        feature_json = json.loads(feature.ExportToJson())
+                        geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
 
-                    if geom_type in ['Point', 'LineString', 'Polygon']:
-                        self.geometries[geom_type]['features'].append({'geojson': feature_json})
-                    elif geom_type == 'MultiPoint':
-                        # MultiPoints are broken up now to single features with an ENV variable
-                        feature_template = json.loads(feature.ExportToJson())
-                        feature_template['geometry']['type'] = 'Point'
-                        for point in feature.geometry():
-                            feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
-                            self.geometries['Point']['features'].append({'geojson': feature_template})     
-                    else:
-                        if geom_type:
-                            arcpy.AddMessage(f'Unknown feature type: {geom_type}')
-    
-    def open_file(self):
+                        if geom_type in ['Point', 'LineString', 'Polygon']:
+                            self.geometries[geom_type]['features'].append({'geojson': feature_json})
+                        elif geom_type == 'MultiPoint':
+                            # MultiPoints are broken up now to single features with an ENV variable
+                            feature_template = json.loads(feature.ExportToJson())
+                            feature_template['geometry']['type'] = 'Point'
+                            for point in feature.geometry():
+                                feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
+                                self.geometries['Point']['features'].append({'geojson': feature_template})     
+                        else:
+                            if geom_type:
+                                arcpy.AddMessage(f'Unknown feature type: {geom_type}')
+        
+    def open_file(self, enc_path):
         """
         Open a single input ENC file
+        :param str enc_path: Path to an ENC file on disk
         :returns GDAL.File: GDAL File object you can loop through
         """
 
-        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON"
-        enc_file_path = self.param_lookup['enc_files'].valueAsText
-        enc_file = self.driver.Open(enc_file_path, 0)
+        enc_file = self.driver.Open(enc_path, 0)
         return enc_file
 
     def perform_spatial_filter(self) -> None:
@@ -224,6 +225,11 @@ class ENCReaderEngine(Engine):
 
         self.driver = ogr.GetDriverByName('S57')
 
+    def set_env_variables(self) -> None:
+        """Set multipoint on ENV variable"""
+
+        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON"
+
     def set_failed_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
         """
         Isolate logic for setting failed layer 'invreq' column
@@ -313,8 +319,9 @@ class ENCReaderEngine(Engine):
 
     def start(self):
         self.set_driver()
+        self.set_env_variables()
         self.get_enc_geometries()
         self.perform_spatial_filter()
         self.print_feature_total()
         self.add_columns()
-        self.save_feature_layers()
+        # self.save_feature_layers()
