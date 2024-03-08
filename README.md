@@ -21,3 +21,4 @@ The repository currently contains an ArcGIS Python Toolbox and associated Tools.
 6. Add any ENC files for the project location
 7. Add the output folder for the tool to export files
 8. Click run and view the log messages for tool status
+9. A GeoPackage database will be created with all associated output files
