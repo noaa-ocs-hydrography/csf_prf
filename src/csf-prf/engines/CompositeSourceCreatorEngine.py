@@ -27,9 +27,12 @@ class CompositeSourceCreatorEngine(Engine):
     def convert_junctions(self) -> None:
         """Process the Junctions input parameter"""
 
-        if self.param_lookup['junctions'].valueAsText:
+        junctions_parameter = self.param_lookup['junctions'].valueAsText
+        if junctions_parameter:
+            junctions = junctions_parameter.replace("'", "").split(';')
             arcpy.AddMessage('converting junctions')
-            layer = self.make_junctions_layer()
+            layers = [self.make_junctions_layer(junctions_file) for junctions_file in junctions]
+            layer = arcpy.management.Merge(layers, r'memory\junctions_layer')
             expression = "'Survey: ' + str(!survey!) + ', Platform: ' + str(!field_unit!) + ', Year: ' + str(!year!) + ', Scale: ' + str(!scale!)"
             self.add_column_and_constant(layer, 'invreq', expression)
             self.add_column_and_constant(layer, 'TRAFIC', 2)
@@ -45,16 +48,17 @@ class CompositeSourceCreatorEngine(Engine):
         """Process the 3 Maritime input parameters"""
 
         # TODO can we process with only certain maritime files?
-        points = self.param_lookup['maritime_boundary_pts'].valueAsText
-        features = self.param_lookup['maritime_boundary_features'].valueAsText
-        baselines = self.param_lookup['maritime_boundary_baselines'].valueAsText
-        if points and baselines and features:
+        points_parameter = self.param_lookup['maritime_boundary_pts'].valueAsText
+        features_parameter = self.param_lookup['maritime_boundary_features'].valueAsText
+        baselines_parameter = self.param_lookup['maritime_boundary_baselines'].valueAsText
+        if points_parameter and features_parameter and baselines_parameter:
             arcpy.AddMessage('converting maritime boundary files')
             self.convert_maritime_boundary_baselines()
             self.convert_maritime_boundary_points_and_features()
 
     def convert_maritime_boundary_points_and_features(self) -> None:
         """Merge and process maritime files"""
+
 
         layer = self.merge_maritime_pts_and_features()
         self.add_column_and_constant(layer, 'invreq', "'Verify the existence of the furthest offshore feature that is dry at MLLW. \
@@ -67,7 +71,9 @@ class CompositeSourceCreatorEngine(Engine):
     def convert_maritime_boundary_baselines(self) -> None:
         """Process the maritime boundary baselines input parameter"""
 
-        layer = self.make_maritime_boundary_pts_layer()
+        points = self.param_lookup['maritime_boundary_pts'].valueAsText.replace("'", "").split(';')
+        layers = [self.make_maritime_boundary_pts_layer(points_file) for points_file in points]
+        layer = arcpy.management.Merge(layers, r'memory\maritime_pts_layer')
         self.add_column_and_constant(layer, 'invreq', "'Current baseline point. See Baseline Priorities.doc for further \
                                     information. NOAA units, see FPM section 3.5.6 Maritime Boundary Delineation.'")
         self.add_column_and_constant(layer, 'asgnment', 3, 'SHORT')
@@ -76,10 +82,12 @@ class CompositeSourceCreatorEngine(Engine):
 
     def convert_sheets(self) -> None:
         """Process the Sheets input parameter"""
-
-        if self.param_lookup['sheets'].valueAsText:
+        sheet_parameter = self.param_lookup['sheets'].valueAsText
+        if sheet_parameter:
             arcpy.AddMessage('converting sheets')
-            layer = self.make_sheets_layer()
+            sheets = sheet_parameter.replace("'", "").split(';')
+            layers = [self.make_sheets_layer(sheets_file) for sheets_file in sheets]
+            layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
             expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
             self.add_column_and_constant(layer, 'invreq', expression)
             outer_features, inner_features = self.split_inner_polygons(layer)
@@ -94,8 +102,12 @@ class CompositeSourceCreatorEngine(Engine):
         """Process the ENC files input parameter"""
 
         arcpy.AddMessage('converting ENC files')
-        enc_engine = ENCReaderEngine(self.param_lookup, self.make_sheets_layer())
+        sheets = self.param_lookup['sheets'].valueAsText.replace("'", "").split(';')
+        layers = [self.make_sheets_layer(sheets_file) for sheets_file in sheets]
+        layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
+        enc_engine = ENCReaderEngine(self.param_lookup, layer)
         enc_engine.start()
+        self.export_enc_layers(enc_engine)
     
     def copy_layer_to_shapefile(self, output_data_type, layer, shapefile_name) -> None:
         """
@@ -120,6 +132,26 @@ class CompositeSourceCreatorEngine(Engine):
             self.output_db = True
         else:
             arcpy.AddMessage(f'Output GeoPackage already exists')
+
+    def export_enc_layers(self, enc_engine) -> None:
+        """
+        Write out passed and failed layers to output folder
+        :param ENCReaderEngine enc_engine: ENCReaderEngine object
+        """
+
+        output_folder = str(self.param_lookup['output_folder'].valueAsText)
+        for feature_type in enc_engine.geometries.keys():
+            passed_name = f'{feature_type}_passed.shp'
+            arcpy.AddMessage(f' - Writing output shapefile: {passed_name}')
+            output_name = os.path.join(output_folder, passed_name)
+            arcpy.management.CopyFeatures(enc_engine.geometries[feature_type]['layers']['passed'], output_name)
+            self.output_data[f'enc_{feature_type}_passed'] = output_name
+            
+            failed_name = f'{feature_type}_failed.shp'
+            arcpy.AddMessage(f' - Writing output shapefile: {failed_name}')
+            output_name = os.path.join(output_folder, failed_name)
+            arcpy.management.CopyFeatures(enc_engine.geometries[feature_type]['layers']['failed'], output_name)
+            self.output_data[f'enc_{feature_type}_failed'] = output_name
 
     def export_to_shapefile(self, output_data_type, template_layer, shapefile_name):
         """
@@ -149,11 +181,10 @@ class CompositeSourceCreatorEngine(Engine):
         input_fields = arcpy.ListFields(maritime_pts_path)
         for field in input_fields:
             field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
-        maritime_boundary_pts_layer = arcpy.management.MakeFeatureLayer(maritime_pts_path, field_info=field_info)
-        layer = arcpy.management.CopyFeatures(maritime_boundary_pts_layer, r'memory\maritime_pts_layer')
+        layer = arcpy.management.MakeFeatureLayer(maritime_pts_path, field_info=field_info)
         return layer
 
-    def make_sheets_layer(self):
+    def make_sheets_layer(self, sheets):
         """
         Create in memory layer for processing.
         This copies the input Sheets shapefile to not corrupt it.
@@ -169,14 +200,13 @@ class CompositeSourceCreatorEngine(Engine):
             23: 'invreq'
         }
         field_info = arcpy.FieldInfo()
-        input_fields = arcpy.ListFields(self.param_lookup['sheets'].valueAsText)
+        input_fields = arcpy.ListFields(sheets)
         for field in input_fields:
             if field.name in fields.values():
                 field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
             else:
                 field_info.addField(field.name, field.name, 'HIDDEN', 'NONE')
-        sheet_layer = arcpy.management.MakeFeatureLayer(self.param_lookup['sheets'].valueAsText, field_info=field_info)
-        layer = arcpy.management.CopyFeatures(sheet_layer, r'memory\sheets_layer')
+        layer = arcpy.management.MakeFeatureLayer(sheets, field_info=field_info)
         return layer
     
     def merge_maritime_pts_and_features(self):
@@ -185,12 +215,13 @@ class CompositeSourceCreatorEngine(Engine):
         :return arcpy.FeatureLayer: In memory layer used for processing
         """
 
-        maritime_pts = self.param_lookup['maritime_boundary_pts'].valueAsText
-        maritime_features = self.param_lookup['maritime_boundary_features'].valueAsText
-        layer = arcpy.management.Merge([maritime_pts, maritime_features], r'memory\maritime_features_layer')
+        maritime_pts = self.param_lookup['maritime_boundary_pts'].valueAsText.replace("'", "").split(';')
+        maritime_features = self.param_lookup['maritime_boundary_features'].valueAsText.replace("'", "").split(';')
+
+        layer = arcpy.management.Merge(maritime_pts + maritime_features, r'memory\maritime_features_layer')
         return layer
 
-    def make_junctions_layer(self):
+    def make_junctions_layer(self, junctions):
         """
         Create in memory layer for processing.
         This copies the input Junctions shapefile to not corrupt it.
@@ -198,12 +229,10 @@ class CompositeSourceCreatorEngine(Engine):
         """
 
         field_info = arcpy.FieldInfo()
-        input_fields = arcpy.ListFields(self.param_lookup['junctions'].valueAsText)
+        input_fields = arcpy.ListFields(junctions)
         for field in input_fields:
             field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
-        junctions_layer = arcpy.management.MakeFeatureLayer(self.param_lookup['junctions'].valueAsText,
-                                                             field_info=field_info)
-        layer = arcpy.management.CopyFeatures(junctions_layer, r'memory\junctions_layer')
+        layer = arcpy.management.MakeFeatureLayer(junctions, field_info=field_info)
         return layer
 
     def split_inner_polygons(self, layer):
@@ -261,7 +290,7 @@ class CompositeSourceCreatorEngine(Engine):
         self.convert_junctions()
         self.convert_bottom_samples()
         self.convert_maritime_datasets()
-        self.convert_tides()
+        # self.convert_tides()
         self.convert_enc_files()
         self.create_output_db()
         self.write_to_geopackage()
