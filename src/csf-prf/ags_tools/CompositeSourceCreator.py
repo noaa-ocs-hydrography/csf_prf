@@ -48,7 +48,7 @@ class CompositeSourceCreator:
         """Set up the tool parameters"""
         
         sheets_shapefile = arcpy.Parameter(
-            displayName="Sheets in shp format (use template file in Project PLanning Template for invereg to map):",
+            displayName="Sheets in shp format (use template file in Project PLanning Template for invreq to map):",
             name="sheets",
             datatype="GPFeatureLayer",
             parameterType="Optional",
@@ -56,7 +56,7 @@ class CompositeSourceCreator:
             multiValue=True
         )
         junctions_shapefile = arcpy.Parameter(
-            displayName="Junctions in shp format (expected input as an export from SURDEX for invreg to map):",
+            displayName="Junctions in shp format (expected input as an export from SURDEX for invreq to map):",
             name="junctions",
             datatype="GPFeatureLayer",
             parameterType="Optional",
@@ -64,7 +64,7 @@ class CompositeSourceCreator:
             multiValue=True
         )
         bottom_sample_shapefile = arcpy.Parameter(
-            displayName="Bottom Sample Esri Shape File(s) (Use Null_Point.shp if not assigned):",
+            displayName="Bottom Sample Esri Shape File(s):",
             name="bottom_samples",
             datatype="GPFeatureLayer",
             parameterType="Optional",
@@ -72,7 +72,7 @@ class CompositeSourceCreator:
             multiValue=True
         )
         boundary_pts_shapefile = arcpy.Parameter(
-            displayName="Maritime Boundary Points Rocks Esri Shape File(s) (Use Null_Point.shp if not assigned):",
+            displayName="Maritime Boundary Points Rocks Esri Shape File(s):",
             name="maritime_boundary_pts",
             datatype="GPFeatureLayer",
             parameterType="Optional",
@@ -80,7 +80,7 @@ class CompositeSourceCreator:
             multiValue=True
         )
         boundary_features_shapefile = arcpy.Parameter(
-            displayName="Maritime Boundary Additional Features Esri Shape File(s) (Use Null_Point.shp if not assigned):",
+            displayName="Maritime Boundary Additional Features Esri Shape File(s):",
             name="maritime_boundary_features",
             datatype="GPFeatureLayer",
             parameterType="Optional",
@@ -88,7 +88,7 @@ class CompositeSourceCreator:
             multiValue=True
         )
         boundary_baseline_shapefile = arcpy.Parameter(
-            displayName="Maritime Boundary Baseline Esri Shape File(s) (Use Null_Point.shp if not assigned):",
+            displayName="Maritime Boundary Baseline Esri Shape File(s):",
             name="maritime_boundary_baselines",
             datatype="GPFeatureLayer",
             parameterType="Optional",
