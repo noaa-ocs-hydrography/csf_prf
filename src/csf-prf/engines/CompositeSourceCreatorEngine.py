@@ -135,23 +135,23 @@ class CompositeSourceCreatorEngine(Engine):
 
     def export_enc_layers(self, enc_engine) -> None:
         """
-        Write out passed and failed layers to output folder
+        Write out assigned and unassigned layers to output folder
         :param ENCReaderEngine enc_engine: ENCReaderEngine object
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         for feature_type in enc_engine.geometries.keys():
-            passed_name = f'{feature_type}_passed.shp'
-            arcpy.AddMessage(f' - Writing output shapefile: {passed_name}')
-            output_name = os.path.join(output_folder, passed_name)
-            arcpy.management.CopyFeatures(enc_engine.geometries[feature_type]['layers']['passed'], output_name)
-            self.output_data[f'enc_{feature_type}_passed'] = output_name
+            assigned_name = f'{feature_type}_assigned.shp'
+            arcpy.AddMessage(f' - Writing output shapefile: {assigned_name}')
+            output_name = os.path.join(output_folder, assigned_name)
+            arcpy.management.CopyFeatures(enc_engine.geometries[feature_type]['layers']['assigned'], output_name)
+            self.output_data[f'enc_{feature_type}_assigned'] = output_name
             
-            failed_name = f'{feature_type}_failed.shp'
-            arcpy.AddMessage(f' - Writing output shapefile: {failed_name}')
-            output_name = os.path.join(output_folder, failed_name)
-            arcpy.management.CopyFeatures(enc_engine.geometries[feature_type]['layers']['failed'], output_name)
-            self.output_data[f'enc_{feature_type}_failed'] = output_name
+            unassigned_name = f'{feature_type}_unassigned.shp'
+            arcpy.AddMessage(f' - Writing output shapefile: {unassigned_name}')
+            output_name = os.path.join(output_folder, unassigned_name)
+            arcpy.management.CopyFeatures(enc_engine.geometries[feature_type]['layers']['unassigned'], output_name)
+            self.output_data[f'enc_{feature_type}_unassigned'] = output_name
 
     def export_to_shapefile(self, output_data_type, template_layer, shapefile_name):
         """

@@ -20,9 +20,9 @@ class ENCReaderEngine(Engine):
         self.sheets_layer = sheets_layer
         self.driver = None
         self.geometries = {
-            'Point': {'features': [], 'layers': {'passed': None, 'failed': None}},
-            'LineString': {'features': [], 'layers': {'passed': None, 'failed': None}},
-            'Polygon': {'features': [], 'layers': {'passed': None, 'failed': None}}
+            'Point': {'features': [], 'layers': {'assigned': None, 'unassigned': None}},
+            'LineString': {'features': [], 'layers': {'assigned': None, 'unassigned': None}},
+            'Polygon': {'features': [], 'layers': {'assigned': None, 'unassigned': None}}
         }
 
     def add_columns(self):
@@ -37,11 +37,11 @@ class ENCReaderEngine(Engine):
 
         arcpy.AddMessage(" - Adding 'asgnmt' column")
         for feature_type in self.geometries.keys():
-            # Passed layers
-            self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'asgnmt', 2)
+            # Assigned layers
+            self.add_column_and_constant(self.geometries[feature_type]['layers']['assigned'], 'asgnmt', 2)
             
-            # Failed layers
-            self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'asgnmt', 1)
+            # Unassigned layers
+            self.add_column_and_constant(self.geometries[feature_type]['layers']['unassigned'], 'asgnmt', 1)
             
     def add_invreq_column(self):
         """Add and populate the investigation required column for allowed features"""
@@ -52,19 +52,19 @@ class ENCReaderEngine(Engine):
 
         for feature_type in self.geometries.keys():
             arcpy.AddMessage(f" - Adding 'invreq' column: {feature_type}")
-            self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'invreq', nullable=True)
-            self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'invreq', nullable=True)
-            self.set_passed_invreq(feature_type, objl_lookup, invreq_options)
-            self.set_failed_invreq(feature_type, objl_lookup, invreq_options)
+            self.add_column_and_constant(self.geometries[feature_type]['layers']['assigned'], 'invreq', nullable=True)
+            self.add_column_and_constant(self.geometries[feature_type]['layers']['unassigned'], 'invreq', nullable=True)
+            self.set_assigned_invreq(feature_type, objl_lookup, invreq_options)
+            self.set_unassigned_invreq(feature_type, objl_lookup, invreq_options)
 
     def add_objl_string(self):
         """Convert OBJL number to string name"""
 
         for feature_type in self.geometries.keys():
-            self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'OBJL_NAME', nullable=True)
-            self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'OBJL_NAME', nullable=True)
+            self.add_column_and_constant(self.geometries[feature_type]['layers']['assigned'], 'OBJL_NAME', nullable=True)
+            self.add_column_and_constant(self.geometries[feature_type]['layers']['unassigned'], 'OBJL_NAME', nullable=True)
             
-            for value in ['passed', 'failed']:
+            for value in ['assigned', 'unassigned']:
                 with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers'][value], ["OBJL", "OBJL_NAME"]) as updateCursor:
                     for row in updateCursor:
                         row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
@@ -138,11 +138,11 @@ class ENCReaderEngine(Engine):
                 geometry = arcpy.PointGeometry(arcpy.Point(X=coords[0], Y=coords[1]), arcpy.SpatialReference(4326))
                 attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
                 point_cursor.insertRow([geometry] + attribute_values)
-        points_passed = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', self.sheets_layer)
-        points_passed_layer = arcpy.management.MakeFeatureLayer(points_passed)
-        point_failed = arcpy.management.SelectLayerByLocation(points_passed_layer, selection_type='SWITCH_SELECTION')
-        self.geometries['Point']['layers']['passed'] = points_passed
-        self.geometries['Point']['layers']['failed'] = point_failed
+        points_assigned = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', self.sheets_layer)
+        points_assigned_layer = arcpy.management.MakeFeatureLayer(points_assigned)
+        point_unassigned = arcpy.management.SelectLayerByLocation(points_assigned_layer, selection_type='SWITCH_SELECTION')
+        self.geometries['Point']['layers']['assigned'] = points_assigned
+        self.geometries['Point']['layers']['unassigned'] = point_unassigned
 
         # LINES
         line_fields = self.get_all_fields(self.geometries['LineString']['features'])
@@ -159,11 +159,11 @@ class ENCReaderEngine(Engine):
                 geometry = arcpy.Polyline(coord_array, arcpy.SpatialReference(4326))
                 attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
                 line_cursor.insertRow([geometry] + attribute_values)
-        lines_passed = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', self.sheets_layer)
-        lines_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(lines_passed)
-        line_failed = arcpy.management.SelectLayerByLocation(lines_passed_layer, selection_type='SWITCH_SELECTION')
-        self.geometries['LineString']['layers']['passed'] = lines_passed
-        self.geometries['LineString']['layers']['failed'] = line_failed
+        lines_assigned = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', self.sheets_layer)
+        lines_assigned_layer = arcpy.arcpy.management.MakeFeatureLayer(lines_assigned)
+        line_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
+        self.geometries['LineString']['layers']['assigned'] = lines_assigned
+        self.geometries['LineString']['layers']['unassigned'] = line_unassigned
 
         # POLYGONS
         polygons_fields = self.get_all_fields(self.geometries['Polygon']['features'])
@@ -184,11 +184,11 @@ class ENCReaderEngine(Engine):
                 geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
                 attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
                 polygons_cursor.insertRow([geometry] + attribute_values)
-        polygons_passed = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', self.sheets_layer)
-        polygons_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(polygons_passed)
-        polygon_failed = arcpy.management.SelectLayerByLocation(polygons_passed_layer, selection_type='SWITCH_SELECTION')
-        self.geometries['Polygon']['layers']['passed'] = polygons_passed
-        self.geometries['Polygon']['layers']['failed'] = polygon_failed
+        polygons_assigned = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', self.sheets_layer)
+        polygons_assigned_layer = arcpy.arcpy.management.MakeFeatureLayer(polygons_assigned)
+        polygon_unassigned = arcpy.management.SelectLayerByLocation(polygons_assigned_layer, selection_type='SWITCH_SELECTION')
+        self.geometries['Polygon']['layers']['assigned'] = polygons_assigned
+        self.geometries['Polygon']['layers']['unassigned'] = polygon_unassigned
 
     def print_geometries(self) -> None:
         """Print GeoJSON of all features for review"""
@@ -198,27 +198,27 @@ class ENCReaderEngine(Engine):
                 arcpy.AddMessage(f"\n - {feature['type']}:{feature['geojson']}")
     
     def print_feature_total(self) -> None:
-        """Print total number of passed/failed features from ENC file"""
+        """Print total number of assigned/unassigned features from ENC file"""
 
-        points = arcpy.management.GetCount(self.geometries['Point']['layers']['passed'])
-        lines = arcpy.management.GetCount(self.geometries['LineString']['layers']['passed'])
-        polygons = arcpy.management.GetCount(self.geometries['Polygon']['layers']['passed'])
+        points = arcpy.management.GetCount(self.geometries['Point']['layers']['assigned'])
+        lines = arcpy.management.GetCount(self.geometries['LineString']['layers']['assigned'])
+        polygons = arcpy.management.GetCount(self.geometries['Polygon']['layers']['assigned'])
         arcpy.AddMessage(f' - Found Points: {points}')
         arcpy.AddMessage(f' - Found Lines: {lines}')
         arcpy.AddMessage(f' - Found Polygons: {polygons}')
-        arcpy.AddMessage(f' - Total passed: {int(points[0]) + int(lines[0]) + int(polygons[0])}')
-        points = arcpy.management.GetCount(self.geometries['Point']['layers']['failed'])
-        lines = arcpy.management.GetCount(self.geometries['LineString']['layers']['failed'])
-        polygons = arcpy.management.GetCount(self.geometries['Polygon']['layers']['failed'])
-        arcpy.AddMessage(f' - Total failed: {int(points[0]) + int(lines[0]) + int(polygons[0])}')
+        arcpy.AddMessage(f' - Total assigned: {int(points[0]) + int(lines[0]) + int(polygons[0])}')
+        points = arcpy.management.GetCount(self.geometries['Point']['layers']['unassigned'])
+        lines = arcpy.management.GetCount(self.geometries['LineString']['layers']['unassigned'])
+        polygons = arcpy.management.GetCount(self.geometries['Polygon']['layers']['unassigned'])
+        arcpy.AddMessage(f' - Total unassigned: {int(points[0]) + int(lines[0]) + int(polygons[0])}')
 
     def save_feature_layers(self) -> None:
-        """Write out passed and failed layers to output folder"""
+        """Write out assigned and unassigned layers to output folder"""
 
         for feature_type in self.geometries.keys():
             arcpy.AddMessage(f' - Saving {feature_type} layers to {str(OUTPUTS)}')
-            arcpy.management.CopyFeatures(self.geometries[feature_type]['layers']['passed'], str(OUTPUTS / f'{feature_type}-passed.shp'))
-            arcpy.management.CopyFeatures(self.geometries[feature_type]['layers']['failed'], str(OUTPUTS / f'{feature_type}-failed.shp'))
+            arcpy.management.CopyFeatures(self.geometries[feature_type]['layers']['assigned'], str(OUTPUTS / f'{feature_type}-assigned.shp'))
+            arcpy.management.CopyFeatures(self.geometries[feature_type]['layers']['unassigned'], str(OUTPUTS / f'{feature_type}-unassigned.shp'))
 
     def set_driver(self) -> None:
         """Set the S57 driver for GDAL"""
@@ -230,15 +230,15 @@ class ENCReaderEngine(Engine):
 
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON"
 
-    def set_failed_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
+    def set_unassigned_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
         """
-        Isolate logic for setting failed layer 'invreq' column
+        Isolate logic for setting unassigned layer 'invreq' column
         :param str feature_type: Point, LineString, or Polygon
         :param dict[str[str|int]]: YAML values from invreq_look.yaml
         :param dict[int|str] invreq_options: YAML invreq string values to fill column
         """
 
-        with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['failed'], ['OBJL_NAME', 'invreq']) as updateCursor:
+        with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['unassigned'], ['OBJL_NAME', 'invreq']) as updateCursor:
             for row in updateCursor:
                 objl_found = row[0] in objl_lookup.keys()
                 if objl_found:
@@ -249,15 +249,15 @@ class ENCReaderEngine(Engine):
                         row[1] = invreq_options.get(14)
                     updateCursor.updateRow(row)
 
-    def set_passed_invreq(self, feature_type, objl_lookup, invreq_options):
+    def set_assigned_invreq(self, feature_type, objl_lookup, invreq_options):
         """
-        Isolate logic for setting passed layer 'invreq' column
+        Isolate logic for setting assigned layer 'invreq' column
         :param str feature_type: Point, LineString, or Polygon
         :param dict[str[str|int]]: YAML values from invreq_look.yaml
         :param dict[int|str] invreq_options: YAML invreq string values to fill column
         """
 
-        with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['passed'], ["SHAPE@", "*"]) as updateCursor:
+        with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['assigned'], ["SHAPE@", "*"]) as updateCursor:
             # Have to use * because some columns(CATOBS, etc) may be missing in point, line, or polygon feature layers
             indx = {
                 'OBJL_NAME': updateCursor.fields.index('OBJL_NAME'),
