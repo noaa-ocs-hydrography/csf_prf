@@ -146,24 +146,24 @@ class CompositeSourceCreatorEngine(Engine):
 
     def export_enc_layers(self, enc_engine) -> None:
         """
-        Write out passed and failed layers to output folder
+        Write out assigned and unassigned layers to output folder
         :param ENCReaderEngine enc_engine: ENCReaderEngine object
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         for geom_type in enc_engine.geometries.keys():
             for feature_type in ['features', 'QUAPOS']:
-                passed_name = f'{geom_type}_{feature_type}_passed'
-                arcpy.AddMessage(f' - Writing output shapefile: {passed_name}')
-                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', passed_name)
-                arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['passed'], output_name)
-                self.output_data[f'enc_{passed_name}'] = output_name
+                assigned_name = f'{geom_type}_{feature_type}_assigned'
+                arcpy.AddMessage(f' - Writing output shapefile: {assigned_name}')
+                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
+                arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
+                self.output_data[f'enc_{assigned_name}'] = output_name
 
-                failed_name = f'{geom_type}_{feature_type}_failed'
-                arcpy.AddMessage(f' - Writing output shapefile: {failed_name}')
-                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', failed_name)
-                arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['failed'], output_name)
-                self.output_data[f'enc_{failed_name}'] = output_name
+                unassigned_name = f'{geom_type}_{feature_type}_unassigned'
+                arcpy.AddMessage(f' - Writing output shapefile: {unassigned_name}')
+                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', unassigned_name)
+                arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
+                self.output_data[f'enc_{unassigned_name}'] = output_name
 
     def export_to_feature_class(self, output_data_type, template_layer, feature_class_name):
         """
