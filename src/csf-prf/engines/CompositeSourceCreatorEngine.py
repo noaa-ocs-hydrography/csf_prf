@@ -82,6 +82,7 @@ class CompositeSourceCreatorEngine(Engine):
 
     def convert_sheets(self) -> None:
         """Process the Sheets input parameter"""
+
         sheet_parameter = self.param_lookup['sheets'].valueAsText
         if sheet_parameter:
             arcpy.AddMessage('converting sheets')
@@ -134,7 +135,7 @@ class CompositeSourceCreatorEngine(Engine):
         else:
             arcpy.AddMessage(f'Output GeoPackage already exists')
 
-    def create_output_gdb(self):
+    def create_output_gdb(self) -> None:
         """Build the output geodatabase for data storage"""
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
@@ -165,7 +166,7 @@ class CompositeSourceCreatorEngine(Engine):
                 arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
                 self.output_data[f'enc_{unassigned_name}'] = output_name
 
-    def export_to_feature_class(self, output_data_type, template_layer, feature_class_name):
+    def export_to_feature_class(self, output_data_type, template_layer, feature_class_name) -> None:
         """
         Store processed layer as an output shapefile
         :param str output_data_type: Name of input parameter type being stored; see param_lookup

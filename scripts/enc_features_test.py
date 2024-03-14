@@ -36,11 +36,6 @@ class ENCReaderEngine(Engine):
             # Failed layers
             self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'asgnmt', 1)
 
-        # TODO For Info Only layers? Need to make copies of passed/failed layers and add asgnmt = 3
-        # with arcpy.da.SearchCursor(self.geometries['Point']['layers']['passed'], ["*"]) as searchCursor:
-        #     for row in searchCursor:
-        #         arcpy.AddMessage(row)
-            
     def add_invreq_column(self):
         """Add and populate the investigation required column for allowed features"""
 
@@ -80,10 +75,6 @@ class ENCReaderEngine(Engine):
         print('Getting feature records')
         enc_file = self.open_file()
         for layer in enc_file:
-            # for feature in layer:
-            #     print(dir(feature))
-            #     print(feature.DumpReadable())
-            #     break
             layer.ResetReading()
             for feature in layer:
                 if feature:
@@ -420,13 +411,6 @@ class ENCReaderEngine(Engine):
                     invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
                     row[indx['invreq']] = invreq_options.get(invreq, '')
                 updateCursor.updateRow(row)
-
-    # def set_env_variables(self) -> None:
-    #     """Set multipoint on ENV variable"""
-
-    #     print('Setting OGR ENV variables')
-    #     os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON,SPLIT_MULTIPOINT=ON"
-    #     gdal.SetConfigOption('OGR_S57_OPTIONS', "SPLIT_MULTIPOINT=ON,RETURN_PRIMITIVES=ON")
 
     def return_primitives_env(self):
         os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON"

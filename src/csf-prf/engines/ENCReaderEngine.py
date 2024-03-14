@@ -15,6 +15,10 @@ OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 
 
 class ENCReaderEngine(Engine):
+    """
+    Class for handling all reading and processing
+    of features from ENC files
+    """
     def __init__(self, param_lookup: dict, sheets_layer):
         self.param_lookup = param_lookup
         self.sheets_layer = sheets_layer
@@ -41,25 +45,22 @@ class ENCReaderEngine(Engine):
             },
         }
 
-    def add_columns(self):
+    def add_columns(self) -> None:
         """Main caller for adding all columns"""
 
         self.add_objl_string()
         self.add_asgnmt_column()
         self.add_invreq_column()
 
-    def add_asgnmt_column(self):
+    def add_asgnmt_column(self) -> None:
         """Populate the 'asgnmt' column for all feature layers"""
 
         arcpy.AddMessage(" - Adding 'asgnmt' column")
         for feature_type in self.geometries.keys():
-            # Assigned layers
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['assigned'], 'asgnmt', 2)
-
-            # Unassigned layers
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['unassigned'], 'asgnmt', 1)
 
-    def add_invreq_column(self):
+    def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
 
         with open(str(INPUTS / 'invreq_lookup.yaml'), 'r') as lookup:
@@ -73,7 +74,7 @@ class ENCReaderEngine(Engine):
             self.set_assigned_invreq(feature_type, objl_lookup, invreq_options)
             self.set_unassigned_invreq(feature_type, objl_lookup, invreq_options)
 
-    def add_objl_string(self):
+    def add_objl_string(self) -> None:
         """Convert OBJL number to string name"""
 
         for feature_type in self.geometries.keys():
@@ -86,7 +87,7 @@ class ENCReaderEngine(Engine):
                         row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
                         updateCursor.updateRow(row)
 
-    def get_all_fields(self, features):
+    def get_all_fields(self, features) -> None:
         """
         Build a unique list of all field names
         :param dict[dict[str]]: GeoJSON of string values for all features
@@ -126,7 +127,7 @@ class ENCReaderEngine(Engine):
                             if geom_type:
                                 arcpy.AddMessage(f'Unknown feature type: {geom_type}')
 
-    def get_vector_records(self):
+    def get_vector_records(self) -> None:
         """Read and store all vector records with QUAPOS from ENC file"""
 
         arcpy.AddMessage(' - Reading QUAPOS records')
@@ -152,17 +153,19 @@ class ENCReaderEngine(Engine):
                                 if geom_type:
                                     print(f'Unknown feature type: {geom_type}')
 
-    def join_quapos_to_features(self):
+    def join_quapos_to_features(self) -> None:
         """Spatial join the QUAPOS tables to features tables"""
+
+        arcpy.AddMessage(' - Joining QUAPOS to feature records')
         overlap_types = {
             'Point': 'ARE_IDENTICAL_TO',
             'LineString': 'SHARE_A_LINE_SEGMENT_WITH',
             'Polygon': 'ARE_IDENTICAL_TO'
         }
         for feature_type in self.geometries.keys():
-            feature_records = self.geometries[feature_type]['features_layers']['passed']
-            vector_records = self.geometries[feature_type]['QUAPOS_layers']['passed']
-            self.geometries[feature_type]["features_layers"]["passed"] = (
+            feature_records = self.geometries[feature_type]['features_layers']['assigned']
+            vector_records = self.geometries[feature_type]['QUAPOS_layers']['assigned']
+            self.geometries[feature_type]["features_layers"]["assigned"] = (
                 arcpy.management.AddSpatialJoin(
                     feature_records,
                     vector_records,
@@ -183,8 +186,9 @@ class ENCReaderEngine(Engine):
     def perform_spatial_filter(self) -> None:
         """Spatial query all of the ENC features against Sheets boundary"""
 
-        for i, feature_type in enumerate(['features', 'QUAPOS']):
-            arcpy.AddMessage(f' - Filter set {i+1}')
+        for feature_type in ['features', 'QUAPOS']:
+            arcpy.AddMessage(f' - Filtering {feature_type} records')
+
             # POINTS
             point_fields = self.get_all_fields(self.geometries['Point'][feature_type])
             points_layer = arcpy.management.CreateFeatureclass(
@@ -281,31 +285,17 @@ class ENCReaderEngine(Engine):
         polygons = arcpy.management.GetCount(self.geometries['Polygon']['features_layers']['unassigned'])
         arcpy.AddMessage(f' - Total unassigned: {int(points[0]) + int(lines[0]) + int(polygons[0])}')
 
-    def save_feature_layers(self) -> None:
-        """Write out assigned and unassigned layers to output folder"""
-
-        for feature_type in self.geometries.keys():
-            arcpy.AddMessage(f" - Saving {feature_type} layers to {str(OUTPUTS)}")
-            arcpy.management.CopyFeatures(
-                self.geometries[feature_type]["features_layers"]["assigned"],
-                str(OUTPUTS / f"{feature_type}-assigned.shp"),
-            )
-            arcpy.management.CopyFeatures(
-                self.geometries[feature_type]["features_layers"]["unassigned"],
-                str(OUTPUTS / f"{feature_type}-unassigned.shp"),
-            )
-
     def set_driver(self) -> None:
         """Set the S57 driver for GDAL"""
 
         self.driver = ogr.GetDriverByName('S57')
 
-    def return_primitives_env(self):
+    def return_primitives_env(self) -> None:
         """Reset S57 ENV for primitives only"""
 
         os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON"
 
-    def split_multipoint_env(self):
+    def split_multipoint_env(self) -> None:
         """Reset S57 ENV for split multipoint only"""
 
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON"
@@ -329,7 +319,7 @@ class ENCReaderEngine(Engine):
                         row[1] = invreq_options.get(14)
                     updateCursor.updateRow(row)
 
-    def set_assigned_invreq(self, feature_type, objl_lookup, invreq_options):
+    def set_assigned_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
         """
         Isolate logic for setting assigned layer 'invreq' column
         :param str feature_type: Point, LineString, or Polygon
@@ -397,15 +387,13 @@ class ENCReaderEngine(Engine):
                     row[indx['invreq']] = invreq_options.get(invreq, '')
                 updateCursor.updateRow(row)
 
-    def start(self):
+    def start(self) -> None:
         self.set_driver()
         self.split_multipoint_env()
         self.get_feature_records()
         self.return_primitives_env()
         self.get_vector_records()
-        # self.save_quapos_layers()
         self.perform_spatial_filter()
         self.print_feature_total()
         self.add_columns()
         self.join_quapos_to_features()
-        # self.save_feature_layers()
