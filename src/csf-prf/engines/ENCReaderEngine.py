@@ -1,10 +1,10 @@
 import pathlib
 import json
 import arcpy
-import os
 import yaml
+import os
 
-from osgeo import ogr
+from osgeo import ogr, gdal
 from engines.Engine import Engine
 from engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
@@ -18,11 +18,27 @@ class ENCReaderEngine(Engine):
     def __init__(self, param_lookup: dict, sheets_layer):
         self.param_lookup = param_lookup
         self.sheets_layer = sheets_layer
+        self.gdb_name = 'csf_features'
         self.driver = None
         self.geometries = {
-            'Point': {'features': [], 'layers': {'passed': None, 'failed': None}},
-            'LineString': {'features': [], 'layers': {'passed': None, 'failed': None}},
-            'Polygon': {'features': [], 'layers': {'passed': None, 'failed': None}}
+            "Point": {
+                "features": [],
+                "QUAPOS": [],
+                "features_layers": {"passed": None, "failed": None},
+                "QUAPOS_layers": {"passed": None, "failed": None},
+            },
+            "LineString": {
+                "features": [],
+                "QUAPOS": [],
+                "features_layers": {"passed": None, "failed": None},
+                "QUAPOS_layers": {"passed": None, "failed": None},
+            },
+            "Polygon": {
+                "features": [],
+                "QUAPOS": [],
+                "features_layers": {"passed": None, "failed": None},
+                "QUAPOS_layers": {"passed": None, "failed": None},
+            },
         }
 
     def add_columns(self):
@@ -38,11 +54,11 @@ class ENCReaderEngine(Engine):
         arcpy.AddMessage(" - Adding 'asgnmt' column")
         for feature_type in self.geometries.keys():
             # Passed layers
-            self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'asgnmt', 2)
-            
+            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['passed'], 'asgnmt', 2)
+
             # Failed layers
-            self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'asgnmt', 1)
-            
+            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['failed'], 'asgnmt', 1)
+
     def add_invreq_column(self):
         """Add and populate the investigation required column for allowed features"""
 
@@ -52,8 +68,8 @@ class ENCReaderEngine(Engine):
 
         for feature_type in self.geometries.keys():
             arcpy.AddMessage(f" - Adding 'invreq' column: {feature_type}")
-            self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'invreq', nullable=True)
-            self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'invreq', nullable=True)
+            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['passed'], 'invreq', nullable=True)
+            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['failed'], 'invreq', nullable=True)
             self.set_passed_invreq(feature_type, objl_lookup, invreq_options)
             self.set_failed_invreq(feature_type, objl_lookup, invreq_options)
 
@@ -61,11 +77,11 @@ class ENCReaderEngine(Engine):
         """Convert OBJL number to string name"""
 
         for feature_type in self.geometries.keys():
-            self.add_column_and_constant(self.geometries[feature_type]['layers']['passed'], 'OBJL_NAME', nullable=True)
-            self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'OBJL_NAME', nullable=True)
-            
+            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['passed'], 'OBJL_NAME', nullable=True)
+            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['failed'], 'OBJL_NAME', nullable=True)
+
             for value in ['passed', 'failed']:
-                with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers'][value], ["OBJL", "OBJL_NAME"]) as updateCursor:
+                with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][value], ["OBJL", "OBJL_NAME"]) as updateCursor:
                     for row in updateCursor:
                         row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
                         updateCursor.updateRow(row)
@@ -76,20 +92,22 @@ class ENCReaderEngine(Engine):
         :param dict[dict[str]]: GeoJSON of string values for all features
         :returns set[str]: Unique list of all fields
         """
-        
+
         fields = set()
         for feature in features:
             for field in feature['geojson']['properties'].keys():
                 fields.add(field)
         return fields
 
-    def get_enc_geometries(self) -> None:
+    def get_feature_records(self) -> None:
         """Read and store all features from ENC file"""
 
+        arcpy.AddMessage(' - Reading Feature records')
         enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
             for layer in enc_file:
+                layer.ResetReading()
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
@@ -107,7 +125,51 @@ class ENCReaderEngine(Engine):
                         else:
                             if geom_type:
                                 arcpy.AddMessage(f'Unknown feature type: {geom_type}')
-        
+
+    def get_vector_records(self):
+        """Read and store all vector records with QUAPOS from ENC file"""
+
+        arcpy.AddMessage(' - Reading QUAPOS records')
+        enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        for enc_path in enc_files:
+            enc_file = self.open_file(enc_path)
+            for layer in enc_file:
+                layer.ResetReading()
+                for feature in layer:
+                    if feature:
+                        feature_json = json.loads(feature.ExportToJson())
+                        if 'QUAPOS' in feature_json['properties'].keys() and feature_json['properties']['QUAPOS'] is not None:
+                            geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
+                            if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
+                                self.geometries[geom_type]['QUAPOS'].append({'geojson': feature_json})
+                            # elif geom_type == 'MultiPoint':  # TODO do we need MultiPoint 'QUAPOS' features?
+                            #     feature_template = json.loads(feature.ExportToJson())
+                            #     feature_template['geometry']['type'] = 'Point'
+                            #     for point in feature.geometry():
+                            #         feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
+                            #         self.geometries['Point']['QUAPOS'].append({'geojson': feature_template})
+                            else:
+                                if geom_type:
+                                    print(f'Unknown feature type: {geom_type}')
+
+    def join_quapos_to_features(self):
+        """Spatial join the QUAPOS tables to features tables"""
+        overlap_types = {
+            'Point': 'ARE_IDENTICAL_TO',
+            'LineString': 'SHARE_A_LINE_SEGMENT_WITH',
+            'Polygon': 'ARE_IDENTICAL_TO'
+        }
+        for feature_type in self.geometries.keys():
+            feature_records = self.geometries[feature_type]['features_layers']['passed']
+            vector_records = self.geometries[feature_type]['QUAPOS_layers']['passed']
+            self.geometries[feature_type]["features_layers"]["passed"] = (
+                arcpy.management.AddSpatialJoin(
+                    feature_records,
+                    vector_records,
+                    match_option=overlap_types[feature_type],
+                )
+            )
+
     def open_file(self, enc_path):
         """
         Open a single input ENC file
@@ -121,74 +183,81 @@ class ENCReaderEngine(Engine):
     def perform_spatial_filter(self) -> None:
         """Spatial query all of the ENC features against Sheets boundary"""
 
-        # sorted_sheets = arcpy.management.Sort(self.sheets_layer, r'memory\sorted_sheets', [["scale", "ASCENDING"]])
-        # POINTS
-        point_fields = self.get_all_fields(self.geometries['Point']['features'])
-        points_layer = arcpy.management.CreateFeatureclass('memory', 'points_layer', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
-        for field in point_fields:
-            arcpy.management.AddField(points_layer, field, 'TEXT')
+        for i, feature_type in enumerate(['features', 'QUAPOS']):
+            arcpy.AddMessage(f' - Filter set {i+1}')
+            # POINTS
+            point_fields = self.get_all_fields(self.geometries['Point'][feature_type])
+            points_layer = arcpy.management.CreateFeatureclass(
+                'memory', 
+                f'{feature_type}_points_layer', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
+            for field in point_fields:
+                arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300)
 
-        arcpy.AddMessage(' - Building point features')
-        for feature in self.geometries['Point']['features']:
-            current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
-            # TODO this is slow to open new every time, but field names change
-            # Another option might be to have lookup by index and fill missing values to None
-            with arcpy.da.InsertCursor(points_layer, current_fields, explicit=True) as point_cursor: 
-                coords = feature['geojson']['geometry']['coordinates']
-                geometry = arcpy.PointGeometry(arcpy.Point(X=coords[0], Y=coords[1]), arcpy.SpatialReference(4326))
-                attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
-                point_cursor.insertRow([geometry] + attribute_values)
-        points_passed = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', self.sheets_layer)
-        points_passed_layer = arcpy.management.MakeFeatureLayer(points_passed)
-        point_failed = arcpy.management.SelectLayerByLocation(points_passed_layer, selection_type='SWITCH_SELECTION')
-        self.geometries['Point']['layers']['passed'] = points_passed
-        self.geometries['Point']['layers']['failed'] = point_failed
+            arcpy.AddMessage(' - Building point features')
+            for feature in self.geometries['Point'][feature_type]:
+                current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
+                # TODO this is slow to open new every time, but field names change
+                # Another option might be to have lookup by index and fill missing values to None
+                with arcpy.da.InsertCursor(points_layer, current_fields, explicit=True) as point_cursor: 
+                    coords = feature['geojson']['geometry']['coordinates']
+                    geometry = arcpy.PointGeometry(arcpy.Point(X=coords[0], Y=coords[1]), arcpy.SpatialReference(4326))
+                    attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
+                    point_cursor.insertRow([geometry] + attribute_values)
+            points_passed = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', self.sheets_layer)
+            points_passed_layer = arcpy.management.MakeFeatureLayer(points_passed)
+            point_failed = arcpy.management.SelectLayerByLocation(points_passed_layer, selection_type='SWITCH_SELECTION')
+            self.geometries['Point'][f'{feature_type}_layers']['passed'] = points_passed
+            self.geometries['Point'][f'{feature_type}_layers']['failed'] = point_failed
 
-        # LINES
-        line_fields = self.get_all_fields(self.geometries['LineString']['features'])
-        lines_layer = arcpy.management.CreateFeatureclass('memory', 'lines_layer', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
-        for field in line_fields:
-            arcpy.management.AddField(lines_layer, field, 'TEXT')
+            # LINES
+            line_fields = self.get_all_fields(self.geometries['LineString'][feature_type])
+            lines_layer = arcpy.management.CreateFeatureclass(
+                'memory', 
+                f'{feature_type}_lines_layer', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
+            for field in line_fields:
+                arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=300)
 
-        arcpy.AddMessage(' - Building line features')
-        for feature in self.geometries['LineString']['features']:
-            current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
-            with arcpy.da.InsertCursor(lines_layer, current_fields, explicit=True) as line_cursor: 
-                points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates']]
-                coord_array = arcpy.Array(points)
-                geometry = arcpy.Polyline(coord_array, arcpy.SpatialReference(4326))
-                attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
-                line_cursor.insertRow([geometry] + attribute_values)
-        lines_passed = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', self.sheets_layer)
-        lines_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(lines_passed)
-        line_failed = arcpy.management.SelectLayerByLocation(lines_passed_layer, selection_type='SWITCH_SELECTION')
-        self.geometries['LineString']['layers']['passed'] = lines_passed
-        self.geometries['LineString']['layers']['failed'] = line_failed
+            arcpy.AddMessage(' - Building line features')
+            for feature in self.geometries['LineString'][feature_type]:
+                current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
+                with arcpy.da.InsertCursor(lines_layer, current_fields, explicit=True) as line_cursor: 
+                    points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates']]
+                    coord_array = arcpy.Array(points)
+                    geometry = arcpy.Polyline(coord_array, arcpy.SpatialReference(4326))
+                    attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
+                    line_cursor.insertRow([geometry] + attribute_values)
+            lines_passed = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', self.sheets_layer)
+            lines_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(lines_passed)
+            line_failed = arcpy.management.SelectLayerByLocation(lines_passed_layer, selection_type='SWITCH_SELECTION')
+            self.geometries['LineString'][f'{feature_type}_layers']['passed'] = lines_passed
+            self.geometries['LineString'][f'{feature_type}_layers']['failed'] = line_failed
 
-        # POLYGONS
-        polygons_fields = self.get_all_fields(self.geometries['Polygon']['features'])
-        polygons_layer = arcpy.management.CreateFeatureclass('memory', 'polygons_layer', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
-        for field in polygons_fields:
-            arcpy.management.AddField(polygons_layer, field, 'TEXT')
+            # POLYGONS
+            polygons_fields = self.get_all_fields(self.geometries['Polygon'][feature_type])
+            polygons_layer = arcpy.management.CreateFeatureclass(
+                'memory', 
+                f'{feature_type}_polygons_layer', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
+            for field in polygons_fields:
+                arcpy.management.AddField(polygons_layer, field, 'TEXT', field_length=300)
 
-        arcpy.AddMessage(' - Building Polygon features')
-        for feature in self.geometries['Polygon']['features']:
-            current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
-            with arcpy.da.InsertCursor(polygons_layer, current_fields, explicit=True) as polygons_cursor: 
-                polygons = feature['geojson']['geometry']['coordinates']
-                if len(polygons) > 1:
-                    points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
-                else:
-                    points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates'][0]]
-                coord_array = arcpy.Array(points)
-                geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
-                attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
-                polygons_cursor.insertRow([geometry] + attribute_values)
-        polygons_passed = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', self.sheets_layer)
-        polygons_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(polygons_passed)
-        polygon_failed = arcpy.management.SelectLayerByLocation(polygons_passed_layer, selection_type='SWITCH_SELECTION')
-        self.geometries['Polygon']['layers']['passed'] = polygons_passed
-        self.geometries['Polygon']['layers']['failed'] = polygon_failed
+            arcpy.AddMessage(' - Building Polygon features')
+            for feature in self.geometries['Polygon'][feature_type]:
+                current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
+                with arcpy.da.InsertCursor(polygons_layer, current_fields, explicit=True) as polygons_cursor: 
+                    polygons = feature['geojson']['geometry']['coordinates']
+                    if len(polygons) > 1:
+                        points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
+                    else:
+                        points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates'][0]]
+                    coord_array = arcpy.Array(points)
+                    geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
+                    attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
+                    polygons_cursor.insertRow([geometry] + attribute_values)
+            polygons_passed = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', self.sheets_layer)
+            polygons_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(polygons_passed)
+            polygon_failed = arcpy.management.SelectLayerByLocation(polygons_passed_layer, selection_type='SWITCH_SELECTION')
+            self.geometries['Polygon'][f'{feature_type}_layers']['passed'] = polygons_passed
+            self.geometries['Polygon'][f'{feature_type}_layers']['failed'] = polygon_failed
 
     def print_geometries(self) -> None:
         """Print GeoJSON of all features for review"""
@@ -196,37 +265,48 @@ class ENCReaderEngine(Engine):
         for feature_type in self.geometries.keys():
             for feature in self.geometries[feature_type]:
                 arcpy.AddMessage(f"\n - {feature['type']}:{feature['geojson']}")
-    
+
     def print_feature_total(self) -> None:
         """Print total number of passed/failed features from ENC file"""
 
-        points = arcpy.management.GetCount(self.geometries['Point']['layers']['passed'])
-        lines = arcpy.management.GetCount(self.geometries['LineString']['layers']['passed'])
-        polygons = arcpy.management.GetCount(self.geometries['Polygon']['layers']['passed'])
+        points = arcpy.management.GetCount(self.geometries['Point']['features_layers']['passed'])
+        lines = arcpy.management.GetCount(self.geometries['LineString']['features_layers']['passed'])
+        polygons = arcpy.management.GetCount(self.geometries['Polygon']['features_layers']['passed'])
         arcpy.AddMessage(f' - Found Points: {points}')
         arcpy.AddMessage(f' - Found Lines: {lines}')
         arcpy.AddMessage(f' - Found Polygons: {polygons}')
         arcpy.AddMessage(f' - Total passed: {int(points[0]) + int(lines[0]) + int(polygons[0])}')
-        points = arcpy.management.GetCount(self.geometries['Point']['layers']['failed'])
-        lines = arcpy.management.GetCount(self.geometries['LineString']['layers']['failed'])
-        polygons = arcpy.management.GetCount(self.geometries['Polygon']['layers']['failed'])
+        points = arcpy.management.GetCount(self.geometries['Point']['features_layers']['failed'])
+        lines = arcpy.management.GetCount(self.geometries['LineString']['features_layers']['failed'])
+        polygons = arcpy.management.GetCount(self.geometries['Polygon']['features_layers']['failed'])
         arcpy.AddMessage(f' - Total failed: {int(points[0]) + int(lines[0]) + int(polygons[0])}')
 
     def save_feature_layers(self) -> None:
         """Write out passed and failed layers to output folder"""
 
         for feature_type in self.geometries.keys():
-            arcpy.AddMessage(f' - Saving {feature_type} layers to {str(OUTPUTS)}')
-            arcpy.management.CopyFeatures(self.geometries[feature_type]['layers']['passed'], str(OUTPUTS / f'{feature_type}-passed.shp'))
-            arcpy.management.CopyFeatures(self.geometries[feature_type]['layers']['failed'], str(OUTPUTS / f'{feature_type}-failed.shp'))
+            arcpy.AddMessage(f" - Saving {feature_type} layers to {str(OUTPUTS)}")
+            arcpy.management.CopyFeatures(
+                self.geometries[feature_type]["features_layers"]["passed"],
+                str(OUTPUTS / f"{feature_type}-passed.shp"),
+            )
+            arcpy.management.CopyFeatures(
+                self.geometries[feature_type]["features_layers"]["failed"],
+                str(OUTPUTS / f"{feature_type}-failed.shp"),
+            )
 
     def set_driver(self) -> None:
         """Set the S57 driver for GDAL"""
 
         self.driver = ogr.GetDriverByName('S57')
 
-    def set_env_variables(self) -> None:
-        """Set multipoint on ENV variable"""
+    def return_primitives_env(self):
+        """Reset S57 ENV for primitives only"""
+
+        os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON"
+
+    def split_multipoint_env(self):
+        """Reset S57 ENV for split multipoint only"""
 
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON"
 
@@ -238,7 +318,7 @@ class ENCReaderEngine(Engine):
         :param dict[int|str] invreq_options: YAML invreq string values to fill column
         """
 
-        with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['failed'], ['OBJL_NAME', 'invreq']) as updateCursor:
+        with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers']['failed'], ['OBJL_NAME', 'invreq']) as updateCursor:
             for row in updateCursor:
                 objl_found = row[0] in objl_lookup.keys()
                 if objl_found:
@@ -257,7 +337,7 @@ class ENCReaderEngine(Engine):
         :param dict[int|str] invreq_options: YAML invreq string values to fill column
         """
 
-        with arcpy.da.UpdateCursor(self.geometries[feature_type]['layers']['passed'], ["SHAPE@", "*"]) as updateCursor:
+        with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers']['passed'], ["SHAPE@", "*"]) as updateCursor:
             # Have to use * because some columns(CATOBS, etc) may be missing in point, line, or polygon feature layers
             indx = {
                 'OBJL_NAME': updateCursor.fields.index('OBJL_NAME'),
@@ -319,9 +399,13 @@ class ENCReaderEngine(Engine):
 
     def start(self):
         self.set_driver()
-        self.set_env_variables()
-        self.get_enc_geometries()
+        self.split_multipoint_env()
+        self.get_feature_records()
+        self.return_primitives_env()
+        self.get_vector_records()
+        # self.save_quapos_layers()
         self.perform_spatial_filter()
         self.print_feature_total()
         self.add_columns()
+        self.join_quapos_to_features()
         # self.save_feature_layers()
