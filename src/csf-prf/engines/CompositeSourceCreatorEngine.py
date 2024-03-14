@@ -20,6 +20,7 @@ class CompositeSourceCreatorEngine(Engine):
     def __init__(self, param_lookup: dict) -> None:
         self.param_lookup = param_lookup
         self.output_name = 'csf_prf_geopackage'
+        self.gdb_name = 'csf_features'
         self.output_db = False
         self.split_features = []
         self.output_data = {key: None for key in list(self.param_lookup.keys())[:-1]} # skip output_folder
@@ -37,8 +38,8 @@ class CompositeSourceCreatorEngine(Engine):
             self.add_column_and_constant(layer, 'invreq', expression)
             self.add_column_and_constant(layer, 'TRAFIC', 2)
             self.add_column_and_constant(layer, 'ORIENT', 45)
-            self.export_to_shapefile('junctions', layer, 'output_junctions.shp')
-    
+            self.export_to_feature_class('junctions', layer, 'output_junctions')
+
     def convert_bottom_samples(self) -> None:
         """Process the Bottom Samples input parameter"""
 
@@ -59,14 +60,13 @@ class CompositeSourceCreatorEngine(Engine):
     def convert_maritime_boundary_points_and_features(self) -> None:
         """Merge and process maritime files"""
 
-
         layer = self.merge_maritime_pts_and_features()
         self.add_column_and_constant(layer, 'invreq', "'Verify the existence of the furthest offshore feature that is dry at MLLW. \
                                      See Baseline Priorities.doc and section 8.1.4 Descriptive Report of the HSSD for further \
                                      information. NOAA units, see FPM section 3.5.6 Maritime Boundary Delineation.'")
         self.add_column_and_constant(layer, 'asgnment', 2, 'SHORT')
         self.add_column_and_constant(layer, 'sftype', 4, 'SHORT')
-        self.copy_layer_to_shapefile('maritime_boundary_features', layer, 'output_maritime_features.shp')
+        self.copy_layer_to_feature_class('maritime_boundary_features', layer, 'output_maritime_features')
 
     def convert_maritime_boundary_baselines(self) -> None:
         """Process the maritime boundary baselines input parameter"""
@@ -78,10 +78,11 @@ class CompositeSourceCreatorEngine(Engine):
                                     information. NOAA units, see FPM section 3.5.6 Maritime Boundary Delineation.'")
         self.add_column_and_constant(layer, 'asgnment', 3, 'SHORT')
         self.add_column_and_constant(layer, 'sftype', 4, 'SHORT')
-        self.copy_layer_to_shapefile('maritime_boundary_baselines', layer, 'output_maritime_baselines.shp')
+        self.copy_layer_to_feature_class('maritime_boundary_baselines', layer, 'output_maritime_baselines')
 
     def convert_sheets(self) -> None:
         """Process the Sheets input parameter"""
+
         sheet_parameter = self.param_lookup['sheets'].valueAsText
         if sheet_parameter:
             arcpy.AddMessage('converting sheets')
@@ -91,7 +92,7 @@ class CompositeSourceCreatorEngine(Engine):
             expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
             self.add_column_and_constant(layer, 'invreq', expression)
             outer_features, inner_features = self.split_inner_polygons(layer)
-            self.write_features_to_shapefile('sheets', layer, outer_features + inner_features, 'output_sheets.shp')
+            self.write_features_to_shapefile('sheets', layer, outer_features + inner_features, 'output_sheets')
 
     def convert_tides(self) -> None:
         """Process the Tides input parameter"""
@@ -108,19 +109,20 @@ class CompositeSourceCreatorEngine(Engine):
         enc_engine = ENCReaderEngine(self.param_lookup, layer)
         enc_engine.start()
         self.export_enc_layers(enc_engine)
-    
-    def copy_layer_to_shapefile(self, output_data_type, layer, shapefile_name) -> None:
+
+    def copy_layer_to_feature_class(self, output_data_type, layer, feature_class_name) -> None:
         """
-        Store processed layer as an output shapefile
+        Store processed layer as an output feature class
         :param str output_data_type: Name of input parameter type being stored; see param_lookup
         :param arcpy.FeatureLayer template_layer: Layer used as a schema template
-        :param str shapefile_name: Name for output shapefile
+        :param str feature_class_name: Name for output feature_class
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        arcpy.AddMessage(f'Writing output shapefile: {shapefile_name}')
-        arcpy.conversion.FeatureClassToFeatureClass(layer, output_folder, shapefile_name)
-        self.output_data[output_data_type] = os.path.join(output_folder, shapefile_name)
+        output_gdb = os.path.join(output_folder, self.gdb_name + '.gdb')
+        arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
+        arcpy.conversion.FeatureClassToFeatureClass(layer, output_gdb, feature_class_name)
+        self.output_data[output_data_type] = os.path.join(output_gdb, feature_class_name)
 
     def create_output_db(self) -> None:
         """Build the output SQLite Geopackage database"""
@@ -133,6 +135,16 @@ class CompositeSourceCreatorEngine(Engine):
         else:
             arcpy.AddMessage(f'Output GeoPackage already exists')
 
+    def create_output_gdb(self) -> None:
+        """Build the output geodatabase for data storage"""
+
+        output_folder = str(self.param_lookup['output_folder'].valueAsText)
+        if arcpy.Exists(os.path.join(output_folder, self.gdb_name + '.gdb')):
+            arcpy.AddMessage('Output GDB already exists')
+        else:
+            arcpy.AddMessage(f'Creating output geodatabase in {output_folder}')
+            arcpy.management.CreateFileGDB(output_folder, self.gdb_name)
+
     def export_enc_layers(self, enc_engine) -> None:
         """
         Write out assigned and unassigned layers to output folder
@@ -140,30 +152,31 @@ class CompositeSourceCreatorEngine(Engine):
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        for feature_type in enc_engine.geometries.keys():
-            assigned_name = f'{feature_type}_assigned.shp'
-            arcpy.AddMessage(f' - Writing output shapefile: {assigned_name}')
-            output_name = os.path.join(output_folder, assigned_name)
-            arcpy.management.CopyFeatures(enc_engine.geometries[feature_type]['layers']['assigned'], output_name)
-            self.output_data[f'enc_{feature_type}_assigned'] = output_name
-            
-            unassigned_name = f'{feature_type}_unassigned.shp'
-            arcpy.AddMessage(f' - Writing output shapefile: {unassigned_name}')
-            output_name = os.path.join(output_folder, unassigned_name)
-            arcpy.management.CopyFeatures(enc_engine.geometries[feature_type]['layers']['unassigned'], output_name)
-            self.output_data[f'enc_{feature_type}_unassigned'] = output_name
+        for geom_type in enc_engine.geometries.keys():
+            for feature_type in ['features', 'QUAPOS']:
+                assigned_name = f'{geom_type}_{feature_type}_assigned'
+                arcpy.AddMessage(f' - Writing output shapefile: {assigned_name}')
+                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
+                arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
+                self.output_data[f'enc_{assigned_name}'] = output_name
 
-    def export_to_shapefile(self, output_data_type, template_layer, shapefile_name):
+                unassigned_name = f'{geom_type}_{feature_type}_unassigned'
+                arcpy.AddMessage(f' - Writing output shapefile: {unassigned_name}')
+                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', unassigned_name)
+                arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
+                self.output_data[f'enc_{unassigned_name}'] = output_name
+
+    def export_to_feature_class(self, output_data_type, template_layer, feature_class_name) -> None:
         """
         Store processed layer as an output shapefile
         :param str output_data_type: Name of input parameter type being stored; see param_lookup
         :param arcpy.FeatureLayer template_layer: Layer used as a schema template
-        :param str shapefile_name: Name for output shapefile
+        :param str feature_class_name: Name for output shapefile
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        arcpy.AddMessage(f'Writing output shapefile: {shapefile_name}')
-        output_name = os.path.join(output_folder, shapefile_name)
+        arcpy.AddMessage(f'Writing output shapefile: {feature_class_name}')
+        output_name = os.path.join(os.path.join(output_folder, self.gdb_name + '.gdb'), feature_class_name)
         copied_layer = arcpy.management.CopyFeatures(template_layer, output_name)
         arcpy.arcpy.management.DefineProjection(copied_layer, arcpy.SpatialReference(4326))
 
@@ -208,7 +221,7 @@ class CompositeSourceCreatorEngine(Engine):
                 field_info.addField(field.name, field.name, 'HIDDEN', 'NONE')
         layer = arcpy.management.MakeFeatureLayer(sheets, field_info=field_info)
         return layer
-    
+
     def merge_maritime_pts_and_features(self):
         """
         Merge the point maritime boundary datasets and create a layer
@@ -285,7 +298,7 @@ class CompositeSourceCreatorEngine(Engine):
 
     def start(self) -> None:
         """Main method to begin process"""
-
+        self.create_output_gdb()
         self.convert_sheets()
         self.convert_junctions()
         self.convert_bottom_samples()
@@ -296,19 +309,19 @@ class CompositeSourceCreatorEngine(Engine):
         self.write_to_geopackage()
         arcpy.AddMessage('Done')
 
-    def write_features_to_shapefile(self, output_data_type, template_layer, features, shapefile_name) -> None:
+    def write_features_to_shapefile(self, output_data_type, template_layer, features, feature_class_name) -> None:
         """
         Store processed layer as an output shapefile
         :param str output_data_type: Name of input parameter type being stored; see param_lookup
         :param arcpy.FeatureLayer template_layer: Layer used as a schema template
         :param (list[dict[]]) features: Combined outer and inner feature lists
-        :param str shapefile_name: Name for output shapefile
+        :param str feature_class_name: Name for output feature_class
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        arcpy.AddMessage(f'Writing output shapefile: {shapefile_name}')
-        output_name = os.path.join(output_folder, shapefile_name)
-        arcpy.management.CreateFeatureclass(output_folder, shapefile_name, 
+        arcpy.AddMessage(f'Writing output shapefile: {feature_class_name}')
+        output_name = os.path.join(output_folder, self.gdb_name + '.gdb', feature_class_name)
+        arcpy.management.CreateFeatureclass(os.path.join(output_folder, self.gdb_name + '.gdb'), feature_class_name, 
                                                 geometry_type='POLYGON', 
                                                 template=template_layer,
                                                 spatial_reference=arcpy.SpatialReference(4326))
@@ -335,8 +348,12 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.AddMessage('Writing to geopackage database')
         for output_name, data in self.output_data.items():
             if data:
-                arcpy.AddMessage(f' - Exporting: {output_name}')
+                arcpy.AddMessage(f" - Exporting: {output_name}")
                 try:
-                    arcpy.conversion.ExportFeatures(data, os.path.join(self.output_db_path + '.gpkg', output_name))
+                    arcpy.conversion.ExportFeatures(
+                        data,
+                        os.path.join(self.output_db_path + ".gpkg", output_name),
+                        use_field_alias_as_name="USE_ALIAS",
+                    )
                 except CompositeSourceCreatorException as e:
                     arcpy.AddMessage(f'Error writing {output_name} to {self.output_db_path} : \n{e}')

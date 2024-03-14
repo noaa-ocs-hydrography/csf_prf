@@ -1,12 +1,12 @@
 import pathlib
 import json
 import arcpy
-import os
 import yaml
 import time
+import os
 arcpy.env.overwriteOutput = True
 
-from osgeo import ogr
+from osgeo import ogr, gdal
 from engines.Engine import Engine
 from engines.class_code_lookup import class_codes as CLASS_CODES
 
@@ -18,9 +18,9 @@ class ENCReaderEngine(Engine):
         self.param_lookup = param_lookup
         self.driver = None
         self.geometries = {
-            'Point': {'features': [], 'layers': {'passed': None, 'failed': None}},
-            'LineString': {'features': [], 'layers': {'passed': None, 'failed': None}},
-            'Polygon': {'features': [], 'layers': {'passed': None, 'failed': None}}
+            'Point': {'features': [], 'QUAPOS': [], 'layers': {'passed': None, 'failed': None}},
+            'LineString': {'features': [], 'QUAPOS': [], 'layers': {'passed': None, 'failed': None}},
+            'Polygon': {'features': [], 'QUAPOS': [], 'layers': {'passed': None, 'failed': None}}
         }
 
     def add_columns(self):
@@ -36,11 +36,6 @@ class ENCReaderEngine(Engine):
             # Failed layers
             self.add_column_and_constant(self.geometries[feature_type]['layers']['failed'], 'asgnmt', 1)
 
-        # TODO For Info Only layers? Need to make copies of passed/failed layers and add asgnmt = 3
-        # with arcpy.da.SearchCursor(self.geometries['Point']['layers']['passed'], ["*"]) as searchCursor:
-        #     for row in searchCursor:
-        #         arcpy.AddMessage(row)
-            
     def add_invreq_column(self):
         """Add and populate the investigation required column for allowed features"""
 
@@ -75,18 +70,20 @@ class ENCReaderEngine(Engine):
                 fields.add(field)
         return fields
 
-    def get_enc_geometries(self):
+    def get_feature_records(self):
         """"""
+        print('Getting feature records')
         enc_file = self.open_file()
         for layer in enc_file:
+            layer.ResetReading()
             for feature in layer:
                 if feature:
                     feature_json = json.loads(feature.ExportToJson())
                     geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
-
                     if geom_type in ['Point', 'LineString', 'Polygon']:
                         self.geometries[geom_type]['features'].append({'geojson': feature_json})
                     elif geom_type == 'MultiPoint':
+                        print('it is multipoint')
                         # Create individual points for soundings
                         feature_template = json.loads(feature.ExportToJson())
                         feature_template['geometry']['type'] = 'Point'
@@ -96,6 +93,33 @@ class ENCReaderEngine(Engine):
                     else:
                         if geom_type:
                             print(f'Unknown feature type: {geom_type}')
+
+    def get_vector_records(self):
+        """"""
+        print('Getting vector records')
+        enc_file = self.open_file()
+        for layer in enc_file:
+            print(layer.GetName())
+            layer.ResetReading()
+            for feature in layer:
+                if feature:
+                    feature_json = json.loads(feature.ExportToJson())
+                    if 'QUAPOS' in feature_json['properties']:
+                        geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
+                        if geom_type in ['Point', 'LineString', 'Polygon']:
+                            self.geometries[geom_type]['QUAPOS'].append({'geojson': feature_json})
+                        elif geom_type == 'MultiPoint':
+                            print('it is multipoint')
+                            # Create individual points for soundings
+                            feature_template = json.loads(feature.ExportToJson())
+                            # print(feature_template['properties'])
+                            feature_template['geometry']['type'] = 'Point'
+                            for point in feature.geometry():
+                                feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
+                                self.geometries['Point']['QUAPOS'].append({'geojson': feature_template})     
+                        else:
+                            if geom_type:
+                                print(f'Unknown feature type: {geom_type}')
 
     def get_polygon_types(self):
         foids = {}
@@ -137,7 +161,6 @@ class ENCReaderEngine(Engine):
         return layer
     
     def open_file(self):
-        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON"
         enc_file_path = self.param_lookup['enc_files'].valueAsText
         enc_file = self.driver.Open(enc_file_path, 0)
         return enc_file
@@ -264,9 +287,28 @@ class ENCReaderEngine(Engine):
         #     self.geometries['Polygon']['layers']['failed'] = polygon_failed
 
     def print_geometries(self):
+        print('Feature records')
         for feature_type in self.geometries.keys():
-            for feature in self.geometries[feature_type]:
-                print('\n', feature['type'], ':', feature['geojson'])
+            for feature in self.geometries[feature_type]['features']:
+                if feature['geojson']['properties']['RCID'] == 1496:
+                    print('\n', feature['geojson']['geometry']['type'], ':', feature['geojson'])
+
+        # Point : {'RCID': 1496, 'PRIM': 1, 'GRUP': 2, 'OBJL': 159, 'RVER': 1, 'AGEN': 550, 'FIDN': 34381042, 
+        #          'FIDS': 50, 'LNAM': '0226020C9CF20032', 'LNAM_REFS': None, 'FFPT_RIND': None, 'CATWRK': 1, 
+        #          'CONRAD': None, 'CONVIS': None, 'EXPSOU': 1, 'HEIGHT': None, 'NOBJNM': None, 'OBJNAM': None, 
+        #          'QUASOU': ['2'], 'SOUACC': None, 'STATUS': None, 'TECSOU': None, 'VALSOU': None, 'VERACC': None, 
+        #          'VERDAT': None, 'VERLEN': None, 'WATLEV': 3, 'INFORM': None, 'NINFOM': None, 'NTXTDS': None, 'SCAMAX': None, 
+        #          'SCAMIN': 179999, 'TXTDSC': None, 'RECDAT': None, 'RECIND': None, 'SORDAT': '201308', 'SORIND': 'US,US,graph,Chart 13278'}
+
+    def print_quapos_features(self):
+        print('Vector records')
+        for feature_type in self.geometries.keys():
+            for feature in self.geometries[feature_type]['QUAPOS']:
+                if feature['geojson']['properties']['RCID'] == 506:
+                    print('\n', feature['geojson']['geometry']['type'], ':', feature['geojson'])
+
+        # Point : {'RCNM': 110, 'RCID': 506, 'RVER': 1, 'RUIN': 1, 'POSACC': None, 'QUAPOS': 4}
+
     
     def print_feature_total(self):
         # TODO add logic for no data found
@@ -370,15 +412,27 @@ class ENCReaderEngine(Engine):
                     row[indx['invreq']] = invreq_options.get(invreq, '')
                 updateCursor.updateRow(row)
 
+    def return_primitives_env(self):
+        os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON"
+
+    def split_multipoint_env(self):
+        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON"
+
     def start(self):
+        # self.set_env_variables()
+        self.split_multipoint_env()
         self.set_driver()
-        self.get_enc_geometries()
-        # self.print_geometries()
+        self.get_feature_records()
+        self.return_primitives_env()
+        self.get_vector_records()
+        
+        self.print_geometries()
+        self.print_quapos_features()
         # self.get_polygon_types()
-        self.perform_spatial_filter(self.make_sheets_layer())
-        self.print_feature_total()
-        self.add_columns()
-        self.save_feature_layers()
+        # self.perform_spatial_filter(self.make_sheets_layer())
+        # self.print_feature_total()
+        # self.add_columns()s
+        # self.save_feature_layers()
 
 
 if __name__ == "__main__":
