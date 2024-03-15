@@ -63,7 +63,7 @@ class ENCReaderEngine(Engine):
     def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
 
-        with open(str(INPUTS / 'invreq_lookup.yaml'), 'r') as lookup:
+        with open(str(INPUTS / 'lookups' / 'invreq_lookup.yaml'), 'r') as lookup:
             objl_lookup = yaml.safe_load(lookup)
         invreq_options = objl_lookup['OPTIONS']
 
@@ -76,7 +76,10 @@ class ENCReaderEngine(Engine):
 
     def add_objl_string(self) -> None:
         """Convert OBJL number to string name"""
-
+        
+        aton_values = self.get_aton_lookup()
+        aton_count = 0
+        aton_found = set()
         for feature_type in self.geometries.keys():
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['assigned'], 'OBJL_NAME', nullable=True)
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['unassigned'], 'OBJL_NAME', nullable=True)
@@ -85,7 +88,13 @@ class ENCReaderEngine(Engine):
                 with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][value], ["OBJL", "OBJL_NAME"]) as updateCursor:
                     for row in updateCursor:
                         row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
-                        updateCursor.updateRow(row)
+                        if feature_type == 'Point' and row[1] in aton_values:
+                            aton_found.add(row[1])
+                            aton_count += 1
+                            updateCursor.deleteRow()
+                        else:
+                            updateCursor.updateRow(row)
+        arcpy.AddMessage(f'Removed {aton_count} ATON features containing {str(aton_found)}')
 
     def get_all_fields(self, features) -> None:
         """
@@ -99,6 +108,15 @@ class ENCReaderEngine(Engine):
             for field in feature['geojson']['properties'].keys():
                 fields.add(field)
         return fields
+    
+    def get_aton_lookup(self):
+        """
+        Return ATON values that are not allowed in CSF
+        :return list[str]: ATON attributes
+        """
+
+        with open(str(INPUTS / 'lookups' / 'aton_lookup.yaml'), 'r') as lookup:
+            return yaml.safe_load(lookup)
 
     def get_feature_records(self) -> None:
         """Read and store all features from ENC file"""
@@ -113,16 +131,15 @@ class ENCReaderEngine(Engine):
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
-
                         if geom_type in ['Point', 'LineString', 'Polygon']:
                             self.geometries[geom_type]['features'].append({'geojson': feature_json})
-                        elif geom_type == 'MultiPoint':
-                            # MultiPoints are broken up now to single features with an ENV variable
-                            feature_template = json.loads(feature.ExportToJson())
-                            feature_template['geometry']['type'] = 'Point'
-                            for point in feature.geometry():
-                                feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
-                                self.geometries['Point']['features'].append({'geojson': feature_template})     
+                        # elif geom_type == 'MultiPoint':
+                        #     # MultiPoints are broken up now to single features with an ENV variable
+                        #     feature_template = json.loads(feature.ExportToJson())
+                        #     feature_template['geometry']['type'] = 'Point'
+                        #     for point in feature.geometry():
+                        #         feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
+                        #         self.geometries['Point']['features'].append({'geojson': feature_template})     
                         else:
                             if geom_type:
                                 arcpy.AddMessage(f'Unknown feature type: {geom_type}')
