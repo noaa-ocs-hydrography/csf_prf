@@ -76,7 +76,10 @@ class ENCReaderEngine(Engine):
 
     def add_objl_string(self) -> None:
         """Convert OBJL number to string name"""
-
+        
+        aton_values = self.get_aton_lookup()
+        aton_count = 0
+        aton_found = set()
         for feature_type in self.geometries.keys():
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['assigned'], 'OBJL_NAME', nullable=True)
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['unassigned'], 'OBJL_NAME', nullable=True)
@@ -85,7 +88,13 @@ class ENCReaderEngine(Engine):
                 with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][value], ["OBJL", "OBJL_NAME"]) as updateCursor:
                     for row in updateCursor:
                         row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
-                        updateCursor.updateRow(row)
+                        if feature_type == 'Point' and row[1] in aton_values:
+                            aton_found.add(row[1])
+                            aton_count += 1
+                            updateCursor.deleteRow()
+                        else:
+                            updateCursor.updateRow(row)
+        arcpy.AddMessage(f'Removed {aton_count} ATON features containing {str(aton_found)}')
 
     def get_all_fields(self, features) -> None:
         """
@@ -113,7 +122,6 @@ class ENCReaderEngine(Engine):
         """Read and store all features from ENC file"""
 
         arcpy.AddMessage(' - Reading Feature records')
-        aton_values = self.get_aton_lookup()
         enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
@@ -124,11 +132,6 @@ class ENCReaderEngine(Engine):
                         feature_json = json.loads(feature.ExportToJson())
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
                         if geom_type in ['Point', 'LineString', 'Polygon']:
-                            # Skip any ATON features
-                            for aton in aton_values:
-                                if aton in feature_json['properties'].keys():
-                                    arcpy.AddMessage(f'Skipping ATON: {aton}')
-                                    continue
                             self.geometries[geom_type]['features'].append({'geojson': feature_json})
                         # elif geom_type == 'MultiPoint':
                         #     # MultiPoints are broken up now to single features with an ENV variable
