@@ -53,6 +53,12 @@ def test_get_all_fields(victim):
     assert 'four' in results
 
 
+def test_get_aton_lookup(victim):
+    results = victim.get_aton_lookup()
+    assert type(results) == type([])
+    assert results[0] == 'BCNCAR'
+
+
 def test_get_feature_records(victim):
     victim.set_driver()
     victim.split_multipoint_env()

@@ -63,7 +63,7 @@ class ENCReaderEngine(Engine):
     def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
 
-        with open(str(INPUTS / 'invreq_lookup.yaml'), 'r') as lookup:
+        with open(str(INPUTS / 'lookups' / 'invreq_lookup.yaml'), 'r') as lookup:
             objl_lookup = yaml.safe_load(lookup)
         invreq_options = objl_lookup['OPTIONS']
 
@@ -99,11 +99,21 @@ class ENCReaderEngine(Engine):
             for field in feature['geojson']['properties'].keys():
                 fields.add(field)
         return fields
+    
+    def get_aton_lookup(self):
+        """
+        Return ATON values that are not allowed in CSF
+        :return list[str]: ATON attributes
+        """
+
+        with open(str(INPUTS / 'lookups' / 'aton_lookup.yaml'), 'r') as lookup:
+            return yaml.safe_load(lookup)
 
     def get_feature_records(self) -> None:
         """Read and store all features from ENC file"""
 
         arcpy.AddMessage(' - Reading Feature records')
+        aton_values = self.get_aton_lookup()
         enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
@@ -113,16 +123,20 @@ class ENCReaderEngine(Engine):
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
-
                         if geom_type in ['Point', 'LineString', 'Polygon']:
+                            # Skip any ATON features
+                            for aton in aton_values:
+                                if aton in feature_json['properties'].keys():
+                                    arcpy.AddMessage(f'Skipping ATON: {aton}')
+                                    continue
                             self.geometries[geom_type]['features'].append({'geojson': feature_json})
-                        elif geom_type == 'MultiPoint':
-                            # MultiPoints are broken up now to single features with an ENV variable
-                            feature_template = json.loads(feature.ExportToJson())
-                            feature_template['geometry']['type'] = 'Point'
-                            for point in feature.geometry():
-                                feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
-                                self.geometries['Point']['features'].append({'geojson': feature_template})     
+                        # elif geom_type == 'MultiPoint':
+                        #     # MultiPoints are broken up now to single features with an ENV variable
+                        #     feature_template = json.loads(feature.ExportToJson())
+                        #     feature_template['geometry']['type'] = 'Point'
+                        #     for point in feature.geometry():
+                        #         feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
+                        #         self.geometries['Point']['features'].append({'geojson': feature_template})     
                         else:
                             if geom_type:
                                 arcpy.AddMessage(f'Unknown feature type: {geom_type}')
