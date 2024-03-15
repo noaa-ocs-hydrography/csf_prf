@@ -2,8 +2,11 @@ import pytest
 import pathlib
 import arcpy
 
-from engines.compositesourcecreatorengine import CompositeSourceCreatorEngine
+from engines.CompositeSourceCreatorEngine import CompositeSourceCreatorEngine
 
+"""
+Unit tests need to havea  .pth file set in your conda ENV that points to CSF-PRF repo
+"""
 
 REPO = pathlib.Path(__file__).parents[2]
 INPUTS = REPO / 'inputs'
@@ -13,7 +16,6 @@ SHAPEFILE = str(INPUTS / 'OPR_A325_KR_24_Sheets_09262023_FULL_AREA_NO_LIDAR.shp'
 @pytest.fixture
 def victim():
     victim = CompositeSourceCreatorEngine(param_lookup=[])
-    victim.load_arcpy()
     return victim
 
 
