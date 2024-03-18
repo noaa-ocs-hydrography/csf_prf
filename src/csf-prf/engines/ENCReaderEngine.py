@@ -132,6 +132,7 @@ class ENCReaderEngine(Engine):
                         feature_json = json.loads(feature.ExportToJson())
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
                         if geom_type in ['Point', 'LineString', 'Polygon']:
+                            feature_json = self.set_none_to_null(feature_json)
                             self.geometries[geom_type]['features'].append({'geojson': feature_json})
                         # elif geom_type == 'MultiPoint':
                         #     # MultiPoints are broken up now to single features with an ENV variable
@@ -212,7 +213,7 @@ class ENCReaderEngine(Engine):
                 'memory', 
                 f'{feature_type}_points_layer', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
             for field in point_fields:
-                arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300)
+                arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
             arcpy.AddMessage(' - Building point features')
             for feature in self.geometries['Point'][feature_type]:
@@ -236,7 +237,7 @@ class ENCReaderEngine(Engine):
                 'memory', 
                 f'{feature_type}_lines_layer', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
             for field in line_fields:
-                arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=300)
+                arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
             arcpy.AddMessage(' - Building line features')
             for feature in self.geometries['LineString'][feature_type]:
@@ -259,7 +260,7 @@ class ENCReaderEngine(Engine):
                 'memory', 
                 f'{feature_type}_polygons_layer', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
             for field in polygons_fields:
-                arcpy.management.AddField(polygons_layer, field, 'TEXT', field_length=300)
+                arcpy.management.AddField(polygons_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
             arcpy.AddMessage(' - Building Polygon features')
             for feature in self.geometries['Polygon'][feature_type]:
@@ -307,15 +308,23 @@ class ENCReaderEngine(Engine):
 
         self.driver = ogr.GetDriverByName('S57')
 
+    def set_none_to_null(self, feature_json):
+        """Convert undesirable text to empty string"""
+        
+        for key, value in feature_json['properties'].items():
+            if value == 'None' or value is None:
+                feature_json['properties'][key] = ''
+        return feature_json
+
     def return_primitives_env(self) -> None:
         """Reset S57 ENV for primitives only"""
 
-        os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON"
+        os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
     def split_multipoint_env(self) -> None:
         """Reset S57 ENV for split multipoint only"""
 
-        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON"
+        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
     def set_unassigned_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
         """

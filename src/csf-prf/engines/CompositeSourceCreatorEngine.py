@@ -1,5 +1,6 @@
 import os
 import arcpy
+import time
 
 from engines.Engine import Engine
 from engines.ENCReaderEngine import ENCReaderEngine
@@ -9,7 +10,7 @@ arcpy.env.overwriteOutput = True
 class CompositeSourceCreatorException(Exception):
     """Custom exception for tool"""
 
-    pass
+    pass 
 
 
 class CompositeSourceCreatorEngine(Engine):
@@ -298,6 +299,8 @@ class CompositeSourceCreatorEngine(Engine):
 
     def start(self) -> None:
         """Main method to begin process"""
+
+        start = time.time()
         self.create_output_gdb()
         self.convert_sheets()
         self.convert_junctions()
@@ -308,6 +311,7 @@ class CompositeSourceCreatorEngine(Engine):
         self.create_output_db()
         self.write_to_geopackage()
         arcpy.AddMessage('Done')
+        # arcpy.AddMessage(time.time() - start)
 
     def write_features_to_shapefile(self, output_data_type, template_layer, features, feature_class_name) -> None:
         """
