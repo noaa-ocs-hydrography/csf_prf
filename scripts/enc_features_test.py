@@ -75,10 +75,31 @@ class ENCReaderEngine(Engine):
         print('Getting feature records')
         enc_file = self.open_file()
         for layer in enc_file:
+            # print(dir(layer))
             layer.ResetReading()
             for feature in layer:
+                # ['Clone', 'Dereference', 'Destroy', 'DumpReadable', 'Equal', 'ExportToJson', 'FillUnsetWithDefault', 
+                #  'GetDefnRef', 'GetFID', 'GetField', 'GetFieldAsBinary', 'GetFieldAsDateTime', 'GetFieldAsDouble', 
+                #  'GetFieldAsDoubleList', 'GetFieldAsInteger', 'GetFieldAsInteger64', 'GetFieldAsInteger64List', 'GetFieldAsIntegerList', 
+                #  'GetFieldAsString', 'GetFieldAsStringList', 'GetFieldCount', 'GetFieldDefnRef', 'GetFieldIndex', 'GetFieldType', 
+                #  'GetGeomFieldCount', 'GetGeomFieldDefnRef', 'GetGeomFieldIndex', 'GetGeomFieldRef', 'GetGeometryRef', 'GetNativeData', 
+                #  'GetNativeMediaType', 'GetStyleString', 'IsFieldNull', 'IsFieldSet', 'IsFieldSetAndNotNull', 'Reference', 'SetFID', 
+                #  'SetField', 'SetField2', 'SetFieldBinaryFromHexString', 'SetFieldDoubleList', 'SetFieldInteger64', 'SetFieldInteger64List', 
+                #  'SetFieldIntegerList', 'SetFieldNull', 'SetFieldString', 'SetFieldStringList', 'SetFrom', 'SetFromWithMap', 'SetGeomField', 
+                #  'SetGeomFieldDirectly', 'SetGeometry', 'SetGeometryDirectly', 'SetNativeData', 'SetNativeMediaType', 'SetStyleString', 
+                #  'UnsetField', 'Validate', '__class__', '__cmp__', '__copy__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__',
+                #    '__format__', '__ge__', '__getattr__', '__getattribute__', '__getitem__', '__gt__', '__hash__', '__init__', '__init_subclass__', 
+                #    '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__setitem__',
+                #      '__sizeof__', '__str__', '__subclasshook__', '__swig_destroy__', '__weakref__', '_getfieldindex', 'geometry', 
+                #      'items', 'keys', 'this', 'thisown']
+                # break
                 if feature:
-                    feature_json = json.loads(feature.ExportToJson())
+                    features = json.loads(feature.ExportToJson())
+                    feature_json = self.set_none_to_null(features)
+                    # if 'STATUS' in feature_json['properties']:
+                    #     status = feature_json['properties']['STATUS']
+                    #     if status:
+                    #         print(int(status))
                     geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
                     if geom_type in ['Point', 'LineString', 'Polygon']:
                         self.geometries[geom_type]['features'].append({'geojson': feature_json})
@@ -93,6 +114,7 @@ class ENCReaderEngine(Engine):
                     else:
                         if geom_type:
                             print(f'Unknown feature type: {geom_type}')
+            # break
 
     def get_vector_records(self):
         """"""
@@ -413,21 +435,30 @@ class ENCReaderEngine(Engine):
                 updateCursor.updateRow(row)
 
     def return_primitives_env(self):
-        os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON"
+        os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
     def split_multipoint_env(self):
-        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON"
+        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON" 
+        #,RETURN_LINKAGES=ON" # This gives primitive RCID values
+        #,LNAM_REFS=ON" # This returns a list of potential LNAM_REFS values
+        
+    def set_none_to_null(self, feature_json):
+        for key, value in feature_json['properties'].items():
+            print(key, value)
+            if value == 'None':
+                feature_json['properties'][key] = ''
+        return feature_json
 
     def start(self):
         # self.set_env_variables()
         self.split_multipoint_env()
         self.set_driver()
         self.get_feature_records()
-        self.return_primitives_env()
-        self.get_vector_records()
+        # self.return_primitives_env()
+        # self.get_vector_records()
         
         self.print_geometries()
-        self.print_quapos_features()
+        # self.print_quapos_features()
         # self.get_polygon_types()
         # self.perform_spatial_filter(self.make_sheets_layer())
         # self.print_feature_total()
