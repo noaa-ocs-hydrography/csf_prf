@@ -312,7 +312,7 @@ class CompositeSourceCreatorEngine(Engine):
         self.create_output_db()
         self.write_to_geopackage()
         arcpy.AddMessage('Done')
-        arcpy.AddMessage(time.time() - start)
+        arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
 
     def write_features_to_shapefile(self, output_data_type, template_layer, features, feature_class_name) -> None:
         """
