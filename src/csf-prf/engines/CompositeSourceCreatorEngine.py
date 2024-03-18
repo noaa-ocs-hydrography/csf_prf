@@ -154,18 +154,19 @@ class CompositeSourceCreatorEngine(Engine):
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         for geom_type in enc_engine.geometries.keys():
-            for feature_type in ['features', 'QUAPOS']:
-                assigned_name = f'{geom_type}_{feature_type}_assigned'
-                arcpy.AddMessage(f' - Writing output shapefile: {assigned_name}')
-                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
-                arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
-                self.output_data[f'enc_{assigned_name}'] = output_name
+            # for feature_type in ['features', 'QUAPOS']:  # QUAPOS is joined later and not needing output
+            feature_type = 'features'
+            assigned_name = f'{geom_type}_{feature_type}_assigned'
+            arcpy.AddMessage(f' - Writing output shapefile: {assigned_name}')
+            output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
+            arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
+            self.output_data[f'enc_{assigned_name}'] = output_name
 
-                unassigned_name = f'{geom_type}_{feature_type}_unassigned'
-                arcpy.AddMessage(f' - Writing output shapefile: {unassigned_name}')
-                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', unassigned_name)
-                arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
-                self.output_data[f'enc_{unassigned_name}'] = output_name
+            unassigned_name = f'{geom_type}_{feature_type}_unassigned'
+            arcpy.AddMessage(f' - Writing output shapefile: {unassigned_name}')
+            output_name = os.path.join(output_folder, self.gdb_name + '.gdb', unassigned_name)
+            arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
+            self.output_data[f'enc_{unassigned_name}'] = output_name
 
     def export_to_feature_class(self, output_data_type, template_layer, feature_class_name) -> None:
         """
@@ -311,7 +312,7 @@ class CompositeSourceCreatorEngine(Engine):
         self.create_output_db()
         self.write_to_geopackage()
         arcpy.AddMessage('Done')
-        # arcpy.AddMessage(time.time() - start)
+        arcpy.AddMessage(time.time() - start)
 
     def write_features_to_shapefile(self, output_data_type, template_layer, features, feature_class_name) -> None:
         """

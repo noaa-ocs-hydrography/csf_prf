@@ -309,7 +309,11 @@ class ENCReaderEngine(Engine):
         self.driver = ogr.GetDriverByName('S57')
 
     def set_none_to_null(self, feature_json):
-        """Convert undesirable text to empty string"""
+        """
+        Convert undesirable text to empty string
+        :param dict[dict[]] feature_json: JSON object of ENC Vector features
+        :returns dict[dict[]]: Updated JSON object
+        """
         
         for key, value in feature_json['properties'].items():
             if value == 'None' or value is None:
