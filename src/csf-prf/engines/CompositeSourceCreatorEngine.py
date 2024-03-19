@@ -24,6 +24,7 @@ class CompositeSourceCreatorEngine(Engine):
         self.gdb_name = 'csf_features'
         self.output_db = False
         self.split_features = []
+        self.sheets_layer = None
         self.output_data = {key: None for key in list(self.param_lookup.keys())[:-1]} # skip output_folder
 
     def convert_junctions(self) -> None:
@@ -94,6 +95,7 @@ class CompositeSourceCreatorEngine(Engine):
             self.add_column_and_constant(layer, 'invreq', expression)
             outer_features, inner_features = self.split_inner_polygons(layer)
             self.write_features_to_shapefile('sheets', layer, outer_features + inner_features, 'output_sheets')
+            self.sheets_layer = layer  # Set sheets layer for later use
 
     def convert_tides(self) -> None:
         """Process the Tides input parameter"""
@@ -104,10 +106,10 @@ class CompositeSourceCreatorEngine(Engine):
         """Process the ENC files input parameter"""
 
         arcpy.AddMessage('converting ENC files')
-        sheets = self.param_lookup['sheets'].valueAsText.replace("'", "").split(';')
-        layers = [self.make_sheets_layer(sheets_file) for sheets_file in sheets]
-        layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
-        enc_engine = ENCReaderEngine(self.param_lookup, layer)
+        # sheets = self.param_lookup['sheets'].valueAsText.replace("'", "").split(';')
+        # layers = [self.make_sheets_layer(sheets_file) for sheets_file in sheets]
+        # layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
+        enc_engine = ENCReaderEngine(self.param_lookup, self.sheets_layer)
         enc_engine.start()
         self.export_enc_layers(enc_engine)
 
