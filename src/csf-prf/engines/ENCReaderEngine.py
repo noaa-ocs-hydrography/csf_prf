@@ -212,7 +212,7 @@ class ENCReaderEngine(Engine):
             points_layer = arcpy.management.CreateFeatureclass(
                 'memory', 
                 f'{feature_type}_points_layer', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
-            for field in point_fields:
+            for field in sorted(point_fields):
                 arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
             arcpy.AddMessage(' - Building point features')
@@ -236,7 +236,7 @@ class ENCReaderEngine(Engine):
             lines_layer = arcpy.management.CreateFeatureclass(
                 'memory', 
                 f'{feature_type}_lines_layer', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
-            for field in line_fields:
+            for field in sorted(line_fields):
                 arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
             arcpy.AddMessage(' - Building line features')
@@ -259,7 +259,7 @@ class ENCReaderEngine(Engine):
             polygons_layer = arcpy.management.CreateFeatureclass(
                 'memory', 
                 f'{feature_type}_polygons_layer', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
-            for field in polygons_fields:
+            for field in sorted(polygons_fields):
                 arcpy.management.AddField(polygons_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
             arcpy.AddMessage(' - Building Polygon features')
