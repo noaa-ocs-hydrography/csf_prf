@@ -94,7 +94,7 @@ class CompositeSourceCreatorEngine(Engine):
             expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
             self.add_column_and_constant(layer, 'invreq', expression)
             outer_features, inner_features = self.split_inner_polygons(layer)
-            self.write_features_to_shapefile('sheets', layer, outer_features + inner_features, 'output_sheets')
+            self.write_features_to_featureclass('sheets', layer, outer_features + inner_features, 'output_sheets')
             self.sheets_layer = layer  # Set sheets layer for later use
 
     def convert_tides(self) -> None:
@@ -159,27 +159,27 @@ class CompositeSourceCreatorEngine(Engine):
             # for feature_type in ['features', 'QUAPOS']:  # QUAPOS is joined later and not needing output
             feature_type = 'features'
             assigned_name = f'{geom_type}_{feature_type}_assigned'
-            arcpy.AddMessage(f' - Writing output shapefile: {assigned_name}')
+            arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
             output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
             arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
             self.output_data[f'enc_{assigned_name}'] = output_name
 
             unassigned_name = f'{geom_type}_{feature_type}_unassigned'
-            arcpy.AddMessage(f' - Writing output shapefile: {unassigned_name}')
+            arcpy.AddMessage(f' - Writing output feature class: {unassigned_name}')
             output_name = os.path.join(output_folder, self.gdb_name + '.gdb', unassigned_name)
             arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
             self.output_data[f'enc_{unassigned_name}'] = output_name
 
     def export_to_feature_class(self, output_data_type, template_layer, feature_class_name) -> None:
         """
-        Store processed layer as an output shapefile
+        Store processed layer as an output feature class
         :param str output_data_type: Name of input parameter type being stored; see param_lookup
         :param arcpy.FeatureLayer template_layer: Layer used as a schema template
-        :param str feature_class_name: Name for output shapefile
+        :param str feature_class_name: Name for output feature class
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        arcpy.AddMessage(f'Writing output shapefile: {feature_class_name}')
+        arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
         output_name = os.path.join(os.path.join(output_folder, self.gdb_name + '.gdb'), feature_class_name)
         copied_layer = arcpy.management.CopyFeatures(template_layer, output_name)
         arcpy.arcpy.management.DefineProjection(copied_layer, arcpy.SpatialReference(4326))
@@ -316,9 +316,9 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
 
-    def write_features_to_shapefile(self, output_data_type, template_layer, features, feature_class_name) -> None:
+    def write_features_to_featureclass(self, output_data_type, template_layer, features, feature_class_name) -> None:
         """
-        Store processed layer as an output shapefile
+        Store processed layer as an output feature class
         :param str output_data_type: Name of input parameter type being stored; see param_lookup
         :param arcpy.FeatureLayer template_layer: Layer used as a schema template
         :param (list[dict[]]) features: Combined outer and inner feature lists
@@ -326,7 +326,7 @@ class CompositeSourceCreatorEngine(Engine):
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        arcpy.AddMessage(f'Writing output shapefile: {feature_class_name}')
+        arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
         output_name = os.path.join(output_folder, self.gdb_name + '.gdb', feature_class_name)
         arcpy.management.CreateFeatureclass(os.path.join(output_folder, self.gdb_name + '.gdb'), feature_class_name, 
                                                 geometry_type='POLYGON', 
@@ -350,7 +350,7 @@ class CompositeSourceCreatorEngine(Engine):
         self.output_data[output_data_type] = output_name
 
     def write_to_geopackage(self) -> None:
-        """Copy the output shapefiles to Geopackage"""
+        """Copy the output feature classes to Geopackage"""
 
         arcpy.AddMessage('Writing to geopackage database')
         for output_name, data in self.output_data.items():
