@@ -18,7 +18,7 @@ class ENCDownloader:
     Class to download all ENC files that intersect a project boundary shapefile
     """
     def __init__(self, sheets_layer=str(INPUTS / 'G322_Sheets_01302024.shp')):
-        self.xml_path = "https://charts.noaa.gov/ENCs/ENCProdCat_19115.xml"
+        self.xml_path = "https://charts.noaa.gov/ENCs/ENCProdCat_19115.xml" # TODO will this URL ever change?
         self.sheets_layer = sheets_layer
 
     def build_polygons_layer(self, polygons):
