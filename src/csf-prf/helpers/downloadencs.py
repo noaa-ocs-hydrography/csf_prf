@@ -9,17 +9,14 @@ from bs4 import BeautifulSoup
 arcpy.env.overwriteOutput = True
 
 
-INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
-OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
-
-
-class ENCDownloader:
+class DownloadENCs:
     """
     Class to download all ENC files that intersect a project boundary shapefile
     """
-    def __init__(self, sheets_layer=str(INPUTS / 'G322_Sheets_01302024.shp')):
+    def __init__(self, param_lookup: dict) -> None:
         self.xml_path = "https://charts.noaa.gov/ENCs/ENCProdCat_19115.xml" # TODO will this URL ever change?
-        self.sheets_layer = sheets_layer
+        self.sheets_layer = param_lookup['sheets'].valueAsText
+        self.output_folder = param_lookup['output_folder'].valueAsText
 
     def build_polygons_layer(self, polygons):
         """
@@ -59,7 +56,7 @@ class ENCDownloader:
             for row in cursor:
                 arcpy.AddMessage(f'Downloading: {row[0]}')
                 enc_zip = requests.get(f'https://charts.noaa.gov/ENCs/{row[0]}.zip')
-                with open(str(OUTPUTS / 'charts' / f'{row[0]}.zip'), 'wb') as file:
+                with open(str(pathlib.Path(self.output_folder) / f'{row[0]}.zip'), 'wb') as file:
                     for chunk in enc_zip.iter_content(chunk_size=128):
                         file.write(chunk)
 
@@ -86,7 +83,7 @@ class ENCDownloader:
             polygons.append([polygon.find('gml:Polygon').attrs['gml:id'].split('_')[0], self.clean_geometry(polygon.text)])
         enc_polygons_layer = self.build_polygons_layer(polygons)
         enc_intersected = arcpy.management.SelectLayerByLocation(enc_polygons_layer, 'INTERSECT', self.sheets_layer)
-        arcpy.management.CopyFeatures(enc_intersected, str(OUTPUTS / 'enc_intersected.shp'))
+        arcpy.management.CopyFeatures(enc_intersected, str(pathlib.Path(self.output_folder) / 'enc_intersected.shp'))
         arcpy.AddMessage(f'ENC files found: {arcpy.management.GetCount(enc_intersected)}')
         return enc_intersected
     
@@ -103,12 +100,8 @@ class ENCDownloader:
     def unzip_enc_files(self) -> None:
         """Unzip all zip fileis in a folder"""
         
-        for enc_path in glob.glob(str(OUTPUTS / 'charts' / '*.zip')):
+        for enc_path in glob.glob(str(pathlib.Path(self.output_folder) / '*.zip')):
             arcpy.AddMessage(f'Unzipping: {enc_path}')
             with zipfile.ZipFile(enc_path, 'r') as zipped:
-                zipped.extractall(str(OUTPUTS / 'charts'))
+                zipped.extractall(str(pathlib.Path(self.output_folder)))
   
-   
-if __name__ == "__main__":
-    downloader = ENCDownloader()
-    downloader.start()

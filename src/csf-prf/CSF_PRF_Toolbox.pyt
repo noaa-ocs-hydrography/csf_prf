@@ -3,7 +3,7 @@
 import arcpy
 
 from ags_tools.CompositeSourceCreator import CompositeSourceCreator
-
+from ags_tools.ENCDownloader import ENCDownloader
 
 class Toolbox:
     def __init__(self):
@@ -12,4 +12,4 @@ class Toolbox:
         self.label = "CSF/PRF Toolbox"
         self.alias = "CSF/PRF Toolbox"
 
-        self.tools = [CompositeSourceCreator]
+        self.tools = [ENCDownloader, CompositeSourceCreator]

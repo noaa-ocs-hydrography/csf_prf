@@ -48,7 +48,7 @@ class CompositeSourceCreator:
         """Set up the tool parameters"""
         
         sheets_shapefile = arcpy.Parameter(
-            displayName="Sheets in shp format (use template file in Project PLanning Template for invreq to map):",
+            displayName="Sheets in shp format (use template file in Project Planning Template for invreq to map):",
             name="sheets",
             datatype="GPFeatureLayer",
             parameterType="Optional",
