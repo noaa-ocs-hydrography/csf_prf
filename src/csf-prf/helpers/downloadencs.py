@@ -1,6 +1,6 @@
 import requests
 import zipfile
-import glob
+import shutil
 import arcpy
 import pathlib
 
@@ -46,6 +46,16 @@ class DownloadENCs:
         strip_polygon = polygon.strip()
         polygon_text = strip_polygon.split('\n')
         return [[float(c) for c in coord.split(' ')] for coord in polygon_text]
+    
+    def cleanup_output(self) -> None:
+        """Delete any zip files after use"""
+
+        output_path = pathlib.Path(self.output_folder)
+        for enc_file in output_path.rglob('*.zip'):
+            arcpy.AddMessage(f'Remove unzipped: {enc_file.name}')
+            enc_file.unlink()
+        arcpy.AddMessage(f'Removing ENC_ROOT folder')
+        shutil.rmtree(output_path / 'ENC_ROOT')
 
     def download_enc_zipfiles(self, enc_intersected) -> None:
         """
@@ -67,6 +77,9 @@ class DownloadENCs:
         enc_intersected = self.find_intersecting_polygons(xml)
         self.download_enc_zipfiles(enc_intersected)
         self.unzip_enc_files()
+        self.move_to_output_folder()
+        self.cleanup_output()
+        arcpy.AddMessage('Done')
 
     def find_intersecting_polygons(self, xml):
         """
@@ -96,12 +109,21 @@ class DownloadENCs:
 
         result = requests.get(path if path else self.xml_path)
         return result.content 
+    
+    def move_to_output_folder(self) -> None:
+        """Move all *.000 files to the main output folder"""
+
+        output_path = pathlib.Path(self.output_folder)
+        for enc_file in output_path.rglob('*.000'):
+            arcpy.AddMessage(f'Moving: {enc_file.name}')
+            enc_path = pathlib.Path(enc_file)
+            enc_path.rename(str(output_path / enc_path.name))
 
     def unzip_enc_files(self) -> None:
         """Unzip all zip fileis in a folder"""
         
-        for enc_path in glob.glob(str(pathlib.Path(self.output_folder) / '*.zip')):
-            arcpy.AddMessage(f'Unzipping: {enc_path}')
+        for enc_path in pathlib.Path(self.output_folder).rglob('*.zip'):
+            arcpy.AddMessage(f'Unzipping: {enc_path.name}')
             with zipfile.ZipFile(enc_path, 'r') as zipped:
                 zipped.extractall(str(pathlib.Path(self.output_folder)))
   
