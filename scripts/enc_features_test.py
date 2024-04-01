@@ -222,7 +222,7 @@ class ENCReaderEngine(Engine):
         # if point_list:
         #     points_layer = arcpy.management.CopyFeatures(point_list, r'memory\points_layer')
         #     points_passed = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', sheets_layer)
-        #     points_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(points_passed)
+        #     points_passed_layer = arcpy.management.MakeFeatureLayer(points_passed)
         #     point_failed = arcpy.management.SelectLayerByLocation(points_passed_layer, selection_type='SWITCH_SELECTION')
         #     self.geometries['Point']['layers']['passed'] = points_passed
         #     self.geometries['Point']['layers']['failed'] = point_failed
@@ -244,7 +244,7 @@ class ENCReaderEngine(Engine):
                 line_cursor.insertRow([geometry] + attribute_values)
         print('Finished Line features')
         lines_passed = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', sheets_layer)
-        lines_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(lines_passed)
+        lines_passed_layer = arcpy.management.MakeFeatureLayer(lines_passed)
         line_failed = arcpy.management.SelectLayerByLocation(lines_passed_layer, selection_type='SWITCH_SELECTION')
         self.geometries['LineString']['layers']['passed'] = lines_passed
         self.geometries['LineString']['layers']['failed'] = line_failed
@@ -257,7 +257,7 @@ class ENCReaderEngine(Engine):
         # if lines_list:
             # lines_layer = arcpy.management.CopyFeatures(lines_list, r'memory\lines_layer')
             # lines_passed = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', sheets_layer)
-            # lines_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(lines_passed)
+            # lines_passed_layer = arcpy.management.MakeFeatureLayer(lines_passed)
             # line_failed = arcpy.management.SelectLayerByLocation(lines_passed_layer, selection_type='SWITCH_SELECTION')
             # self.geometries['LineString']['layers']['passed'] = lines_passed
             # self.geometries['LineString']['layers']['failed'] = line_failed
@@ -283,7 +283,7 @@ class ENCReaderEngine(Engine):
                 polygons_cursor.insertRow([geometry] + attribute_values)
         print('Finished Polygon features')
         polygons_passed = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', sheets_layer)
-        polygons_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(polygons_passed)
+        polygons_passed_layer = arcpy.management.MakeFeatureLayer(polygons_passed)
         polygon_failed = arcpy.management.SelectLayerByLocation(polygons_passed_layer, selection_type='SWITCH_SELECTION')
         self.geometries['Polygon']['layers']['passed'] = polygons_passed
         self.geometries['Polygon']['layers']['failed'] = polygon_failed
@@ -303,7 +303,7 @@ class ENCReaderEngine(Engine):
         # if polygons_list:
         #     polygons_layer = arcpy.management.CopyFeatures(polygons_list, r'memory\polygons_layer')
         #     polygons_passed = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', sheets_layer)
-        #     polygons_passed_layer = arcpy.arcpy.management.MakeFeatureLayer(polygons_passed)
+        #     polygons_passed_layer = arcpy.management.MakeFeatureLayer(polygons_passed)
         #     polygon_failed = arcpy.management.SelectLayerByLocation(polygons_passed_layer, selection_type='SWITCH_SELECTION')
         #     self.geometries['Polygon']['layers']['passed'] = polygons_passed
         #     self.geometries['Polygon']['layers']['failed'] = polygon_failed

@@ -46,9 +46,9 @@ class ENCDownloader:
         """Set up the tool parameters"""
         
         sheets_shapefile = arcpy.Parameter(
-            displayName="Sheets in shp format (use template file in Project Planning Template for invreq to map):",
+            displayName="Sheets boundary in shapefile or geojson format:",
             name="sheets",
-            datatype="GPFeatureLayer",
+            datatype="DEFile",
             parameterType="Optional",
             direction="Input"
         )
