@@ -249,7 +249,7 @@ class ENCReaderEngine(Engine):
                     attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
                     line_cursor.insertRow([geometry] + attribute_values)
             lines_assigned = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', self.sheets_layer)
-            lines_assigned_layer = arcpy.arcpy.management.MakeFeatureLayer(lines_assigned)
+            lines_assigned_layer = arcpy.management.MakeFeatureLayer(lines_assigned)
             line_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
             self.geometries['LineString'][f'{feature_type}_layers']['assigned'] = lines_assigned
             self.geometries['LineString'][f'{feature_type}_layers']['unassigned'] = line_unassigned
@@ -276,7 +276,7 @@ class ENCReaderEngine(Engine):
                     attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
                     polygons_cursor.insertRow([geometry] + attribute_values)
             polygons_assigned = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', self.sheets_layer)
-            polygons_assigned_layer = arcpy.arcpy.management.MakeFeatureLayer(polygons_assigned)
+            polygons_assigned_layer = arcpy.management.MakeFeatureLayer(polygons_assigned)
             polygon_unassigned = arcpy.management.SelectLayerByLocation(polygons_assigned_layer, selection_type='SWITCH_SELECTION')
             self.geometries['Polygon'][f'{feature_type}_layers']['assigned'] = polygons_assigned
             self.geometries['Polygon'][f'{feature_type}_layers']['unassigned'] = polygon_unassigned

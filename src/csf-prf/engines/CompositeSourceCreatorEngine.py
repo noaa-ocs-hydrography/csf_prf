@@ -182,7 +182,7 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
         output_name = os.path.join(os.path.join(output_folder, self.gdb_name + '.gdb'), feature_class_name)
         copied_layer = arcpy.management.CopyFeatures(template_layer, output_name)
-        arcpy.arcpy.management.DefineProjection(copied_layer, arcpy.SpatialReference(4326))
+        arcpy.management.DefineProjection(copied_layer, arcpy.SpatialReference(4326))
 
         self.output_data[output_data_type] = output_name
 

@@ -1,3 +1,4 @@
+import os
 import requests
 import zipfile
 import shutil
@@ -73,6 +74,7 @@ class DownloadENCs:
     def start(self) -> None:
         """Main method to begin process"""
 
+        self.verify_sheets_layer()
         xml = self.get_enc_xml()
         enc_intersected = self.find_intersecting_polygons(xml)
         self.download_enc_zipfiles(enc_intersected)
@@ -126,4 +128,11 @@ class DownloadENCs:
             arcpy.AddMessage(f'Unzipping: {enc_path.name}')
             with zipfile.ZipFile(enc_path, 'r') as zipped:
                 zipped.extractall(str(pathlib.Path(self.output_folder)))
+
+    def verify_sheets_layer(self):
+        """Convert geojson for tool to work same as shapefile"""
+        
+        if 'geojson' in self.sheets_layer:
+            arcpy.AddMessage('Converting geojson input to feature layer')
+            self.sheets_layer = arcpy.conversion.JSONToFeatures(self.sheets_layer, os.path.join('memory', 'sheets_layer'))
   
