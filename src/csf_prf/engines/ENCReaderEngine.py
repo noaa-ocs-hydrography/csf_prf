@@ -5,8 +5,8 @@ import yaml
 import os
 
 from osgeo import ogr, gdal
-from csfprf.engines.Engine import Engine
-from csfprf.engines.class_code_lookup import class_codes as CLASS_CODES
+from csf_prf.engines.Engine import Engine
+from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
 
 

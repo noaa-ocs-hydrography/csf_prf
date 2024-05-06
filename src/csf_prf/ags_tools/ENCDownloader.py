@@ -1,5 +1,5 @@
 import arcpy
-from helpers.downloadencs import DownloadENCs
+from csf_prf.helpers.downloadencs import DownloadENCs
 
 
 class ENCDownloader:

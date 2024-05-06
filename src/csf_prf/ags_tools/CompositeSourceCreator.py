@@ -1,5 +1,5 @@
 import arcpy
-from engines.CompositeSourceCreatorEngine import CompositeSourceCreatorEngine
+from csf_prf.engines.CompositeSourceCreatorEngine import CompositeSourceCreatorEngine
 
 
 class CompositeSourceCreator:

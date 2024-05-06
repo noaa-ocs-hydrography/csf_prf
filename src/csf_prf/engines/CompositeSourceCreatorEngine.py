@@ -2,8 +2,8 @@ import os
 import arcpy
 import time
 
-from engines.Engine import Engine
-from engines.ENCReaderEngine import ENCReaderEngine
+from csf_prf.engines.Engine import Engine
+from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
 arcpy.env.overwriteOutput = True
 
 
