@@ -1,6 +1,7 @@
 import os
 import arcpy
 import time
+import sqlite3
 
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
@@ -353,14 +354,16 @@ class CompositeSourceCreatorEngine(Engine):
         """Copy the output feature classes to Geopackage"""
 
         arcpy.AddMessage('Writing to geopackage database')
-        for output_name, data in self.output_data.items():
-            if data:
-                arcpy.AddMessage(f" - Exporting: {output_name}")
+        for param_name, feature_class in self.output_data.items():
+            if feature_class:
+                arcpy.AddMessage(f" - Exporting: {param_name}")
+                gpkg_data = os.path.join(self.output_db_path + ".gpkg", param_name)
                 try:
                     arcpy.conversion.ExportFeatures(
-                        data,
-                        os.path.join(self.output_db_path + ".gpkg", output_name),
+                        feature_class,
+                        gpkg_data,
                         use_field_alias_as_name="USE_ALIAS",
                     )
                 except CompositeSourceCreatorException as e:
-                    arcpy.AddMessage(f'Error writing {output_name} to {self.output_db_path} : \n{e}')
+                    arcpy.AddMessage(f'Error writing {param_name} to {self.output_db_path} : \n{e}')
+    

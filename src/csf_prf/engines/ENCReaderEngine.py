@@ -81,11 +81,11 @@ class ENCReaderEngine(Engine):
         aton_count = 0
         aton_found = set()
         for feature_type in self.geometries.keys():
-            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['assigned'], 'Feature Type', nullable=True)
-            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['unassigned'], 'Feature Type', nullable=True)
+            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['assigned'], 'OBJL_NAME', nullable=True)
+            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['unassigned'], 'OBJL_NAME', nullable=True)
 
             for value in ['assigned', 'unassigned']:
-                with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][value], ["OBJL", "Feature Type"]) as updateCursor:
+                with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][value], ['OBJL', 'OBJL_NAME']) as updateCursor:
                     for row in updateCursor:
                         row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
                         if feature_type == 'Point' and row[1] in aton_values:
@@ -130,7 +130,7 @@ class ENCReaderEngine(Engine):
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
-                        geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
+                        geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                         if geom_type in ['Point', 'LineString', 'Polygon']:
                             feature_json = self.set_none_to_null(feature_json)
                             self.geometries[geom_type]['features'].append({'geojson': feature_json})
@@ -169,7 +169,7 @@ class ENCReaderEngine(Engine):
                             #         self.geometries['Point']['QUAPOS'].append({'geojson': feature_template})
                             else:
                                 if geom_type:
-                                    print(f'Unknown feature type: {geom_type}')
+                                    arcpy.AddMessage(f"Found QUAPOS but missing coordinates: {geom_type} - {feature_json['geometry']['coordinates']}")
 
     def join_quapos_to_features(self) -> None:
         """Spatial join the QUAPOS tables to features tables"""
@@ -338,7 +338,7 @@ class ENCReaderEngine(Engine):
         :param dict[int|str] invreq_options: YAML invreq string values to fill column
         """
 
-        with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers']['unassigned'], ['Feature Type', 'invreq']) as updateCursor:
+        with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers']['unassigned'], ['OBJL_NAME', 'invreq']) as updateCursor:
             for row in updateCursor:
                 objl_found = row[0] in objl_lookup.keys()
                 if objl_found:
@@ -360,7 +360,7 @@ class ENCReaderEngine(Engine):
         with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers']['assigned'], ["SHAPE@", "*"]) as updateCursor:
             # Have to use * because some columns(CATOBS, etc) may be missing in point, line, or polygon feature layers
             indx = {
-                'Feature Type': updateCursor.fields.index('Feature Type'),
+                'OBJL_NAME': updateCursor.fields.index('OBJL_NAME'),
                 'CATOBS': updateCursor.fields.index('CATOBS') if 'CATOBS' in updateCursor.fields else False,
                 'CATMOR': updateCursor.fields.index('CATMOR') if 'CATMOR' in updateCursor.fields else False,
                 'CONDTN': updateCursor.fields.index('CONDTN') if 'CONDTN' in updateCursor.fields else False,
@@ -369,14 +369,14 @@ class ENCReaderEngine(Engine):
                 'SHAPE@': updateCursor.fields.index('SHAPE@')
             }
             for row in updateCursor:
-                if row[indx['Feature Type']] == 'LNDARE':
+                if row[indx['OBJL_NAME']] == 'LNDARE':
                     if feature_type == 'Polygon':
                         area = row[indx['SHAPE@']].projectAs(arcpy.SpatialReference(102008)).area  # project to NA Albers Equal Area
                         if area < 3775:  # FME polygon size check 
-                            invreq = objl_lookup.get(row[indx['Feature Type']], objl_lookup['OTHER'])['invreq']
+                            invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
                             row[indx['invreq']] = invreq_options.get(invreq, '')
                 # CATMOR column needed for MORFAC
-                elif row[indx['Feature Type']] == 'MORFAC':
+                elif row[indx['OBJL_NAME']] == 'MORFAC':
                     if indx['CATMOR']:
                         catmor = row[indx["CATMOR"]]
                         if catmor == 1:
@@ -384,7 +384,7 @@ class ENCReaderEngine(Engine):
                         elif catmor in [2, 3, 4, 5, 6, 7]:
                             row[indx['invreq']] = invreq_options.get(1, '')
                 # CATOBS column needed for OBSTRN
-                elif row[indx['Feature Type']] == 'OBSTRN':
+                elif row[indx['OBJL_NAME']] == 'OBSTRN':
                     if indx['CATOBS']:
                         catobs = row[indx["CATOBS"]]
                         if catobs == 2:
@@ -393,10 +393,10 @@ class ENCReaderEngine(Engine):
                             row[indx['invreq']] = invreq_options.get(8, '')
                         elif catobs in [None, 1, 3, 4, 6, 7, 8, 9, 10]:
                             row[indx['invreq']] = invreq_options.get(5, '')
-                elif row[indx['Feature Type']] == 'SBDARE':
+                elif row[indx['OBJL_NAME']] == 'SBDARE':
                     row[indx['invreq']] = invreq_options.get(13, '')
                 # CONDTN column needed for SLCONS
-                elif row[indx['Feature Type']] == 'SLCONS':
+                elif row[indx['OBJL_NAME']] == 'SLCONS':
                     if indx['CONDTN']:
                         condtn = row[indx["CONDTN"]]
                         if condtn in [1, 3, 4, 5]:
@@ -404,7 +404,7 @@ class ENCReaderEngine(Engine):
                         elif condtn == 2:
                             row[indx['invreq']] = invreq_options.get(5, '')
                 # WATLEV column needed for UWTROC
-                elif row[indx['Feature Type']] == 'UWTROC':
+                elif row[indx['OBJL_NAME']] == 'UWTROC':
                     if indx['WATLEV']:
                         condtn = row[indx["WATLEV"]]
                         if condtn in [1, 2, 4, 5, 6, 7]:
@@ -413,7 +413,7 @@ class ENCReaderEngine(Engine):
                             row[indx['invreq']] = invreq_options.get(7, '')
                 else:
                     # Set to OTHER value if missing
-                    invreq = objl_lookup.get(row[indx['Feature Type']], objl_lookup['OTHER'])['invreq']
+                    invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
                     row[indx['invreq']] = invreq_options.get(invreq, '')
                 updateCursor.updateRow(row)
 
