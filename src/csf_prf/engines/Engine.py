@@ -18,9 +18,6 @@ class Engine:
             arcpy.management.CalculateField(
                 layer, column, expression, expression_type="PYTHON3", field_type=field_type
             )
-         # Setting column to "Feature Type" for CARIS import
-        if column == 'Feature':
-            arcpy.management.AlterField(layer, column, new_field_alias='Feature Type')
 
     def reverse(self, geom_list):
         """

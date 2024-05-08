@@ -128,16 +128,29 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.conversion.FeatureClassToFeatureClass(layer, output_gdb, feature_class_name)
         self.output_data[output_data_type] = os.path.join(output_gdb, feature_class_name)
 
-    def create_output_db(self) -> None:
-        """Build the output SQLite Geopackage database"""
+    def create_caris_export(self) -> None:
+        """Output datasets to Geopackage by unique OBJL_NAME"""
 
-        if not self.output_db:
-            self.output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.output_name)
-            arcpy.AddMessage(f'Creating output GeoPackage in {self.output_db_path}')
-            arcpy.management.CreateSQLiteDatabase(self.output_db_path, spatial_type='GEOPACKAGE')
-            self.output_db = True
-        else:
-            arcpy.AddMessage(f'Output GeoPackage already exists')
+        csfprf_output_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.output_name)
+        arcpy.management.CreateSQLiteDatabase(csfprf_output_path, spatial_type='GEOPACKAGE')
+        for enc_feature_type, feature_class in self.output_data.items():
+            if feature_class:
+                if 'enc' in enc_feature_type and enc_feature_type != 'enc_files':
+                    output_path = os.path.join(self.param_lookup['output_folder'].valueAsText, enc_feature_type)
+                    arcpy.management.CreateSQLiteDatabase(output_path, spatial_type='GEOPACKAGE')
+                    objl_name_field = [field.name for field in arcpy.ListFields(feature_class) if 'OBJL_NAME' in field.name][0]
+                    objl_names = self.get_unique_values(feature_class, objl_name_field)
+                    for objl_name in objl_names:
+                        query = f'{objl_name_field} = ' + f"'{objl_name}'"
+                        rows = arcpy.management.SelectLayerByAttribute(feature_class,'NEW_SELECTION', query)
+                        gpkg_data = os.path.join(output_path + ".gpkg", objl_name)
+                        try:
+                            arcpy.AddMessage(f" - Exporting: {enc_feature_type}")
+                            arcpy.conversion.ExportFeatures(rows, gpkg_data, use_field_alias_as_name="USE_ALIAS")
+                        except CompositeSourceCreatorException as e:
+                            arcpy.AddMessage(f'Error writing {objl_name} to {output_path} : \n{e}')
+                else:
+                    self.export_to_geopackage(csfprf_output_path, enc_feature_type, feature_class)
 
     def create_output_gdb(self) -> None:
         """Build the output geodatabase for data storage"""
@@ -186,6 +199,26 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.management.DefineProjection(copied_layer, arcpy.SpatialReference(4326))
 
         self.output_data[output_data_type] = output_name
+
+    def export_to_geopackage(self, output_path, param_name, feature_class) -> None:
+        """Export a feature class in GDB to a Geopackage"""
+
+        arcpy.AddMessage(f" - Exporting: {param_name}")
+        gpkg_data = os.path.join(output_path + ".gpkg", param_name)
+        try:
+            arcpy.conversion.ExportFeatures(
+                feature_class,
+                gpkg_data,
+                use_field_alias_as_name="USE_ALIAS",
+            )
+        except CompositeSourceCreatorException as e:
+            arcpy.AddMessage(f'Error writing {param_name} to {output_path} : \n{e}')
+
+    def get_unique_values(self, feature_class, attribute) -> list:
+        """Get a list of unique values from a feature class"""
+
+        with arcpy.da.SearchCursor(feature_class, [[attribute]]) as cursor:
+            return sorted({row[0] for row in cursor})
 
     def make_maritime_boundary_pts_layer(self):
         """
@@ -312,7 +345,6 @@ class CompositeSourceCreatorEngine(Engine):
         self.convert_maritime_datasets()
         # self.convert_tides()
         self.convert_enc_files()
-        self.create_output_db()
         self.write_to_geopackage()
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
@@ -354,16 +386,17 @@ class CompositeSourceCreatorEngine(Engine):
         """Copy the output feature classes to Geopackage"""
 
         arcpy.AddMessage('Writing to geopackage database')
-        for param_name, feature_class in self.output_data.items():
-            if feature_class:
-                arcpy.AddMessage(f" - Exporting: {param_name}")
-                gpkg_data = os.path.join(self.output_db_path + ".gpkg", param_name)
-                try:
-                    arcpy.conversion.ExportFeatures(
-                        feature_class,
-                        gpkg_data,
-                        use_field_alias_as_name="USE_ALIAS",
-                    )
-                except CompositeSourceCreatorException as e:
-                    arcpy.AddMessage(f'Error writing {param_name} to {self.output_db_path} : \n{e}')
-    
+        if self.param_lookup['caris_export'].value:
+            self.create_caris_export()
+        else:
+            if not self.output_db:
+                output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.output_name)
+                arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}')
+                arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
+                self.output_db = True
+            else:
+                arcpy.AddMessage(f'Output GeoPackage already exists')
+            for param_name, feature_class in self.output_data.items():
+                if feature_class:
+                    self.export_to_geopackage(output_db_path, param_name, feature_class)
+        
