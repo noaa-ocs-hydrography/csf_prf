@@ -4,7 +4,7 @@ import arcpy
 import yaml
 import os
 
-from osgeo import ogr, gdal
+from osgeo import ogr
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
@@ -19,6 +19,7 @@ class ENCReaderEngine(Engine):
     Class for handling all reading and processing
     of features from ENC files
     """
+
     def __init__(self, param_lookup: dict, sheets_layer):
         self.param_lookup = param_lookup
         self.sheets_layer = sheets_layer
@@ -45,13 +46,6 @@ class ENCReaderEngine(Engine):
             },
         }
 
-    def add_columns(self) -> None:
-        """Main caller for adding all columns"""
-
-        self.add_objl_string()
-        self.add_asgnmt_column()
-        self.add_invreq_column()
-
     def add_asgnmt_column(self) -> None:
         """Populate the 'asgnmt' column for all feature layers"""
 
@@ -59,6 +53,13 @@ class ENCReaderEngine(Engine):
         for feature_type in self.geometries.keys():
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['assigned'], 'asgnmt', 2)
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['unassigned'], 'asgnmt', 1)
+
+    def add_columns(self) -> None:
+        """Main caller for adding all columns"""
+
+        self.add_objl_string()
+        self.add_asgnmt_column()
+        self.add_invreq_column()
 
     def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
@@ -281,13 +282,6 @@ class ENCReaderEngine(Engine):
             self.geometries['Polygon'][f'{feature_type}_layers']['assigned'] = polygons_assigned
             self.geometries['Polygon'][f'{feature_type}_layers']['unassigned'] = polygon_unassigned
 
-    def print_geometries(self) -> None:
-        """Print GeoJSON of all features for review"""
-
-        for feature_type in self.geometries.keys():
-            for feature in self.geometries[feature_type]:
-                arcpy.AddMessage(f"\n - {feature['type']}:{feature['geojson']}")
-
     def print_feature_total(self) -> None:
         """Print total number of assigned/unassigned features from ENC file"""
 
@@ -302,6 +296,18 @@ class ENCReaderEngine(Engine):
         lines = arcpy.management.GetCount(self.geometries['LineString']['features_layers']['unassigned'])
         polygons = arcpy.management.GetCount(self.geometries['Polygon']['features_layers']['unassigned'])
         arcpy.AddMessage(f' - Total unassigned: {int(points[0]) + int(lines[0]) + int(polygons[0])}')
+
+    def print_geometries(self) -> None:
+        """Print GeoJSON of all features for review"""
+
+        for feature_type in self.geometries.keys():
+            for feature in self.geometries[feature_type]:
+                arcpy.AddMessage(f"\n - {feature['type']}:{feature['geojson']}")
+
+    def return_primitives_env(self) -> None:
+        """Reset S57 ENV for primitives only"""
+
+        os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
     def set_driver(self) -> None:
         """Set the S57 driver for GDAL"""
@@ -320,40 +326,11 @@ class ENCReaderEngine(Engine):
                 feature_json['properties'][key] = ''
         return feature_json
 
-    def return_primitives_env(self) -> None:
-        """Reset S57 ENV for primitives only"""
-
-        os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
-
-    def split_multipoint_env(self) -> None:
-        """Reset S57 ENV for split multipoint only"""
-
-        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
-
-    def set_unassigned_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
-        """
-        Isolate logic for setting unassigned layer 'invreq' column
-        :param str feature_type: Point, LineString, or Polygon
-        :param dict[str[str|int]]: YAML values from invreq_look.yaml
-        :param dict[int|str] invreq_options: YAML invreq string values to fill column
-        """
-
-        with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers']['unassigned'], ['OBJL_NAME', 'invreq']) as updateCursor:
-            for row in updateCursor:
-                objl_found = row[0] in objl_lookup.keys()
-                if objl_found:
-                    if row[0] == 'SBDARE':
-                        if feature_type != 'Point':
-                            row[1] = invreq_options.get(14)
-                    else:
-                        row[1] = invreq_options.get(14)
-                    updateCursor.updateRow(row)
-
     def set_assigned_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
         """
         Isolate logic for setting assigned layer 'invreq' column
         :param str feature_type: Point, LineString, or Polygon
-        :param dict[str[str|int]]: YAML values from invreq_look.yaml
+        :param dict[str[str|int]] objl_lookup: YAML values from invreq_look.yaml
         :param dict[int|str] invreq_options: YAML invreq string values to fill column
         """
 
@@ -416,6 +393,30 @@ class ENCReaderEngine(Engine):
                     invreq = objl_lookup.get(row[indx['OBJL_NAME']], objl_lookup['OTHER'])['invreq']
                     row[indx['invreq']] = invreq_options.get(invreq, '')
                 updateCursor.updateRow(row)
+
+    def set_unassigned_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
+        """
+        Isolate logic for setting unassigned layer 'invreq' column
+        :param str feature_type: Point, LineString, or Polygon
+        :param dict[str[str|int]] objl_lookup: YAML values from invreq_look.yaml
+        :param dict[int|str] invreq_options: YAML invreq string values to fill column
+        """
+
+        with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers']['unassigned'], ['OBJL_NAME', 'invreq']) as updateCursor:
+            for row in updateCursor:
+                objl_found = row[0] in objl_lookup.keys()
+                if objl_found:
+                    if row[0] == 'SBDARE':
+                        if feature_type != 'Point':
+                            row[1] = invreq_options.get(14)
+                    else:
+                        row[1] = invreq_options.get(14)
+                    updateCursor.updateRow(row)
+
+    def split_multipoint_env(self) -> None:
+        """Reset S57 ENV for split multipoint only"""
+
+        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
     def start(self) -> None:
         self.set_driver()

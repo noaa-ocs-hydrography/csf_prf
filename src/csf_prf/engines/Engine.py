@@ -24,6 +24,7 @@ class Engine:
         Reverse all the inner polygon geometries
         - Esri inner polygons are supposed to be counterclockwise
         - Shapely.is_ccw() could be used to properly test
+        :param list[float] geom_list: 
         :return list[arcpy.Geometry]: List of reversed inner polygon geometry
         """
 

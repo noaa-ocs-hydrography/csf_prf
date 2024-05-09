@@ -1,7 +1,6 @@
 import os
 import arcpy
 import time
-import sqlite3
 
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
@@ -19,6 +18,7 @@ class CompositeSourceCreatorEngine(Engine):
     Class to hold the logic for transforming the 
     Composite Source Creator process into an ArcGIS Python Tool
     """
+
     def __init__(self, param_lookup: dict) -> None:
         self.param_lookup = param_lookup
         self.output_name = 'csf_prf_geopackage'
@@ -27,6 +27,11 @@ class CompositeSourceCreatorEngine(Engine):
         self.split_features = []
         self.sheets_layer = None
         self.output_data = {key: None for key in list(self.param_lookup.keys())[:-1]} # skip output_folder
+
+    def convert_bottom_samples(self) -> None:
+        """Process the Bottom Samples input parameter"""
+
+        return
 
     def convert_junctions(self) -> None:
         """Process the Junctions input parameter"""
@@ -42,11 +47,6 @@ class CompositeSourceCreatorEngine(Engine):
             self.add_column_and_constant(layer, 'TRAFIC', 2)
             self.add_column_and_constant(layer, 'ORIENT', 45)
             self.export_to_feature_class('junctions', layer, 'output_junctions')
-
-    def convert_bottom_samples(self) -> None:
-        """Process the Bottom Samples input parameter"""
-
-        return
 
     def convert_maritime_datasets(self) -> None:
         """Process the 3 Maritime input parameters"""
@@ -201,7 +201,12 @@ class CompositeSourceCreatorEngine(Engine):
         self.output_data[output_data_type] = output_name
 
     def export_to_geopackage(self, output_path, param_name, feature_class) -> None:
-        """Export a feature class in GDB to a Geopackage"""
+        """
+        Export a feature class in GDB to a Geopackage
+        :param str output_path: Path to the output Geopackage
+        :param str param_name: Current OBJL_NAME to export
+        :param str feature_class: Current path to the .GDB feature class being exported
+        """
 
         arcpy.AddMessage(f" - Exporting: {param_name}")
         gpkg_data = os.path.join(output_path + ".gpkg", param_name)
@@ -215,11 +220,31 @@ class CompositeSourceCreatorEngine(Engine):
             arcpy.AddMessage(f'Error writing {param_name} to {output_path} : \n{e}')
 
     def get_unique_values(self, feature_class, attribute) -> list:
-        """Get a list of unique values from a feature class"""
+        """
+        Get a list of unique values from a feature class
+        :param str feature_class: Current path to the .GDB feature class being exported
+        :param str attribute: Current OBJL_NAME to export
+        :return list[str]: List of unique OBJL_NAMES
+        """
 
         with arcpy.da.SearchCursor(feature_class, [[attribute]]) as cursor:
             return sorted({row[0] for row in cursor})
 
+    def make_junctions_layer(self, junctions):
+        """
+        Create in memory layer for processing.
+        This copies the input Junctions shapefile to not corrupt it.
+        :param str junctions: Path to the input Junctions shapefile
+        :return arcpy.FeatureLayer: In memory layer used for processing
+        """
+
+        field_info = arcpy.FieldInfo()
+        input_fields = arcpy.ListFields(junctions)
+        for field in input_fields:
+            field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
+        layer = arcpy.management.MakeFeatureLayer(junctions, field_info=field_info)
+        return layer
+    
     def make_maritime_boundary_pts_layer(self):
         """
         Create in memory layer for processing.
@@ -239,6 +264,7 @@ class CompositeSourceCreatorEngine(Engine):
         """
         Create in memory layer for processing.
         This copies the input Sheets shapefile to not corrupt it.
+        :param str sheets: Path to the input Sheets shapefile
         :return arcpy.FeatureLayer: In memory layer used for processing
         """
 
@@ -271,21 +297,7 @@ class CompositeSourceCreatorEngine(Engine):
 
         layer = arcpy.management.Merge(maritime_pts + maritime_features, r'memory\maritime_features_layer')
         return layer
-
-    def make_junctions_layer(self, junctions):
-        """
-        Create in memory layer for processing.
-        This copies the input Junctions shapefile to not corrupt it.
-        :return arcpy.FeatureLayer: In memory layer used for processing
-        """
-
-        field_info = arcpy.FieldInfo()
-        input_fields = arcpy.ListFields(junctions)
-        for field in input_fields:
-            field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
-        layer = arcpy.management.MakeFeatureLayer(junctions, field_info=field_info)
-        return layer
-
+    
     def split_inner_polygons(self, layer):
         """
         Get all inner and outer polygon feature geometries
