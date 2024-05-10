@@ -16,7 +16,7 @@ if __name__ == '__main__':
             return self.path
         
     param_lookup = {
-        'sheets': Param(str(INPUTS / 'G322_Sheets_01302024.shp')),
+        'sheets': Param(str(INPUTS / 'OPR_A325_KR_24_Sheets_09262023_FULL_AREA_NO_LIDAR.shp')),
         'junctions': Param(''),
         'maritime_boundary_pts': Param(''),
         'maritime_boundary_features': Param(''),

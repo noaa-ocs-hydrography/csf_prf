@@ -2,7 +2,7 @@ import pytest
 import pathlib
 import os
 
-from engines.ENCReaderEngine import ENCReaderEngine
+from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
 
 """
 Unit tests need to havea  .pth file set in your conda ENV that points to CSF-PRF repo
