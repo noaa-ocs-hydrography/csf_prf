@@ -11,9 +11,8 @@ arcpy.env.overwriteOutput = True
 
 
 class DownloadENCs:
-    """
-    Class to download all ENC files that intersect a project boundary shapefile
-    """
+    """Class to download all ENC files that intersect a project boundary shapefile"""
+
     def __init__(self, param_lookup: dict) -> None:
         self.xml_path = "https://charts.noaa.gov/ENCs/ENCProdCat_19115.xml" # TODO will this URL ever change?
         self.sheets_layer = param_lookup['sheets'].valueAsText
@@ -71,18 +70,6 @@ class DownloadENCs:
                     for chunk in enc_zip.iter_content(chunk_size=128):
                         file.write(chunk)
 
-    def start(self) -> None:
-        """Main method to begin process"""
-
-        self.verify_sheets_layer()
-        xml = self.get_enc_xml()
-        enc_intersected = self.find_intersecting_polygons(xml)
-        self.download_enc_zipfiles(enc_intersected)
-        self.unzip_enc_files()
-        self.move_to_output_folder()
-        self.cleanup_output()
-        arcpy.AddMessage('Done')
-
     def find_intersecting_polygons(self, xml):
         """
         Obtain ENC geometry from XML and spatial query against project boundary
@@ -120,6 +107,18 @@ class DownloadENCs:
             arcpy.AddMessage(f'Moving: {enc_file.name}')
             enc_path = pathlib.Path(enc_file)
             enc_path.rename(str(output_path / enc_path.name))
+
+    def start(self) -> None:
+        """Main method to begin process"""
+
+        self.verify_sheets_layer()
+        xml = self.get_enc_xml()
+        enc_intersected = self.find_intersecting_polygons(xml)
+        self.download_enc_zipfiles(enc_intersected)
+        self.unzip_enc_files()
+        self.move_to_output_folder()
+        self.cleanup_output()
+        arcpy.AddMessage('Done')
 
     def unzip_enc_files(self) -> None:
         """Unzip all zip fileis in a folder"""

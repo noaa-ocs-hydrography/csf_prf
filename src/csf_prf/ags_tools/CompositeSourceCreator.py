@@ -117,6 +117,13 @@ class CompositeSourceCreator:
             parameterType="Required",
             direction="Input"
         )
+        caris_export = arcpy.Parameter(
+            displayName="Create CARIS ready Geopackage?",
+            name="caris_export",
+            datatype="GPBoolean",
+            parameterType="Required",
+            direction="Input",
+        )
 
         return [
             sheets_shapefile,
@@ -127,7 +134,8 @@ class CompositeSourceCreator:
             boundary_baseline_shapefile,
             # tides_mapinfo_tab,
             enc_file,
-            csf_prf_output_file
+            csf_prf_output_file,
+            caris_export
         ]
     
     @property
@@ -154,7 +162,8 @@ class CompositeSourceCreator:
             'maritime_boundary_baselines',
             # 'tides',
             'enc_files',
-            'output_folder'
+            'output_folder',
+            'caris_export'
         ]
 
         lookup = {}

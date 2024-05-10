@@ -52,4 +52,6 @@ Thumbs.db
 *.xml
 **/__pycache__
 .vscode
-**/outputs/*
+
+# Ignore
+outputs/*

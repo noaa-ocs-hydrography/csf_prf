@@ -18,15 +18,13 @@ class Engine:
             arcpy.management.CalculateField(
                 layer, column, expression, expression_type="PYTHON3", field_type=field_type
             )
-         # Setting column to "Feature Type" for CARIS import
-        if column == 'Feature':
-            arcpy.management.AlterField(layer, column, new_field_alias='Feature Type')
 
     def reverse(self, geom_list):
         """
         Reverse all the inner polygon geometries
         - Esri inner polygons are supposed to be counterclockwise
         - Shapely.is_ccw() could be used to properly test
+        :param list[float] geom_list: 
         :return list[arcpy.Geometry]: List of reversed inner polygon geometry
         """
 
