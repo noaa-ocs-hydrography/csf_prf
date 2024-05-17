@@ -127,6 +127,11 @@ class DownloadENCs:
         self.unzip_enc_files()
         self.move_to_output_folder()
         self.cleanup_output()
+        # TODO Clipping process for ENCs
+        # 1. Smaller scale ENCs (clipee) should be clipped by larger scale ENCs (clipper).  
+        # 2. Older ENCs (clipee) should be clipped by newer ENCs (clipper).  
+        # 3. ENCs that do not include all the same features as the corresponding raster chart (clipee) should be clipped by ENCs that do contain all the features (clipper). 
+
         arcpy.AddMessage('Done')
 
     def unzip_enc_files(self) -> None:
