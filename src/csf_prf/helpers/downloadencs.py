@@ -45,7 +45,7 @@ class DownloadENCs:
 
         strip_polygon = polygon.strip()
         polygon_text = strip_polygon.split('\n')
-        return [[float(c) for c in coord.split(' ')] for coord in polygon_text]
+        return [[float(c) for c in coord.split(' ')] for coord in polygon_text if coord]
     
     def cleanup_output(self) -> None:
         """Delete any zip files after use"""
@@ -54,8 +54,9 @@ class DownloadENCs:
         for enc_file in output_path.rglob('*.zip'):
             arcpy.AddMessage(f'Remove unzipped: {enc_file.name}')
             enc_file.unlink()
-        arcpy.AddMessage(f'Removing ENC_ROOT folder')
-        shutil.rmtree(output_path / 'ENC_ROOT')
+        if os.path.exists(str(output_path / 'ENC_ROOT')):
+            arcpy.AddMessage(f'Removing ENC_ROOT folder')
+            shutil.rmtree(output_path / 'ENC_ROOT')
 
     def download_enc_zipfiles(self, enc_intersected) -> None:
         """
@@ -64,11 +65,17 @@ class DownloadENCs:
         """
         with arcpy.da.SearchCursor(enc_intersected, ['enc_id']) as cursor:
             for row in cursor:
-                arcpy.AddMessage(f'Downloading: {row[0]}')
-                enc_zip = requests.get(f'https://charts.noaa.gov/ENCs/{row[0]}.zip')
-                with open(str(pathlib.Path(self.output_folder) / f'{row[0]}.zip'), 'wb') as file:
-                    for chunk in enc_zip.iter_content(chunk_size=128):
-                        file.write(chunk)
+                downloaded = str(pathlib.Path(self.output_folder) / str(row[0] + '.000'))
+                if not os.path.exists(downloaded):
+                    arcpy.AddMessage(f'Downloading: {row[0]}')
+                    # TODO check if file in output folder
+                    enc_zip = requests.get(f'https://charts.noaa.gov/ENCs/{row[0]}.zip')
+                    output_file = str(pathlib.Path(self.output_folder) / f'{row[0]}.zip')
+                    with open(output_file, 'wb') as file:
+                        for chunk in enc_zip.iter_content(chunk_size=128):
+                            file.write(chunk)
+                else:
+                    arcpy.AddMessage(f'File already downloaded: {row[0]}')
 
     def find_intersecting_polygons(self, xml):
         """
@@ -104,9 +111,11 @@ class DownloadENCs:
 
         output_path = pathlib.Path(self.output_folder)
         for enc_file in output_path.rglob('*.000'):
-            arcpy.AddMessage(f'Moving: {enc_file.name}')
             enc_path = pathlib.Path(enc_file)
-            enc_path.rename(str(output_path / enc_path.name))
+            output_enc = str(output_path / enc_path.name)
+            if not os.path.exists(output_enc):
+                arcpy.AddMessage(f'Moving: {enc_file.name}')
+                enc_path.rename(output_enc)
 
     def start(self) -> None:
         """Main method to begin process"""
@@ -124,9 +133,12 @@ class DownloadENCs:
         """Unzip all zip fileis in a folder"""
         
         for enc_path in pathlib.Path(self.output_folder).rglob('*.zip'):
-            arcpy.AddMessage(f'Unzipping: {enc_path.name}')
-            with zipfile.ZipFile(enc_path, 'r') as zipped:
-                zipped.extractall(str(pathlib.Path(self.output_folder)))
+            # TODO check if existing unzipped file
+            unzipped_file = str(enc_path).replace('zip', '000')
+            if not os.path.exists(unzipped_file):
+                arcpy.AddMessage(f'Unzipping: {enc_path.name}')
+                with zipfile.ZipFile(enc_path, 'r') as zipped:
+                    zipped.extractall(str(pathlib.Path(self.output_folder)))
 
     def verify_sheets_layer(self):
         """Convert geojson for tool to work same as shapefile"""
