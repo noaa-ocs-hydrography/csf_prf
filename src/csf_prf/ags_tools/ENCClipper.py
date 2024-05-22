@@ -1,5 +1,5 @@
 import arcpy
-from csf_prf.engines.DownloadEncEngine import DownloadEncEngine
+from csf_prf.engines.ClipEncEngine import ClipEncEngine
 
 
 class ENCDownloader:
@@ -32,7 +32,7 @@ class ENCDownloader:
         """The source code of the tool."""
                 
         param_lookup = self.setup_param_lookup(parameters)
-        downloader = DownloadEncEngine(param_lookup)
+        downloader = ClipEncEngine(param_lookup)
         downloader.start()
         return
 
@@ -46,9 +46,9 @@ class ENCDownloader:
         """Set up the tool parameters"""
         
         sheets_shapefile = arcpy.Parameter(
-            displayName="Sheets boundary in shapefile or geojson format:",
-            name="sheets",
-            datatype="DEFile",
+            displayName="Input folder containing ENC files:",
+            name="input_folder",
+            datatype="DEFolder",
             parameterType="Optional",
             direction="Input"
         )
@@ -80,5 +80,4 @@ class ENCDownloader:
         self.param_lookup = lookup
         return lookup
         
-    
     

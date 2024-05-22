@@ -25,6 +25,8 @@ class ENCReaderEngine(Engine):
         self.sheets_layer = sheets_layer
         self.gdb_name = 'csf_features'
         self.driver = None
+        self.scale_bounds = {}
+        self.scales = {}
         self.geometries = {
             "Point": {
                 "features": [],
@@ -96,11 +98,39 @@ class ENCReaderEngine(Engine):
                         else:
                             updateCursor.updateRow(row)
         arcpy.AddMessage(f'Removed {aton_count} ATON features containing {str(aton_found)}')
+    
+    def feature_covered_by_upper_scale(self, feature_json, enc_scale):
+        """
+        Determine if a current Point, LineString, or Polygon intersects an upper scale level ENC extent
+        :param dict[str] feature_json: Loaded JSON of current feature
+        :param int enc_scale: Current ENC file scale level
+        :returns boolean: True or False
+        """
+        
+        if feature_json['geometry'] is None:
+            return False
+        feature_geometry = ogr.CreateGeometryFromJson(json.dumps(feature_json['geometry']))
+        upper_scale = int(enc_scale) + 1
+        inside = False
+        if upper_scale in self.scale_bounds:
+            xMin, xMax, yMin, yMax = self.scale_bounds[upper_scale]
+            extent_geom = ogr.Geometry(ogr.wkbLinearRing)
+            extent_geom.AddPoint(xMin, yMin)
+            extent_geom.AddPoint(xMin, yMax)
+            extent_geom.AddPoint(xMax, yMax)
+            extent_geom.AddPoint(xMax, yMin)
+            extent_geom.AddPoint(xMin, yMin)
+            extent_polygon = ogr.Geometry(ogr.wkbPolygon)
+            extent_polygon.AddGeometry(extent_geom)
+            if feature_geometry.Intersects(extent_polygon):
+                print('intersect:', enc_scale, upper_scale)
+                inside = True
+        return inside
 
     def get_all_fields(self, features) -> None:
         """
         Build a unique list of all field names
-        :param dict[dict[str]]: GeoJSON of string values for all features
+        :param dict[dict[str]] features: GeoJSON of string values for all features
         :returns set[str]: Unique list of all fields
         """
 
@@ -118,23 +148,45 @@ class ENCReaderEngine(Engine):
 
         with open(str(INPUTS / 'lookups' / 'aton_lookup.yaml'), 'r') as lookup:
             return yaml.safe_load(lookup)
+        
+    def get_enc_bounds(self) -> None:
+        """Create lookup for ENC extents by scale"""
+
+        # This gets a rectangular extent for removing lower level features
+        # TODO Should we build a polygon boundary for found upper level features being clipped?
+        # Most ENC files seem to be rectangles
+        enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        for enc_path in enc_files:
+            enc_file = self.open_file(enc_path)
+            enc_scale = int(pathlib.Path(enc_path).stem[2])
+            for layer in enc_file:
+                if layer.GetName() not in ['DSID', 'C_ASSO']:
+                    self.scale_bounds[enc_scale] = layer.GetExtent()
+                    break
 
     def get_feature_records(self) -> None:
         """Read and store all features from ENC file"""
 
         arcpy.AddMessage(' - Reading Feature records')
         enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        intersected = 0
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
+            enc_scale = pathlib.Path(enc_path).stem[2]
             for layer in enc_file:
                 layer.ResetReading()
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
+                        if self.feature_covered_by_upper_scale(feature_json, enc_scale):
+                            intersected += 1
+                            continue
+                        
+                        feature_json['properties']['SCALE_LVL'] = enc_scale
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                         if geom_type in ['Point', 'LineString', 'Polygon']:
                             feature_json = self.set_none_to_null(feature_json)
-                            self.geometries[geom_type]['features'].append({'geojson': feature_json})
+                            self.geometries[geom_type]['features'].append({'geojson': feature_json, 'scale': enc_scale})
                         # elif geom_type == 'MultiPoint':
                         #     # MultiPoints are broken up now to single features with an ENV variable
                         #     feature_template = json.loads(feature.ExportToJson())
@@ -145,23 +197,31 @@ class ENCReaderEngine(Engine):
                         else:
                             if geom_type:
                                 arcpy.AddMessage(f'Unknown feature type: {geom_type}')
+        arcpy.AddMessage(f'  - Removed {intersected} supersession features')
 
     def get_vector_records(self) -> None:
         """Read and store all vector records with QUAPOS from ENC file"""
 
         arcpy.AddMessage(' - Reading QUAPOS records')
         enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        intersected = 0
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
+            enc_scale = pathlib.Path(enc_path).stem[2]
             for layer in enc_file:
                 layer.ResetReading()
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
-                        if 'QUAPOS' in feature_json['properties'].keys() and feature_json['properties']['QUAPOS'] is not None:
+                        if self.feature_covered_by_upper_scale(feature_json, enc_scale):
+                            intersected += 1
+                            continue
+
+                        feature_json['properties']['SCALE_LVL'] = enc_scale
+                        if 'QUAPOS' in feature_json['properties'] and feature_json['properties']['QUAPOS'] is not None:
                             geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
                             if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
-                                self.geometries[geom_type]['QUAPOS'].append({'geojson': feature_json})
+                                self.geometries[geom_type]['QUAPOS'].append({'geojson': feature_json, 'scale': enc_scale})
                             # elif geom_type == 'MultiPoint':  # TODO do we need MultiPoint 'QUAPOS' features?
                             #     feature_template = json.loads(feature.ExportToJson())
                             #     feature_template['geometry']['type'] = 'Point'
@@ -171,6 +231,7 @@ class ENCReaderEngine(Engine):
                             else:
                                 if geom_type:
                                     arcpy.AddMessage(f"Found QUAPOS but missing coordinates: {geom_type} - {feature_json['geometry']['coordinates']}")
+        arcpy.AddMessage(f'  - Removed {intersected} supersession QUAPOS features')
 
     def join_quapos_to_features(self) -> None:
         """Spatial join the QUAPOS tables to features tables"""
@@ -181,16 +242,17 @@ class ENCReaderEngine(Engine):
             'LineString': 'SHARE_A_LINE_SEGMENT_WITH',
             'Polygon': 'ARE_IDENTICAL_TO'
         }
-        for feature_type in self.geometries.keys():
-            feature_records = self.geometries[feature_type]['features_layers']['assigned']
-            vector_records = self.geometries[feature_type]['QUAPOS_layers']['assigned']
-            self.geometries[feature_type]["features_layers"]["assigned"] = (
-                arcpy.management.AddSpatialJoin(
+        for feature_type in self.geometries:
+            output_types = ['assigned', 'unassigned']
+            for output_type in output_types:
+                feature_records = self.geometries[feature_type]['features_layers'][output_type]
+                vector_records = self.geometries[feature_type]['QUAPOS_layers'][output_type]
+                self.geometries[feature_type]["features_layers"][output_type] = \
+                    arcpy.management.AddSpatialJoin(
                     feature_records,
                     vector_records,
                     match_option=overlap_types[feature_type],
                 )
-            )
 
     def open_file(self, enc_path):
         """
@@ -215,7 +277,6 @@ class ENCReaderEngine(Engine):
                 f'{feature_type}_points_layer', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
             for field in sorted(point_fields):
                 arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
-
             arcpy.AddMessage(' - Building point features')
             for feature in self.geometries['Point'][feature_type]:
                 current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
@@ -421,6 +482,7 @@ class ENCReaderEngine(Engine):
     def start(self) -> None:
         self.set_driver()
         self.split_multipoint_env()
+        self.get_enc_bounds()
         self.get_feature_records()
         self.return_primitives_env()
         self.get_vector_records()

@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 arcpy.env.overwriteOutput = True
 
 
-class DownloadENCs:
+class DownloadEncEngine:
     """Class to download all ENC files that intersect a project boundary shapefile"""
 
     def __init__(self, param_lookup: dict) -> None:
@@ -88,6 +88,7 @@ class DownloadENCs:
         xml_polygons = soup.find_all('polygon')
         polygons = []
         for polygon in xml_polygons:
+            print(polygon)
             # id, geometry
             polygons.append([polygon.find('gml:Polygon').attrs['gml:id'].split('_')[0], self.clean_geometry(polygon.text)])
         enc_polygons_layer = self.build_polygons_layer(polygons)
@@ -127,18 +128,12 @@ class DownloadENCs:
         self.unzip_enc_files()
         self.move_to_output_folder()
         self.cleanup_output()
-        # TODO Clipping process for ENCs
-        # 1. Smaller scale ENCs (clipee) should be clipped by larger scale ENCs (clipper).  
-        # 2. Older ENCs (clipee) should be clipped by newer ENCs (clipper).  
-        # 3. ENCs that do not include all the same features as the corresponding raster chart (clipee) should be clipped by ENCs that do contain all the features (clipper). 
-
         arcpy.AddMessage('Done')
 
     def unzip_enc_files(self) -> None:
         """Unzip all zip fileis in a folder"""
         
         for enc_path in pathlib.Path(self.output_folder).rglob('*.zip'):
-            # TODO check if existing unzipped file
             unzipped_file = str(enc_path).replace('zip', '000')
             if not os.path.exists(unzipped_file):
                 arcpy.AddMessage(f'Unzipping: {enc_path.name}')
