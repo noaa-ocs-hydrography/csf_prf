@@ -122,8 +122,9 @@ class ENCReaderEngine(Engine):
             extent_geom.AddPoint(xMin, yMin)
             extent_polygon = ogr.Geometry(ogr.wkbPolygon)
             extent_polygon.AddGeometry(extent_geom)
-            if feature_geometry.Intersects(extent_polygon):
-                print('intersect:', enc_scale, upper_scale)
+            # TODO will there be polygons extending over edge of ENC?
+            # Might need to use Contains
+            if feature_geometry.Intersects(extent_polygon): 
                 inside = True
         return inside
 
