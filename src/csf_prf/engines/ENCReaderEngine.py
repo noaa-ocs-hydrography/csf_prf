@@ -113,15 +113,15 @@ class ENCReaderEngine(Engine):
         upper_scale = int(enc_scale) + 1
         inside = False
         if upper_scale in self.scale_bounds:
-            xMin, xMax, yMin, yMax = self.scale_bounds[upper_scale]
-            extent_geom = ogr.Geometry(ogr.wkbLinearRing)
-            extent_geom.AddPoint(xMin, yMin)
-            extent_geom.AddPoint(xMin, yMax)
-            extent_geom.AddPoint(xMax, yMax)
-            extent_geom.AddPoint(xMax, yMin)
-            extent_geom.AddPoint(xMin, yMin)
-            extent_polygon = ogr.Geometry(ogr.wkbPolygon)
-            extent_polygon.AddGeometry(extent_geom)
+            for xMin, xMax, yMin, yMax in self.scale_bounds[upper_scale]:
+                extent_geom = ogr.Geometry(ogr.wkbLinearRing)
+                extent_geom.AddPoint(xMin, yMin)
+                extent_geom.AddPoint(xMin, yMax)
+                extent_geom.AddPoint(xMax, yMax)
+                extent_geom.AddPoint(xMax, yMin)
+                extent_geom.AddPoint(xMin, yMin)
+                extent_polygon = ogr.Geometry(ogr.wkbPolygon)
+                extent_polygon.AddGeometry(extent_geom)
             # TODO will there be polygons extending over edge of ENC?
             # Might need to use Contains
             if feature_geometry.Intersects(extent_polygon): 
@@ -153,17 +153,20 @@ class ENCReaderEngine(Engine):
     def get_enc_bounds(self) -> None:
         """Create lookup for ENC extents by scale"""
 
-        # This gets a rectangular extent for removing lower level features
-        # TODO Should we build a polygon boundary for found upper level features being clipped?
-        # Most ENC files seem to be rectangles
         enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
             enc_scale = int(pathlib.Path(enc_path).stem[2])
-            for layer in enc_file:
-                if layer.GetName() not in ['DSID', 'C_ASSO']:
-                    self.scale_bounds[enc_scale] = layer.GetExtent()
-                    break
+            metadata_layer = enc_file.GetLayerByName('DSID')
+            metadata = metadata_layer.GetFeature(0)
+            metadata_json = json.loads(metadata.ExportToJson())
+            # resolution = metadata_json['properties']['DSPM_CSCL']
+            scale_level = metadata_json['properties']['DSID_INTU']
+
+            enc_extent = enc_file.GetLayerByName('M_COVR').GetExtent()
+            if scale_level not in self.scale_bounds:
+                self.scale_bounds[enc_scale] = []
+            self.scale_bounds[enc_scale].append(enc_extent)
 
     def get_feature_records(self) -> None:
         """Read and store all features from ENC file"""

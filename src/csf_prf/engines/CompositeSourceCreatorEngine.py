@@ -33,6 +33,14 @@ class CompositeSourceCreatorEngine(Engine):
 
         return
 
+    def convert_enc_files(self) -> None:
+        """Process the ENC files input parameter"""
+
+        arcpy.AddMessage('converting ENC files')
+        enc_engine = ENCReaderEngine(self.param_lookup, self.sheets_layer)
+        enc_engine.start()
+        self.export_enc_layers(enc_engine)
+
     def convert_junctions(self) -> None:
         """Process the Junctions input parameter"""
 
@@ -102,17 +110,6 @@ class CompositeSourceCreatorEngine(Engine):
         """Process the Tides input parameter"""
 
         return
-
-    def convert_enc_files(self) -> None:
-        """Process the ENC files input parameter"""
-
-        arcpy.AddMessage('converting ENC files')
-        # sheets = self.param_lookup['sheets'].valueAsText.replace("'", "").split(';')
-        # layers = [self.make_sheets_layer(sheets_file) for sheets_file in sheets]
-        # layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
-        enc_engine = ENCReaderEngine(self.param_lookup, self.sheets_layer)
-        enc_engine.start()
-        self.export_enc_layers(enc_engine)
 
     def copy_layer_to_feature_class(self, output_data_type, layer, feature_class_name) -> None:
         """

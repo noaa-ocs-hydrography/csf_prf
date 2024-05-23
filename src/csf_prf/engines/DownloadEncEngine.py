@@ -14,6 +14,7 @@ class DownloadEncEngine:
     """Class to download all ENC files that intersect a project boundary shapefile"""
 
     def __init__(self, param_lookup: dict) -> None:
+        # https://charts.noaa.gov/ENCs/ENCProdCat.xml - review tags
         self.xml_path = "https://charts.noaa.gov/ENCs/ENCProdCat_19115.xml" # TODO will this URL ever change?
         self.sheets_layer = param_lookup['sheets'].valueAsText
         self.output_folder = param_lookup['output_folder'].valueAsText
@@ -86,6 +87,7 @@ class DownloadEncEngine:
 
         soup = BeautifulSoup(xml, 'xml')
         xml_polygons = soup.find_all('polygon')
+        # TODO exclude <status>Cancelled</status> ENC files
         polygons = []
         for polygon in xml_polygons:
             print(polygon)
