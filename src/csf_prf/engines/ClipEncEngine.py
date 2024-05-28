@@ -6,10 +6,11 @@ import pathlib
 
 
 from osgeo import ogr
+from csf_prf.engines.Engine import Engine
 
 
-class ClipEncEngine:
-    """Class to download all ENC files that intersect a project boundary shapefile"""
+class ClipEncEngine(Engine):
+    """Class to perform supersession on ENC files"""
 
     def __init__(self, param_lookup: dict) -> None:
         self.input_folder = param_lookup['input_folder'].valueAsText
@@ -18,9 +19,9 @@ class ClipEncEngine:
 
     def clip_enc_files(self, enc_sorter):
         scales = list(sorted(enc_sorter.keys()))  # 1, 2, 3, 4, 5
-        for i, scale in enumerate(scales):
-            if i < len(scales):
-                upper_scale = i + 1
+        for scale in scales:
+            upper_scale = scale + 1
+            if upper_scale in scales:
                 print(scale, upper_scale)
                 for lower in enc_sorter[scale]:
                     print(str(lower))
@@ -30,11 +31,15 @@ class ClipEncEngine:
     def clip_files(self, lower, upper):
         lower_enc = self.driver.Open(str(lower), 0)
         upper_enc = self.driver.Open(str(upper), 0)
+        # TODO need to run this for matching layers
         for lower_layer, upper_layer in zip(lower_enc, upper_enc):
-            # These have Clip()
             lower_layer.ResetReading()
             upper_layer.ResetReading()
             print(lower_layer.GetName(), upper_layer.GetName())
+
+            # TODO clip upper area out of lower
+            lower_layer.Clip(upper_layer, lower_layer)
+            # TODO add upper to lower
         
     def get_enc_files(self):
         enc_files = []
@@ -57,6 +62,7 @@ class ClipEncEngine:
     def start(self) -> None:
         self.driver = ogr.GetDriverByName('S57')
         enc_sorter = self.get_enc_list()
+        # TODO create new ENC file and add to it?
         self.clip_enc_files(enc_sorter)
         # clip by top to bottom of stacked ENCs
             # if no clip, only take features from stacked ENC order

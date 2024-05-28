@@ -2,7 +2,7 @@ import pathlib
 from csf_prf.engines.ClipEncEngine import ClipEncEngine
 
 
-INPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
+INPUTS = pathlib.Path(__file__).parents[3] / 'inputs' / 'test'
 OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs' / 'clipped'
 
 

@@ -2,10 +2,10 @@ import arcpy
 from csf_prf.engines.ClipEncEngine import ClipEncEngine
 
 
-class ENCDownloader:
+class ENCClipper:
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = "ENC Downloader"
+        self.label = "ENC Clipper"
         self.description = ""
 
     def getParameterInfo(self):
