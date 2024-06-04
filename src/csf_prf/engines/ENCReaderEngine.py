@@ -318,16 +318,23 @@ class ENCReaderEngine(Engine):
                 current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
                 with arcpy.da.InsertCursor(polygons_layer, current_fields, explicit=True) as polygons_cursor: 
                     polygons = feature['geojson']['geometry']['coordinates']
-                    arcpy.AddMessage(f'len: {len(polygons)}, {polygons}')
                     if polygons:
+                        # first polygon is extent boundary
                         if len(polygons) > 1:
-                            points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
+                            # Add each polygon from multipolygon
+                            for polygon in polygons:
+                                points = [arcpy.Point(coord[0], coord[1]) for coord in polygon]
+                                coord_array = arcpy.Array(points)
+                                geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
+                                attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
+                                polygons_cursor.insertRow([geometry] + attribute_values)
                         else:
-                            points = [arcpy.Point(coord[0], coord[1]) for coord in polygons]  # TODO why were these the same before?
-                        coord_array = arcpy.Array(points)
-                        geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
-                        attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
-                        polygons_cursor.insertRow([geometry] + attribute_values)
+                            # add single polygon
+                            points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
+                            coord_array = arcpy.Array(points)
+                            geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
+                            attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
+                            polygons_cursor.insertRow([geometry] + attribute_values)
             polygons_assigned = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', self.sheets_layer)
             polygons_assigned_layer = arcpy.management.MakeFeatureLayer(polygons_assigned)
             polygon_unassigned = arcpy.management.SelectLayerByLocation(polygons_assigned_layer, selection_type='SWITCH_SELECTION')
