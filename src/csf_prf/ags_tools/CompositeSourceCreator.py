@@ -121,7 +121,7 @@ class CompositeSourceCreator:
             displayName="Create CARIS ready Geopackage?",
             name="caris_export",
             datatype="GPBoolean",
-            parameterType="Required",
+            parameterType="Optional",
             direction="Input",
         )
 

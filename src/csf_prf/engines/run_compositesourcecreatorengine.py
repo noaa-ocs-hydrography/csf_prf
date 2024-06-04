@@ -13,16 +13,21 @@ if __name__ == '__main__':
 
         @property
         def valueAsText(self):
+            return str(self.path)
+        
+        @property
+        def value(self):
             return self.path
         
     param_lookup = {
-        'sheets': Param(str(INPUTS / 'OPR_A325_KR_24_Sheets_09262023_FULL_AREA_NO_LIDAR.shp')),
+        'sheets': Param(str(INPUTS / 'G322_Sheets_01302024.shp')),
         'junctions': Param(''),
         'maritime_boundary_pts': Param(''),
         'maritime_boundary_features': Param(''),
-        'maritime_boundary_baselinespython': Param(''),
-        'enc_files': Param(str(INPUTS / 'savannah_enc.000')),
+        'maritime_boundary_baselines': Param(''),
+        'enc_files': Param(str(str(INPUTS / 'US2EC02M.000') + ';' + str(INPUTS / 'US3GA10M.000'))),
         'output_folder': Param(str(OUTPUTS)),
+        'caris_export': Param(False)
     }
     engine = CompositeSourceCreatorEngine(param_lookup)
     engine.start()

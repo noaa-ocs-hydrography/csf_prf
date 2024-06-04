@@ -28,10 +28,32 @@ class CompositeSourceCreatorEngine(Engine):
         self.sheets_layer = None
         self.output_data = {key: None for key in list(self.param_lookup.keys())[:-1]} # skip output_folder
 
+    def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT', field_length=255, nullable=False) -> None:
+        """
+        Add the asgnment column and 
+        :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
+        """
+
+        if nullable:
+            arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
+        else:
+            arcpy.management.AddField(layer, column, field_type, field_length=field_length)
+            arcpy.management.CalculateField(
+                layer, column, expression, expression_type="PYTHON3", field_type=field_type
+            )
+            
     def convert_bottom_samples(self) -> None:
         """Process the Bottom Samples input parameter"""
 
         return
+
+    def convert_enc_files(self) -> None:
+        """Process the ENC files input parameter"""
+
+        arcpy.AddMessage('converting ENC files')
+        enc_engine = ENCReaderEngine(self.param_lookup, self.sheets_layer)
+        enc_engine.start()
+        self.export_enc_layers(enc_engine)
 
     def convert_junctions(self) -> None:
         """Process the Junctions input parameter"""
@@ -102,17 +124,6 @@ class CompositeSourceCreatorEngine(Engine):
         """Process the Tides input parameter"""
 
         return
-
-    def convert_enc_files(self) -> None:
-        """Process the ENC files input parameter"""
-
-        arcpy.AddMessage('converting ENC files')
-        # sheets = self.param_lookup['sheets'].valueAsText.replace("'", "").split(';')
-        # layers = [self.make_sheets_layer(sheets_file) for sheets_file in sheets]
-        # layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
-        enc_engine = ENCReaderEngine(self.param_lookup, self.sheets_layer)
-        enc_engine.start()
-        self.export_enc_layers(enc_engine)
 
     def copy_layer_to_feature_class(self, output_data_type, layer, feature_class_name) -> None:
         """

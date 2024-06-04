@@ -2,8 +2,8 @@
 
 import arcpy
 
-from ags_tools.CompositeSourceCreator import CompositeSourceCreator
-from ags_tools.ENCDownloader import ENCDownloader
+from csf_prf.ags_tools.CompositeSourceCreator import CompositeSourceCreator
+from csf_prf.ags_tools.ENCDownloader import ENCDownloader
 
 class Toolbox:
     def __init__(self):

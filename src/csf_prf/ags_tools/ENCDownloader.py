@@ -1,5 +1,5 @@
 import arcpy
-from csf_prf.helpers.downloadencs import DownloadENCs
+from csf_prf.engines.DownloadEncEngine import DownloadEncEngine
 
 
 class ENCDownloader:
@@ -32,7 +32,7 @@ class ENCDownloader:
         """The source code of the tool."""
                 
         param_lookup = self.setup_param_lookup(parameters)
-        downloader = DownloadENCs(param_lookup)
+        downloader = DownloadEncEngine(param_lookup)
         downloader.start()
         return
 
