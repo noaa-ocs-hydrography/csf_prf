@@ -3,7 +3,7 @@ from csf_prf.engines.ClipEncEngine import ClipEncEngine
 
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs' / 'test'
-OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs' / 'clipped'
+OUTPUTS = pathlib.Path(__file__).parents[3] / 'inputs' / 'test' / 'clipped'
 
 
 if __name__ == '__main__':
@@ -17,7 +17,7 @@ if __name__ == '__main__':
         
     param_lookup = {
         'input_folder': Param(str(INPUTS)),
-        'output_folder': Param(str(OUTPUTS)),
+        'output_folder': Param(str(OUTPUTS))
     }
     engine = ClipEncEngine(param_lookup)
     engine.start()

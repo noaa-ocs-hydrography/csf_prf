@@ -28,6 +28,20 @@ class CompositeSourceCreatorEngine(Engine):
         self.sheets_layer = None
         self.output_data = {key: None for key in list(self.param_lookup.keys())[:-1]} # skip output_folder
 
+    def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT', field_length=255, nullable=False) -> None:
+        """
+        Add the asgnment column and 
+        :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
+        """
+
+        if nullable:
+            arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
+        else:
+            arcpy.management.AddField(layer, column, field_type, field_length=field_length)
+            arcpy.management.CalculateField(
+                layer, column, expression, expression_type="PYTHON3", field_type=field_type
+            )
+            
     def convert_bottom_samples(self) -> None:
         """Process the Bottom Samples input parameter"""
 

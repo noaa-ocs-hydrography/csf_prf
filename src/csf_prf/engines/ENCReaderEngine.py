@@ -63,6 +63,20 @@ class ENCReaderEngine(Engine):
         self.add_asgnmt_column()
         self.add_invreq_column()
 
+    def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT', field_length=255, nullable=False) -> None:
+        """
+        Add the asgnment column and 
+        :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
+        """
+
+        if nullable:
+            arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
+        else:
+            arcpy.management.AddField(layer, column, field_type, field_length=field_length)
+            arcpy.management.CalculateField(
+                layer, column, expression, expression_type="PYTHON3", field_type=field_type
+            )
+
     def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
 
@@ -304,14 +318,16 @@ class ENCReaderEngine(Engine):
                 current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
                 with arcpy.da.InsertCursor(polygons_layer, current_fields, explicit=True) as polygons_cursor: 
                     polygons = feature['geojson']['geometry']['coordinates']
-                    if len(polygons) > 1:
-                        points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
-                    else:
-                        points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates'][0]]
-                    coord_array = arcpy.Array(points)
-                    geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
-                    attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
-                    polygons_cursor.insertRow([geometry] + attribute_values)
+                    arcpy.AddMessage(f'len: {len(polygons)}, {polygons}')
+                    if polygons:
+                        if len(polygons) > 1:
+                            points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
+                        else:
+                            points = [arcpy.Point(coord[0], coord[1]) for coord in polygons]  # TODO why were these the same before?
+                        coord_array = arcpy.Array(points)
+                        geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
+                        attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
+                        polygons_cursor.insertRow([geometry] + attribute_values)
             polygons_assigned = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', self.sheets_layer)
             polygons_assigned_layer = arcpy.management.MakeFeatureLayer(polygons_assigned)
             polygon_unassigned = arcpy.management.SelectLayerByLocation(polygons_assigned_layer, selection_type='SWITCH_SELECTION')
