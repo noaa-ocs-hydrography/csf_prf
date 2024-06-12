@@ -17,6 +17,7 @@ class DownloadEncEngine:
         # https://charts.noaa.gov/ENCs/ENCProdCat.xml - review tags
         self.xml_path = "https://charts.noaa.gov/ENCs/ENCProdCat.xml" # TODO will this URL ever change?
         self.sheets_layer = param_lookup['sheets'].valueAsText
+        arcpy.AddMessage(self.sheets_layer)
         self.output_folder = param_lookup['output_folder'].valueAsText
 
     def build_polygons_layer(self, polygons):

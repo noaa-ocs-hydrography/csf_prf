@@ -106,7 +106,7 @@ class CompositeSourceCreator:
             displayName="ENC File(s):",
             name="enc_files",
             datatype="DEFile",
-            parameterType="Required",
+            parameterType="Optional",
             direction="Input",
             multiValue=True
         )
