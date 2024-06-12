@@ -141,7 +141,7 @@ class ENCReaderEngine(Engine):
         enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
-            enc_scale = int(pathlib.Path(enc_path).stem[2])
+            enc_scale = int(pathlib.Path(enc_path).stem[2])  # TODO do we need to look up scale and accept any file name?
             metadata_layer = enc_file.GetLayerByName('DSID')
             metadata = metadata_layer.GetFeature(0)
             metadata_json = json.loads(metadata.ExportToJson())

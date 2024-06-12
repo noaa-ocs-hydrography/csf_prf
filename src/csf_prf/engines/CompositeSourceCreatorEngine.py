@@ -1,10 +1,13 @@
 import os
 import arcpy
 import time
+import pathlib
 
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
 arcpy.env.overwriteOutput = True
+
+CSF_PRF = pathlib.Path(__file__).parents[1]
 
 
 class CompositeSourceCreatorException(Exception):
@@ -49,6 +52,9 @@ class CompositeSourceCreatorEngine(Engine):
 
     def convert_enc_files(self) -> None:
         """Process the ENC files input parameter"""
+
+        if not self.param_lookup['enc_files'].valueAsText:
+            self.download_enc_files()
 
         arcpy.AddMessage('converting ENC files')
         enc_engine = ENCReaderEngine(self.param_lookup, self.sheets_layer)
@@ -172,6 +178,18 @@ class CompositeSourceCreatorEngine(Engine):
         else:
             arcpy.AddMessage(f'Creating output geodatabase in {output_folder}')
             arcpy.management.CreateFileGDB(output_folder, self.gdb_name)
+
+    def download_enc_files(self):
+        csf_prf_toolbox = str(CSF_PRF / 'CSF_PRF_Toolbox.pyt')
+        arcpy.ImportToolbox(csf_prf_toolbox)
+        sheet_parameter = self.param_lookup['sheets'].valueAsText
+        sheets = sheet_parameter.replace("'", "").split(';')
+        output_folder = pathlib.Path(sheets[0]).parents[0]  # This always outputs ENC files to first Sheets input
+        for sheet in sheets:
+            arcpy.AddMessage(f'Downloading ENC files for SHP: {sheet}')
+            # Function name is a built-in combo of class and toolbox alias
+            arcpy.ENCDownloader_csf_prf_tools(sheet, str(output_folder))
+        self.set_enc_files_param(output_folder)
 
     def export_enc_layers(self, enc_engine) -> None:
         """
@@ -308,6 +326,15 @@ class CompositeSourceCreatorEngine(Engine):
 
         layer = arcpy.management.Merge(maritime_pts + maritime_features, r'memory\maritime_features_layer')
         return layer
+    
+    def set_enc_files_param(self, output_folder: pathlib.Path) -> None:
+        enc_files = []
+        arcpy.AddMessage('ENC files found:')
+        for enc in output_folder.glob('*.000'):
+            enc_file = str(enc)
+            arcpy.AddMessage(f' - {enc_file}')
+            enc_files.append(enc_file)
+        self.param_lookup['enc_files'].value = ';'.join(enc_files)
     
     def split_inner_polygons(self, layer):
         """

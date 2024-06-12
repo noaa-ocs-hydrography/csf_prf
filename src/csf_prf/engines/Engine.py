@@ -1,6 +1,10 @@
 import json
+import  yaml
+import pathlib
 
 from osgeo import ogr
+
+INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 
 
 class Engine:
@@ -35,6 +39,17 @@ class Engine:
             if feature_geometry.Intersects(extent_polygon): 
                 inside = True
         return inside
+    
+    # def get_config_item(parent: str, child: str=False) -> tuple[str, int]:
+    #     """Load config and return speciific key"""
+
+    #     with open(str(INPUTS / 'config.yaml'), 'r') as lookup:
+    #         config = yaml.safe_load(lookup)
+    #         parent_item = config[parent]
+    #         if child:
+    #             return parent_item[child]
+    #         else:
+    #             return parent_item
 
     def reverse(self, geom_list):
         """
