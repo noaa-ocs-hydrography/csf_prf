@@ -3,6 +3,7 @@ import json
 import arcpy
 import yaml
 import os
+import pyodbc
 
 from osgeo import ogr
 from csf_prf.engines.Engine import Engine
@@ -187,6 +188,21 @@ class ENCReaderEngine(Engine):
                             if geom_type:
                                 arcpy.AddMessage(f'Unknown feature type: {geom_type}')
         arcpy.AddMessage(f'  - Removed {intersected} supersession features')
+
+    def get_gc_files(self) -> None:
+        arcpy.AddMessage('Checking for Geographic Cells')
+        pwd = self.get_config_item('GC', 'SQL_PW')
+        connection = pyodbc.connect('Driver={SQL Server};'
+                               'Server=OCS-VS-SQLT2PRD;'
+                               'Database=mcd;'
+                               'UID=DREGreader;'
+                               f'PWD={pwd};')
+        cursor = connection.cursor()
+        
+        info_code = 20  # Geographic Cells
+        cursor.execute(f'SELECT * FROM SourceDocument WHERE InformationCode={info_code}')
+        result = cursor.fetchall()
+        print('result:', result)
 
     def get_vector_records(self) -> None:
         """Read and store all vector records with QUAPOS from ENC file"""
@@ -486,6 +502,7 @@ class ENCReaderEngine(Engine):
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
     def start(self) -> None:
+        self.get_gc_files()
         self.set_driver()
         self.split_multipoint_env()
         self.get_enc_bounds()
