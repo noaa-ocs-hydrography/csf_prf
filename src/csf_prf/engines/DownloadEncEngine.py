@@ -1,16 +1,16 @@
 import os
 import requests
-import zipfile
 import shutil
 import arcpy
 import pathlib
 
+from csf_prf.engines.Engine import Engine
 from bs4 import BeautifulSoup
 
 arcpy.env.overwriteOutput = True
 
 
-class DownloadEncEngine:
+class DownloadEncEngine(Engine):
     """Class to download all ENC files that intersect a project boundary shapefile"""
 
     def __init__(self, param_lookup: dict) -> None:
@@ -54,7 +54,7 @@ class DownloadEncEngine:
         """Delete any zip files after use"""
 
         output_path = pathlib.Path(self.output_folder)
-        for enc_file in output_path.rglob('*.zip'):
+        for enc_file in output_path.glob('*.zip'):
             arcpy.AddMessage(f'Remove unzipped: {enc_file.name}')
             enc_file.unlink()
         if os.path.exists(str(output_path / 'ENC_ROOT')):
@@ -135,12 +135,17 @@ class DownloadEncEngine:
         """Move all *.000 files to the main output folder"""
 
         output_path = pathlib.Path(self.output_folder)
+        enc_folders = []
         for enc_file in output_path.rglob('*.000'):
             enc_path = pathlib.Path(enc_file)
+            enc_folders.append(enc_path.stem)
             output_enc = str(output_path / enc_path.name)
             if not os.path.exists(output_enc):
                 arcpy.AddMessage(f'Moving: {enc_file.name}')
                 enc_path.rename(output_enc)
+        for folder in enc_folders:
+            unzipped_folder = output_path / folder
+            shutil.rmtree(unzipped_folder)
 
     def start(self) -> None:
         """Main method to begin process"""
@@ -149,20 +154,10 @@ class DownloadEncEngine:
         xml = self.get_enc_xml()
         enc_intersected = self.find_intersecting_polygons(xml)
         self.download_enc_zipfiles(enc_intersected)
-        self.unzip_enc_files()
+        self.unzip_enc_files(self.output_folder, '000')
         self.move_to_output_folder()
         self.cleanup_output()
         arcpy.AddMessage('Done')
-
-    def unzip_enc_files(self) -> None:
-        """Unzip all zip fileis in a folder"""
-        
-        for enc_path in pathlib.Path(self.output_folder).rglob('*.zip'):
-            unzipped_file = str(enc_path).replace('zip', '000')
-            if not os.path.exists(unzipped_file):
-                arcpy.AddMessage(f'Unzipping: {enc_path.name}')
-                with zipfile.ZipFile(enc_path, 'r') as zipped:
-                    zipped.extractall(str(pathlib.Path(self.output_folder)))
 
     def verify_sheets_layer(self):
         """Convert geojson for tool to work same as shapefile"""

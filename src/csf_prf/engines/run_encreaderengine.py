@@ -17,6 +17,10 @@ if __name__ == '__main__':
         def valueAsText(self):
             return self.path
         
+        @property
+        def value(self):
+            return self.path
+        
     def add_column_and_constant(layer, column, expression=None, field_type='TEXT', field_length=255, nullable=False) -> None:
         """
         Add the asgnment column and 
@@ -72,6 +76,7 @@ if __name__ == '__main__':
         'sheets': Param(str(INPUTS / 'G322_Sheets_01302024.shp')),
         'enc_files': Param(str(str(INPUTS / 'US2EC02M.000') + ';' + str(INPUTS / 'US3GA10M.000'))),
         'output_folder': Param(str(OUTPUTS)),
+        'download_geographic_cells': Param(True)
     }
     sheets_layer = convert_sheets(param_lookup['sheets'].valueAsText)
     engine = ENCReaderEngine(param_lookup, sheets_layer)

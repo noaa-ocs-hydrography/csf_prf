@@ -1,6 +1,8 @@
 import json
 import  yaml
 import pathlib
+import os
+import zipfile
 
 from osgeo import ogr
 
@@ -8,9 +10,6 @@ INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 
 
 class Engine:
-    def __init__(self) -> None:
-        pass
-
     def feature_covered_by_upper_scale(self, feature_json, enc_scale):
         """
         Determine if a current Point, LineString, or Polygon intersects an upper scale level ENC extent
@@ -61,3 +60,13 @@ class Engine:
         """
 
         return list(reversed(geom_list))
+    
+    def unzip_enc_files(self, output_folder, file_ending) -> None:
+        """Unzip all zip fileis in a folder"""
+        
+        for zipped_file in pathlib.Path(output_folder).rglob('*.zip'):
+            unzipped_file = str(zipped_file).replace('zip', file_ending)
+            if not os.path.exists(unzipped_file):
+                download_folder = unzipped_file.replace(file_ending, '')
+                with zipfile.ZipFile(zipped_file, 'r') as zipped:
+                    zipped.extractall(str(download_folder))

@@ -1,7 +1,9 @@
 import pathlib
 import json
 import arcpy
+import requests
 import yaml
+import glob
 import os
 import pyodbc
 
@@ -12,7 +14,12 @@ arcpy.env.overwriteOutput = True
 
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
-OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
+
+
+class ENCReaderException(Exception):
+    """Custom exception for tool"""
+
+    pass 
 
 
 class ENCReaderEngine(Engine):
@@ -24,6 +31,7 @@ class ENCReaderEngine(Engine):
     def __init__(self, param_lookup: dict, sheets_layer):
         self.param_lookup = param_lookup
         self.sheets_layer = sheets_layer
+        self.geographic_cells = None
         self.gdb_name = 'csf_features'
         self.driver = None
         self.scale_bounds = {}
@@ -113,6 +121,50 @@ class ENCReaderEngine(Engine):
                         else:
                             updateCursor.updateRow(row)
         arcpy.AddMessage(f'Removed {aton_count} ATON features containing {str(aton_found)}')
+
+    def download_gc(self, output_folder, enc, path, basefilename):
+        """
+        Download a specific geograhic cell associated with an ENC
+        :param str gc_number: Name/number of a geographic cell dataset
+        """
+
+        enc_folder = output_folder / 'geographic_cells' / enc
+        enc_folder.mkdir(parents=True, exist_ok=True)
+        dreg_api = self.get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
+        output_file = enc_folder / basefilename
+        if not os.path.exists(output_file):
+            arcpy.AddMessage(f'Downloading GC: {basefilename}')
+            enc_zip = requests.get(dreg_api)
+            with open(output_file, 'wb') as file:
+                for chunk in enc_zip.iter_content(chunk_size=128):
+                    file.write(chunk)
+        else:
+            arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
+
+    def download_gcs(self) -> None:
+        """Download any GCs for current ENC files"""
+
+        enc_paths = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        gc_lookup = {}
+        for enc in enc_paths:
+            gc_lookup[pathlib.Path(enc).stem] = []
+        for gc in self.geographic_cells:
+            # ['documenttype', 'BaseFileName', 'iecode', 'status', 'InformationCode', 'Path]
+            enc_name = gc[2]
+            if enc_name in gc_lookup.keys():
+                gc_lookup[enc_name].append(gc)
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+
+        for enc in gc_lookup.keys():
+            arcpy.AddMessage(f'ENC {enc} has {len(gc_lookup[enc])} GCs')
+            for gc in gc_lookup[enc]:
+                self.download_gc(output_folder, enc, gc[5], gc[1])
+        self.unzip_enc_files(str(output_folder / 'geographic_cells'), '.shp')
+
+        gc_folder = output_folder / 'geographic_cells'
+        for gc_file in gc_folder.rglob('*.zip'):
+            arcpy.AddMessage(f'Remove unzipped: {gc_file.name}')
+            gc_file.unlink()
     
     def get_all_fields(self, features) -> None:
         """
@@ -135,6 +187,20 @@ class ENCReaderEngine(Engine):
 
         with open(str(INPUTS / 'lookups' / 'aton_lookup.yaml'), 'r') as lookup:
             return yaml.safe_load(lookup)
+        
+    def get_cursor(self):
+        """
+        Connected to MCD SQL Server and obtain an OBDC cursor
+        :returns pyodbc.Cursor: MCD database cursor
+        """
+
+        pwd = self.get_config_item('GC', 'SQL_PW')
+        connection = pyodbc.connect('Driver={SQL Server};'
+                                    'Server=OCS-VS-SQLT2PRD;'
+                                    'Database=mcd;'
+                                    'UID=DREGreader;'
+                                    f'PWD={pwd};')
+        return connection.cursor()
         
     def get_enc_bounds(self) -> None:
         """Create lookup for ENC extents by scale"""
@@ -190,19 +256,26 @@ class ENCReaderEngine(Engine):
         arcpy.AddMessage(f'  - Removed {intersected} supersession features')
 
     def get_gc_files(self) -> None:
-        arcpy.AddMessage('Checking for Geographic Cells')
-        pwd = self.get_config_item('GC', 'SQL_PW')
-        connection = pyodbc.connect('Driver={SQL Server};'
-                               'Server=OCS-VS-SQLT2PRD;'
-                               'Database=mcd;'
-                               'UID=DREGreader;'
-                               f'PWD={pwd};')
-        cursor = connection.cursor()
+        """Start the process to download any GCs associated with input ENCs"""
         
-        info_code = 20  # Geographic Cells
-        cursor.execute(f'SELECT * FROM SourceDocument WHERE InformationCode={info_code}')
-        result = cursor.fetchall()
-        print('result:', result)
+        arcpy.AddMessage('Checking for Geographic Cells')
+        cursor = self.get_cursor()
+        sql = self.get_sql('GetRelatedENC')
+        self.geographic_cells = self.run_query(cursor, sql)
+
+    def get_sql(self, file_name: str) -> str:
+        """
+        Retrieve SQL query in string format
+        :returns str: Query string
+        """
+
+        sql_files = glob.glob(str(INPUTS / 'sql' / '*'))
+        for file in sql_files:
+            path = pathlib.Path(file)
+            if path.stem == file_name:
+                with open(path, 'r') as sql:
+                    return sql.read()   
+        raise ENCReaderException(f'SQL file not found: {file_name}.sql')
 
     def get_vector_records(self) -> None:
         """Read and store all vector records with QUAPOS from ENC file"""
@@ -392,6 +465,17 @@ class ENCReaderEngine(Engine):
 
         os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
+    def run_query(self, cursor, sql):
+        """
+        Execute a SQL query
+        :param pyodbc.Cursor cursor: Current database and table cursor
+        :param str sql: Formatted SQL expression to run
+        :returns list[()]: All the query results
+        """
+
+        cursor.execute(sql)
+        return cursor.fetchall()
+
     def set_driver(self) -> None:
         """Set the S57 driver for GDAL"""
 
@@ -502,14 +586,16 @@ class ENCReaderEngine(Engine):
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
     def start(self) -> None:
-        self.get_gc_files()
-        self.set_driver()
-        self.split_multipoint_env()
-        self.get_enc_bounds()
-        self.get_feature_records()
-        self.return_primitives_env()
-        self.get_vector_records()
-        self.perform_spatial_filter()
-        self.print_feature_total()
-        self.add_columns()
-        self.join_quapos_to_features()
+        if self.param_lookup['download_geographic_cells'].value:
+            self.get_gc_files()
+            self.download_gcs()
+        # self.set_driver()
+        # self.split_multipoint_env()
+        # self.get_enc_bounds()
+        # self.get_feature_records()
+        # self.return_primitives_env()
+        # self.get_vector_records()
+        # self.perform_spatial_filter()
+        # self.print_feature_total()
+        # self.add_columns()
+        # self.join_quapos_to_features()
