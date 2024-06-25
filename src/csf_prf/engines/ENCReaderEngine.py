@@ -156,7 +156,8 @@ class ENCReaderEngine(Engine):
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
 
         for enc in gc_lookup.keys():
-            arcpy.AddMessage(f'ENC {enc} has {len(gc_lookup[enc])} GCs')
+            if len(gc_lookup[enc]) > 0:
+                arcpy.AddMessage(f'ENC {enc} has {len(gc_lookup[enc])} GCs')
             for gc in gc_lookup[enc]:
                 self.download_gc(output_folder, enc, gc[5], gc[1])
         self.unzip_enc_files(str(output_folder / 'geographic_cells'), '.shp')
@@ -231,6 +232,7 @@ class ENCReaderEngine(Engine):
             enc_scale = pathlib.Path(enc_path).stem[2]
             for layer in enc_file:
                 layer.ResetReading()
+                features_missing_coords = 0
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
@@ -240,7 +242,7 @@ class ENCReaderEngine(Engine):
                         
                         feature_json['properties']['SCALE_LVL'] = enc_scale
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
-                        if geom_type in ['Point', 'LineString', 'Polygon']:
+                        if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                             feature_json = self.set_none_to_null(feature_json)
                             self.geometries[geom_type]['features'].append({'geojson': feature_json, 'scale': enc_scale})
                         # elif geom_type == 'MultiPoint':
@@ -252,8 +254,21 @@ class ENCReaderEngine(Engine):
                         #         self.geometries['Point']['features'].append({'geojson': feature_template})     
                         else:
                             if geom_type:
-                                arcpy.AddMessage(f'Unknown feature type: {geom_type}')
+                                features_missing_coords += 1
+                arcpy.AddMessage(f"Found ({features_missing_coords}) features but missing coordinates")
         arcpy.AddMessage(f'  - Removed {intersected} supersession features')
+
+    def get_gc_features(self) -> None:
+        """Read and store all features from GC shapefiles"""
+
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        gc_folder = output_folder / 'geographic_cells'
+        # loop through enc folders
+        # loop through GC folders in enc folder
+        # open shp and store features
+        # TODO determine which features
+        # TODO do they need joined or keep individual?
+        # TODO store as separate features or add to existing?
 
     def get_gc_files(self) -> None:
         """Start the process to download any GCs associated with input ENCs"""
@@ -288,6 +303,7 @@ class ENCReaderEngine(Engine):
             enc_scale = pathlib.Path(enc_path).stem[2]
             for layer in enc_file:
                 layer.ResetReading()
+                features_missing_coords = 0
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
@@ -308,7 +324,8 @@ class ENCReaderEngine(Engine):
                             #         self.geometries['Point']['QUAPOS'].append({'geojson': feature_template})
                             else:
                                 if geom_type:
-                                    arcpy.AddMessage(f"Found QUAPOS but missing coordinates: {geom_type} - {feature_json['geometry']['coordinates']}")
+                                    features_missing_coords += 1
+                arcpy.AddMessage(f"Found ({features_missing_coords}) QUAPOS features but missing coordinates")
         arcpy.AddMessage(f'  - Removed {intersected} supersession QUAPOS features')
 
     def join_quapos_to_features(self) -> None:
@@ -589,13 +606,14 @@ class ENCReaderEngine(Engine):
         if self.param_lookup['download_geographic_cells'].value:
             self.get_gc_files()
             self.download_gcs()
-        # self.set_driver()
-        # self.split_multipoint_env()
-        # self.get_enc_bounds()
-        # self.get_feature_records()
-        # self.return_primitives_env()
-        # self.get_vector_records()
-        # self.perform_spatial_filter()
-        # self.print_feature_total()
-        # self.add_columns()
-        # self.join_quapos_to_features()
+            self.get_gc_features()
+        self.set_driver()
+        self.split_multipoint_env()
+        self.get_enc_bounds()
+        self.get_feature_records()
+        self.return_primitives_env()
+        self.get_vector_records()
+        self.perform_spatial_filter()
+        self.print_feature_total()
+        self.add_columns()
+        self.join_quapos_to_features()

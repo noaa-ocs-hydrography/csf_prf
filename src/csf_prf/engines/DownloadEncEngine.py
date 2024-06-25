@@ -145,7 +145,8 @@ class DownloadEncEngine(Engine):
                 enc_path.rename(output_enc)
         for folder in enc_folders:
             unzipped_folder = output_path / folder
-            shutil.rmtree(unzipped_folder)
+            if os.path.exists(unzipped_folder):
+                shutil.rmtree(unzipped_folder)
 
     def start(self) -> None:
         """Main method to begin process"""

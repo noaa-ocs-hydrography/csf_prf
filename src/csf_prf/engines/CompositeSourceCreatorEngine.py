@@ -37,10 +37,13 @@ class CompositeSourceCreatorEngine(Engine):
         :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
         """
 
+        fields = [field.name for field in arcpy.ListFields(layer)]
         if nullable:
-            arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
+            if column not in fields:
+                arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
         else:
-            arcpy.management.AddField(layer, column, field_type, field_length=field_length)
+            if column not in fields:
+                arcpy.management.AddField(layer, column, field_type, field_length=field_length)
             arcpy.management.CalculateField(
                 layer, column, expression, expression_type="PYTHON3", field_type=field_type
             )
