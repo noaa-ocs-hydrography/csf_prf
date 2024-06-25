@@ -117,6 +117,14 @@ class CompositeSourceCreator:
             parameterType="Required",
             direction="Input"
         )
+        
+        download_geographic_cells = arcpy.Parameter(
+            displayName="Get additional features from Geographic Cells?",
+            name="download_geographic_cells",
+            datatype="GPBoolean",
+            parameterType="Optional",
+            direction="Input",
+        )
         caris_export = arcpy.Parameter(
             displayName="Create CARIS ready Geopackage?",
             name="caris_export",
@@ -135,6 +143,7 @@ class CompositeSourceCreator:
             # tides_mapinfo_tab,
             enc_file,
             csf_prf_output_file,
+            download_geographic_cells,
             caris_export
         ]
     
@@ -163,6 +172,7 @@ class CompositeSourceCreator:
             # 'tides',
             'enc_files',
             'output_folder',
+            'download_geographic_cells',
             'caris_export'
         ]
 

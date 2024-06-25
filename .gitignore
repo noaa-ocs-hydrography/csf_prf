@@ -55,3 +55,4 @@ Thumbs.db
 
 # Ignore
 outputs/*
+inputs/lookups/config.yaml
