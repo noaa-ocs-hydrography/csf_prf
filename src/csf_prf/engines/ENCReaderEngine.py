@@ -5,8 +5,11 @@ import requests
 import yaml
 import glob
 import os
+import sys
 import pyodbc
+import multiprocessing
 
+from concurrent.futures import ProcessPoolExecutor, wait
 from osgeo import ogr
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
@@ -22,6 +25,42 @@ class ENCReaderException(Exception):
     pass 
 
 
+def get_config_item(parent: str, child: str=False) -> tuple[str, int]:
+    """Load config and return speciific key"""
+
+    with open(str(INPUTS / 'lookups' / 'config.yaml'), 'r') as lookup:
+        config = yaml.safe_load(lookup)
+        parent_item = config[parent]
+        if child:
+            return parent_item[child]
+        else:
+            return parent_item
+            
+
+def download_gc(download_inputs) -> None:
+    """
+    Download a specific geograhic cell associated with an ENC
+    :param pathlib.Path output_folder: The user supplied output folder
+    :param str enc: Name of the current ENC folder
+    :param str basefilename: Name of the GC to download
+    """
+
+    output_folder, enc, path, basefilename = download_inputs
+
+    enc_folder = output_folder / 'geographic_cells' / enc
+    enc_folder.mkdir(parents=True, exist_ok=True)
+    dreg_api = get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
+    output_file = enc_folder / basefilename
+    if not os.path.exists(output_file):
+        arcpy.AddMessage(f'Downloading GC: {basefilename}')
+        enc_zip = requests.get(dreg_api)
+        with open(output_file, 'wb') as file:
+            for chunk in enc_zip.iter_content(chunk_size=128):
+                file.write(chunk)
+    else:
+        arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
+
+
 class ENCReaderEngine(Engine):
     """
     Class for handling all reading and processing
@@ -31,30 +70,34 @@ class ENCReaderEngine(Engine):
     def __init__(self, param_lookup: dict, sheets_layer):
         self.param_lookup = param_lookup
         self.sheets_layer = sheets_layer
-        self.geographic_cells = None
         self.gdb_name = 'csf_features'
         self.driver = None
         self.scale_bounds = {}
         self.scales = {}
+        self.gc_points = None
+        self.gc_lines = None
         self.geometries = {
             "Point": {
                 "features": [],
                 "QUAPOS": [],
                 "features_layers": {"assigned": None, "unassigned": None},
                 "QUAPOS_layers": {"assigned": None, "unassigned": None},
+                "GC_layers": {"assigned": None, "unassigned": None}
             },
             "LineString": {
                 "features": [],
                 "QUAPOS": [],
                 "features_layers": {"assigned": None, "unassigned": None},
                 "QUAPOS_layers": {"assigned": None, "unassigned": None},
+                "GC_layers": {"assigned": None, "unassigned": None}
             },
             "Polygon": {
                 "features": [],
                 "QUAPOS": [],
                 "features_layers": {"assigned": None, "unassigned": None},
                 "QUAPOS_layers": {"assigned": None, "unassigned": None},
-            },
+                "GC_layers": {"assigned": None, "unassigned": None}
+            }
         }
 
     def add_asgnmt_column(self) -> None:
@@ -122,33 +165,40 @@ class ENCReaderEngine(Engine):
                             updateCursor.updateRow(row)
         arcpy.AddMessage(f'Removed {aton_count} ATON features containing {str(aton_found)}')
 
-    def download_gc(self, output_folder, enc, path, basefilename):
-        """
-        Download a specific geograhic cell associated with an ENC
-        :param str gc_number: Name/number of a geographic cell dataset
-        """
+    # def download_gc(self, download_inputs) -> None:
+    #     """
+    #     Download a specific geograhic cell associated with an ENC
+    #     :param pathlib.Path output_folder: The user supplied output folder
+    #     :param str enc: Name of the current ENC folder
+    #     :param str basefilename: Name of the GC to download
+    #     """
 
-        enc_folder = output_folder / 'geographic_cells' / enc
-        enc_folder.mkdir(parents=True, exist_ok=True)
-        dreg_api = self.get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
-        output_file = enc_folder / basefilename
-        if not os.path.exists(output_file):
-            arcpy.AddMessage(f'Downloading GC: {basefilename}')
-            enc_zip = requests.get(dreg_api)
-            with open(output_file, 'wb') as file:
-                for chunk in enc_zip.iter_content(chunk_size=128):
-                    file.write(chunk)
-        else:
-            arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
+    #     output_folder, enc, path, basefilename = download_inputs
 
-    def download_gcs(self) -> None:
-        """Download any GCs for current ENC files"""
+    #     enc_folder = output_folder / 'geographic_cells' / enc
+    #     enc_folder.mkdir(parents=True, exist_ok=True)
+    #     dreg_api = self.get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
+    #     output_file = enc_folder / basefilename
+    #     if not os.path.exists(output_file):
+    #         arcpy.AddMessage(f'Downloading GC: {basefilename}')
+    #         enc_zip = requests.get(dreg_api)
+    #         with open(output_file, 'wb') as file:
+    #             for chunk in enc_zip.iter_content(chunk_size=128):
+    #                 file.write(chunk)
+    #     else:
+    #         arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
+
+    def download_gcs(self, gc_rows) -> None:
+        """
+        Download any GCs for current ENC files
+        :param list[()] gc_rows: Query results of GCs and which ENC
+        """
 
         enc_paths = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
         gc_lookup = {}
         for enc in enc_paths:
             gc_lookup[pathlib.Path(enc).stem] = []
-        for gc in self.geographic_cells:
+        for gc in gc_rows:
             # ['documenttype', 'BaseFileName', 'iecode', 'status', 'InformationCode', 'Path]
             enc_name = gc[2]
             if enc_name in gc_lookup.keys():
@@ -158,8 +208,18 @@ class ENCReaderEngine(Engine):
         for enc in gc_lookup.keys():
             if len(gc_lookup[enc]) > 0:
                 arcpy.AddMessage(f'ENC {enc} has {len(gc_lookup[enc])} GCs')
-            for gc in gc_lookup[enc]:
-                self.download_gc(output_folder, enc, gc[5], gc[1])
+            
+            # download_inputs = [[output_folder, enc, gc_data[5], gc_data[1]] for gc_data in gc_lookup[enc]]
+            multiprocessing.set_executable(os.path.join(sys.exec_prefix, 'pythonw.exe'))
+            processors = int(multiprocessing.cpu_count() * .75)
+            deep_water = multiprocessing.Pool(processes=processors)
+            download_inputs = [[output_folder, enc, gc[5], gc[1]] for gc in gc_lookup[enc]]
+            deep_water.map(download_gc, download_inputs)
+            deep_water.close()
+            deep_water.join()
+
+            # for gc in gc_lookup[enc]:
+            #     self.download_gc(output_folder, enc, gc[5], gc[1])
         self.unzip_enc_files(str(output_folder / 'geographic_cells'), '.shp')
 
         gc_folder = output_folder / 'geographic_cells'
@@ -167,6 +227,19 @@ class ENCReaderEngine(Engine):
             arcpy.AddMessage(f'Remove unzipped: {gc_file.name}')
             gc_file.unlink()
     
+    def filter_gc_features(self) -> None:
+        points_assigned = arcpy.management.SelectLayerByLocation(self.gc_points, 'INTERSECT', self.sheets_layer)
+        points_assigned_layer = arcpy.management.MakeFeatureLayer(points_assigned)
+        points_unassigned = arcpy.management.SelectLayerByLocation(points_assigned_layer, selection_type='SWITCH_SELECTION')
+        self.geometries['Point']['GC_layers']['assigned'] = points_assigned
+        self.geometries['Point']['GC_layers']['unassigned'] = points_unassigned 
+        
+        lines_assigned = arcpy.management.SelectLayerByLocation(self.gc_lines, 'INTERSECT', self.sheets_layer)
+        lines_assigned_layer = arcpy.management.MakeFeatureLayer(lines_assigned)
+        lines_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
+        self.geometries['LineString']['GC_layers']['assigned'] = lines_assigned
+        self.geometries['LineString']['GC_layers']['unassigned'] = lines_unassigned
+
     def get_all_fields(self, features) -> None:
         """
         Build a unique list of all field names
@@ -255,28 +328,37 @@ class ENCReaderEngine(Engine):
                         else:
                             if geom_type:
                                 features_missing_coords += 1
-                arcpy.AddMessage(f"Found ({features_missing_coords}) features but missing coordinates")
+                if features_missing_coords > 0:
+                    arcpy.AddMessage(f"Found ({features_missing_coords}) features but missing coordinates")
         arcpy.AddMessage(f'  - Removed {intersected} supersession features')
 
-    def get_gc_features(self) -> None:
+    def merge_gc_features(self) -> None:
         """Read and store all features from GC shapefiles"""
 
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         gc_folder = output_folder / 'geographic_cells'
-        # loop through enc folders
-        # loop through GC folders in enc folder
-        # open shp and store features
-        # TODO determine which features
-        # TODO do they need joined or keep individual?
-        # TODO store as separate features or add to existing?
 
-    def get_gc_files(self) -> None:
+        point_files = []
+        line_files = []
+        for shapefile in gc_folder.rglob('*.shp'):
+            # TODO only get files from current ENC names
+            shp_path = str(shapefile)
+            if shp_path.endswith('p1.shp'):
+                point_files.append(shp_path)
+            elif shp_path.endswith('l1.shp'):
+                line_files.append(shp_path)
+            else:
+                arcpy.AddMessage(f'Found other GC: {shp_path}')
+        self.gc_points = arcpy.management.Merge(point_files, 'memory/gc_points')
+        self.gc_lines = arcpy.management.Merge(line_files, 'memory/gc_lines')
+
+    def get_gc_data(self) -> None:
         """Start the process to download any GCs associated with input ENCs"""
         
         arcpy.AddMessage('Checking for Geographic Cells')
         cursor = self.get_cursor()
         sql = self.get_sql('GetRelatedENC')
-        self.geographic_cells = self.run_query(cursor, sql)
+        return self.run_query(cursor, sql)
 
     def get_sql(self, file_name: str) -> str:
         """
@@ -325,7 +407,8 @@ class ENCReaderEngine(Engine):
                             else:
                                 if geom_type:
                                     features_missing_coords += 1
-                arcpy.AddMessage(f"Found ({features_missing_coords}) QUAPOS features but missing coordinates")
+                if features_missing_coords > 0:
+                    arcpy.AddMessage(f"Found ({features_missing_coords}) QUAPOS features but missing coordinates")
         arcpy.AddMessage(f'  - Removed {intersected} supersession QUAPOS features')
 
     def join_quapos_to_features(self) -> None:
@@ -384,9 +467,9 @@ class ENCReaderEngine(Engine):
                     point_cursor.insertRow([geometry] + attribute_values)
             points_assigned = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', self.sheets_layer)
             points_assigned_layer = arcpy.management.MakeFeatureLayer(points_assigned)
-            point_unassigned = arcpy.management.SelectLayerByLocation(points_assigned_layer, selection_type='SWITCH_SELECTION')
+            points_unassigned = arcpy.management.SelectLayerByLocation(points_assigned_layer, selection_type='SWITCH_SELECTION')
             self.geometries['Point'][f'{feature_type}_layers']['assigned'] = points_assigned
-            self.geometries['Point'][f'{feature_type}_layers']['unassigned'] = point_unassigned
+            self.geometries['Point'][f'{feature_type}_layers']['unassigned'] = points_unassigned
 
             # LINES
             line_fields = self.get_all_fields(self.geometries['LineString'][feature_type])
@@ -407,9 +490,9 @@ class ENCReaderEngine(Engine):
                     line_cursor.insertRow([geometry] + attribute_values)
             lines_assigned = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', self.sheets_layer)
             lines_assigned_layer = arcpy.management.MakeFeatureLayer(lines_assigned)
-            line_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
+            lines_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
             self.geometries['LineString'][f'{feature_type}_layers']['assigned'] = lines_assigned
-            self.geometries['LineString'][f'{feature_type}_layers']['unassigned'] = line_unassigned
+            self.geometries['LineString'][f'{feature_type}_layers']['unassigned'] = lines_unassigned
 
             # POLYGONS
             polygons_fields = self.get_all_fields(self.geometries['Polygon'][feature_type])
@@ -451,9 +534,9 @@ class ENCReaderEngine(Engine):
                         #     polygons_cursor.insertRow([geometry] + attribute_values)
             polygons_assigned = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', self.sheets_layer)
             polygons_assigned_layer = arcpy.management.MakeFeatureLayer(polygons_assigned)
-            polygon_unassigned = arcpy.management.SelectLayerByLocation(polygons_assigned_layer, selection_type='SWITCH_SELECTION')
+            polygons_unassigned = arcpy.management.SelectLayerByLocation(polygons_assigned_layer, selection_type='SWITCH_SELECTION')
             self.geometries['Polygon'][f'{feature_type}_layers']['assigned'] = polygons_assigned
-            self.geometries['Polygon'][f'{feature_type}_layers']['unassigned'] = polygon_unassigned
+            self.geometries['Polygon'][f'{feature_type}_layers']['unassigned'] = polygons_unassigned
 
     def print_feature_total(self) -> None:
         """Print total number of assigned/unassigned features from ENC file"""
@@ -604,9 +687,10 @@ class ENCReaderEngine(Engine):
 
     def start(self) -> None:
         if self.param_lookup['download_geographic_cells'].value:
-            self.get_gc_files()
-            self.download_gcs()
-            self.get_gc_features()
+            rows = self.get_gc_data()
+            self.download_gcs(rows)
+            self.merge_gc_features()
+            self.filter_gc_features()
         self.set_driver()
         self.split_multipoint_env()
         self.get_enc_bounds()
