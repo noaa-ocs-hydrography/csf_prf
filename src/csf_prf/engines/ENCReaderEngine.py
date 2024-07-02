@@ -1,3 +1,4 @@
+import time
 import pathlib
 import json
 import arcpy
@@ -445,6 +446,7 @@ class ENCReaderEngine(Engine):
     def perform_spatial_filter(self) -> None:
         """Spatial query all of the ENC features against Sheets boundary"""
 
+        # TODO this seems to be the slow part
         for feature_type in ['features', 'QUAPOS']:
             arcpy.AddMessage(f' - Filtering {feature_type} records')
 
@@ -685,7 +687,13 @@ class ENCReaderEngine(Engine):
 
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
+    def get_time(self, function, start):
+        run_time = time.time() - start
+        arcpy.AddMessage(f'{function} - {run_time}')
+        return run_time
+    
     def start(self) -> None:
+        start = time.time()
         if self.param_lookup['download_geographic_cells'].value:
             rows = self.get_gc_data()
             self.download_gcs(rows)
@@ -701,3 +709,11 @@ class ENCReaderEngine(Engine):
         self.print_feature_total()
         self.add_columns()
         self.join_quapos_to_features()
+
+        # download_gcs - 75.
+        # merge_gc_features - 12.
+        # get_feature_records - 115.
+        # get_vector_records - 159.
+        # perform_spatial_filter - 668.
+        # add_columns - 8.
+        # join_quapos_to_features - 12.
