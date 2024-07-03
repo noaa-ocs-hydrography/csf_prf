@@ -51,10 +51,11 @@ def download_gc(download_inputs) -> None:
     enc_folder = output_folder / 'geographic_cells' / enc
     enc_folder.mkdir(parents=True, exist_ok=True)
     dreg_api = get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
-    output_file = enc_folder / basefilename
-    if not os.path.exists(output_file):
+    gc_folder = enc_folder / basefilename.replace('.zip', '')
+    if not os.path.exists(gc_folder):
         arcpy.AddMessage(f'Downloading GC: {basefilename}')
         enc_zip = requests.get(dreg_api)
+        output_file = enc_folder / basefilename
         with open(output_file, 'wb') as file:
             for chunk in enc_zip.iter_content(chunk_size=128):
                 file.write(chunk)
@@ -306,7 +307,7 @@ class ENCReaderEngine(Engine):
             enc_scale = pathlib.Path(enc_path).stem[2]
             for layer in enc_file:
                 layer.ResetReading()
-                features_missing_coords = 0
+                # features_missing_coords = 0
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
@@ -326,11 +327,11 @@ class ENCReaderEngine(Engine):
                         #     for point in feature.geometry():
                         #         feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
                         #         self.geometries['Point']['features'].append({'geojson': feature_template})     
-                        else:
-                            if geom_type:
-                                features_missing_coords += 1
-                if features_missing_coords > 0:
-                    arcpy.AddMessage(f"Found ({features_missing_coords}) features but missing coordinates")
+                        # else:
+                        #     if geom_type:
+                        #         features_missing_coords += 1
+                # if features_missing_coords > 0:
+                #     arcpy.AddMessage(f"Found ({features_missing_coords}) features but missing coordinates")
         arcpy.AddMessage(f'  - Removed {intersected} supersession features')
 
     def merge_gc_features(self) -> None:
@@ -386,7 +387,7 @@ class ENCReaderEngine(Engine):
             enc_scale = pathlib.Path(enc_path).stem[2]
             for layer in enc_file:
                 layer.ResetReading()
-                features_missing_coords = 0
+                # features_missing_coords = 0
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
@@ -405,11 +406,11 @@ class ENCReaderEngine(Engine):
                             #     for point in feature.geometry():
                             #         feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
                             #         self.geometries['Point']['QUAPOS'].append({'geojson': feature_template})
-                            else:
-                                if geom_type:
-                                    features_missing_coords += 1
-                if features_missing_coords > 0:
-                    arcpy.AddMessage(f"Found ({features_missing_coords}) QUAPOS features but missing coordinates")
+                #             else:
+                #                 if geom_type:
+                #                     features_missing_coords += 1
+                # if features_missing_coords > 0:
+                    # arcpy.AddMessage(f"Found ({features_missing_coords}) QUAPOS features but missing coordinates")
         arcpy.AddMessage(f'  - Removed {intersected} supersession QUAPOS features')
 
     def join_quapos_to_features(self) -> None:
@@ -447,6 +448,7 @@ class ENCReaderEngine(Engine):
         """Spatial query all of the ENC features against Sheets boundary"""
 
         # TODO this seems to be the slow part
+        start = time.time()
         for feature_type in ['features', 'QUAPOS']:
             arcpy.AddMessage(f' - Filtering {feature_type} records')
 
@@ -457,18 +459,21 @@ class ENCReaderEngine(Engine):
                 f'{feature_type}_points_layer', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
             for field in sorted(point_fields):
                 arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
+
             arcpy.AddMessage(' - Building point features')
             for feature in self.geometries['Point'][feature_type]:
-                current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
+                # TODO get a master list of field names to only use one cursor
+                current_fields = ['SHAPE@XY'] + list(feature['geojson']['properties'].keys())
                 # TODO this is slow to open new every time, but field names change
                 # Another option might be to have lookup by index and fill missing values to None
                 with arcpy.da.InsertCursor(points_layer, current_fields, explicit=True) as point_cursor: 
                     coords = feature['geojson']['geometry']['coordinates']
-                    geometry = arcpy.PointGeometry(arcpy.Point(X=coords[0], Y=coords[1]), arcpy.SpatialReference(4326))
                     attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
-                    point_cursor.insertRow([geometry] + attribute_values)
+                    attribute_values.insert(0, (coords[0], coords[1]))
+                    point_cursor.insertRow(attribute_values)
             points_assigned = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', self.sheets_layer)
             points_assigned_layer = arcpy.management.MakeFeatureLayer(points_assigned)
+            # TODO removing the unassigned might make the process quicker
             points_unassigned = arcpy.management.SelectLayerByLocation(points_assigned_layer, selection_type='SWITCH_SELECTION')
             self.geometries['Point'][f'{feature_type}_layers']['assigned'] = points_assigned
             self.geometries['Point'][f'{feature_type}_layers']['unassigned'] = points_unassigned
@@ -483,13 +488,14 @@ class ENCReaderEngine(Engine):
 
             arcpy.AddMessage(' - Building line features')
             for feature in self.geometries['LineString'][feature_type]:
-                current_fields = ['SHAPE@'] + list(feature['geojson']['properties'].keys())
+                current_fields = ['SHAPE@JSON'] + list(feature['geojson']['properties'].keys())
                 with arcpy.da.InsertCursor(lines_layer, current_fields, explicit=True) as line_cursor: 
-                    points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates']]
-                    coord_array = arcpy.Array(points)
-                    geometry = arcpy.Polyline(coord_array, arcpy.SpatialReference(4326))
+                    # points = [arcpy.Point(coord[0], coord[1]) for coord in feature['geojson']['geometry']['coordinates']]
+                    # coord_array = arcpy.Array(points)
+                    # geometry = arcpy.Polyline(coord_array, arcpy.SpatialReference(4326))
                     attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
-                    line_cursor.insertRow([geometry] + attribute_values)
+                    geometry = feature['geojson']['geometry']
+                    line_cursor.insertRow([arcpy.AsShape(geometry).JSON] + attribute_values)
             lines_assigned = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', self.sheets_layer)
             lines_assigned_layer = arcpy.management.MakeFeatureLayer(lines_assigned)
             lines_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
@@ -539,6 +545,8 @@ class ENCReaderEngine(Engine):
             polygons_unassigned = arcpy.management.SelectLayerByLocation(polygons_assigned_layer, selection_type='SWITCH_SELECTION')
             self.geometries['Polygon'][f'{feature_type}_layers']['assigned'] = polygons_assigned
             self.geometries['Polygon'][f'{feature_type}_layers']['unassigned'] = polygons_unassigned
+        end = time.time()
+        arcpy.AddMessage(f'perform_spatial_filter - {end - start}')
 
     def print_feature_total(self) -> None:
         """Print total number of assigned/unassigned features from ENC file"""
@@ -693,7 +701,6 @@ class ENCReaderEngine(Engine):
         return run_time
     
     def start(self) -> None:
-        start = time.time()
         if self.param_lookup['download_geographic_cells'].value:
             rows = self.get_gc_data()
             self.download_gcs(rows)
@@ -714,6 +721,6 @@ class ENCReaderEngine(Engine):
         # merge_gc_features - 12.
         # get_feature_records - 115.
         # get_vector_records - 159.
-        # perform_spatial_filter - 668.
+        # perform_spatial_filter - 668. 656 651
         # add_columns - 8.
         # join_quapos_to_features - 12.
