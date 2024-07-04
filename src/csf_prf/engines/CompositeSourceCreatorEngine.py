@@ -37,10 +37,13 @@ class CompositeSourceCreatorEngine(Engine):
         :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
         """
 
+        fields = [field.name for field in arcpy.ListFields(layer)]
         if nullable:
-            arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
+            if column not in fields:
+                arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
         else:
-            arcpy.management.AddField(layer, column, field_type, field_length=field_length)
+            if column not in fields:
+                arcpy.management.AddField(layer, column, field_type, field_length=field_length)
             arcpy.management.CalculateField(
                 layer, column, expression, expression_type="PYTHON3", field_type=field_type
             )
@@ -199,19 +202,19 @@ class CompositeSourceCreatorEngine(Engine):
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         for geom_type in enc_engine.geometries.keys():
-            # for feature_type in ['features', 'QUAPOS']:  # QUAPOS is joined later and not needing output
-            feature_type = 'features'
-            assigned_name = f'{geom_type}_{feature_type}_assigned'
-            arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
-            output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
-            arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
-            self.output_data[f'enc_{assigned_name}'] = output_name
-
-            unassigned_name = f'{geom_type}_{feature_type}_unassigned'
-            arcpy.AddMessage(f' - Writing output feature class: {unassigned_name}')
-            output_name = os.path.join(output_folder, self.gdb_name + '.gdb', unassigned_name)
-            arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
-            self.output_data[f'enc_{unassigned_name}'] = output_name
+            for feature_type in ['features', 'GC']:  # QUAPOS is joined later and not needing output
+                if enc_engine.geometries[geom_type][f'{feature_type}_layers']['assigned']:
+                    assigned_name = f'{geom_type}_{feature_type}_assigned'
+                    arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
+                    output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
+                    arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
+                    self.output_data[f'enc_{assigned_name}'] = output_name
+                if enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned']:
+                    unassigned_name = f'{geom_type}_{feature_type}_unassigned'
+                    arcpy.AddMessage(f' - Writing output feature class: {unassigned_name}')
+                    output_name = os.path.join(output_folder, self.gdb_name + '.gdb', unassigned_name)
+                    arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
+                    self.output_data[f'enc_{unassigned_name}'] = output_name
 
     def export_to_feature_class(self, output_data_type, template_layer, feature_class_name) -> None:
         """
