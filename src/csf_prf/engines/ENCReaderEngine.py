@@ -10,7 +10,6 @@ import sys
 import pyodbc
 import multiprocessing
 
-from concurrent.futures import ProcessPoolExecutor, wait
 from osgeo import ogr
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
@@ -27,7 +26,10 @@ class ENCReaderException(Exception):
 
 
 def get_config_item(parent: str, child: str=False) -> tuple[str, int]:
-    """Load config and return speciific key"""
+    """
+    Load config and return speciific key
+    - Standalone function because class methods can't be pickled
+    """
 
     with open(str(INPUTS / 'lookups' / 'config.yaml'), 'r') as lookup:
         config = yaml.safe_load(lookup)
@@ -41,9 +43,8 @@ def get_config_item(parent: str, child: str=False) -> tuple[str, int]:
 def download_gc(download_inputs) -> None:
     """
     Download a specific geograhic cell associated with an ENC
-    :param pathlib.Path output_folder: The user supplied output folder
-    :param str enc: Name of the current ENC folder
-    :param str basefilename: Name of the GC to download
+    - Standalone function because class methods can't be pickled
+    :param list[list] download_inputs:  Prepared array of output_folder, enc, path, basefilename 
     """
 
     output_folder, enc, path, basefilename = download_inputs
@@ -230,6 +231,8 @@ class ENCReaderEngine(Engine):
             gc_file.unlink()
     
     def filter_gc_features(self) -> None:
+        """Spatial query GC features within Sheets layer"""
+
         points_assigned = arcpy.management.SelectLayerByLocation(self.gc_points, 'INTERSECT', self.sheets_layer)
         points_assigned_layer = arcpy.management.MakeFeatureLayer(points_assigned)
         points_unassigned = arcpy.management.SelectLayerByLocation(points_assigned_layer, selection_type='SWITCH_SELECTION')
@@ -447,8 +450,6 @@ class ENCReaderEngine(Engine):
     def perform_spatial_filter(self) -> None:
         """Spatial query all of the ENC features against Sheets boundary"""
 
-        # TODO this seems to be the slow part
-        start = time.time()
         for feature_type in ['features', 'QUAPOS']:
             arcpy.AddMessage(f' - Filtering {feature_type} records')
 
@@ -461,9 +462,7 @@ class ENCReaderEngine(Engine):
             for field in sorted_point_fields:
                 arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
-            arcpy.AddMessage(' - Building point features')
-
-            
+            arcpy.AddMessage(' - Building point features')     
             # 1. add geometry to fields
             cursor_fields = ['SHAPE@XY'] + sorted_point_fields
             with arcpy.da.InsertCursor(points_layer, cursor_fields, explicit=True) as point_cursor: 
@@ -500,14 +499,11 @@ class ENCReaderEngine(Engine):
             with arcpy.da.InsertCursor(lines_layer, cursor_fields, explicit=True) as line_cursor: 
                 for feature in self.geometries['LineString'][feature_type]:
                     attribute_values = [None for i in range(len(cursor_fields))]
-                    # Set geometry on first index
                     geometry = feature['geojson']['geometry']
                     attribute_values[0] = arcpy.AsShape(geometry).JSON
-                    # Set attributes based on index
                     for fieldname, attr in list(feature['geojson']['properties'].items()):
                         field_index = line_cursor.fields.index(fieldname)
                         attribute_values[field_index] = str(attr)
-                    # add to cursor
                     line_cursor.insertRow(attribute_values)
             lines_assigned = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', self.sheets_layer)
             lines_assigned_layer = arcpy.management.MakeFeatureLayer(lines_assigned)
@@ -529,17 +525,14 @@ class ENCReaderEngine(Engine):
             with arcpy.da.InsertCursor(polygons_layer, cursor_fields, explicit=True) as polygons_cursor: 
                 for feature in self.geometries['Polygon'][feature_type]:
                     attribute_values = [None for i in range(len(cursor_fields))]
-                    # Set geometry on first index
                     polygons = feature['geojson']['geometry']['coordinates']
                     if polygons:
                         points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
                         coord_array = arcpy.Array(points)
                         attribute_values[0] = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
-                        # Set attributes based on index
                         for fieldname, attr in list(feature['geojson']['properties'].items()):
                             field_index = polygons_cursor.fields.index(fieldname)
                             attribute_values[field_index] = str(attr)
-                        # add to cursor
                         polygons_cursor.insertRow(attribute_values)
 
                         # TODO this loads all polygons in a multipolygon
@@ -565,8 +558,6 @@ class ENCReaderEngine(Engine):
             polygons_unassigned = arcpy.management.SelectLayerByLocation(polygons_assigned_layer, selection_type='SWITCH_SELECTION')
             self.geometries['Polygon'][f'{feature_type}_layers']['assigned'] = polygons_assigned
             self.geometries['Polygon'][f'{feature_type}_layers']['unassigned'] = polygons_unassigned
-        end = time.time()
-        arcpy.AddMessage(f'perform_spatial_filter - {end - start}')
 
     def print_feature_total(self) -> None:
         """Print total number of assigned/unassigned features from ENC file"""
@@ -714,11 +705,6 @@ class ENCReaderEngine(Engine):
         """Reset S57 ENV for split multipoint only"""
 
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
-
-    def get_time(self, function, start):
-        run_time = time.time() - start
-        arcpy.AddMessage(f'{function} - {run_time}')
-        return run_time
     
     def start(self) -> None:
         if self.param_lookup['download_geographic_cells'].value:
