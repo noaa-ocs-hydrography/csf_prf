@@ -77,6 +77,7 @@ class ENCReaderEngine(Engine):
         self.driver = None
         self.scale_bounds = {}
         self.scales = {}
+        self.gc_files = []
         self.gc_points = None
         self.gc_lines = None
         self.geometries = {
@@ -233,17 +234,19 @@ class ENCReaderEngine(Engine):
     def filter_gc_features(self) -> None:
         """Spatial query GC features within Sheets layer"""
 
-        points_assigned = arcpy.management.SelectLayerByLocation(self.gc_points, 'INTERSECT', self.sheets_layer)
-        points_assigned_layer = arcpy.management.MakeFeatureLayer(points_assigned)
-        points_unassigned = arcpy.management.SelectLayerByLocation(points_assigned_layer, selection_type='SWITCH_SELECTION')
-        self.geometries['Point']['GC_layers']['assigned'] = points_assigned
-        self.geometries['Point']['GC_layers']['unassigned'] = points_unassigned 
+        if self.gc_points:
+            points_assigned = arcpy.management.SelectLayerByLocation(self.gc_points, 'INTERSECT', self.sheets_layer)
+            points_assigned_layer = arcpy.management.MakeFeatureLayer(points_assigned)
+            points_unassigned = arcpy.management.SelectLayerByLocation(points_assigned_layer, selection_type='SWITCH_SELECTION')
+            self.geometries['Point']['GC_layers']['assigned'] = points_assigned
+            self.geometries['Point']['GC_layers']['unassigned'] = points_unassigned 
         
-        lines_assigned = arcpy.management.SelectLayerByLocation(self.gc_lines, 'INTERSECT', self.sheets_layer)
-        lines_assigned_layer = arcpy.management.MakeFeatureLayer(lines_assigned)
-        lines_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
-        self.geometries['LineString']['GC_layers']['assigned'] = lines_assigned
-        self.geometries['LineString']['GC_layers']['unassigned'] = lines_unassigned
+        if self.gc_lines:
+            lines_assigned = arcpy.management.SelectLayerByLocation(self.gc_lines, 'INTERSECT', self.sheets_layer)
+            lines_assigned_layer = arcpy.management.MakeFeatureLayer(lines_assigned)
+            lines_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
+            self.geometries['LineString']['GC_layers']['assigned'] = lines_assigned
+            self.geometries['LineString']['GC_layers']['unassigned'] = lines_unassigned
 
     def get_all_fields(self, features) -> None:
         """
@@ -346,16 +349,20 @@ class ENCReaderEngine(Engine):
         point_files = []
         line_files = []
         for shapefile in gc_folder.rglob('*.shp'):
-            # TODO only get files from current ENC names
-            shp_path = str(shapefile)
-            if shp_path.endswith('p1.shp'):
-                point_files.append(shp_path)
-            elif shp_path.endswith('l1.shp'):
-                line_files.append(shp_path)
-            else:
-                arcpy.AddMessage(f'Found other GC: {shp_path}')
-        self.gc_points = arcpy.management.Merge(point_files, 'memory/gc_points')
-        self.gc_lines = arcpy.management.Merge(line_files, 'memory/gc_lines')
+            gc_name = pathlib.Path(shapefile).parents[0].stem
+            shp_name = str(shapefile)
+            if gc_name in self.gc_files:
+                if shp_name.endswith('p1.shp'):
+                    point_files.append(shp_name)
+                elif shp_name.endswith('l1.shp'):
+                    line_files.append(shp_name)
+                else:
+                    arcpy.AddMessage(f'Found other GC: {shp_name}')
+                    
+        if point_files:
+            self.gc_points = arcpy.management.Merge(point_files, 'memory/gc_points')
+        if line_files:
+            self.gc_lines = arcpy.management.Merge(line_files, 'memory/gc_lines')
 
     def get_gc_data(self) -> None:
         """Start the process to download any GCs associated with input ENCs"""
@@ -363,6 +370,7 @@ class ENCReaderEngine(Engine):
         arcpy.AddMessage('Checking for Geographic Cells')
         cursor = self.get_cursor()
         sql = self.get_sql('GetRelatedENC')
+        # TODO create new method for string replacement if needed, ie: list of ENC #'s for where clause
         return self.run_query(cursor, sql)
 
     def get_sql(self, file_name: str) -> str:
@@ -705,10 +713,23 @@ class ENCReaderEngine(Engine):
         """Reset S57 ENV for split multipoint only"""
 
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
+
+    def store_gc_names(self, gc_rows) -> None:
+        """Create property of all current GC names"""
+
+        enc_paths = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        enc_names = [pathlib.Path(enc).stem for enc in enc_paths]
+        for gc in gc_rows:
+            # ['documenttype', 'BaseFileName', 'iecode', 'status', 'InformationCode', 'Path]
+            gc_name = gc[1].replace('.zip', '')
+            enc_name = gc[2]
+            if enc_name in enc_names:
+                self.gc_files.append(gc_name)
     
     def start(self) -> None:
         if self.param_lookup['download_geographic_cells'].value:
             rows = self.get_gc_data()
+            self.store_gc_names(rows)
             self.download_gcs(rows)
             self.merge_gc_features()
             self.filter_gc_features()
@@ -723,6 +744,7 @@ class ENCReaderEngine(Engine):
         self.add_columns()
         self.join_quapos_to_features()
 
+        # Run times
         # download_gcs - 75.
         # merge_gc_features - 12.
         # get_feature_records - 115.
