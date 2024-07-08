@@ -1,3 +1,4 @@
+-- 'GC11206.zip', 'US4SC22M', 'US4SC22M', 'AVAILABLE', '20', '2016\\GC''
 SELECT doc.documenttype, doc.BaseFileName, k.iecode, lk.status, doc.InformationCode, doc.Path
 FROM sourcedocument doc
     INNER JOIN affectedkapp aff ON aff.sourceid = doc.sourceid
