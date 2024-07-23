@@ -730,6 +730,7 @@ class ENCReaderEngine(Engine):
     
     def start(self) -> None:
         if self.param_lookup['download_geographic_cells'].value:
+            # TODO check if "Class" types [COALNE, SLCONS, LNDARE] are in the GC tables
             # TODO consolidate calls to get enc_files values
             rows = self.get_gc_data()
             self.store_gc_names(rows)
