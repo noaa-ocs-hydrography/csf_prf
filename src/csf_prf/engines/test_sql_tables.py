@@ -39,8 +39,15 @@ def test_table_access() -> None:
 
     info_code = 20  # Geographic Cells
 
-    cursor.execute(f"select TOP (5) * from sourcedocument")
+    # cursor.execute(f"select TOP (5) * from sourcedocument")
     # cursor.execute(f"select * from sourcedocument where InformationCode = '20' AND Status = 'AVAILABLE' AND DocumentNumber IN ('11113', '11117')")
+    
+    # execute ENC query
+    # path = INPUTS / 'sql' / 'GetRelatedENC.sql'
+    # with open(path, 'r') as sql:
+    #     query = sql.read()  
+    # cursor.execute(query)
+
     cells = cursor.fetchall()
     columns = [column[0] for column in cursor.description]
     print(columns, '\n')

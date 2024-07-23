@@ -203,8 +203,8 @@ class ENCReaderEngine(Engine):
         for enc in enc_paths:
             gc_lookup[pathlib.Path(enc).stem] = []
         for gc in gc_rows:
-            # ['documenttype', 'BaseFileName', 'iecode', 'status', 'InformationCode', 'Path]
-            enc_name = gc[2]
+            # ['BaseFileName', 'iecode', 'status', 'Path]
+            enc_name = gc[1]
             if enc_name in gc_lookup.keys():
                 gc_lookup[enc_name].append(gc)
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
@@ -721,10 +721,10 @@ class ENCReaderEngine(Engine):
         enc_paths = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
         enc_names = [pathlib.Path(enc).stem for enc in enc_paths]
         for gc in gc_rows:
-            # ['documenttype', 'BaseFileName', 'iecode', 'status', 'InformationCode', 'Path]
-            # TODO review indexes for ENC names or convert to dictionary lookup for readabilty
-            gc_name = gc[1].replace('.zip', '')
-            enc_name = gc[2]
+            # ['BaseFileName', 'iecode', 'status', 'Path]
+            # GC_name.zip, ENC name, review status, Year\GC
+            gc_name = gc[0].replace('.zip', '')
+            enc_name = gc[1]
             if enc_name in enc_names:
                 self.gc_files.append(gc_name)
     
