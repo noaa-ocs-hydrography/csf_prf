@@ -234,6 +234,7 @@ class ENCReaderEngine(Engine):
     def filter_gc_features(self) -> None:
         """Spatial query GC features within Sheets layer"""
 
+        # TODO Run tool and see if GC_layers are identical to features from ENC files
         if self.gc_points:
             points_assigned = arcpy.management.SelectLayerByLocation(self.gc_points, 'INTERSECT', self.sheets_layer)
             points_assigned_layer = arcpy.management.MakeFeatureLayer(points_assigned)
@@ -350,14 +351,14 @@ class ENCReaderEngine(Engine):
         line_files = []
         for shapefile in gc_folder.rglob('*.shp'):
             gc_name = pathlib.Path(shapefile).parents[0].stem
-            shp_name = str(shapefile)
+            shp_pth = str(shapefile)
             if gc_name in self.gc_files:
-                if shp_name.endswith('p1.shp'):
-                    point_files.append(shp_name)
-                elif shp_name.endswith('l1.shp'):
-                    line_files.append(shp_name)
+                if shp_pth.endswith('p1.shp'):
+                    point_files.append(shp_pth)
+                elif shp_pth.endswith('l1.shp'):
+                    line_files.append(shp_pth)
                 else:
-                    arcpy.AddMessage(f'Found other GC: {shp_name}')
+                    arcpy.AddMessage(f'Found other GC: {shp_pth}')
                     
         if point_files:
             self.gc_points = arcpy.management.Merge(point_files, 'memory/gc_points')
@@ -721,6 +722,7 @@ class ENCReaderEngine(Engine):
         enc_names = [pathlib.Path(enc).stem for enc in enc_paths]
         for gc in gc_rows:
             # ['documenttype', 'BaseFileName', 'iecode', 'status', 'InformationCode', 'Path]
+            # TODO review indexes for ENC names or convert to dictionary lookup for readabilty
             gc_name = gc[1].replace('.zip', '')
             enc_name = gc[2]
             if enc_name in enc_names:
@@ -728,6 +730,7 @@ class ENCReaderEngine(Engine):
     
     def start(self) -> None:
         if self.param_lookup['download_geographic_cells'].value:
+            # TODO consolidate calls to get enc_files values
             rows = self.get_gc_data()
             self.store_gc_names(rows)
             self.download_gcs(rows)
@@ -744,7 +747,7 @@ class ENCReaderEngine(Engine):
         self.add_columns()
         self.join_quapos_to_features()
 
-        # Run times
+        # Run times in seconds
         # download_gcs - 75.
         # merge_gc_features - 12.
         # get_feature_records - 115.
