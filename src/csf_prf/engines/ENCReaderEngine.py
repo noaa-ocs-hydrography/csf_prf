@@ -217,7 +217,7 @@ class ENCReaderEngine(Engine):
             multiprocessing.set_executable(os.path.join(sys.exec_prefix, 'pythonw.exe'))
             processors = int(multiprocessing.cpu_count() * .75)
             deep_water = multiprocessing.Pool(processes=processors)
-            download_inputs = [[output_folder, enc, gc[5], gc[1]] for gc in gc_lookup[enc]]
+            download_inputs = [[output_folder, enc, gc[3], gc[0]] for gc in gc_lookup[enc]]
             deep_water.map(download_gc, download_inputs)
             deep_water.close()
             deep_water.join()
