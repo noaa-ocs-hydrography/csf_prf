@@ -81,7 +81,7 @@ def test_get_enc_bounds(victim):
     victim.get_enc_bounds()
     assert hasattr(victim, 'scale_bounds')
     assert 4 in victim.scale_bounds
-    assert -81.3995801 in victim.scale_bounds[4]
+    assert -81.3995801 in victim.scale_bounds[4][0]
 
 
 def test_get_feature_records(victim):
