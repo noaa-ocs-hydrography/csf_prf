@@ -1,0 +1,933 @@
+LineString:
+  ASLXIS:
+    code: 1
+    objl_string: ASLXIS_ArchipelagicSeaLaneAxis
+  BERTHS:
+    code: 1
+    objl_string: BERTHS_Berth
+  BRIDGE:
+    code: 1
+    objl_string: BRIDGE_Bridge
+  CANALS:
+    code: 5
+    objl_string: CANALS_Canal
+  CAUSWY:
+    code: 10
+    objl_string: CAUSWY_Causeway
+  CBLOHD:
+    code: 5
+    objl_string: CBLOHD_CableOverhead
+  CBLSUB:
+    code: 1
+    objl_string: CBLSUB_CableSubmarine
+  COALNE:
+    code: 1
+    objl_string: COALNE_Coastline
+  CONVYR:
+    code: 10
+    objl_string: CONVYR_Conveyor
+  DAMCON:
+    code: 15
+    objl_string: DAMCON_Dam
+  DEPCNT:
+    code: 5
+    objl_string: DEPCNT_DepthContour
+  DWRTCL:
+    code: 1
+    objl_string: DWRTCL_DeepWaterRouteCenterline
+  DYKCON:
+    code: 15
+    objl_string: DYKCON_Dyke
+  FERYRT:
+    code: 5
+    objl_string: FERYRT_FerryRoute
+  FLODOC:
+    code: 20
+    objl_string: FLODOC_FloatingDock
+  FNCLNE:
+    code: 20
+    objl_string: FNCLNE_FenceWall
+  FORSTC:
+    code: 25
+    objl_string: FORSTC_FortifiedStructure
+  FSHFAC:
+    code: 1
+    objl_string: FSHFAC_FishingFacility
+  GATCON:
+    code: 25
+    objl_string: GATCON_Gate
+  LNDARE:
+    code: 1
+    objl_string: LNDARE_LandArea
+  LNDELV:
+    code: 5
+    objl_string: LNDELV_LandElevation
+  LNDMRK:
+    code: 30
+    objl_string: LNDMRK_Landmark
+  LOCMAG:
+    code: 5
+    objl_string: LOCMAG_LocalMagneticAnomaly
+  MAGVAR:
+    code: 10
+    objl_string: MAGVAR_MagneticVariation
+  MARCUL:
+    code: 25
+    objl_string: MARCUL_MarineFarmCulture
+  MORFAC:
+    code: 30
+    objl_string: MORFAC_MooringWarpingFacility
+  M_SREL:
+    code: 5
+    objl_string: M_SREL_SurveyReliability
+  NAVLNE:
+    code: 10
+    objl_string: NAVLNE_NavigationLine
+  NEWOBJ:
+    code: 1
+    objl_string: NEWOBJ_NewObject
+  OBSTRN:
+    code: 5
+    objl_string: OBSTRN_Obstruction
+  OILBAR:
+    code: 10
+    objl_string: OILBAR_OilBarrier
+  PIPOHD:
+    code: 35
+    objl_string: PIPOHD_PipelineOverhead
+  PIPSOL:
+    code: 5
+    objl_string: PIPSOL_PipelineSubmarineOnLand
+  PLTS:
+    code: 0
+    objl_string: PLTS_SpatialAttributeL
+  PONTON:
+    code: 35
+    objl_string: PONTON_Pontoon
+  RADLNE:
+    code: 15
+    objl_string: RADLNE_RadarLine
+  RAILWY:
+    code: 40
+    objl_string: RAILWY_Railway
+  RAPIDS:
+    code: 10
+    objl_string: RAPIDS_Rapids
+  RCRTCL:
+    code: 20
+    objl_string: RCRTCL_RecommendedRouteCenterline
+  RDOCAL:
+    code: 25
+    objl_string: RDOCAL_RadioCallingInPoint
+  RECTRC:
+    code: 30
+    objl_string: RECTRC_RecommendedTrack
+  RIVERS:
+    code: 15
+    objl_string: RIVERS_River
+  ROADWY:
+    code: 45
+    objl_string: ROADWY_Road
+  RUNWAY:
+    code: 50
+    objl_string: RUNWAY_Runway
+  SBDARE:
+    code: 10
+    objl_string: SBDARE_SeabedArea
+  SLCONS:
+    code: 5
+    objl_string: SLCONS_ShorelineConstruction
+  SLOTOP:
+    code: 20
+    objl_string: SLOTOP_SlopeTopline
+  SNDWAV:
+    code: 15
+    objl_string: SNDWAV_SandWaves
+  STSLNE:
+    code: 30
+    objl_string: STSLNE_StraightTerritorialSeaBaseline
+  TIDEWY:
+    code: 15
+    objl_string: TIDEWY_Tideway
+  TSELNE:
+    code: 40
+    objl_string: TSELNE_TrafficSeparationLine
+  TSSBND:
+    code: 45
+    objl_string: TSSBND_TrafficSeparationSchemeBoundary
+  TUNNEL:
+    code: 55
+    objl_string: TUNNEL_Tunnel
+  VEGATN:
+    code: 25
+    objl_string: VEGATN_Vegetation
+  WATFAL:
+    code: 30
+    objl_string: WATFAL_Waterfall
+  WATTUR:
+    code: 15
+    objl_string: WATTUR_WaterTurbulence
+  CANBNK:
+    code: 24
+    objl_string: Canal_bank
+  LAKSHR:
+    code: 70
+    objl_string: Lake_shore
+  RIVBNK:
+    code: 115
+    objl_string: River_bank
+  SQUARE:
+    code: 131
+    objl_string: Square
+  M_COVR:
+    code: 302
+    objl_string: Coverage
+  C_AGGR:
+    code: 400
+    objl_string: C_AGGR_Aggregation
+  C_ASSO:
+    code: 401
+    objl_string: C_ASSO_Association
+  C_STAC:
+    code: 402
+    objl_string: C_STAC_Stackedonstackedunder
+  $AREAS:
+    code: 500
+    objl_string: $AREAS_Cartographicarea
+  $LINES:
+    code: 501
+    objl_string: $LINES_Cartographicline
+  $COMPS:
+    code: 503
+    objl_string: $COMPS_Compass
+  $TEXTS:
+    code: 504
+    objl_string: $TEXTS_Text
+Point:
+  $CSYMB:
+    code: 502
+    objl_string: $CSYMB_CartographicSymbol
+  ACHARE:
+    code: 1
+    objl_string: ACHARE_AnchorageArea
+  ACHBRT:
+    code: 5
+    objl_string: ACHBRT_AnchorBerth
+  AIRARE:
+    code: 1
+    objl_string: AIRARE_AirportAirfield
+  BCNCAR:
+    code: 1
+    objl_string: BCNCAR_BeaconCardinal
+  BCNISD:
+    code: 5
+    objl_string: BCNISD_BeaconIsolatedDanger
+  BCNLAT:
+    code: 10
+    objl_string: BCNLAT_BeaconLateral
+  BCNSAW:
+    code: 15
+    objl_string: BCNSAW_BeaconSafeWater
+  BCNSPP:
+    code: 20
+    objl_string: BCNSPP_BeaconSpecialPurpose
+  BERTHS:
+    code: 1
+    objl_string: BERTHS_Berth
+  BOYCAR:
+    code: 25
+    objl_string: BOYCAR_BuoyCardinal
+  BOYINB:
+    code: 30
+    objl_string: BOYINB_BuoyInstallation
+  BOYISD:
+    code: 35
+    objl_string: BOYISD_BuoyIsolatedDanger
+  BOYLAT:
+    code: 40
+    objl_string: BOYLAT_BuoyLateral
+  BOYSAW:
+    code: 45
+    objl_string: BOYSAW_BuoySafeWater
+  BOYSPP:
+    code: 50
+    objl_string: BOYSPP_BuoySpecialPurpose
+  BRIDGE:
+    code: 5
+    objl_string: BRIDGE_Bridge
+  BUAARE:
+    code: 10
+    objl_string: BUAARE_BuiltUpArea
+  BUISGL:
+    code: 15
+    objl_string: BUISGL_BuildingSingle
+  CGUSTA:
+    code: 5
+    objl_string: CGUSTA_CoastguardStation
+  CHKPNT:
+    code: 10
+    objl_string: CHKPNT_CheckPoint
+  CRANES:
+    code: 15
+    objl_string: CRANES_Cranes
+  CTNARE:
+    code: 1
+    objl_string: CTNARE_CautionArea
+  CTRPNT:
+    code: 20
+    objl_string: CTRPNT_ControlPoint
+  CTSARE:
+    code: 10
+    objl_string: CTSARE_CargoTranshipmentArea
+  CURENT:
+    code: 1
+    objl_string: CURENT_CurrentNonGravitational
+  DAMCON:
+    code: 25
+    objl_string: DAMCON_Dam
+  DAYMAR:
+    code: 55
+    objl_string: DAYMAR_Daymark
+  DISMAR:
+    code: 20
+    objl_string: DISMAR_DistanceMark
+  DMPGRD:
+    code: 15
+    objl_string: DMPGRD_DumpingGround
+  FOGSIG:
+    code: 60
+    objl_string: FOGSIG_FogSignal
+  FORSTC:
+    code: 30
+    objl_string: FORSTC_FortifiedStructure
+  FSHFAC:
+    code: 10
+    objl_string: FSHFAC_FishingFacility
+  GATCON:
+    code: 25
+    objl_string: GATCON_Gate
+  GRIDRN:
+    code: 30
+    objl_string: GRIDRN_Gridiron
+  HRBFAC:
+    code: 35
+    objl_string: HRBFAC_HarbourFacility
+  HULKES:
+    code: 40
+    objl_string: HULKES_Hulk
+  ICNARE:
+    code: 25
+    objl_string: ICNARE_IncinerationArea
+  LIGHTS:
+    code: 65
+    objl_string: LIGHTS_Light
+  LITFLT:
+    code: 70
+    objl_string: LITFLT_LightFloat
+  LITVES:
+    code: 75
+    objl_string: LITVES_LightVessel
+  LNDARE:
+    code: 1
+    objl_string: LNDARE_LandArea
+  LNDELV:
+    code: 5
+    objl_string: LNDELV_LandElevation
+  LNDMRK:
+    code: 35
+    objl_string: LNDMRK_Landmark
+  LNDRGN:
+    code: 10
+    objl_string: LNDRGN_LandRegion
+  LOCMAG:
+    code: 5
+    objl_string: LOCMAG_LocalMagneticAnomaly
+  LOGPON:
+    code: 30
+    objl_string: LOGPON_LogPond
+  MAGVAR:
+    code: 10
+    objl_string: MAGVAR_MagneticVariation
+  MARCUL:
+    code: 35
+    objl_string: MARCUL_MarineFarmCulture
+  MIPARE:
+    code: 30
+    objl_string: MIPARE_MilitaryPracticeArea
+  MORFAC:
+    code: 45
+    objl_string: MORFAC_MooringWarpingFacility
+  M_NPUB:
+    code: 1
+    objl_string: M_NPUB_NauticalPublicationInformation
+  NEWOBJ:
+    code: 1
+    objl_string: NEWOBJ_NewObject
+  OBSTRN:
+    code: 20
+    objl_string: OBSTRN_Obstruction
+  OFSPLF:
+    code: 1
+    objl_string: OFSPLF_OffshorePlatform
+  PILBOP:
+    code: 50
+    objl_string: PILBOP_PilotBoardingPlace
+  PILPNT:
+    code: 55
+    objl_string: PILPNT_Pile
+  PIPARE:
+    code: 5
+    objl_string: PIPARE_PipelineArea
+  PIPSOL:
+    code: 10
+    objl_string: PIPSOL_PipelineSubmarineOnLand
+  PRCARE:
+    code: 1
+    objl_string: PRCARE_PrecautionaryArea
+  PRDARE:
+    code: 40
+    objl_string: PRDARE_ProductionStorageArea
+  PYLONS:
+    code: 45
+    objl_string: PYLONS_PylonBridgeSupport
+  RADRFL:
+    code: 85
+    objl_string: RADRFL_RadarReflector
+  RADSTA:
+    code: 90
+    objl_string: RADSTA_RadarStation
+  RAPIDS:
+    code: 15
+    objl_string: RAPIDS_Rapids
+  RCTLPT:
+    code: 5
+    objl_string: RCTLPT_RecommendedTrafficLanePart
+  RDOCAL:
+    code: 10
+    objl_string: RDOCAL_RadioCallingInPoint
+  RDOSTA:
+    code: 95
+    objl_string: RDOSTA_RadioStation
+  RETRFL:
+    code: 100
+    objl_string: RETRFL_RetroReflector
+  ROADWY:
+    code: 50
+    objl_string: ROADWY_Road
+  RSCSTA:
+    code: 60
+    objl_string: RSCSTA_RescueStation
+  RTPBCN:
+    code: 105
+    objl_string: RTPBCN_RadarTransponderBeacon
+  RUNWAY:
+    code: 55
+    objl_string: RUNWAY_Runway
+  SBDARE:
+    code: 15
+    objl_string: SBDARE_SeabedArea
+  SEAARE:
+    code: 20
+    objl_string: SEAARE_SeaAreaNamedWaterArea
+  SILTNK:
+    code: 60
+    objl_string: SILTNK_SiloTank
+  SISTAT:
+    code: 65
+    objl_string: SISTAT_SignalStationTraffic
+  SISTAW:
+    code: 70
+    objl_string: SISTAW_SignalStationWarning
+  SLCONS:
+    code: 1
+    objl_string: SLCONS_ShorelineConstruction
+  SLOGRD:
+    code: 25
+    objl_string: SLOGRD_SlopingGround
+  SMCFAC:
+    code: 75
+    objl_string: SMCFAC_SmallCraftFacility
+  SNDWAV:
+    code: 25
+    objl_string: SNDWAV_SandWaves
+  SOUNDG:
+    code: 1
+    objl_string: SOUNDG_Soundings
+  SPLARE:
+    code: 40
+    objl_string: SPLARE_SeaPlaneLandingArea
+  SPRING:
+    code: 30
+    objl_string: SPRING_Spring
+  TOPMAR:
+    code: 110
+    objl_string: TOPMAR_Topmark
+  TS_FEB:
+    code: 30
+    objl_string: TS_FEB_TidalStreamFloodEbb
+  TS_PAD:
+    code: 35
+    objl_string: TS_PAD_TidalStreamPanelData
+  TS_PNH:
+    code: 40
+    objl_string: TS_PNH_TidalStreamNonHarmonicPrediction
+  TS_PRH:
+    code: 45
+    objl_string: TS_PRH_TidalStreamHarmonicPrediction
+  TS_TIS:
+    code: 50
+    objl_string: TS_TIS_TidalStreamTimeSeries
+  TUNNEL:
+    code: 65
+    objl_string: TUNNEL_Tunnel
+  T_HMON:
+    code: 15
+    objl_string: T_HMON_TideHarmonicPrediction
+  T_NHMN:
+    code: 20
+    objl_string: T_NHMN_TideNonHarmonicPrediction
+  T_TIMS:
+    code: 25
+    objl_string: T_TIMS_TideTimeSeries
+  UWTROC:
+    code: 35
+    objl_string: UWTROC_UnderwaterAwashRock
+  VEGATN:
+    code: 30
+    objl_string: VEGATN_Vegetation
+  WATFAL:
+    code: 35
+    objl_string: WATFAL_Waterfall
+  WATTUR:
+    code: 40
+    objl_string: WATTUR_WaterTurbulence
+  WEDKLP:
+    code: 35
+    objl_string: WEDKLP_WeedKelp
+  WRECKS:
+    code: 45
+    objl_string: WRECKS_Wreck
+  CANBNK:
+    code: 24
+    objl_string: CANBNK_Canalbank
+  LAKSHR:
+    code: 70
+    objl_string: LAKSHR_Lakeshore
+  RIVBNK:
+    code: 115
+    objl_string: RIVBNK_Riverbank
+  SQUARE:
+    code: 131
+    objl_string: SQUARE_Square
+  M_COVR:
+    code: 302
+    objl_string: M_COVR_Coverage
+  C_AGGR:
+    code: 400
+    objl_string: C_AGGR_Aggregation
+  C_ASSO:
+    code: 401
+    objl_string: C_ASSO_Association
+  C_STAC:
+    code: 402
+    objl_string: C_STAC_Stackedonstackedunder
+  $AREAS:
+    code: 500
+    objl_string: $AREAS_Cartographicarea
+  $LINES:
+    code: 501
+    objl_string: $LINES_Cartographicline
+  $COMPS:
+    code: 503
+    objl_string: $COMPS_Compass
+  $TEXTS:
+    code: 504
+    objl_string: $TEXTS_Text
+  M_HDAT:
+    code: 303
+    objl_string: M_HDDAT_Horizontaldatumofdata
+  M_PROD:
+    code: 307
+    objl_string: M_PROD_Productioninformation
+  M_UNIT:
+    code: 311
+    objl_string: M_UNIT_Unitsofmeasurementofdata
+Polygon:
+  ACHARE:
+    code: 1
+    objl_string: ACHARE_AnchorageArea
+  ACHBRT:
+    code: 5
+    objl_string: ACHBRT_AnchorBerth
+  ADMARE:
+    code: 10
+    objl_string: ADMARE_AdministrationAreaNamed
+  AIRARE:
+    code: 1
+    objl_string: AIRARE_AirportAirfield
+  ARCSLN:
+    code: 15
+    objl_string: ARCSLN_ArchipelagicSeaLane
+  BERTHS:
+    code: 1
+    objl_string: BERTHS_Berth
+  BRIDGE:
+    code: 5
+    objl_string: BRIDGE_Bridge
+  BUAARE:
+    code: 10
+    objl_string: BUAARE_BuiltUpArea
+  BUISGL:
+    code: 15
+    objl_string: BUISGL_BuildingSingle
+  CANALS:
+    code: 5
+    objl_string: CANALS_Canal
+  CAUSWY:
+    code: 10
+    objl_string: CAUSWY_Causeway
+  CBLARE:
+    code: 1
+    objl_string: CBLARE_CableArea
+  CHKPNT:
+    code: 15
+    objl_string: CHKPNT_CheckPoint
+  CONVYR:
+    code: 20
+    objl_string: CONVYR_Conveyor
+  CONZNE:
+    code: 20
+    objl_string: CONZNE_ContiguousZone
+  COSARE:
+    code: 25
+    objl_string: COSARE_ContinentalShelfArea
+  CRANES:
+    code: 20
+    objl_string: CRANES_Cranes
+  CTNARE:
+    code: 1
+    objl_string: CTNARE_CautionArea
+  CTSARE:
+    code: 30
+    objl_string: CTSARE_CargoTranshipmentArea
+  CUSZNE:
+    code: 35
+    objl_string: CUSZNE_CustomZone
+  DAMCON:
+    code: 25
+    objl_string: DAMCON_Dam
+  DEPARE:
+    code: 1
+    objl_string: DEPARE_DepthArea
+  DMPGRD:
+    code: 40
+    objl_string: DMPGRD_DumpingGround
+  DOCARE:
+    code: 25
+    objl_string: DOCARE_DockArea
+  DRGARE:
+    code: 5
+    objl_string: DRGARE_DredgedArea
+  DRYDOC:
+    code: 30
+    objl_string: DRYDOC_DryDock
+  DWRTPT:
+    code: 1
+    objl_string: DWRTPT_DeepWaterRoutePart
+  DYKCON:
+    code: 35
+    objl_string: DYKCON_Dyke
+  EXEZNE:
+    code: 50
+    objl_string: EXEZNE_ExclusiveEconomicZone
+  FAIRWY:
+    code: 5
+    objl_string: FAIRWY_Fairway
+  FERYRT:
+    code: 10
+    objl_string: FERYRT_FerryRoute
+  FLODOC:
+    code: 40
+    objl_string: FLODOC_FloatingDock
+  FORSTC:
+    code: 30
+    objl_string: FORSTC_FortifiedStructure
+  FRPARE:
+    code: 55
+    objl_string: FRPARE_FreePortArea
+  FSHFAC:
+    code: 10
+    objl_string: FSHFAC_FishingFacility
+  FSHGRD:
+    code: 60
+    objl_string: FSHGRD_FishingGround
+  FSHZNE:
+    code: 65
+    objl_string: FSHZNE_FisheryZone
+  GATCON:
+    code: 45
+    objl_string: GATCON_Gate
+  GRIDRN:
+    code: 50
+    objl_string: GRIDRN_Gridiron
+  HRBARE:
+    code: 70
+    objl_string: HRBARE_HarbourAreaAdministrative
+  HRBFAC:
+    code: 55
+    objl_string: HRBFAC_HarbourFacility
+  HULKES:
+    code: 60
+    objl_string: HULKES_Hulk
+  ICEARE:
+    code: 15
+    objl_string: ICEARE_IceArea
+  ICNARE:
+    code: 75
+    objl_string: ICNARE_IncinerationArea
+  ISTZNE:
+    code: 15
+    objl_string: ISTZNE_InshoreTrafficZone
+  LAKARE:
+    code: 1
+    objl_string: LAKARE_Lake
+  LNDARE:
+    code: 5
+    objl_string: LNDARE_LandArea
+  LNDMRK:
+    code: 35
+    objl_string: LNDMRK_Landmark
+  LNDRGN:
+    code: 10
+    objl_string: LNDRGN_LandRegion
+  LOCMAG:
+    code: 5
+    objl_string: LOCMAG_LocalMagneticAnomaly
+  LOGPON:
+    code: 85
+    objl_string: LOGPON_LogPond
+  LOKBSN:
+    code: 65
+    objl_string: LOKBSN_LockBasin
+  MAGVAR:
+    code: 10
+    objl_string: MAGVAR_MagneticVariation
+  MARCUL:
+    code: 95
+    objl_string: MARCUL_MarineFarmCulture
+  MIPARE:
+    code: 60
+    objl_string: MIPARE_MilitaryPracticeArea
+  MORFAC:
+    code: 70
+    objl_string: MORFAC_MooringWarpingFacility
+  M_ACCY:
+    code: 1
+    objl_string: M_ACCY_AccuracyOfData
+  M_CSCL:
+    code: 20
+    objl_string: M_CSCL_CompilationScaleOfData
+  M_HOPA:
+    code: 25
+    objl_string: M_HOPA_HorizontalDatumShiftParameters
+  M_NPUB:
+    code: 30
+    objl_string: M_NPUB_NauticalPublicationInformation
+  M_NSYS:
+    code: 35
+    objl_string: M_NSYS_NavigationalSystemOfMarks
+  M_QUAL:
+    code: 40
+    objl_string: M_QUAL_QualityOfData
+  M_SDAT:
+    code: 45
+    objl_string: M_SDAT_SoundingDatum
+  M_SREL:
+    code: 50
+    objl_string: M_SREL_SurveyReliability
+  M_VDAT:
+    code: 55
+    objl_string: M_VDAT_VerticalDatumOfData
+  NEWOBJ:
+    code: 1
+    objl_string: NEWOBJ_NewObject
+  OBSTRN:
+    code: 15
+    objl_string: OBSTRN_Obstruction
+  OFSPLF:
+    code: 5
+    objl_string: OFSPLF_OffshorePlatform
+  OSPARE:
+    code: 10
+    objl_string: OSPARE_OffshoreProductionArea
+  PILBOP:
+    code: 75
+    objl_string: PILBOP_PilotBoardingPlace
+  PIPARE:
+    code: 15
+    objl_string: PIPARE_PipelineArea
+  PONTON:
+    code: 80
+    objl_string: PONTON_Pontoon
+  PRCARE:
+    code: 20
+    objl_string: PRCARE_PrecautionaryArea
+  PRDARE:
+    code: 40
+    objl_string: PRDARE_ProductionStorageArea
+  PYLONS:
+    code: 45
+    objl_string: PYLONS_PylonBridgeSupport
+  RADRNG:
+    code: 25
+    objl_string: RADRNG_RadarRange
+  RAPIDS:
+    code: 15
+    objl_string: RAPIDS_Rapids
+  RCTLPT:
+    code: 30
+    objl_string: RCTLPT_RecommendedTrafficLanePart
+  RECTRC:
+    code: 40
+    objl_string: RECTRC_RecommendedTrack
+  RESARE:
+    code: 105
+    objl_string: RESARE_RestrictedArea
+  RIVERS:
+    code: 20
+    objl_string: RIVERS_River
+  ROADWY:
+    code: 50
+    objl_string: ROADWY_Road
+  RUNWAY:
+    code: 55
+    objl_string: RUNWAY_Runway
+  SBDARE:
+    code: 15
+    objl_string: SBDARE_SeabedArea
+  SEAARE:
+    code: 25
+    objl_string: SEAARE_SeaAreaNamedWaterArea
+  SILTNK:
+    code: 60
+    objl_string: SILTNK_SiloTank
+  SLCONS:
+    code: 1
+    objl_string: SLCONS_ShorelineConstruction
+  SLOGRD:
+    code: 30
+    objl_string: SLOGRD_SlopingGround
+  SMCFAC:
+    code: 85
+    objl_string: SMCFAC_SmallCraftFacility
+  SNDWAV:
+    code: 30
+    objl_string: SNDWAV_SandWaves
+  SPLARE:
+    code: 110
+    objl_string: SPLARE_SeaPlaneLandingArea
+  SUBTLN:
+    code: 45
+    objl_string: SUBTLN_SubmarineTransitLane
+  SWPARE:
+    code: 10
+    objl_string: SWPARE_SweptArea
+  TESARE:
+    code: 115
+    objl_string: TESARE_TerritorialSeaArea
+  TIDEWY:
+    code: 30
+    objl_string: TIDEWY_Tideway
+  TSEZNE:
+    code: 50
+    objl_string: TSEZNE_TrafficSeparationZone
+  TSSCRS:
+    code: 55
+    objl_string: TSSCRS_TrafficSeparationSchemeCrossing
+  TSSLPT:
+    code: 60
+    objl_string: TSSLPT_TrafficSeparationSchemeLanePart
+  TSSRON:
+    code: 65
+    objl_string: TSSRON_TrafficSeparationSchemeRoundabout
+  TS_FEB:
+    code: 35
+    objl_string: TS_FEB_TidalStreamFloodEbb
+  TS_PAD:
+    code: 40
+    objl_string: TS_PAD_TidalStreamPanelData
+  TS_PNH:
+    code: 45
+    objl_string: TS_PNH_TidalStreamNonHarmonicPrediction
+  TS_PRH:
+    code: 50
+    objl_string: TS_PRH_TidalStreamHarmonicPrediction
+  TS_TIS:
+    code: 55
+    objl_string: TS_TIS_TidalStreamTimeSeries
+  TUNNEL:
+    code: 65
+    objl_string: TUNNEL_Tunnel
+  TWRTPT:
+    code: 70
+    objl_string: TWRTPT_TwoWayRoutePart
+  T_HMON:
+    code: 15
+    objl_string: T_HMON_TideHarmonicPrediction
+  T_NHMN:
+    code: 20
+    objl_string: T_NHMN_TideNonHarmonicPrediction
+  T_TIMS:
+    code: 25
+    objl_string: T_TIMS_TideTimeSeries
+  UNSARE:
+    code: 15
+    objl_string: UNSARE_UnsurveyedArea
+  VEGATN:
+    code: 35
+    objl_string: VEGATN_Vegetation
+  WATTUR:
+    code: 20
+    objl_string: WATTUR_WaterTurbulence
+  WEDKLP:
+    code: 40
+    objl_string: WEDKLP_WeedKelp
+  WRECKS:
+    code: 25
+    objl_string: WRECKS_Wreck
+  CANBNK:
+    code: 24
+    objl_string: Canal_bank
+  LAKSHR:
+    code: 70
+    objl_string: Lake_shore
+  RIVBNK:
+    code: 115
+    objl_string: River_bank
+  SQUARE:
+    code: 131
+    objl_string: Square
+  M_COVR:
+    code: 302
+    objl_string: Coverage
+  C_AGGR:
+    code: 400
+    objl_string: C_AGGR_Aggregation
+  C_ASSO:
+    code: 401
+    objl_string: C_ASSO_Association
+  C_STAC:
+    code: 402
+    objl_string: C_STAC_Stackedonstackedunder
+  $AREAS:
+    code: 500
+    objl_string: $AREAS_Cartographicarea
+  $LINES:
+    code: 501
+    objl_string: $LINES_Cartographicline
+  $COMPS:
+    code: 503
+    objl_string: $COMPS_Compass
+  $TEXTS:
+    code: 504
+    objl_string: $TEXTS_Text

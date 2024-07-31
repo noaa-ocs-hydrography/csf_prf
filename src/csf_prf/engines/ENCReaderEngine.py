@@ -118,6 +118,7 @@ class ENCReaderEngine(Engine):
         self.add_objl_string()
         self.add_asgnmt_column()
         self.add_invreq_column()
+        self.add_subtype_column()
 
     def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT', field_length=255, nullable=False) -> None:
         """
@@ -191,6 +192,29 @@ class ENCReaderEngine(Engine):
     #                 file.write(chunk)
     #     else:
     #         arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
+
+    def add_subtype_column(self) -> None:
+        """Add and popuplate FCSubtype field"""
+
+        with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
+            subtype_lookup = yaml.safe_load(lookup)
+
+        for feature_type in self.geometries.keys():
+            subtypes = subtype_lookup[feature_type]
+            # TODO add column and try to dynamically set value based on OBJL_NAME column with an expression
+            # might have to use a cursor if the expression does not work
+
+            arcpy.AddMessage(f" - Adding 'FCSubtype' column: {feature_type}")
+            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['assigned'], 'invreq', nullable=True)
+            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['unassigned'], 'invreq', nullable=True)
+            self.set_assigned_invreq(feature_type, objl_lookup, invreq_options)
+            self.set_unassigned_invreq(feature_type, objl_lookup, invreq_options)
+    
+    def add_subtypes_to_data(self) -> None:
+        # arcpy.env.Workspace =  ''
+        # arcpy.SetSubtypeField_management("water/fittings", "TYPECODE")
+        # TODO arcpy.management.AddSubtype(in_table, subtype_code, subtype_description) 
+        pass
 
     def download_gcs(self, gc_rows) -> None:
         """
@@ -746,6 +770,7 @@ class ENCReaderEngine(Engine):
         self.perform_spatial_filter()
         self.print_feature_total()
         self.add_columns()
+        self.add_subtypes_to_data()
         self.join_quapos_to_features()
 
         # Run times in seconds
