@@ -47,7 +47,16 @@ class CompositeSourceCreatorEngine(Engine):
             arcpy.management.CalculateField(
                 layer, column, expression, expression_type="PYTHON3", field_type=field_type
             )
-            
+
+    def add_subtypes_to_data(self) -> None:
+        # TODO can a subtype be set outside a GDB? Might need to perform this in CompositeSourceCreatorEngine
+        # output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        # arcpy.env.Workspace =  str(output_folder / 'csf_features.gdb')
+        
+        # arcpy.management.SetSubtypeField(table, "FCSubtype")
+        # arcpy.management.AddSubtype(in_table, subtype_code, subtype_description) 
+        pass
+
     def convert_bottom_samples(self) -> None:
         """Process the Bottom Samples input parameter"""
 
@@ -398,6 +407,7 @@ class CompositeSourceCreatorEngine(Engine):
         self.convert_maritime_datasets()
         # self.convert_tides()
         self.convert_enc_files()
+        self.add_subtypes_to_date()
         self.write_to_geopackage()
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')

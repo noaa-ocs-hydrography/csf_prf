@@ -211,15 +211,6 @@ class ENCReaderEngine(Engine):
                 self.add_column_and_constant(self.geometries[feature_type]['features_layers'][data_type], 'FCSubtype', 
                                              expression, field_type='LONG', code_block=code_block)
     
-    def add_subtypes_to_data(self) -> None:
-        # TODO can a subtype be set outside a GDB? Might need to perform this in CompositeSourceCreatorEngine
-        # output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-        # arcpy.env.Workspace =  str(output_folder / 'csf_features.gdb')
-        
-        # arcpy.management.SetSubtypeField(table, "FCSubtype")
-        # arcpy.management.AddSubtype(in_table, subtype_code, subtype_description) 
-        pass
-
     def set_fcsubtype_value(self, feature_type, data_type, subtypes) -> None:
         """
         Isolate logic for setting the FCSubtype value from lookup file
@@ -786,7 +777,7 @@ class ENCReaderEngine(Engine):
         self.perform_spatial_filter()
         self.print_feature_total()
         self.add_columns()
-        self.add_subtypes_to_data()
+        self.write_output_layer_file()
         self.join_quapos_to_features()
 
         # Run times in seconds
@@ -797,3 +788,9 @@ class ENCReaderEngine(Engine):
         # perform_spatial_filter - 668. 656 651 176
         # add_columns - 8.
         # join_quapos_to_features - 12.
+
+    def write_output_layer_file(self) -> None:
+        # open layer file in INPUTS
+        # string replacement on {~} for output GDB path
+        # copy new file to the output folder
+        pass
