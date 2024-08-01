@@ -120,18 +120,18 @@ class ENCReaderEngine(Engine):
         self.add_invreq_column()
         self.add_subtype_column()
 
-    def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT', field_length=255, nullable=False) -> None:
+    def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=255, code_block='', nullable=False) -> None:
         """
         Add the asgnment column and 
         :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
-        """
+        """                          
 
         if nullable:
             arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
         else:
             arcpy.management.AddField(layer, column, field_type, field_length=field_length)
             arcpy.management.CalculateField(
-                layer, column, expression, expression_type="PYTHON3", field_type=field_type
+                layer, column, expression, expression_type="PYTHON3", field_type=field_type, code_block=code_block
             )
 
     def add_invreq_column(self) -> None:
@@ -199,22 +199,39 @@ class ENCReaderEngine(Engine):
         with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
             subtype_lookup = yaml.safe_load(lookup)
 
-        for feature_type in self.geometries.keys():
+        for feature_type in self.geometries.keys():   
             subtypes = subtype_lookup[feature_type]
-            # TODO add column and try to dynamically set value based on OBJL_NAME column with an expression
-            # might have to use a cursor if the expression does not work
-
+            code_block = f"""def get_stcode(objl_name):
+                '''Code block to use OBJL_NAME field with lookup'''
+                return {subtypes}[objl_name]['code']"""
+            expression = "get_stcode(!OBJL_NAME!)"
             arcpy.AddMessage(f" - Adding 'FCSubtype' column: {feature_type}")
-            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['assigned'], 'invreq', nullable=True)
-            self.add_column_and_constant(self.geometries[feature_type]['features_layers']['unassigned'], 'invreq', nullable=True)
-            self.set_assigned_invreq(feature_type, objl_lookup, invreq_options)
-            self.set_unassigned_invreq(feature_type, objl_lookup, invreq_options)
+            data = ['assigned', 'unassigned']
+            for data_type in data:
+                self.add_column_and_constant(self.geometries[feature_type]['features_layers'][data_type], 'FCSubtype', 
+                                             expression, field_type='LONG', code_block=code_block)
     
     def add_subtypes_to_data(self) -> None:
-        # arcpy.env.Workspace =  ''
-        # arcpy.SetSubtypeField_management("water/fittings", "TYPECODE")
-        # TODO arcpy.management.AddSubtype(in_table, subtype_code, subtype_description) 
+        # TODO can a subtype be set outside a GDB? Might need to perform this in CompositeSourceCreatorEngine
+        # output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        # arcpy.env.Workspace =  str(output_folder / 'csf_features.gdb')
+        
+        # arcpy.management.SetSubtypeField(table, "FCSubtype")
+        # arcpy.management.AddSubtype(in_table, subtype_code, subtype_description) 
         pass
+
+    def set_fcsubtype_value(self, feature_type, data_type, subtypes) -> None:
+        """
+        Isolate logic for setting the FCSubtype value from lookup file
+        :param str feature_type: Point, LineString, or Polygon
+        :param str data_type: assigned or unassigned
+        :param dict[dict[]] subtypes: Loaded YAML of subtype lookup
+        """
+
+        with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][data_type], ["OBJL_NAME", "FCSubtype"]) as updateCursor:
+            for row in updateCursor:
+                row[1] = subtypes[feature_type][row[0]]
+                updateCursor.updateRow(row)
 
     def download_gcs(self, gc_rows) -> None:
         """
@@ -754,7 +771,6 @@ class ENCReaderEngine(Engine):
     
     def start(self) -> None:
         if self.param_lookup['download_geographic_cells'].value:
-            # TODO check if "Class" types [COALNE, SLCONS, LNDARE] are in the GC tables
             # TODO consolidate calls to get enc_files values
             rows = self.get_gc_data()
             self.store_gc_names(rows)
