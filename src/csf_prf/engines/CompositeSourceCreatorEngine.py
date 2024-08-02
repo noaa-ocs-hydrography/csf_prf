@@ -57,8 +57,6 @@ class CompositeSourceCreatorEngine(Engine):
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         arcpy.env.workspace =  str(output_folder / 'csf_features.gdb')
         featureclasses = arcpy.ListFeatureClasses()
-        for featureclass in featureclasses:
-            arcpy.management.SetSubtypeField(featureclass, "FCSubtype")
         
         with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
             subtype_lookup = yaml.safe_load(lookup)
@@ -66,6 +64,7 @@ class CompositeSourceCreatorEngine(Engine):
         for geometry_type in subtype_lookup.keys():
             for featureclass in featureclasses: 
                 if geometry_type in featureclass:
+                    arcpy.management.SetSubtypeField(featureclass, "FCSubtype")
                     for data in subtype_lookup[geometry_type].values():
                         featureclass_path = os.path.join(arcpy.env.workspace, featureclass)
                         arcpy.management.AddSubtype(featureclass_path, data['code'], data['objl_string']) 
