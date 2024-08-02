@@ -210,19 +210,6 @@ class ENCReaderEngine(Engine):
             for data_type in data:
                 self.add_column_and_constant(self.geometries[feature_type]['features_layers'][data_type], 'FCSubtype', 
                                              expression, field_type='LONG', code_block=code_block)
-    
-    def set_fcsubtype_value(self, feature_type, data_type, subtypes) -> None:
-        """
-        Isolate logic for setting the FCSubtype value from lookup file
-        :param str feature_type: Point, LineString, or Polygon
-        :param str data_type: assigned or unassigned
-        :param dict[dict[]] subtypes: Loaded YAML of subtype lookup
-        """
-
-        with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][data_type], ["OBJL_NAME", "FCSubtype"]) as updateCursor:
-            for row in updateCursor:
-                row[1] = subtypes[feature_type][row[0]]
-                updateCursor.updateRow(row)
 
     def download_gcs(self, gc_rows) -> None:
         """

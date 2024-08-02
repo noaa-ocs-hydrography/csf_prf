@@ -110,7 +110,7 @@ class CompositeSourceCreator:
             direction="Input",
             multiValue=True
         )
-        csf_prf_output_file = arcpy.Parameter(
+        output_folder = arcpy.Parameter(
             displayName="CSF, PRF & Tide .000 Output File Folder:",
             name="output_folder",
             datatype="DEFolder",
@@ -142,7 +142,7 @@ class CompositeSourceCreator:
             boundary_baseline_shapefile,
             # tides_mapinfo_tab,
             enc_file,
-            csf_prf_output_file,
+            output_folder,
             download_geographic_cells,
             caris_export
         ]
