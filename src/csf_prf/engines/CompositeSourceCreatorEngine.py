@@ -51,11 +51,11 @@ class CompositeSourceCreatorEngine(Engine):
             )
 
     def add_subtypes_to_data(self) -> None:
+        """Add subtype objects to all output featureclasses"""
+
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         arcpy.env.workspace =  str(output_folder / 'csf_features.gdb')
-        
         featureclasses = arcpy.ListFeatureClasses()
-
         for featureclass in featureclasses:
             arcpy.management.SetSubtypeField(featureclass, "FCSubtype")
         
