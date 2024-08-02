@@ -2,6 +2,7 @@ import os
 import arcpy
 import time
 import pathlib
+import yaml
 
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
@@ -51,7 +52,7 @@ class CompositeSourceCreatorEngine(Engine):
 
     def add_subtypes_to_data(self) -> None:
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-        arcpy.env.Workspace =  str(output_folder / 'csf_features.gdb')
+        arcpy.env.workspace =  str(output_folder / 'csf_features.gdb')
         
         featureclasses = arcpy.ListFeatureClasses()
 
