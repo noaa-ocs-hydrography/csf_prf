@@ -9,6 +9,7 @@ from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
 arcpy.env.overwriteOutput = True
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
+OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 CSF_PRF = pathlib.Path(__file__).parents[1]
 
 
