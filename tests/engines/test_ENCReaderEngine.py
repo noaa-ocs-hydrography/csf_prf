@@ -2,6 +2,7 @@ import pytest
 import pathlib
 import os
 
+from osgeo import ogr
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
 
 """
@@ -32,6 +33,12 @@ def test___init__(victim):
     assert victim.gdb_name == 'csf_features'
     assert 'Point' in victim.geometries.keys()
 
+@pytest.mark.skip(reason="This function runs 3 other functions.")
+def add_columns():
+    ...
+
+# def test_add_column_and_constant(victim):    
+#     ...    
 
 def test_feature_covered_by_upper_scale(victim):
     class MultiParam:
@@ -102,6 +109,11 @@ def test_get_vector_records(victim):
 def test_return_primitives_env(victim):
     victim.return_primitives_env()
     assert os.environ["OGR_S57_OPTIONS"] == "RETURN_PRIMITIVES=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
+
+def test_set_driver(victim):
+    victim.set_driver()
+    results = ogr.GetDriver(victim)
+    assert results == 'S57'
 
 
 def test_split_multipoint_env(victim):
