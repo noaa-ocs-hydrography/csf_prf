@@ -1,6 +1,7 @@
 import pytest
 import pathlib
 import os
+import arcpy
 
 from osgeo import ogr
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
@@ -12,6 +13,7 @@ Unit tests need to havea  .pth file set in your conda ENV that points to CSF-PRF
 REPO = pathlib.Path(__file__).parents[2]
 INPUTS = REPO / 'inputs'
 ENC_FILE = str(INPUTS / 'US4GA17M.000')
+SHP_FILE = str(INPUTS / 'test_shapefile.shp')
 MULTIPLE_ENC = ENC_FILE + ';' + str(INPUTS / 'US5SC21M.000')
 
 
@@ -37,8 +39,27 @@ def test___init__(victim):
 def add_columns():
     ...
 
-# def test_add_column_and_constant(victim):    
-#     ...    
+def test_add_column_and_constant(victim):    
+    layer = arcpy.management.CopyFeatures(SHP_FILE, r'memory\test_layer')
+    fields = [field.name for field in arcpy.ListFields(layer)]
+    assert 'test_column_name' not in fields
+    victim.add_column_and_constant(layer, 'test_column_name', nullable=True)
+    fields = [field.name for field in arcpy.ListFields(layer)]
+    assert 'test_column_name' in fields    
+
+def test_add_invreq_column(victim): # TODO an error in add_invreq_column
+    victim.split_multipoint_env()
+    victim.get_feature_records() # make a sample dataset, 1 record for each type
+    victim.add_invreq_column()  # maybe get Matt or HSD to make a dummy file, S57 has to be made through CARIS or FME
+    assert 'invreq' in victim.geometries['Point']['GC_layers']['assigned'].keys()
+
+# def test_add_objl_string(victim):
+
+
+
+@pytest.mark.skip(reason="This function runs 1 other function twice.")
+def test_asgnmt_column():
+    ...    
 
 def test_feature_covered_by_upper_scale(victim):
     class MultiParam:
@@ -83,6 +104,10 @@ def test_get_aton_lookup(victim):
     assert type(results) == type([])
     assert results[0] == 'BCNCAR'
 
+@pytest.mark.skip(reason="Requires the password.")
+def test_get_cursor():
+    ...    
+
 
 def test_get_enc_bounds(victim):
     victim.get_enc_bounds()
@@ -110,11 +135,26 @@ def test_return_primitives_env(victim):
     victim.return_primitives_env()
     assert os.environ["OGR_S57_OPTIONS"] == "RETURN_PRIMITIVES=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
-def test_set_driver(victim):
+def test_set_driver(victim): 
     victim.set_driver()
-    results = ogr.GetDriver(victim)
+    results = victim.driver.GetName()
     assert results == 'S57'
 
+def test_set_none_to_null(victim):
+    feature_json = {
+        'type': 'Feature',
+        'geometry': {
+            'type': 'Point',
+            'coordinates': [125.6, 10.1]
+        },
+        'properties': {
+            'name': 'None',
+            'type': None
+        }
+        }
+    results = victim.set_none_to_null(feature_json)
+    assert results['properties']['name'] == ''
+    assert results['properties']['type'] == ''
 
 def test_split_multipoint_env(victim):
     victim.split_multipoint_env()

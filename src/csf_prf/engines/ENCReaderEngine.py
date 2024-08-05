@@ -119,7 +119,7 @@ class ENCReaderEngine(Engine):
         self.add_asgnmt_column()
         self.add_invreq_column()
 
-    def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT', field_length=255, nullable=False) -> None:
+    def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=255, nullable=False) -> None:
         """
         Add the asgnment column and 
         :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
