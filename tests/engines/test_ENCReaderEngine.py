@@ -47,10 +47,10 @@ def test_add_column_and_constant(victim):
     fields = [field.name for field in arcpy.ListFields(layer)]
     assert 'test_column_name' in fields    
 
-def test_add_invreq_column(victim): # TODO an error in add_invreq_column
+def test_add_invreq_column(victim): # TODO Build S57 test file
     victim.split_multipoint_env()
-    victim.get_feature_records() # make a sample dataset, 1 record for each type
-    victim.add_invreq_column()  # maybe get Matt or HSD to make a dummy file, S57 has to be made through CARIS or FME
+    victim.get_feature_records() 
+    victim.add_invreq_column() 
     assert 'invreq' in victim.geometries['Point']['GC_layers']['assigned'].keys()
 
 # def test_add_objl_string(victim):
