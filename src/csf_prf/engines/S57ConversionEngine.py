@@ -4,6 +4,7 @@ import pathlib
 import json
 
 from csf_prf.engines.Engine import Engine
+arcpy.env.overwriteOutput = True
 
 
 class S57ConversionEngine(Engine):
@@ -191,6 +192,7 @@ class S57ConversionEngine(Engine):
         # self.return_primitives_env() 
         # self.get_vector_records()
         self.build_output_layers()  
+        self.export_enc_layers()
         self.write_to_geopackage()  
 
     def write_to_geopackage(self) -> None:
