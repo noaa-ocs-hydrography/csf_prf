@@ -11,8 +11,8 @@ class S57Conversion:
     def getParameterInfo(self):
         """Define the tool parameters."""
         enc_file = arcpy.Parameter(
-            displayName="ENC File(s):",
-            name="enc_files",
+            displayName="ENC File:",
+            name="enc_file",
             datatype="DEFile",
             parameterType="Optional",
             direction="Input",

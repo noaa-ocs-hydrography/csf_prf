@@ -248,19 +248,6 @@ class ENCReaderEngine(Engine):
             lines_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
             self.geometries['LineString']['GC_layers']['assigned'] = lines_assigned
             self.geometries['LineString']['GC_layers']['unassigned'] = lines_unassigned
-
-    def get_all_fields(self, features) -> None:
-        """
-        Build a unique list of all field names
-        :param dict[dict[str]] features: GeoJSON of string values for all features
-        :returns set[str]: Unique list of all fields
-        """
-
-        fields = set()
-        for feature in features:
-            for field in feature['geojson']['properties'].keys():
-                fields.add(field)
-        return fields
     
     def get_aton_lookup(self):
         """
@@ -590,11 +577,6 @@ class ENCReaderEngine(Engine):
             for feature in self.geometries[feature_type]:
                 arcpy.AddMessage(f"\n - {feature['type']}:{feature['geojson']}")
 
-    def return_primitives_env(self) -> None:
-        """Reset S57 ENV for primitives only"""
-
-        os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
-
     def run_query(self, cursor, sql):
         """
         Execute a SQL query
@@ -605,23 +587,6 @@ class ENCReaderEngine(Engine):
 
         cursor.execute(sql)
         return cursor.fetchall()
-
-    def set_driver(self) -> None:
-        """Set the S57 driver for GDAL"""
-
-        self.driver = ogr.GetDriverByName('S57')
-
-    def set_none_to_null(self, feature_json):
-        """
-        Convert undesirable text to empty string
-        :param dict[dict[]] feature_json: JSON object of ENC Vector features
-        :returns dict[dict[]]: Updated JSON object
-        """
-        
-        for key, value in feature_json['properties'].items():
-            if value == 'None' or value is None:
-                feature_json['properties'][key] = ''
-        return feature_json
 
     def set_assigned_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
         """
@@ -709,11 +674,6 @@ class ENCReaderEngine(Engine):
                     else:
                         row[1] = invreq_options.get(14)
                     updateCursor.updateRow(row)
-
-    def split_multipoint_env(self) -> None:
-        """Reset S57 ENV for split multipoint only"""
-
-        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
     def store_gc_names(self, gc_rows) -> None:
         """Create property of all current GC names"""
