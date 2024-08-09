@@ -4,6 +4,7 @@ import pathlib
 import json
 
 from csf_prf.engines.Engine import Engine
+from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
 
 
@@ -30,6 +31,30 @@ class S57ConversionEngine(Engine):
                 "output": None
             }
         }
+
+    def add_objl_string(self) -> None:
+        """Convert OBJL number to string name"""
+        
+        aton_values = self.get_aton_lookup()
+        aton_count = 0
+        aton_found = set()
+        for feature_type in self.geometries.keys():
+            print(self.geometries.keys())
+            print(self.get_all_fields(self.geometries[feature_type]['features']))
+            self.add_column_and_constant(self.geometries[feature_type]['features'], 'OBJL_NAME', nullable=True)
+            
+
+        #     for value in ['assigned', 'unassigned']:
+        #         with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][value], ['OBJL', 'OBJL_NAME']) as updateCursor:
+        #             for row in updateCursor:
+        #                 row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
+        #                 if feature_type == 'Point' and row[1] in aton_values:
+        #                     aton_found.add(row[1])
+        #                     aton_count += 1
+        #                     updateCursor.deleteRow()
+        #                 else:
+        #                     updateCursor.updateRow(row)
+        # arcpy.AddMessage(f'Removed {aton_count} ATON features containing {str(aton_found)}')
 
     def build_output_layers(self) -> None:
         """Spatial query all of the ENC features against Sheets boundary"""
@@ -191,7 +216,8 @@ class S57ConversionEngine(Engine):
         self.get_feature_records()
         # self.return_primitives_env() 
         # self.get_vector_records()
-        self.build_output_layers()  
+        self.add_objl_string() 
+        self.build_output_layers() 
         self.export_enc_layers()
         self.write_to_geopackage()  
 

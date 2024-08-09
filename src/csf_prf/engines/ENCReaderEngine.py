@@ -119,20 +119,6 @@ class ENCReaderEngine(Engine):
         self.add_asgnmt_column()
         self.add_invreq_column()
 
-    def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=255, nullable=False) -> None:
-        """
-        Add the asgnment column and 
-        :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
-        """
-
-        if nullable:
-            arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
-        else:
-            arcpy.management.AddField(layer, column, field_type, field_length=field_length)
-            arcpy.management.CalculateField(
-                layer, column, expression, expression_type="PYTHON3", field_type=field_type
-            )
-
     def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
 
@@ -248,15 +234,6 @@ class ENCReaderEngine(Engine):
             lines_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
             self.geometries['LineString']['GC_layers']['assigned'] = lines_assigned
             self.geometries['LineString']['GC_layers']['unassigned'] = lines_unassigned
-    
-    def get_aton_lookup(self):
-        """
-        Return ATON values that are not allowed in CSF
-        :return list[str]: ATON attributes
-        """
-
-        with open(str(INPUTS / 'lookups' / 'aton_lookup.yaml'), 'r') as lookup:
-            return yaml.safe_load(lookup)
         
     def get_cursor(self):
         """
