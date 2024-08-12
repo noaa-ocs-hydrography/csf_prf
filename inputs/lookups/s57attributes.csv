@@ -1,0 +1,529 @@
+"Code","Attribute","Acronym","Attributetype","Class"
+1,Agency responsible for production,AGENCY,A,F,None
+2,Beacon shape,BCNSHP,E,F,None
+3,Building shape,BUISHP,E,F,None
+4,Buoy shape,BOYSHP,E,F,None
+5,Buried depth,BURDEP,F,F,m
+6,Call sign,CALSGN,S,F,None
+7,Category of airport/airfield,CATAIR,L,F,None
+8,Category of anchorage,CATACH,L,F,None
+9,Category of bridge,CATBRG,L,F,None
+10,Category of built-up area,CATBUA,E,F,None
+11,Category of cable,CATCBL,E,F,None
+12,Category of canal,CATCAN,E,F,None
+13,Category of cardinal mark,CATCAM,E,F,None
+14,Category of checkpoint,CATCHP,E,F,None
+15,Category of coastline,CATCOA,E,F,None
+16,Category of control point,CATCTR,E,F,None
+17,Category of conveyor,CATCON,E,F,None
+18,Category of coverage,CATCOV,E,F,None
+19,Category of crane,CATCRN,E,F,None
+20,Category of dam,CATDAM,E,F,None
+21,Category of distance mark,CATDIS,E,F,None
+22,Category of dock,CATDOC,E,F,None
+23,Category of dumping ground,CATDPG,L,F,None
+24,Category of fence/wall,CATFNC,E,F,None
+25,Category of ferry,CATFRY,E,F,None
+26,Category of fishing  facility,CATFIF,E,F,None
+27,Category of fog signal,CATFOG,E,F,None
+28,Category of fortified structure,CATFOR,E,F,None
+29,Category of gate,CATGAT,E,F,None
+30,Category of harbour facility,CATHAF,L,F,None
+31,Category of hulk,CATHLK,L,F,None
+32,Category of ice,CATICE,E,F,None
+33,Category of installation buoy,CATINB,E,F,None
+34,Category of land region,CATLND,L,F,None
+35,Category of landmark,CATLMK,L,F,None
+36,Category of lateral mark,CATLAM,E,F,None
+37,Category of light,CATLIT,L,F,None
+38,Category of marine farm/culture,CATMFA,E,F,None
+39,Category of military practice area,CATMPA,L,F,None
+40,Category of mooring/warping facility,CATMOR,E,F,None
+41,Category of navigation line,CATNAV,E,F,None
+42,Category of obstruction,CATOBS,E,F,None
+43,Category of offshore platform,CATOFP,L,F,None
+44,Category of oil barrier,CATOLB,E,F,None
+45,Category of pile,CATPLE,E,F,None
+46,Category of pilot boarding place,CATPIL,E,F,None
+47,Category of pipeline / pipe,CATPIP,L,F,None
+48,Category of production area,CATPRA,E,F,None
+49,Category of pylon,CATPYL,E,F,None
+50,Category of quality of data,CATQUA,E,F,None
+51,Category of radar station,CATRAS,E,F,None
+52,Category of radar transponder beacon,CATRTB,E,F,None
+53,Category of radio station,CATROS,L,F,None
+54,Category of recommended track,CATTRK,E,F,None
+55,Category of rescue station,CATRSC,L,F,None
+56,Category of restricted area,CATREA,L,F,None
+57,Category of road,CATROD,E,F,None
+58,Category of runway,CATRUN,E,F,None
+59,Category of sea area,CATSEA,E,F,None
+60,Category of shoreline construction,CATSLC,E,F,None
+61,"Category of signal station, traffic",CATSIT,L,F,None
+62,"Category of signal station, warning",CATSIW,L,F,None
+63,Category of silo/tank,CATSIL,E,F,None
+64,Category of slope,CATSLO,E,F,None
+65,Category of small craft facility,CATSCF,L,F,None
+66,Category of special purpose mark,CATSPM,L,F,None
+67,Category of Traffic Separation Scheme,CATTSS,E,F,None
+68,Category of vegetation,CATVEG,L,F,None
+69,Category of water turbulence,CATWAT,E,F,None
+70,Category of weed/kelp,CATWED,E,F,None
+71,Category of wreck,CATWRK,E,F,None
+72,Category of zone of confidence data,CATZOC,E,F,None
+73,Character spacing,$SPACE,E,$,None
+74,Character specification,$CHARS,A,$,None
+75,Colour,COLOUR,L,F,None
+76,Colour pattern,COLPAT,L,F,None
+77,Communication channel,COMCHA,A,F,None
+78,Compass size,$CSIZE,F,$,mm
+79,Compilation date,CPDATE,A,F,None
+80,Compilation scale,CSCALE,I,F,None
+81,Condition,CONDTN,E,F,None
+82,"Conspicuous, Radar",CONRAD,E,F,None
+83,"Conspicuous, visual",CONVIS,E,F,None
+84,Current velocity,CURVEL,F,F,kt
+85,Date end,DATEND,A,F,None
+86,Date start,DATSTA,A,F,None
+87,Depth range value 1,DRVAL1,F,F,m
+88,Depth range value 2,DRVAL2,F,F,m
+89,Depth units,DUNITS,E,F,None
+90,Elevation,ELEVAT,F,F,m
+91,Estimated range of transmission,ESTRNG,F,F,NM
+92,Exhibition condition of light,EXCLIT,E,F,None
+93,Exposition of sounding,EXPSOU,E,F,None
+94,Function,FUNCTN,L,F,None
+95,Height,HEIGHT,F,F,m
+96,Height/length units,HUNITS,E,F,None
+97,Horizontal accuracy,HORACC,F,F,m
+98,Horizontal clearance,HORCLR,F,F,m
+99,Horizontal length,HORLEN,F,F,m
+100,Horizontal width,HORWID,F,F,m
+101,Ice factor,ICEFAC,F,F,m
+102,Information,INFORM,S,F,None
+103,Jurisdiction,JRSDTN,E,F,None
+104,Justification - horizontal,$JUSTH,E,$,None
+105,Justification - vertical,$JUSTV,E,$,None
+106,Lifting capacity,LIFCAP,F,F,t
+107,Light characteristic,LITCHR,E,F,None
+108,Light visibility,LITVIS,L,F,None
+109,Marks navigational - System of,MARSYS,E,F,None
+110,Multiplicity of lights,MLTYLT,I,F,None
+111,Nationality,NATION,A,F,None
+112,Nature of construction,NATCON,L,F,None
+113,Nature of surface,NATSUR,L,F,None
+114,Nature of surface - qualifying terms,NATQUA,L,F,None
+115,Notice to Mariners date,NMDATE,A,F,None
+116,Object name,OBJNAM,S,F,None
+117,Orientation,ORIENT,F,F,deg
+118,Periodic date end,PEREND,A,F,None
+119,Periodic date start,PERSTA,A,F,None
+120,Pictorial representation,PICREP,S,F,None
+121,Pilot district,PILDST,S,F,None
+122,Producing country,PRCTRY,A,F,None
+123,Product,PRODCT,L,F,None
+124,Publication reference,PUBREF,S,F,None
+125,Quality of sounding measurement,QUASOU,L,F,None
+126,Radar wave length,RADWAL,A,F,None
+127,Radius,RADIUS,F,F,m
+128,Recording date,RECDAT,A,F,None
+129,Recording indication,RECIND,A,F,None
+130,Reference year for magnetic variation,RYRMGV,A,F,None
+131,Restriction,RESTRN,L,F,None
+132,Scale maximum,SCAMAX,I,F,None
+133,Scale minimum,SCAMIN,I,F,None
+134,Scale value one,SCVAL1,I,F,None
+135,Scale value two,SCVAL2,I,F,None
+136,Sector limit one,SECTR1,F,F,deg
+137,Sector limit two,SECTR2,F,F,deg
+138,Shift parameters,SHIPAM,A,F,None
+139,Signal frequency,SIGFRQ,I,F,Hz
+140,Signal generation,SIGGEN,E,F,None
+141,Signal group,SIGGRP,A,F,None
+142,Signal period,SIGPER,F,F,s
+143,Signal sequence,SIGSEQ,A,F,None
+144,Sounding accuracy,SOUACC,F,F,m
+145,Sounding distance - maximum,SDISMX,I,F,m
+146,Sounding distance - minimum,SDISMN,I,F,m
+147,Source date,SORDAT,A,F,None
+148,Source indication,SORIND,A,F,None
+149,Status,STATUS,L,F,None
+150,Survey authority,SURATH,S,F,None
+151,Survey date - end,SUREND,A,F,None
+152,Survey date - start,SURSTA,A,F,None
+153,Survey type,SURTYP,L,F,None
+154,Symbol scaling factor,$SCALE,F,$,None
+155,Symbolization code,$SCODE,A,$,None
+156,Technique of sounding measurement,TECSOU,L,F,None
+157,Text string,$TXSTR,S,$,None
+158,Textual description,TXTDSC,S,F,None
+159,Tidal stream - panel values,TS_TSP,A,F,None
+160,"Tidal stream, current - time series values",TS_TSV,A,F,None
+161,Tide - accuracy of water level,T_ACWL,E,F,None
+162,Tide - high and low water values,T_HWLW,A,F,None
+163,Tide - method of tidal prediction,T_MTOD,E,F,None
+164,Tide - time and height differences,T_THDF,A,F,None
+165,"Tide, current - time interval of values",T_TINT,I,F,min
+166,Tide - time series values,T_TSVL,A,F,None
+167,Tide - value of harmonic constituents,T_VAHC,A,F,None
+168,Time end,TIMEND,A,F,None
+169,Time start,TIMSTA,A,F,None
+170,Tint,$TINTS,E,$,None
+171,Topmark/daymark shape,TOPSHP,E,F,None
+172,Traffic flow,TRAFIC,E,F,None
+173,Value of annual change in magnetic variation,VALACM,F,F,min
+174,Value of depth contour,VALDCO,F,F,m
+175,Value of local magnetic anomaly,VALLMA,F,F,min
+176,Value of magnetic variation,VALMAG,F,F,deg
+177,Value of maximum range,VALMXR,F,F,NM
+178,Value of nominal range,VALNMR,F,F,NM
+179,Value of sounding,VALSOU,F,F,m
+180,Vertical accuracy,VERACC,F,F,m
+181,Vertical clearance,VERCLR,F,F,m
+182,"Vertical clearance, closed",VERCCL,F,F,m
+183,"Vertical clearance, open",VERCOP,F,F,m
+184,"Vertical clearance, safe",VERCSA,F,F,m
+185,Vertical datum,VERDAT,E,F,None
+186,Vertical length,VERLEN,F,F,m
+187,Water level effect,WATLEV,E,F,None
+188,Category of Tidal stream,CAT_TS,E,F,None
+189,Positional accuracy units,PUNITS,E,F,None
+190,Defining characteristics of a new object,CLSDEF,S,F,None
+191,Descriptive name of a new object,CLSNAM,S,F,None
+192,S-52 symbol instruction,SYMINS,S,F,None
+300,Information in national language,NINFOM,S,N,None
+301,Object name in national language,NOBJNM,S,N,None
+302,Pilot district in national language,NPLDST,S,N,None
+303,Text string in national language,$NTXST,S,N,None
+304,Textual description in national language,NTXTDS,S,N,None
+400,Horizontal datum,HORDAT,E,S,None
+401,Positional Accuracy,POSACC,F,S,m
+402,Quality of position,QUAPOS,E,S,None
+0,"###Codes in the 1xxx and 2xxx come from Pydro and CARIS",###,S,F,None
+1039,Coverage Object Type,cvgtyp,E,F,None
+1041,Database Key ID (Pydro XML Event digest),dbkyid,S,F,None
+1073,Grid surface resolution,srfres,F,F,m
+1115,Last modified time,modtim,S,F,None
+1116,Marker picture file,mk_pic,S,F,None
+1117,Unique ID (Pydro XML DispName),userid,S,F,None
+1118,Remarks (Pydro XML),remrks,S,F,None
+1119,Recommendations (Pydro XML),recomd,S,F,None
+1220,Update Time (Pydro XML Event data),updtim,A,F,None
+1221,External Text Reference,mk_doc,S,F,None
+1297,Marker edit,mk_edi,E,F,None
+1298,Outline for area object,areout,E,F,None
+1305,Observed time,obstim,A,F,None
+1306,Observed depth,obsdpt,F,F,m
+1307,Tidal adjustment,tidadj,F,F,m
+1308,Tide Correction File,tidfil,S,F,None
+2000,Description of cartographic action,descrp,E,F,None
+2001,Assignment flag,asgnmt,E,F,None
+2002,Primary/Secondary status,prmsec,E,F,None
+2003,Image(s),images,S,F,None
+2004,Office notes,onotes,S,F,None
+2005,Special feature type,sftype,E,F,None
+2006,Keyword,keywrd,S,F,None
+2007,Acquisition status,acqsts,E,F,None
+2008,Contact height,cnthgt,F,F,m
+2009,Investigation requirements,invreq,S,F,None
+2010,Primary feature dbkyid,prkyid,S,F,None
+2011,HSD Charting Recommendation,hsdrec,E,F,None
+0,"###Codes in the 10xxx come from CARIS",###,S,F,None
+10014,Marker timestamp,mk_tim,A,F,None
+10015,Marker text,mk_txt,A,F,None
+10016,Marker status,mk_sta,E,F,None
+10017,Marker user name,mk_unm,A,F,None
+10018,Related feature ids,mk_rel,A,F,None
+10020,Object subtitle name,subnam,S,F,None
+10022,Hydrographic Instruction reference ID,surhir,S,F,None
+10024,Category of bathymetric surface,srfcat,E,F,None
+10026,Unique identifier of parent object,idprnt,I,F,None
+0,"###Codes in the 17xxx range come from past s57attributes_iw.csv (Inland Waterways)",###,S,F,None
+17000,Category of Anchorage area,catach,L,F,None
+17001,Category of distance mark,catdis,E,F,None
+17002,Category of signal station trafficcatsit,catsit,L,F,None
+17003,Category of signal station warning,catsiw,L,F,None
+17004,Restriction,restrn,L,F,None
+17005,Vertical datum,verdat,E,F,None
+17006,Category of bridge,catbrg,L,F,None
+17007,Category of ferry,catfry,L,F,None
+17008,Category of harbour facilities,cathaf,L,F,None
+17009,"Marks navigational ? System of",marsys,E,F,None
+17050,Additional mark,addmrk,L,F,None
+17051,Category of bank,catbnk,E,F,None
+17052,Category of notice mark,catnmk,E,F,None
+17055,Class of dangerous cargo,clsdng,E,F,None
+17056,Direction of impact,dirimp,L,F,None
+17057,Distance from bank,disbk1,F,F,None
+17058,Distance from bank,disbk2,F,F,None
+17059,"Distance of impact, upstream",disipu,F,F,None
+17060,"Distance of impact, downstream",disipd,F,F,None
+17061,Elevation 1,eleva1,F,F,None
+17062,Elevation 2,eleva2,F,F,None
+17063,Function of notice mark,fnctnm,E,F,None
+17064,Waterway distance,wtwdis,F,F,None
+17065,Bunker vessel,bunves,E,F,None
+17066,Category of berth,catbrt,L,F,None
+17067,Category of bunker,catbun,L,F,None
+17068,Category of CEMT class,catccl,L,F,None
+17069,Category of communication,catcom,L,F,None
+17070,Category of harbour area,cathbr,L,F,None
+17071,Category of refuse dump,catrfd,L,F,None
+17072,Category of terminal,cattml,L,F,None
+17073,Communication,comctn,S,F,None
+17074,"Horizontal clearance, length",horcll,F,F,None
+17075,"Horizontal clearance, width",horclw,F,F,None
+17076,Transshipping goods,trshgd,L,F,None
+17077,UN Location Code,unlocd,S,F,None
+17112,Category of waterway mark,catwwm,E,F,None
+0,"###Codes in the 18xxx come from CARIS",###,S,F,None
+18687,Contour Slope,cntdir,E,F,None
+18688,Creation time,cretim,S,F,None
+18689,Storage Type,srftyp,E,F,None
+18690,Object State,objst8,E,F,None
+18691,User id of the object's creator,uidcre,I,F,None
+0,"###Codes in the 20xxx and 22xxx range come from past s57attributes_aml.csv (Additional_Military_Layers)",###,S,F,None
+20484,"Abandonment Date","databa","A","?",None
+20485,"Attenuation","attutn","F","?",None
+20486,"Beam of Vessel","vesbem","F","?",None
+20487,"Bearing","bearng","F","?",None
+20488,"Blind Zone","blndzn","A","?",None
+20489,"Breaker Type","brktyp","E","?",None
+20490,"Density","bulkdn","F","?",None
+20491,"Burial Mechanism","brmchm","E","?",None
+20492,"Burial Percentage","brpctg","I","?",None
+20493,"Burial Period","brperd","I","?",None
+20494,"Burial Probability","brprob","E","?",None
+20495,"Cardinal Point Orientation","orcard","E","?",None
+20496,"Category of administration area","catadm","E","?",None
+20497,"Category of airspace restriction","catasr","E","?",None
+20498,"Category of bedrock","N/A","N/A","?",None
+20499,"Bottom Feature Classification","catbot","E","?",None
+20500,"Category of coastguard station","catcgs","E","?",None
+20501,"Category of controlled airspace","catcas","E","?",None
+20502,"Fishing Activity","catfsh","E","?",None
+20503,"Type of Imagery","catimg","L","?",None
+20504,"Category of marine management area","catmma","E","?",None
+20505,"Category of maritime safety information","catmsi","E","?",None
+20506,"Category of military exercise airspace ","catmea","E","?",None
+20507,"Category of patrol area","catpat","E","?",None
+20508,"Category of reporting/radio calling-in point","catrep","E","?",None
+20509,"Category of regulated airspace","N/A","N/A","?",None
+20510,"Category of territorial sea baseline","catsbl","E","?",None
+20511,"Trafficability","cattrf","E","?",None
+20512,"Command System","comsys","S","?",None
+20515,"Controlled airspace class designation","caircd","E","?",None
+20516,"Controlling authority","authty","S","?",None
+20517,"Current Scour Dimensions","scrdim","A","?",None
+20518,"Dangerous Marine and Land Life","dgmrlf","L","?",None
+20519,"Date Sunk","datsnk","A","?",None
+20520,"Debris Field","debfld","A","?",None
+20521,"Depth of Activity","depact","F","?",None
+20522,"Depth of Layer","deplyr","F","?",None
+20523,"Distance from Small Bottom Object","discon","F","?",None
+20524,"Diver’s Thrust Test Depth","dttdep","E","?",None
+20525,"Diver’s Thrust Test Number","dttnum","I","?",None
+20526,"Diving Activity","divact","E","?",None
+20527,"Draught of Vessel","vesdgh","F","?",None
+20528,"Exit Usability","exitus","E","?",None
+20529,"Field Name","fldnam","S","?",None
+20530,"First Detection Year","datfir","A","?",None
+20531,"First Sensor","senfir","E","?",None
+20532,"First Source","sorfir","E","?",None
+20533,"Foliar Index","folinx","F","?",None
+20534,"Gas Content","gascon","I","?",None
+20535,"General Water Depth","gendep","I","?",None
+20536,"Gradient","gradnt","E","?",None
+20537,"Grain Size","grnsiz","F","?",None
+20538,"Inclination","incltn","F","?",None
+20539,"Internal Data Record Identification Number","N/A","N/A","?",None
+20540,"Last Detection Year","datlst","A","?",None
+20541,"Last Sensor","senlst","E","?",None
+20542,"Last Source","sorlst","E","?",None
+20543,"Lay Platform","layptm","E","?",None
+20544,"Lay Reference Number","layrfn","S","?",None
+20545,"Lay Time","laytim","A","?",None
+20546,"Layer Number","laynum","I","?",None
+20547,"Legal Status","legsta","S","?",None
+20548,"Length of Vessel","veslen","F","?",None
+20549,"Magnetic Anomaly Detector (MAD) Signature","madsig","E","?",None
+20550,"Magnetic Intensity","magint","I","?",None
+20551,"Mean Shear Strength","msstrg","F","?",None
+20552,"Migration Direction","migdir","I","?",None
+20553,"Migration Speed","migspd","F","?",None
+20554,"Milec Density","milden","E","?",None
+20555,"Mine Index Mine Case","mnimnc","E","?",None
+20556,"Mine Index Mine Type","mnimnt","L","?",None
+20557,"Mine Reference Number","minern","S","?",None
+20558,"Mine-Hunting Classification","mhclas","E","?",None
+20559,"Minehunting System","mnhsys","S","?",None
+20560,"Minesweeping System","mnssys","S","?",None
+20561,"Mission Classification","miscls","E","?",None
+20562,"Mission Comments","miscom","S","?",None
+20563,"Mission Date","misdat","A","?",None
+20564,"Mission Name","misnme","S","?",None
+20565,"MWDC Reference Number","mwdcrn","S","?",None
+20566,"Nature of Geological Layer","natsed","E","?",None
+20567,"Navigation System","navsys","S","?",None
+20568,"NOMBO Density","nomden","E","?",None
+20569,"Not Found","notfnd","S","?",None
+20570,"Number of Previous Observations","nmprob","I","?",None
+20571,"Operator","oprtor","S","?",None
+20572,"Orientation of Best Observation","orbobn","F","?",None
+20573,"Origin of Data","orgdat","E","?",None
+20574,"Originator","orgntr","S","?",None
+20575,"Porosity","porsty","I","?",None
+20576,"Quality of Beach Data","quabch","A","?",None
+20577,"Re-entered Date","datren","A","?",None
+20578,"Re-suspended Date","datres","A","?",None
+20579,"Reverberation","revebn","E","?",None
+20580,"Safety Zone","N/A","N/A","?",None
+20581,"Sample Retained","samret","S","?",None
+20582,"Seabed Coverage","sbdcov","I","?",None
+20583,"Ships Speed","shpspd","F","?",None
+20584,"Sonar Frequency","snrfrq","E","?",None
+20585,"Sonar Range Scale","snrrsc","F","?",None
+20586,"Sonar Reflectivity","snrflc","E","?",None
+20587,"Sonar Signal Strength","sonsig","E","?",None
+20588,"Sound Velocity","sndvel","F","?",None
+20589,"Sounding Datum","soudat","E","?",None
+20590,"Spudded Date","datspd","A","?",None
+20592,"Steepest Face Orientation","stfotn","F","?",None
+20593,"Strength According to Richter Scale","ricsca","I","?",None
+20594,"Strength of Magnetic Anomaly","magany","E","?",None
+20595,"Suitability for ACV Use","stbacv","E","?",None
+20596,"Surf Height","srfhgt","F","?",None
+20597,"Surf Zone","srfzne","I","?",None
+20598,"Survey Date and Time","surdat","A","?",None
+20599,"Suspension Date","datsus","A","?",None
+20600,"Swell Height","swlhgt","F","?",None
+20601,"Tidal Range","tdlrng","F","?",None
+20602,"Time of Year","timeyr","L","?",None
+20603,"Tonnage","tonage","I","?",None
+20604,"Towed Body Depth","twdbdp","F","?",None
+20605,"Type of military activity","milact","L","?",None
+20606,"Type of Tonnage","typton","E","?",None
+20607,"Type of Wreck","typewk","E","?",None
+20608,"Underwater Reference Mark","unwrfm","E","?",None
+20609,"Unique ID from a Navigational Product","N/A","N/A","?",None
+20610,"Water Clarity","watclr","F","?",None
+20611,"Wavelength","wavlen","F","?",None
+20612,"Weight Bearing Capability","wbrcap","I","?",None
+20613,"Width (left)","lftwid","F","?",None
+20614,"Width (right)","rgtwid","F","?",None
+20615,"Contour Type","hypcat","E","?",None
+20616,"Sounding Velocity","souvel","E","?",None
+20617,"Access Restriction","accres","S","?",None
+20618,"Approach","apprch","S","?",None
+20619,"Category of Beach","catbch","E","?",None
+20620,"Clearance Percentage","clperc","I","?",None
+20621,"Communications","commns","L","?",None
+20622,"Confidence Level","conlev","F","?",None
+20624,"Exit Description","extdes","S","?",None
+20625,"Industry","indtry","S","?",None
+20626,"Landing Conditions","lndcon","S","?",None
+20627,"Leisure Activity","lsract","S","?",None
+20628,"Logistics","logtcs","L","?",None
+20629,"Manoeuvring","manvrg","S","?",None
+20630,"Mine Threat Density","mntden","I","?",None
+20631,"Multiple Contacts","mulcon","I","?",None
+20632,"Navigational Description","navdes","S","?",None
+20633,"Navigational Difficulty","navdif","E","?",None
+20634,"Number of Remaining Mines","numrmn","I","?",None
+20635,"Pier Contact Details","pierod","S","?",None
+20636,"Pier Description","pierdn","S","?",None
+20637,"Prairies Density","prsden","I","?",None
+20638,"Probability for Remaining Mines","prbrmn","F","?",None
+20639,"Remaining Mines Likely, Maximum Number","rmnlmn","I","?",None
+20640,"Self Protection (Air)","sfptna","E","?",None
+20641,"Self Protection (Near Defence)","sptnnd","E","?",None
+20642,"Self Protection (Surface)","sfptns","E","?",None
+20643,"Sensor Coverage","sencov","S","?",None
+20644,"Simple Initial Threat","sminth","F","?",None
+20645,"Target Reference Weight","tgrfwt","E","?",None
+20646,"Tidal Type","tdltyp","E","?",None
+20647,"Type of Resource Location","typres","E","?",None
+20648,"Undetectable Mines Ratio","undmnr","F","?",None
+20649,"Undetectable Mines Ratio with Burial","umnrwb","F","?",None
+20650,"Undetectable Mines Ratio without Burial","umrwob","F","?",None
+20651,"Weapon Coverage","wpncov","S","?",None
+20652,"On Sonar","onsonr","E","?",None
+20653,"HF Bottom Loss","hfbmls","F","?",None
+20654,"LF Bottom Loss","lfbmls","F","?",None
+20655,"Detection Probability","dtprob","F","?",None
+20656,"Disposal Probability","dsprob","F","?",None
+20657,"Classification Probability","clprob","F","?",None
+20658,"Characteristic Detection Width (A)","cswidt","I","?",None
+20659,"Characteristic Detection Probability (B)","csprob","F","?",None
+20660,"Zone Colour","znecol","E","?",None
+20661,"Reverberation Frequency","revfqy","F","?",None
+20662,"Reverberation Grazing Angle","revgan","F","?",None
+20663,"International Defence Organisation (IDO) status","secido","E","?",None
+20664,"Protective Marking","secpmk","E","?",None
+20665,"Owner Authority","secown","S","?",None
+20666,"Caveat ","seccvt","S","?",None
+20667,"Species","spcies","S","?",None
+20668,"Swept date","swpdat","A","?",None
+20669,"Runway length","rwylen","I","?",None
+20670,"Active period","actper","S","?",None
+20671,"Maximum altitude","maxalt","I","?",None
+20672,"Minimum altitude","minalt","I","?",None
+20673,"Maximum Flight Level","maxftl","I","?",None
+20674,"Minimum Flight Level","minftl","I","?",None
+20675,"Bottom Vertical Safety Separation","bverss","I","?",None
+20676,"Minimum Safe Depth","mindep","I","?",None
+20677,"Interpolated line characteristic","linech","E","?",None
+20678,"Identification","identy","S","?",None
+20679,"Route Classification","rclass","E","?",None
+20680,"Population","popltn","I","?",None
+20681,"Surface Threat","surtht","E","?",None
+20682,"Heading-Up Bearing","upbear","F","?",None
+20683,"Heading-Down Bearing","dnbear","F","?",None
+20684,"Ice Concentration","icencn","I","?",None
+20685,"Danger height","dgrhgt","I","?",None
+20686,"Depth Restriction","depres","S","?",None
+20687,"Area Category","arecat","E","?",None
+20688,"Existence of Restricted Area","exzres","E","?",None
+20689,"Target Strength","tarstg","I","?",None
+20690,"Qualification of Radar Coverage","quarad","I","?",None
+20691,"Contact Details","condet","S","?",None
+20692,"Limit of Anchors and Chains","limanc","F","?",None
+20693,"CCM Index","ccmidx","I","?",None
+20694,"Military Load Classification","mlclas","E","?",None
+20695,"MGS Type","mgstyp","E","?",None
+20696,"Ice Attribute Concentration Total","iceact","E","?",None
+20697,"Ice Stage of Development","icesod","E","?",None
+20698,"Ice Advisory Code","iceadc","S","?",None
+20699,"Number of Icebergs in Area","icebnm","I","?",None
+20700,"Ice Line Category","icelnc","E","?",None
+20701,"Ice Polynya Type","icepty","E","?",None
+20702,"Ice Polynya Status","icepst","E","?",None
+20703,"Ice Lead Type","icelty","E","?",None
+20704,"Ice Lead Status","icelst","E","?",None
+20705,"Iceberg Size","icebsz","E","?",None
+20706,"Iceberg Shape","icebsh","E","?",None
+20707,"Icedrift or Iceberg Direction","icebdr","E","?",None
+20708,"Icedrift or Iceberg Speed","icebsp","F","?",None
+20709,"Maximum Ice Thickness","icemax","F","?",None
+20710,"Minimum Ice Thickness","icemin","F","?",None
+20711,"Ice Ridge Development","icerdv","E","?",None
+20712,"Land Ice","icelnd","E","?",None
+20713,"Sea Direction","seadir","E","?",None
+20714,"Traffic density","traden","S","?",None
+20715,"Type of shipping","typshp","L","?",None
+20716,"Ice Coverage Type","icecvt","E","?",None
+20718,"Status of Small Bottom Object","staobj","L","?",None
+20719,"ICAO code","icaocd","S","?",None
+20720,"textual description","txtdes","S","?",None
+20721,"Object Reference Number","objtrn","S","?",None
+20722,"Object Shape","objshp","S","?",None
+22484,"Category of completeness","catcnf","E","?",None
+22485,"Error Ellipse","errell","A","?",None
+22486,"Object classes","N/A","N/A","?",None
+22487,"Security classification","N/A","N/A","?",None
+22488,"Vertical Datum Shift Parameter","vershf","F","?",None
+22489,"Absolute Vertical Accuracy","elvacc","F","?",None
+22490,"Reflection Coefficient","reflco","F","?",None
+22491,"Copyright statement","cpyrit","S","?",None
+0,"###40000 comes from past s57attributes_iw.csv (Inland Waterways)",###,S,F,None
+40000,Update message,updmsg,S,F,None
