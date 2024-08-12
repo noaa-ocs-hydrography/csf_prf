@@ -254,6 +254,7 @@ class ENCReaderEngine(Engine):
         """Spatial query GC features within Sheets layer"""
 
         # TODO Run tool and see if GC_layers are identical to features from ENC files
+        # TODO is supersession an issue with GC features?
         if self.gc_points:
             points_assigned = arcpy.management.SelectLayerByLocation(self.gc_points, 'INTERSECT', self.sheets_layer)
             points_assigned_layer = arcpy.management.MakeFeatureLayer(points_assigned)
