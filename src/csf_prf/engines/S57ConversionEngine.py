@@ -32,26 +32,27 @@ class S57ConversionEngine(Engine):
             }
         }
 
-    def add_objl_string(self) -> None:
+    def add_objl_string_to_S57(self) -> None:
         """Convert OBJL number to string name"""
         
         aton_values = self.get_aton_lookup()
         aton_count = 0
         aton_found = set()
         for feature_type in self.geometries.keys():
-            print(self.geometries.keys())
-            print(self.get_all_fields(self.geometries[feature_type]['features']))
-            self.add_column_and_constant(self.geometries[feature_type]['features'], 'OBJL_NAME', nullable=True)
+            # print(self.geometries.keys())
+            # print(self.get_all_fields(self.geometries[feature_type]['output']))
+            self.add_column_and_constant(self.geometries[feature_type]['output'], 'OBJL_NAME', nullable=True)
             
 
         #     for value in ['assigned', 'unassigned']:
         #         with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][value], ['OBJL', 'OBJL_NAME']) as updateCursor:
         #             for row in updateCursor:
+        # will probably need to load class_codes into the file in the engine folder, import it as 
         #                 row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
         #                 if feature_type == 'Point' and row[1] in aton_values:
         #                     aton_found.add(row[1])
         #                     aton_count += 1
-        #                     updateCursor.deleteRow()
+        #                     updateCursor.deleteRow() 
         #                 else:
         #                     updateCursor.updateRow(row)
         # arcpy.AddMessage(f'Removed {aton_count} ATON features containing {str(aton_found)}')
@@ -216,8 +217,9 @@ class S57ConversionEngine(Engine):
         self.get_feature_records()
         # self.return_primitives_env() 
         # self.get_vector_records()
-        self.add_objl_string() 
-        self.build_output_layers() 
+         
+        self.build_output_layers()
+        self.add_objl_string_to_S57() 
         self.export_enc_layers()
         self.write_to_geopackage()  
 
