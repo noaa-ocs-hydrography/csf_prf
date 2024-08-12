@@ -152,6 +152,7 @@ class S57ConversionEngine(Engine):
             for feature in layer:
                 if feature:
                     feature_json = json.loads(feature.ExportToJson())
+                    # TODO use lookup to add converted S57 columns
                     geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                     if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                         feature_json = self.set_none_to_null(feature_json) # TODO move to the base class

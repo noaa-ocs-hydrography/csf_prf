@@ -113,6 +113,7 @@ class Engine:
     def split_multipoint_env(self) -> None:
         """Reset S57 ENV for split multipoint only"""
 
+        os.environ["S57_CSV"] = str(INPUTS / 'lookups')
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"    
     
     def unzip_enc_files(self, output_folder, file_ending) -> None:
