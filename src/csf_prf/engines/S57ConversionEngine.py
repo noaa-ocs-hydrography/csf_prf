@@ -7,6 +7,8 @@ from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
 
+INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
+
 
 class S57ConversionEngine(Engine):
     """Class for converting S57 files to geopackage"""
@@ -209,7 +211,13 @@ class S57ConversionEngine(Engine):
         """
 
         enc_file = self.driver.Open(enc_path, 0)
-        return enc_file                                                                     
+        return enc_file     
+
+    def split_multipoint_env(self) -> None:
+        """Reset S57 ENV for split multipoint only"""
+
+        os.environ["S57_CSV"] = str(INPUTS / 'lookups')
+        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON,ADD_SOUNDG_DEPTH=ON"                                                                     
 
     def start(self) -> None:
         self.create_output_gdb(gdb_name=self.gdb_name)   
