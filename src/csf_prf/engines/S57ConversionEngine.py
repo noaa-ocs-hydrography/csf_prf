@@ -45,19 +45,15 @@ class S57ConversionEngine(Engine):
             # print(self.get_all_fields(self.geometries[feature_type]['output']))
             self.add_column_and_constant(self.geometries[feature_type]['output'], 'OBJL_NAME', nullable=True)
             
-
-        #     for value in ['assigned', 'unassigned']:
-        #         with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][value], ['OBJL', 'OBJL_NAME']) as updateCursor:
-        #             for row in updateCursor:
-        # will probably need to load class_codes into the file in the engine folder, import it as 
-        #                 row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
-        #                 if feature_type == 'Point' and row[1] in aton_values:
-        #                     aton_found.add(row[1])
-        #                     aton_count += 1
-        #                     updateCursor.deleteRow() 
-        #                 else:
-        #                     updateCursor.updateRow(row)
-        # arcpy.AddMessage(f'Removed {aton_count} ATON features containing {str(aton_found)}')
+            with arcpy.da.UpdateCursor(self.geometries[feature_type]['output'], ['OBJL', 'OBJL_NAME']) as updateCursor:
+                for row in updateCursor:
+                    row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
+                    if feature_type == 'Point' and row[1] in aton_values:
+                        aton_found.add(row[1])
+                        aton_count += 1
+                        updateCursor.deleteRow() 
+                    else:
+                        updateCursor.updateRow(row)
 
     def build_output_layers(self) -> None:
         """Spatial query all of the ENC features against Sheets boundary"""
@@ -236,7 +232,7 @@ class S57ConversionEngine(Engine):
         """Copy the output feature classes to Geopackage"""
 
         arcpy.AddMessage('Writing to geopackage database')
-        output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, 'fff_geopackage')
+        output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
         arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}')
         arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
 
