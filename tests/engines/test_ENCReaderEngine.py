@@ -150,7 +150,7 @@ def test_get_gc_data(): # TODO double check this should be skipped
 
 
 pytest.mark.skip(reason="")
-def test_get_sql(): # TODO double check this should be skipped
+def test_get_sql(): # TODO test it
     ...     
 
 
@@ -162,7 +162,7 @@ def test_get_vector_records(victim):
 
 
 pytest.mark.skip(reason="")
-def test_open_file(): # TODO double check this should be skipped
+def test_open_file(): # TODO maybe a GDAL operator to see if it, or hasattr(), or check what the driver is from the object that gets returned
     ...    
 
 
