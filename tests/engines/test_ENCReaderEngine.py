@@ -145,7 +145,7 @@ def test_get_feature_records(victim):
 
 
 @pytest.mark.skip(reason="This function runs 3 other functions.")
-def test_get_gc_data(): # TODO double check this should be skipped
+def test_get_gc_data():
     ...    
 
 
@@ -161,19 +161,27 @@ def test_get_vector_records(victim):
     assert victim.geometries['Point']['QUAPOS'][0]['geojson']['properties']['QUAPOS'] == 4
 
 
-pytest.mark.skip(reason="")
-def test_open_file(): # TODO maybe a GDAL operator to see if it, or hasattr(), or check what the driver is from the object that gets returned
-    ...    
+def test_open_file(victim):
+    victim.open_file(ENC_FILE)
+    results = victim.driver.GetName()
+    assert results == 'S57'
 
 
 def test_print_feature_total(victim):
     victim.geometries['Point']['features_layers']['assigned'] = SHP_FILE_1
     victim.geometries['Point']['features_layers']['unassigned'] = SHP_FILE_2
-    # TODO should I do this for lines and polygons too? thn e make test shapefiles
+    # TODO should I do this for lines and polygons too? then make test shapefiles
     # victim.print_feature_total()
     # assert victim.points == 6
     # assert int(arcpy.management.GetCount(victim.geometries['Point']['features_layers']['assigned']).getOutput(0)) == 6
     # assert int(arcpy.management.GetCount(victim.geometries['Point']['features_layers']['unassigned']).getOutput(0)) == 6
+
+
+def test_join_quapos_to_features(victim): # TODO need to make quapos layers, they will get joined, then check quapos is there
+    victim.geometries['Point']['features_layers']['assigned'] = SHP_FILE_1
+    victim.geometries['Point']['features_layers']['unassigned'] = SHP_FILE_2
+    victim.geometries['Point']['QUAPOS_layers']['assigned'] = QUAPOS_FILE_1
+    victim.geometries['Point']['QUAPOS_layers']['assigned'] = QUAPOS_FILE_2
 
 
 def test_return_primitives_env(victim):
