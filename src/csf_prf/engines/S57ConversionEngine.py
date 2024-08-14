@@ -78,7 +78,7 @@ class S57ConversionEngine(Engine):
                                     new_value = s57_lookup[field_name][int(current_value)]
                                     new_row.append(new_value)
                                 except ValueError as e:
-                                    arcpy.AddMessage(f'  -found multiple values: {current_value}')
+                                    arcpy.AddMessage(f'  -field {field_name} had multiple values: {current_value}')
                                     # split multiple values in one field to get each string from lookup
                                     multiple_values = current_value.split(',')
                                     new_values = []
@@ -87,7 +87,7 @@ class S57ConversionEngine(Engine):
                                     new_row.append(','.join(new_values))
                                     pass
                                 except KeyError as e:
-                                    arcpy.AddMessage(f'  -found weird value: {current_value}')
+                                    arcpy.AddMessage(f'  -field {field_name} has weird value: {current_value}')
                                     new_row.append(current_value)
                                     pass
                             else:
