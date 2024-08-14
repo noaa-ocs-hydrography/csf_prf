@@ -1,0 +1,1091 @@
+Code,Attribute,Acronym,Attributetype,Class,Unit,ID,Meaning
+2,Beacon shape,BCNSHP,E,F,None,1,"stake, pole, perch, post"
+2,Beacon shape,BCNSHP,E,F,None,2,whity
+2,Beacon shape,BCNSHP,E,F,None,3,beacon tower
+2,Beacon shape,BCNSHP,E,F,None,4,lattice beacon
+2,Beacon shape,BCNSHP,E,F,None,5,pile beacon
+2,Beacon shape,BCNSHP,E,F,None,6,cairn
+2,Beacon shape,BCNSHP,E,F,None,7,buoyant beacon
+3,Building shape,BUISHP,E,F,None,5,high-rise building
+3,Building shape,BUISHP,E,F,None,6,pyramid
+3,Building shape,BUISHP,E,F,None,7,cylindrical
+3,Building shape,BUISHP,E,F,None,8,spherical
+3,Building shape,BUISHP,E,F,None,9,cubic
+4,Buoy shape,BOYSHP,E,F,None,1,"conical (nun, ogival)"
+4,Buoy shape,BOYSHP,E,F,None,2,can (cylindrical)
+4,Buoy shape,BOYSHP,E,F,None,3,spherical
+4,Buoy shape,BOYSHP,E,F,None,4,pillar
+4,Buoy shape,BOYSHP,E,F,None,5,spar (spindle)
+4,Buoy shape,BOYSHP,E,F,None,6,barrel (tun)
+4,Buoy shape,BOYSHP,E,F,None,7,super-buoy
+4,Buoy shape,BOYSHP,E,F,None,8,ice buoy
+7,Category of airport/airfield,CATAIR,L,F,None,1,military aeroplane airport
+7,Category of airport/airfield,CATAIR,L,F,None,2,civil aeroplane airport
+7,Category of airport/airfield,CATAIR,L,F,None,3,military heliport
+7,Category of airport/airfield,CATAIR,L,F,None,4,civil heliport
+7,Category of airport/airfield,CATAIR,L,F,None,5,glider airfield
+7,Category of airport/airfield,CATAIR,L,F,None,6,small planes airfield
+7,Category of airport/airfield,CATAIR,L,F,None,8,emergency airfield
+8,Category of anchorage,CATACH,L,F,None,1,unrestricted anchorage
+8,Category of anchorage,CATACH,L,F,None,2,deep water anchorage
+8,Category of anchorage,CATACH,L,F,None,3,tanker anchorage
+8,Category of anchorage,CATACH,L,F,None,4,explosives anchorage
+8,Category of anchorage,CATACH,L,F,None,5,quarantine anchorage
+8,Category of anchorage,CATACH,L,F,None,6,sea-plane anchorage
+8,Category of anchorage,CATACH,L,F,None,7,small craft anchorage
+8,Category of anchorage,CATACH,L,F,None,8,small craft mooring area
+8,Category of anchorage,CATACH,L,F,None,9,anchorage for periods up to 24 hours
+8,Category of anchorage,CATACH,L,F,None,10,anchorage for a limited period of time
+9,Category of bridge,CATBRG,L,F,None,1,fixed bridge
+9,Category of bridge,CATBRG,L,F,None,2,opening bridge
+9,Category of bridge,CATBRG,L,F,None,3,swing bridge
+9,Category of bridge,CATBRG,L,F,None,4,lifting bridge
+9,Category of bridge,CATBRG,L,F,None,5,bascule bridge
+9,Category of bridge,CATBRG,L,F,None,6,pontoon bridge
+9,Category of bridge,CATBRG,L,F,None,7,draw bridge
+9,Category of bridge,CATBRG,L,F,None,8,transporter bridge
+9,Category of bridge,CATBRG,L,F,None,9,footbridge
+9,Category of bridge,CATBRG,L,F,None,10,viaduct
+9,Category of bridge,CATBRG,L,F,None,11,aqueduct
+9,Category of bridge,CATBRG,L,F,None,12,suspension bridge
+10,Category of built-up area,CATBUA,E,F,None,1,urban area
+10,Category of built-up area,CATBUA,E,F,None,2,settlement
+10,Category of built-up area,CATBUA,E,F,None,3,village
+10,Category of built-up area,CATBUA,E,F,None,4,town
+10,Category of built-up area,CATBUA,E,F,None,5,city
+10,Category of built-up area,CATBUA,E,F,None,6,holiday village
+11,Category of cable,CATCBL,E,F,None,1,power line
+11,Category of cable,CATCBL,E,F,None,3,transmission line
+11,Category of cable,CATCBL,E,F,None,4,telephone
+11,Category of cable,CATCBL,E,F,None,5,telegraph
+11,Category of cable,CATCBL,E,F,None,6,mooring cable/chain
+12,Category of canal,CATCAN,E,F,None,1,transportation
+12,Category of canal,CATCAN,E,F,None,2,drainage
+12,Category of canal,CATCAN,E,F,None,3,irrigation
+13,Category of cardinal mark,CATCAM,E,F,None,1,north cardinal mark
+13,Category of cardinal mark,CATCAM,E,F,None,2,east cardinal mark
+13,Category of cardinal mark,CATCAM,E,F,None,3,south cardinal mark
+13,Category of cardinal mark,CATCAM,E,F,None,4,west cardinal mark
+14,Category of checkpoint,CATCHP,E,F,None,1,custom
+15,Category of coastline,CATCOA,E,F,None,1,steep coast
+15,Category of coastline,CATCOA,E,F,None,2,flat coast
+15,Category of coastline,CATCOA,E,F,None,3,sandy shore
+15,Category of coastline,CATCOA,E,F,None,4,stony shore
+15,Category of coastline,CATCOA,E,F,None,5,shingly shore
+15,Category of coastline,CATCOA,E,F,None,6,glacier (seaward end)
+15,Category of coastline,CATCOA,E,F,None,7,mangrove
+15,Category of coastline,CATCOA,E,F,None,8,marshy shore
+15,Category of coastline,CATCOA,E,F,None,9,coral reef
+15,Category of coastline,CATCOA,E,F,None,10,ice coast
+15,Category of coastline,CATCOA,E,F,None,11,shelly shore
+16,Category of control point,CATCTR,E,F,None,1,triangulation point
+16,Category of control point,CATCTR,E,F,None,2,observation spot
+16,Category of control point,CATCTR,E,F,None,3,fixed point
+16,Category of control point,CATCTR,E,F,None,4,bench-mark
+16,Category of control point,CATCTR,E,F,None,5,boundary mark
+16,Category of control point,CATCTR,E,F,None,6,"horizontal control, main station"
+16,Category of control point,CATCTR,E,F,None,7,"horizontal control, secondary station"
+17,Category of conveyor,CATCON,E,F,None,1,aerial cableway (telepheric)
+17,Category of conveyor,CATCON,E,F,None,2,belt conveyor
+18,Category of coverage,CATCOV,E,F,None,1,coverage available
+18,Category of coverage,CATCOV,E,F,None,2,no coverage available
+19,Category of crane,CATCRN,E,F,None,2,container crane/gantry
+19,Category of crane,CATCRN,E,F,None,3,sheerlegs
+19,Category of crane,CATCRN,E,F,None,4,travelling crane
+19,Category of crane,CATCRN,E,F,None,5,A-frame
+20,Category of dam,CATDAM,E,F,None,1,weir
+20,Category of dam,CATDAM,E,F,None,2,dam
+20,Category of dam,CATDAM,E,F,None,3,flood barrage
+21,Category of distance mark,CATDIS,E,F,None,1,distance mark not physically installed
+21,Category of distance mark,CATDIS,E,F,None,2,"visible mark, pole"
+21,Category of distance mark,CATDIS,E,F,None,3,"visible mark, board"
+21,Category of distance mark,CATDIS,E,F,None,4,"visible mark, unknown shape"
+22,Category of dock,CATDOC,E,F,None,1,tidal
+22,Category of dock,CATDOC,E,F,None,2,non-tidal (wet dock)
+23,Category of dumping ground,CATDPG,L,F,None,2,chemical waste dumping ground
+23,Category of dumping ground,CATDPG,L,F,None,3,nuclear waste dumping ground
+23,Category of dumping ground,CATDPG,L,F,None,4,explosives dumping ground
+23,Category of dumping ground,CATDPG,L,F,None,5,spoil ground
+23,Category of dumping ground,CATDPG,L,F,None,6,vessel dumping ground
+24,Category of fence/wall,CATFNC,E,F,None,1,fence
+24,Category of fence/wall,CATFNC,E,F,None,3,hedge
+24,Category of fence/wall,CATFNC,E,F,None,4,wall
+25,Category of ferry,CATFRY,E,F,None,1,'free-moving' ferry
+25,Category of ferry,CATFRY,E,F,None,2,cable ferry
+25,Category of ferry,CATFRY,E,F,None,3,ice ferry
+26,Category of fishing  facility,CATFIF,E,F,None,1,fishing stake
+26,Category of fishing  facility,CATFIF,E,F,None,2,fish trap
+26,Category of fishing  facility,CATFIF,E,F,None,3,fish weir
+26,Category of fishing  facility,CATFIF,E,F,None,4,tunny net
+27,Category of fog signal,CATFOG,E,F,None,1,explosive
+27,Category of fog signal,CATFOG,E,F,None,2,diaphone
+27,Category of fog signal,CATFOG,E,F,None,3,siren
+27,Category of fog signal,CATFOG,E,F,None,4,nautophone
+27,Category of fog signal,CATFOG,E,F,None,5,reed
+27,Category of fog signal,CATFOG,E,F,None,6,tyfon
+27,Category of fog signal,CATFOG,E,F,None,7,bell
+27,Category of fog signal,CATFOG,E,F,None,8,whistle
+27,Category of fog signal,CATFOG,E,F,None,9,gong
+27,Category of fog signal,CATFOG,E,F,None,10,horn
+28,Category of fortified structure,CATFOR,E,F,None,1,castle
+28,Category of fortified structure,CATFOR,E,F,None,2,fort
+28,Category of fortified structure,CATFOR,E,F,None,3,battery
+28,Category of fortified structure,CATFOR,E,F,None,4,blockhouse
+28,Category of fortified structure,CATFOR,E,F,None,5,Martello tower
+28,Category of fortified structure,CATFOR,E,F,None,6,redoubt
+29,Category of gate,CATGAT,E,F,None,2,flood barrage gate
+29,Category of gate,CATGAT,E,F,None,3,caisson
+29,Category of gate,CATGAT,E,F,None,4,lock gate
+29,Category of gate,CATGAT,E,F,None,5,dyke gate
+29,Category of gate,CATGAT,E,F,None,6,sluice
+30,Category of harbour facility,CATHAF,L,F,None,1,RoRo-terminal
+30,Category of harbour facility,CATHAF,L,F,None,3,ferry terminal
+30,Category of harbour facility,CATHAF,L,F,None,4,fishing harbour
+30,Category of harbour facility,CATHAF,L,F,None,5,yacht harbour/marina
+30,Category of harbour facility,CATHAF,L,F,None,6,naval base
+30,Category of harbour facility,CATHAF,L,F,None,7,tanker terminal
+30,Category of harbour facility,CATHAF,L,F,None,8,passenger terminal
+30,Category of harbour facility,CATHAF,L,F,None,9,shipyard
+30,Category of harbour facility,CATHAF,L,F,None,10,container terminal
+30,Category of harbour facility,CATHAF,L,F,None,11,bulk terminal
+30,Category of harbour facility,CATHAF,L,F,None,12,syncrolift
+30,Category of harbour facility,CATHAF,L,F,None,13,straddle carrier
+31,Category of hulk,CATHLK,L,F,None,1,floating restaurant
+31,Category of hulk,CATHLK,L,F,None,2,historic ship
+31,Category of hulk,CATHLK,L,F,None,3,museum
+31,Category of hulk,CATHLK,L,F,None,4,accomodation
+31,Category of hulk,CATHLK,L,F,None,5,floating breakwater
+32,Category of ice,CATICE,E,F,None,1,fast ice
+32,Category of ice,CATICE,E,F,None,5,glacier
+32,Category of ice,CATICE,E,F,None,8,polar ice
+33,Category of installation buoy,CATINB,E,F,None,1,catenary anchor leg mooring (CALM)
+33,Category of installation buoy,CATINB,E,F,None,2,single buoy mooring (SBM or SPM)
+34,Category of land region,CATLND,L,F,None,1,fen
+34,Category of land region,CATLND,L,F,None,2,marsh
+34,Category of land region,CATLND,L,F,None,3,moor/bog
+34,Category of land region,CATLND,L,F,None,4,heathland
+34,Category of land region,CATLND,L,F,None,5,mountain range
+34,Category of land region,CATLND,L,F,None,6,lowlands
+34,Category of land region,CATLND,L,F,None,7,canyon lands
+34,Category of land region,CATLND,L,F,None,8,paddy field
+34,Category of land region,CATLND,L,F,None,9,agricultural land
+34,Category of land region,CATLND,L,F,None,10,savanna/grassland
+34,Category of land region,CATLND,L,F,None,11,parkland
+34,Category of land region,CATLND,L,F,None,12,swamp
+34,Category of land region,CATLND,L,F,None,13,landslide
+34,Category of land region,CATLND,L,F,None,14,lava flow
+34,Category of land region,CATLND,L,F,None,15,salt pan
+34,Category of land region,CATLND,L,F,None,16,moraine
+34,Category of land region,CATLND,L,F,None,17,crater
+34,Category of land region,CATLND,L,F,None,18,cave
+34,Category of land region,CATLND,L,F,None,19,rock column or pinnacle
+34,Category of land region,CATLND,L,F,None,20,cay
+35,Category of landmark,CATLMK,L,F,None,1,cairn
+35,Category of landmark,CATLMK,L,F,None,2,cemetery
+35,Category of landmark,CATLMK,L,F,None,3,chimney
+35,Category of landmark,CATLMK,L,F,None,4,dish aerial
+35,Category of landmark,CATLMK,L,F,None,5,flagstaff (flagpole)
+35,Category of landmark,CATLMK,L,F,None,6,flare stack
+35,Category of landmark,CATLMK,L,F,None,7,mast
+35,Category of landmark,CATLMK,L,F,None,8,windsock
+35,Category of landmark,CATLMK,L,F,None,9,monument
+35,Category of landmark,CATLMK,L,F,None,10,column (pillar)
+35,Category of landmark,CATLMK,L,F,None,11,memorial plaque
+35,Category of landmark,CATLMK,L,F,None,12,obelisk
+35,Category of landmark,CATLMK,L,F,None,13,statue
+35,Category of landmark,CATLMK,L,F,None,14,cross
+35,Category of landmark,CATLMK,L,F,None,15,dome
+35,Category of landmark,CATLMK,L,F,None,16,radar scanner
+35,Category of landmark,CATLMK,L,F,None,17,tower
+35,Category of landmark,CATLMK,L,F,None,18,windmill
+35,Category of landmark,CATLMK,L,F,None,19,windmotor
+35,Category of landmark,CATLMK,L,F,None,20,spire/minaret
+35,Category of landmark,CATLMK,L,F,None,21,large rock or boulder on land
+36,Category of lateral mark,CATLAM,E,F,None,1,port-hand lateral mark
+36,Category of lateral mark,CATLAM,E,F,None,2,starboard-hand lateral mark
+36,Category of lateral mark,CATLAM,E,F,None,3,preferred channel to starboard lateral mark
+36,Category of lateral mark,CATLAM,E,F,None,4,preferred channel to port lateral mark
+37,Category of light,CATLIT,L,F,None,1,directional function
+37,Category of light,CATLIT,L,F,None,4,leading light
+37,Category of light,CATLIT,L,F,None,5,aero light
+37,Category of light,CATLIT,L,F,None,6,air obstruction light
+37,Category of light,CATLIT,L,F,None,7,fog detector light
+37,Category of light,CATLIT,L,F,None,8,flood light
+37,Category of light,CATLIT,L,F,None,9,strip light
+37,Category of light,CATLIT,L,F,None,10,subsidiary light
+37,Category of light,CATLIT,L,F,None,11,spotlight
+37,Category of light,CATLIT,L,F,None,12,front
+37,Category of light,CATLIT,L,F,None,13,rear
+37,Category of light,CATLIT,L,F,None,14,lower
+37,Category of light,CATLIT,L,F,None,15,upper
+37,Category of light,CATLIT,L,F,None,16,moiré effect
+37,Category of light,CATLIT,L,F,None,17,emergency
+37,Category of light,CATLIT,L,F,None,18,bearing light
+37,Category of light,CATLIT,L,F,None,19,horizontally disposed
+37,Category of light,CATLIT,L,F,None,20,vertically disposed
+38,Category of marine farm/culture,CATMFA,E,F,None,1,crustaceans
+38,Category of marine farm/culture,CATMFA,E,F,None,2,oyster/mussels
+38,Category of marine farm/culture,CATMFA,E,F,None,3,fish
+38,Category of marine farm/culture,CATMFA,E,F,None,4,seaweed
+38,Category of marine farm/culture,CATMFA,E,F,None,5,pearl culture farm
+39,Category of military practice area,CATMPA,L,F,None,2,torpedo exercise area
+39,Category of military practice area,CATMPA,L,F,None,3,submarine exercise area
+39,Category of military practice area,CATMPA,L,F,None,4,firing danger area
+39,Category of military practice area,CATMPA,L,F,None,5,mine-laying practice area
+39,Category of military practice area,CATMPA,L,F,None,6,small arms firing range
+40,Category of mooring/warping facility,CATMOR,E,F,None,1,dolphin
+40,Category of mooring/warping facility,CATMOR,E,F,None,2,deviation dolphin
+40,Category of mooring/warping facility,CATMOR,E,F,None,3,bollard
+40,Category of mooring/warping facility,CATMOR,E,F,None,4,tie-up wall
+40,Category of mooring/warping facility,CATMOR,E,F,None,5,post or pile
+40,Category of mooring/warping facility,CATMOR,E,F,None,6,chain/wire/cable
+40,Category of mooring/warping facility,CATMOR,E,F,None,7,mooring buoy
+41,Category of navigation line,CATNAV,E,F,None,1,clearing line
+41,Category of navigation line,CATNAV,E,F,None,2,transit line
+41,Category of navigation line,CATNAV,E,F,None,3,leading line bearing a recommended track
+42,Category of obstruction,CATOBS,E,F,None,1,snag / stump
+42,Category of obstruction,CATOBS,E,F,None,2,wellhead
+42,Category of obstruction,CATOBS,E,F,None,3,diffuser
+42,Category of obstruction,CATOBS,E,F,None,4,crib
+42,Category of obstruction,CATOBS,E,F,None,5,fish haven
+42,Category of obstruction,CATOBS,E,F,None,6,foul area
+42,Category of obstruction,CATOBS,E,F,None,7,foul ground
+42,Category of obstruction,CATOBS,E,F,None,8,ice boom
+42,Category of obstruction,CATOBS,E,F,None,9,ground tackle
+42,Category of obstruction,CATOBS,E,F,None,10,boom
+43,Category of offshore platform,CATOFP,L,F,None,1,oil derrick / rig
+43,Category of offshore platform,CATOFP,L,F,None,2,production platform
+43,Category of offshore platform,CATOFP,L,F,None,3,observation / research platform
+43,Category of offshore platform,CATOFP,L,F,None,4,articulated loading platform (ALP)
+43,Category of offshore platform,CATOFP,L,F,None,5,single anchor leg mooring (SALM)
+43,Category of offshore platform,CATOFP,L,F,None,6,mooring tower
+43,Category of offshore platform,CATOFP,L,F,None,7,artificial island
+43,Category of offshore platform,CATOFP,L,F,None,8,"floating production, storage and off-loading vessel (FPSO)"
+43,Category of offshore platform,CATOFP,L,F,None,9,accomodation platform
+43,Category of offshore platform,CATOFP,L,F,None,10,"navigation, communication and control buoy (NCCB)"
+44,Category of oil barrier,CATOLB,E,F,None,1,oil retention (high pressure pipe)
+44,Category of oil barrier,CATOLB,E,F,None,2,floating oil barrier
+45,Category of pile,CATPLE,E,F,None,1,stake
+45,Category of pile,CATPLE,E,F,None,3,post
+45,Category of pile,CATPLE,E,F,None,4,tripodal
+46,Category of pilot boarding place,CATPIL,E,F,None,1,boarding by pilot-cruising vessel
+46,Category of pilot boarding place,CATPIL,E,F,None,2,boarding by helicopter
+46,Category of pilot boarding place,CATPIL,E,F,None,3,pilot comes out from shore
+47,Category of pipeline / pipe,CATPIP,L,F,None,2,outfall pipe
+47,Category of pipeline / pipe,CATPIP,L,F,None,3,intake pipe
+47,Category of pipeline / pipe,CATPIP,L,F,None,4,sewer
+47,Category of pipeline / pipe,CATPIP,L,F,None,5,bubbler system
+47,Category of pipeline / pipe,CATPIP,L,F,None,6,supply pipe
+48,Category of production area,CATPRA,E,F,None,1,quarry
+48,Category of production area,CATPRA,E,F,None,2,mine
+48,Category of production area,CATPRA,E,F,None,3,stockpile
+48,Category of production area,CATPRA,E,F,None,4,power station area
+48,Category of production area,CATPRA,E,F,None,5,refinery area
+48,Category of production area,CATPRA,E,F,None,6,timber yard
+48,Category of production area,CATPRA,E,F,None,7,factory area
+48,Category of production area,CATPRA,E,F,None,8,tank farm
+48,Category of production area,CATPRA,E,F,None,9,wind farm
+48,Category of production area,CATPRA,E,F,None,10,slag heap/spoil heap
+49,Category of pylon,CATPYL,E,F,None,1,power transmission pylon/pole
+49,Category of pylon,CATPYL,E,F,None,2,telephone/telegraph pylon/pole
+49,Category of pylon,CATPYL,E,F,None,3,aerial cableway/sky pylon
+49,Category of pylon,CATPYL,E,F,None,4,bridge pylon/tower
+49,Category of pylon,CATPYL,E,F,None,5,bridge pier
+50,Category of quality of data,CATQUA,E,F,None,1,data quality A
+50,Category of quality of data,CATQUA,E,F,None,2,data quality B
+50,Category of quality of data,CATQUA,E,F,None,3,data quality C
+50,Category of quality of data,CATQUA,E,F,None,4,data quality D
+50,Category of quality of data,CATQUA,E,F,None,5,data quality E
+50,Category of quality of data,CATQUA,E,F,None,6,quality not evaluated
+51,Category of radar station,CATRAS,E,F,None,1,radar surveillance station
+51,Category of radar station,CATRAS,E,F,None,2,coast radar station
+52,Category of radar transponder beacon,CATRTB,E,F,None,1,"ramark, radar beacon transmitting continuously"
+52,Category of radar transponder beacon,CATRTB,E,F,None,2,"racon, radar transponder beacon"
+52,Category of radar transponder beacon,CATRTB,E,F,None,3,leading racon/radar transponder beacon
+53,Category of radio station,CATROS,L,F,None,1,circular (non-directional) marine or aero-marine radiobeacon
+53,Category of radio station,CATROS,L,F,None,2,directional radiobeacon
+53,Category of radio station,CATROS,L,F,None,3,rotating-pattern radiobeacon
+53,Category of radio station,CATROS,L,F,None,4,Consol beacon
+53,Category of radio station,CATROS,L,F,None,5,radio direction-finding station
+53,Category of radio station,CATROS,L,F,None,6,coast radio station providing QTG service
+53,Category of radio station,CATROS,L,F,None,7,aeronautical radiobeacon
+53,Category of radio station,CATROS,L,F,None,8,Decca
+53,Category of radio station,CATROS,L,F,None,9,Loran C
+53,Category of radio station,CATROS,L,F,None,10,Differential GPS
+53,Category of radio station,CATROS,L,F,None,11,Toran
+53,Category of radio station,CATROS,L,F,None,12,Omega
+53,Category of radio station,CATROS,L,F,None,13,Syledis
+53,Category of radio station,CATROS,L,F,None,14,Chaika (Chayka)
+54,Category of recommended track,CATTRK,E,F,None,1,based on a system of fixed marks
+54,Category of recommended track,CATTRK,E,F,None,2,not based on a system of fixed marks
+55,Category of rescue station,CATRSC,L,F,None,1,rescue station with lifeboat
+55,Category of rescue station,CATRSC,L,F,None,2,rescue station with rocket
+55,Category of rescue station,CATRSC,L,F,None,4,refuge for shipwrecked mariners
+55,Category of rescue station,CATRSC,L,F,None,5,refuge for intertidal area walkers
+55,Category of rescue station,CATRSC,L,F,None,6,lifeboat lying at a mooring
+55,Category of rescue station,CATRSC,L,F,None,7,aid radio station
+55,Category of rescue station,CATRSC,L,F,None,8,first aid equipment
+56,Category of restricted area,CATREA,L,F,None,1,offshore safety zone
+56,Category of restricted area,CATREA,L,F,None,4,nature reserve
+56,Category of restricted area,CATREA,L,F,None,5,bird sanctuary
+56,Category of restricted area,CATREA,L,F,None,6,game preserve
+56,Category of restricted area,CATREA,L,F,None,7,seal sanctuary
+56,Category of restricted area,CATREA,L,F,None,8,degaussing range
+56,Category of restricted area,CATREA,L,F,None,9,military area
+56,Category of restricted area,CATREA,L,F,None,10,historic wreck area
+56,Category of restricted area,CATREA,L,F,None,12,navigational aid safety zone
+56,Category of restricted area,CATREA,L,F,None,14,minefield
+56,Category of restricted area,CATREA,L,F,None,18,swimming area
+56,Category of restricted area,CATREA,L,F,None,19,waiting area
+56,Category of restricted area,CATREA,L,F,None,20,research area
+56,Category of restricted area,CATREA,L,F,None,21,dredging area
+56,Category of restricted area,CATREA,L,F,None,22,fish sanctuary
+56,Category of restricted area,CATREA,L,F,None,23,ecological reserve
+56,Category of restricted area,CATREA,L,F,None,24,no wake area
+56,Category of restricted area,CATREA,L,F,None,25,swinging area
+56,Category of restricted area,CATREA,L,F,None,26,water skiing area
+56,Category of restricted area,CATREA,L,F,None,27,Environmentally Sensitive Sea Area (ESSA)
+56,Category of restricted area,CATREA,L,F,None,28,Particularly Sensitive Sea Area (PSSA)
+57,Category of road,CATROD,E,F,None,1,motorway
+57,Category of road,CATROD,E,F,None,2,major road
+57,Category of road,CATROD,E,F,None,3,minor road
+57,Category of road,CATROD,E,F,None,4,track / path
+57,Category of road,CATROD,E,F,None,5,major street
+57,Category of road,CATROD,E,F,None,6,minor street
+57,Category of road,CATROD,E,F,None,7,crossing
+58,Category of runway,CATRUN,E,F,None,1,aeroplane
+58,Category of runway,CATRUN,E,F,None,2,helicopter landing pad
+59,Category of sea area,CATSEA,E,F,None,2,gat
+59,Category of sea area,CATSEA,E,F,None,3,bank
+59,Category of sea area,CATSEA,E,F,None,4,deep
+59,Category of sea area,CATSEA,E,F,None,5,bay
+59,Category of sea area,CATSEA,E,F,None,6,trench
+59,Category of sea area,CATSEA,E,F,None,7,basin
+59,Category of sea area,CATSEA,E,F,None,8,mud flats
+59,Category of sea area,CATSEA,E,F,None,9,reef
+59,Category of sea area,CATSEA,E,F,None,10,ledge
+59,Category of sea area,CATSEA,E,F,None,11,canyon
+59,Category of sea area,CATSEA,E,F,None,12,narrows
+59,Category of sea area,CATSEA,E,F,None,13,shoal
+59,Category of sea area,CATSEA,E,F,None,14,knoll
+59,Category of sea area,CATSEA,E,F,None,15,ridge
+59,Category of sea area,CATSEA,E,F,None,16,seamount
+59,Category of sea area,CATSEA,E,F,None,17,pinnacle
+59,Category of sea area,CATSEA,E,F,None,18,abyssal plain
+59,Category of sea area,CATSEA,E,F,None,19,plateau
+59,Category of sea area,CATSEA,E,F,None,20,spur
+59,Category of sea area,CATSEA,E,F,None,21,shelf
+59,Category of sea area,CATSEA,E,F,None,22,trough
+59,Category of sea area,CATSEA,E,F,None,23,saddle
+59,Category of sea area,CATSEA,E,F,None,24,abyssal hills
+59,Category of sea area,CATSEA,E,F,None,25,apron
+59,Category of sea area,CATSEA,E,F,None,26,archipelagic apron
+59,Category of sea area,CATSEA,E,F,None,27,borderland
+59,Category of sea area,CATSEA,E,F,None,28,continental margin
+59,Category of sea area,CATSEA,E,F,None,29,continental rise
+59,Category of sea area,CATSEA,E,F,None,30,escarpment
+59,Category of sea area,CATSEA,E,F,None,31,fan
+59,Category of sea area,CATSEA,E,F,None,32,fracture zone
+59,Category of sea area,CATSEA,E,F,None,33,gap
+59,Category of sea area,CATSEA,E,F,None,34,guyot
+59,Category of sea area,CATSEA,E,F,None,35,hill
+59,Category of sea area,CATSEA,E,F,None,36,hole
+59,Category of sea area,CATSEA,E,F,None,37,levee
+59,Category of sea area,CATSEA,E,F,None,38,median valley
+59,Category of sea area,CATSEA,E,F,None,39,moat
+59,Category of sea area,CATSEA,E,F,None,40,mountains
+59,Category of sea area,CATSEA,E,F,None,41,peak
+59,Category of sea area,CATSEA,E,F,None,42,province
+59,Category of sea area,CATSEA,E,F,None,43,rise
+59,Category of sea area,CATSEA,E,F,None,44,seachannel
+59,Category of sea area,CATSEA,E,F,None,45,seamount chain
+59,Category of sea area,CATSEA,E,F,None,46,shelf edge
+59,Category of sea area,CATSEA,E,F,None,47,sill
+59,Category of sea area,CATSEA,E,F,None,48,slope
+59,Category of sea area,CATSEA,E,F,None,49,terrace
+59,Category of sea area,CATSEA,E,F,None,50,valley
+59,Category of sea area,CATSEA,E,F,None,51,canal
+59,Category of sea area,CATSEA,E,F,None,52,lake
+59,Category of sea area,CATSEA,E,F,None,53,river
+59,Category of sea area,CATSEA,E,F,None,54,reach
+60,Category of shoreline construction,CATSLC,E,F,None,1,breakwater
+60,Category of shoreline construction,CATSLC,E,F,None,2,groyne (groin)
+60,Category of shoreline construction,CATSLC,E,F,None,3,mole
+60,Category of shoreline construction,CATSLC,E,F,None,4,pier ( jetty)
+60,Category of shoreline construction,CATSLC,E,F,None,5,promenadepier
+60,Category of shoreline construction,CATSLC,E,F,None,6,wharf (quay)
+60,Category of shoreline construction,CATSLC,E,F,None,7,training wall
+60,Category of shoreline construction,CATSLC,E,F,None,8,rip rap
+60,Category of shoreline construction,CATSLC,E,F,None,9,revetment
+60,Category of shoreline construction,CATSLC,E,F,None,10,sea wall
+60,Category of shoreline construction,CATSLC,E,F,None,11,landing steps
+60,Category of shoreline construction,CATSLC,E,F,None,12,ramp
+60,Category of shoreline construction,CATSLC,E,F,None,13,slipway
+60,Category of shoreline construction,CATSLC,E,F,None,14,fender
+60,Category of shoreline construction,CATSLC,E,F,None,15,solid face wharf
+60,Category of shoreline construction,CATSLC,E,F,None,16,open face wharf
+60,Category of shoreline construction,CATSLC,E,F,None,17,log ramp
+61,"Category of signal station, traffic",CATSIT,L,F,None,1,port control
+61,"Category of signal station, traffic",CATSIT,L,F,None,2,port entry and departure
+61,"Category of signal station, traffic",CATSIT,L,F,None,3,International Port Traffic
+61,"Category of signal station, traffic",CATSIT,L,F,None,4,berthing
+61,"Category of signal station, traffic",CATSIT,L,F,None,5,dock
+61,"Category of signal station, traffic",CATSIT,L,F,None,6,lock
+61,"Category of signal station, traffic",CATSIT,L,F,None,7,flood barrage
+61,"Category of signal station, traffic",CATSIT,L,F,None,8,bridge passage
+61,"Category of signal station, traffic",CATSIT,L,F,None,9,dredging
+61,"Category of signal station, traffic",CATSIT,L,F,None,10,traffic control light
+62,"Category of signal station, warning",CATSIW,L,F,None,1,danger
+62,"Category of signal station, warning",CATSIW,L,F,None,2,maritime obstruction
+62,"Category of signal station, warning",CATSIW,L,F,None,3,cable
+62,"Category of signal station, warning",CATSIW,L,F,None,4,military practice
+62,"Category of signal station, warning",CATSIW,L,F,None,5,distress
+62,"Category of signal station, warning",CATSIW,L,F,None,6,weather
+62,"Category of signal station, warning",CATSIW,L,F,None,7,storm
+62,"Category of signal station, warning",CATSIW,L,F,None,8,ice
+62,"Category of signal station, warning",CATSIW,L,F,None,9,time
+62,"Category of signal station, warning",CATSIW,L,F,None,10,tide
+62,"Category of signal station, warning",CATSIW,L,F,None,11,tidal stream
+62,"Category of signal station, warning",CATSIW,L,F,None,12,tide gauge
+62,"Category of signal station, warning",CATSIW,L,F,None,13,tide scale
+62,"Category of signal station, warning",CATSIW,L,F,None,14,diving
+62,"Category of signal station, warning",CATSIW,L,F,None,15,water level gauge
+63,Category of silo/tank,CATSIL,E,F,None,1,silo in general
+63,Category of silo/tank,CATSIL,E,F,None,2,tank in general
+63,Category of silo/tank,CATSIL,E,F,None,3,grain elevator
+63,Category of silo/tank,CATSIL,E,F,None,4,water tower
+64,Category of slope,CATSLO,E,F,None,1,cutting
+64,Category of slope,CATSLO,E,F,None,2,embankment
+64,Category of slope,CATSLO,E,F,None,3,dune
+64,Category of slope,CATSLO,E,F,None,4,hill
+64,Category of slope,CATSLO,E,F,None,5,pingo
+64,Category of slope,CATSLO,E,F,None,6,cliff
+64,Category of slope,CATSLO,E,F,None,7,scree
+65,Category of small craft facility,CATSCF,L,F,None,1,visitor`s berth
+65,Category of small craft facility,CATSCF,L,F,None,2,nautical club
+65,Category of small craft facility,CATSCF,L,F,None,3,boat hoist
+65,Category of small craft facility,CATSCF,L,F,None,4,sailmaker
+65,Category of small craft facility,CATSCF,L,F,None,5,boatyard
+65,Category of small craft facility,CATSCF,L,F,None,6,public inn
+65,Category of small craft facility,CATSCF,L,F,None,7,restaurant
+65,Category of small craft facility,CATSCF,L,F,None,8,chandler
+65,Category of small craft facility,CATSCF,L,F,None,9,provisions
+65,Category of small craft facility,CATSCF,L,F,None,10,doctor
+65,Category of small craft facility,CATSCF,L,F,None,11,pharmacy
+65,Category of small craft facility,CATSCF,L,F,None,12,water tap
+65,Category of small craft facility,CATSCF,L,F,None,13,fuel station
+65,Category of small craft facility,CATSCF,L,F,None,14,electricity
+65,Category of small craft facility,CATSCF,L,F,None,15,bottle gas
+65,Category of small craft facility,CATSCF,L,F,None,16,showers
+65,Category of small craft facility,CATSCF,L,F,None,17,launderette
+65,Category of small craft facility,CATSCF,L,F,None,18,public toilets
+65,Category of small craft facility,CATSCF,L,F,None,19,post box
+65,Category of small craft facility,CATSCF,L,F,None,20,public telephone
+65,Category of small craft facility,CATSCF,L,F,None,21,refuse bin
+65,Category of small craft facility,CATSCF,L,F,None,22,car park
+65,Category of small craft facility,CATSCF,L,F,None,23,parking for boats and trailers
+65,Category of small craft facility,CATSCF,L,F,None,24,caravan site
+65,Category of small craft facility,CATSCF,L,F,None,25,camping site
+65,Category of small craft facility,CATSCF,L,F,None,26,sewerage pump-out station
+65,Category of small craft facility,CATSCF,L,F,None,27,emergency telephone
+65,Category of small craft facility,CATSCF,L,F,None,28,landing / launching place for boats
+65,Category of small craft facility,CATSCF,L,F,None,29,visitors mooring
+65,Category of small craft facility,CATSCF,L,F,None,30,scrubbing berth
+65,Category of small craft facility,CATSCF,L,F,None,31,picnic area
+65,Category of small craft facility,CATSCF,L,F,None,32,mechanics workshop
+65,Category of small craft facility,CATSCF,L,F,None,33,guard and/or security service
+66,Category of special purpose mark,CATSPM,L,F,None,1,firing danger area mark
+66,Category of special purpose mark,CATSPM,L,F,None,2,target mark
+66,Category of special purpose mark,CATSPM,L,F,None,3,marker ship mark
+66,Category of special purpose mark,CATSPM,L,F,None,4,degaussing range mark
+66,Category of special purpose mark,CATSPM,L,F,None,5,barge mark
+66,Category of special purpose mark,CATSPM,L,F,None,6,cable mark
+66,Category of special purpose mark,CATSPM,L,F,None,7,spoil ground mark
+66,Category of special purpose mark,CATSPM,L,F,None,8,outfall mark
+66,Category of special purpose mark,CATSPM,L,F,None,9,ODAS (Ocean-Data-Acquisition-System)
+66,Category of special purpose mark,CATSPM,L,F,None,10,recording mark
+66,Category of special purpose mark,CATSPM,L,F,None,11,seaplane anchorage mark
+66,Category of special purpose mark,CATSPM,L,F,None,12,recreation zone mark
+66,Category of special purpose mark,CATSPM,L,F,None,13,private mark
+66,Category of special purpose mark,CATSPM,L,F,None,14,mooring mark
+66,Category of special purpose mark,CATSPM,L,F,None,15,LANBY (Large Automatic Navigational Buoy)
+66,Category of special purpose mark,CATSPM,L,F,None,16,leading mark
+66,Category of special purpose mark,CATSPM,L,F,None,17,measured distance mark
+66,Category of special purpose mark,CATSPM,L,F,None,18,notice mark
+66,Category of special purpose mark,CATSPM,L,F,None,19,TSS mark (Traffic Separation Scheme)
+66,Category of special purpose mark,CATSPM,L,F,None,20,anchoring prohibited mark
+66,Category of special purpose mark,CATSPM,L,F,None,21,berthing prohibited mark
+66,Category of special purpose mark,CATSPM,L,F,None,22,overtaking prohibited mark
+66,Category of special purpose mark,CATSPM,L,F,None,23,two-way traffic prohibited mark
+66,Category of special purpose mark,CATSPM,L,F,None,24,'reduced wake' mark
+66,Category of special purpose mark,CATSPM,L,F,None,25,speed limit mark
+66,Category of special purpose mark,CATSPM,L,F,None,26,stop mark
+66,Category of special purpose mark,CATSPM,L,F,None,27,general warning mark
+66,Category of special purpose mark,CATSPM,L,F,None,28,'sound ship's siren' mark
+66,Category of special purpose mark,CATSPM,L,F,None,29,restricted vertical clearence mark
+66,Category of special purpose mark,CATSPM,L,F,None,30,maximum vessel's draught mark
+66,Category of special purpose mark,CATSPM,L,F,None,31,restricted horizontal clearance mark
+66,Category of special purpose mark,CATSPM,L,F,None,32,strong current warning mark
+66,Category of special purpose mark,CATSPM,L,F,None,33,berthing permitted mark
+66,Category of special purpose mark,CATSPM,L,F,None,34,overhead power cable mark
+66,Category of special purpose mark,CATSPM,L,F,None,35,'channel edge gradient' mark
+66,Category of special purpose mark,CATSPM,L,F,None,36,telephone mark
+66,Category of special purpose mark,CATSPM,L,F,None,37,ferry crossing mark
+66,Category of special purpose mark,CATSPM,L,F,None,39,pipline mark
+66,Category of special purpose mark,CATSPM,L,F,None,40,anchorage mark
+66,Category of special purpose mark,CATSPM,L,F,None,41,clearing mark
+66,Category of special purpose mark,CATSPM,L,F,None,42,control mark
+66,Category of special purpose mark,CATSPM,L,F,None,43,diving mark
+66,Category of special purpose mark,CATSPM,L,F,None,44,refuge beacon
+66,Category of special purpose mark,CATSPM,L,F,None,45,foul ground mark
+66,Category of special purpose mark,CATSPM,L,F,None,46,yachting mark
+66,Category of special purpose mark,CATSPM,L,F,None,47,heliport mark
+66,Category of special purpose mark,CATSPM,L,F,None,48,GPS mark
+66,Category of special purpose mark,CATSPM,L,F,None,49,seaplane landing mark
+66,Category of special purpose mark,CATSPM,L,F,None,50,entry prohibited mark
+66,Category of special purpose mark,CATSPM,L,F,None,51,work in progress mark
+66,Category of special purpose mark,CATSPM,L,F,None,52,mark with unknown purpose
+66,Category of special purpose mark,CATSPM,L,F,None,53,wellhead mark
+66,Category of special purpose mark,CATSPM,L,F,None,54,channel separation mark
+66,Category of special purpose mark,CATSPM,L,F,None,55,marine farm mark
+66,Category of special purpose mark,CATSPM,L,F,None,56,artificial reef mark
+67,Category of Traffic Separation Scheme,CATTSS,E,F,None,1,IMO - adopted
+67,Category of Traffic Separation Scheme,CATTSS,E,F,None,2,not IMO - adopted
+68,Category of vegetation,CATVEG,L,F,None,1,grassland
+68,Category of vegetation,CATVEG,L,F,None,3,bush
+68,Category of vegetation,CATVEG,L,F,None,4,deciduous wood
+68,Category of vegetation,CATVEG,L,F,None,5,coniferous  wood
+68,Category of vegetation,CATVEG,L,F,None,6,wood in general (inc mixed wood)
+68,Category of vegetation,CATVEG,L,F,None,7,mangroves
+68,Category of vegetation,CATVEG,L,F,None,10,mixed crops
+68,Category of vegetation,CATVEG,L,F,None,11,reed
+68,Category of vegetation,CATVEG,L,F,None,12,moos
+68,Category of vegetation,CATVEG,L,F,None,13,tree in general
+68,Category of vegetation,CATVEG,L,F,None,14,evergreen tree
+68,Category of vegetation,CATVEG,L,F,None,15,coniferous tree
+68,Category of vegetation,CATVEG,L,F,None,16,palm tree
+68,Category of vegetation,CATVEG,L,F,None,17,nipa palm tree
+68,Category of vegetation,CATVEG,L,F,None,18,casuarina tree
+68,Category of vegetation,CATVEG,L,F,None,19,eucalypt tree
+68,Category of vegetation,CATVEG,L,F,None,20,deciduous tree
+68,Category of vegetation,CATVEG,L,F,None,21,mangrove tree
+68,Category of vegetation,CATVEG,L,F,None,22,filao tree
+69,Category of water turbulence,CATWAT,E,F,None,1,breakers
+69,Category of water turbulence,CATWAT,E,F,None,2,eddies
+69,Category of water turbulence,CATWAT,E,F,None,3,overfalls
+69,Category of water turbulence,CATWAT,E,F,None,4,tide rips
+69,Category of water turbulence,CATWAT,E,F,None,5,bombora
+70,Category of weed/kelp,CATWED,E,F,None,1,kelp
+70,Category of weed/kelp,CATWED,E,F,None,2,sea weed
+70,Category of weed/kelp,CATWED,E,F,None,3,sea grass
+70,Category of weed/kelp,CATWED,E,F,None,4,saragasso
+71,Category of wreck,CATWRK,E,F,None,1,non-dangerous wreck
+71,Category of wreck,CATWRK,E,F,None,2,dangerous wreck
+71,Category of wreck,CATWRK,E,F,None,3,distributed remains of wreck
+71,Category of wreck,CATWRK,E,F,None,4,wreck showing mast/masts
+71,Category of wreck,CATWRK,E,F,None,5,wreck showing any portion of hull or superstructure
+72,Category of zone of confidence data,CATZOC,E,F,None,1,zone of confidence A1
+72,Category of zone of confidence data,CATZOC,E,F,None,2,zone of confidence A2
+72,Category of zone of confidence data,CATZOC,E,F,None,3,zone of confidence B
+72,Category of zone of confidence data,CATZOC,E,F,None,4,zone of confidence C
+72,Category of zone of confidence data,CATZOC,E,F,None,5,zone of confidence D
+72,Category of zone of confidence data,CATZOC,E,F,None,6,zone of confidence U (data not assessed)
+73,Character spacing,$SPACE,E,$,None,1,expanded/condensed
+73,Character spacing,$SPACE,E,$,None,2,standard
+75,Colour,COLOUR,L,F,None,1,white
+75,Colour,COLOUR,L,F,None,2,black
+75,Colour,COLOUR,L,F,None,3,red
+75,Colour,COLOUR,L,F,None,4,green
+75,Colour,COLOUR,L,F,None,5,blue
+75,Colour,COLOUR,L,F,None,6,yellow
+75,Colour,COLOUR,L,F,None,7,grey
+75,Colour,COLOUR,L,F,None,8,brown
+75,Colour,COLOUR,L,F,None,9,amber
+75,Colour,COLOUR,L,F,None,10,violet
+75,Colour,COLOUR,L,F,None,11,orange
+75,Colour,COLOUR,L,F,None,12,magenta
+75,Colour,COLOUR,L,F,None,13,pink
+76,Colour pattern,COLPAT,L,F,None,1,horizontal stripes
+76,Colour pattern,COLPAT,L,F,None,2,vertical stripes
+76,Colour pattern,COLPAT,L,F,None,3,diagonal stripes
+76,Colour pattern,COLPAT,L,F,None,4,squared
+76,Colour pattern,COLPAT,L,F,None,5,stripes (direction unknown)
+76,Colour pattern,COLPAT,L,F,None,6,border stripes
+81,Condition,CONDTN,E,F,None,1,under construction
+81,Condition,CONDTN,E,F,None,2,ruined
+81,Condition,CONDTN,E,F,None,3,under reclamation
+81,Condition,CONDTN,E,F,None,4,wingless
+81,Condition,CONDTN,E,F,None,5,planned construction
+82,"Conspicuous, Radar",CONRAD,E,F,None,1,radar conspicuous
+82,"Conspicuous, Radar",CONRAD,E,F,None,2,not radar conspicuous
+82,"Conspicuous, Radar",CONRAD,E,F,None,3,radar conspicuous (has radar reflector)
+83,"Conspicuous, visual",CONVIS,E,F,None,1,visual conspicuous
+83,"Conspicuous, visual",CONVIS,E,F,None,2,not visual conspicuous
+89,Depth units,DUNITS,E,F,None,1,metres
+89,Depth units,DUNITS,E,F,None,2,fathoms and feet
+89,Depth units,DUNITS,E,F,None,3,feet
+89,Depth units,DUNITS,E,F,None,4,fathoms and fractions
+92,Exhibition condition of light,EXCLIT,E,F,None,1,light shown without change of character
+92,Exhibition condition of light,EXCLIT,E,F,None,2,daytime light
+92,Exhibition condition of light,EXCLIT,E,F,None,3,fog light
+92,Exhibition condition of light,EXCLIT,E,F,None,4,night light
+93,Exposition of sounding,EXPSOU,E,F,None,1,within the range of depth of the surrounding depth area
+93,Exposition of sounding,EXPSOU,E,F,None,2,shoaler than range of depth of the surrounding depth area
+93,Exposition of sounding,EXPSOU,E,F,None,3,deeper than range of depth of the surrounding depth area
+94,Function,FUNCTN,L,F,None,2,harbour-master's office
+94,Function,FUNCTN,L,F,None,3,custom office
+94,Function,FUNCTN,L,F,None,4,health office
+94,Function,FUNCTN,L,F,None,5,hospital
+94,Function,FUNCTN,L,F,None,6,post office
+94,Function,FUNCTN,L,F,None,7,hotel
+94,Function,FUNCTN,L,F,None,8,railway station
+94,Function,FUNCTN,L,F,None,9,police station
+94,Function,FUNCTN,L,F,None,10,water-police station
+94,Function,FUNCTN,L,F,None,11,pilot office
+94,Function,FUNCTN,L,F,None,12,pilot lookout
+94,Function,FUNCTN,L,F,None,13,bank office
+94,Function,FUNCTN,L,F,None,14,headquarters for district control
+94,Function,FUNCTN,L,F,None,15,transit shed/warehouse
+94,Function,FUNCTN,L,F,None,16,factory
+94,Function,FUNCTN,L,F,None,17,power station
+94,Function,FUNCTN,L,F,None,18,administrative
+94,Function,FUNCTN,L,F,None,19,educational facility
+94,Function,FUNCTN,L,F,None,20,church
+94,Function,FUNCTN,L,F,None,21,chapel
+94,Function,FUNCTN,L,F,None,22,temple
+94,Function,FUNCTN,L,F,None,23,pagoda
+94,Function,FUNCTN,L,F,None,24,shinto shrine
+94,Function,FUNCTN,L,F,None,25,buddhist temple
+94,Function,FUNCTN,L,F,None,26,mosque
+94,Function,FUNCTN,L,F,None,27,marabout
+94,Function,FUNCTN,L,F,None,28,lookout
+94,Function,FUNCTN,L,F,None,29,communication
+94,Function,FUNCTN,L,F,None,30,television
+94,Function,FUNCTN,L,F,None,31,radio
+94,Function,FUNCTN,L,F,None,32,radar
+94,Function,FUNCTN,L,F,None,33,light support
+94,Function,FUNCTN,L,F,None,34,microwave
+94,Function,FUNCTN,L,F,None,35,cooling
+94,Function,FUNCTN,L,F,None,36,observation
+94,Function,FUNCTN,L,F,None,37,timeball
+94,Function,FUNCTN,L,F,None,38,clock
+94,Function,FUNCTN,L,F,None,39,control
+94,Function,FUNCTN,L,F,None,40,airship mooring
+94,Function,FUNCTN,L,F,None,41,stadium
+94,Function,FUNCTN,L,F,None,42,bus station
+96,Height/length units,HUNITS,E,F,None,1,metres
+96,Height/length units,HUNITS,E,F,None,2,feet
+103,Jurisdiction,JRSDTN,E,F,None,1,international
+103,Jurisdiction,JRSDTN,E,F,None,2,national
+103,Jurisdiction,JRSDTN,E,F,None,3,national sub-division
+104,Justification - horizontal,$JUSTH,E,$,None,1,centre justified
+104,Justification - horizontal,$JUSTH,E,$,None,2,right justified
+104,Justification - horizontal,$JUSTH,E,$,None,3,left justified
+105,Justification - vertical,$JUSTV,E,$,None,1,bottom justified
+105,Justification - vertical,$JUSTV,E,$,None,2,centre justified
+105,Justification - vertical,$JUSTV,E,$,None,3,top justified
+107,Light characteristic,LITCHR,E,F,None,1,fixed
+107,Light characteristic,LITCHR,E,F,None,2,flashing
+107,Light characteristic,LITCHR,E,F,None,3,long-flashing
+107,Light characteristic,LITCHR,E,F,None,4,quick-flashing
+107,Light characteristic,LITCHR,E,F,None,5,very quick-flashing
+107,Light characteristic,LITCHR,E,F,None,6,ultra quick-flashing
+107,Light characteristic,LITCHR,E,F,None,7,isophased
+107,Light characteristic,LITCHR,E,F,None,8,occulting
+107,Light characteristic,LITCHR,E,F,None,9,interrupted quick-flashing
+107,Light characteristic,LITCHR,E,F,None,10,interrupted very quick-flashing
+107,Light characteristic,LITCHR,E,F,None,11,interrupted ultra quick-flashing
+107,Light characteristic,LITCHR,E,F,None,12,morse
+107,Light characteristic,LITCHR,E,F,None,13,fixed / flash
+107,Light characteristic,LITCHR,E,F,None,14,flash / long-flash
+107,Light characteristic,LITCHR,E,F,None,15,occulting / flash
+107,Light characteristic,LITCHR,E,F,None,16,fixed / long-flash
+107,Light characteristic,LITCHR,E,F,None,17,occulting alternating
+107,Light characteristic,LITCHR,E,F,None,18,long-flash alternating
+107,Light characteristic,LITCHR,E,F,None,19,flash alternating
+107,Light characteristic,LITCHR,E,F,None,20,group alternating
+107,Light characteristic,LITCHR,E,F,None,25,quick-flash plus long-flash
+107,Light characteristic,LITCHR,E,F,None,26,very quick-flash plus long-flash
+107,Light characteristic,LITCHR,E,F,None,27,ultra quick-flash plus long-flash
+107,Light characteristic,LITCHR,E,F,None,28,alternating
+107,Light characteristic,LITCHR,E,F,None,29,fixed and alternating flashing
+108,Light visibility,LITVIS,L,F,None,1,high intensity
+108,Light visibility,LITVIS,L,F,None,2,low intensity
+108,Light visibility,LITVIS,L,F,None,3,faint
+108,Light visibility,LITVIS,L,F,None,4,intensified
+108,Light visibility,LITVIS,L,F,None,5,unintensified
+108,Light visibility,LITVIS,L,F,None,6,visibility deliberately restricted
+108,Light visibility,LITVIS,L,F,None,7,obscured
+108,Light visibility,LITVIS,L,F,None,8,partially obscured
+109,Marks navigational - System of,MARSYS,E,F,None,1,IALA A
+109,Marks navigational - System of,MARSYS,E,F,None,2,IALA B
+109,Marks navigational - System of,MARSYS,E,F,None,9,no system
+109,Marks navigational - System of,MARSYS,E,F,None,10,other sytem
+112,Nature of construction,NATCON,L,F,None,1,masonry
+112,Nature of construction,NATCON,L,F,None,2,concreted
+112,Nature of construction,NATCON,L,F,None,3,loose boulders
+112,Nature of construction,NATCON,L,F,None,4,hard surfaced
+112,Nature of construction,NATCON,L,F,None,5,unsurfaced
+112,Nature of construction,NATCON,L,F,None,6,wooden
+112,Nature of construction,NATCON,L,F,None,7,metal
+112,Nature of construction,NATCON,L,F,None,8,glass reinforced plastic (GRP)
+112,Nature of construction,NATCON,L,F,None,9,painted
+113,Nature of surface,NATSUR,L,F,None,1,mud
+113,Nature of surface,NATSUR,L,F,None,2,clay
+113,Nature of surface,NATSUR,L,F,None,3,silt
+113,Nature of surface,NATSUR,L,F,None,4,sand
+113,Nature of surface,NATSUR,L,F,None,5,stone
+113,Nature of surface,NATSUR,L,F,None,6,gravel
+113,Nature of surface,NATSUR,L,F,None,7,pebbles
+113,Nature of surface,NATSUR,L,F,None,8,cobbles
+113,Nature of surface,NATSUR,L,F,None,9,rock
+113,Nature of surface,NATSUR,L,F,None,11,lava
+113,Nature of surface,NATSUR,L,F,None,14,coral
+113,Nature of surface,NATSUR,L,F,None,17,shells
+113,Nature of surface,NATSUR,L,F,None,18,boulder
+114,Nature of surface - qualifying terms,NATQUA,L,F,None,1,fine
+114,Nature of surface - qualifying terms,NATQUA,L,F,None,2,medium
+114,Nature of surface - qualifying terms,NATQUA,L,F,None,3,coarse
+114,Nature of surface - qualifying terms,NATQUA,L,F,None,4,broken
+114,Nature of surface - qualifying terms,NATQUA,L,F,None,5,sticky
+114,Nature of surface - qualifying terms,NATQUA,L,F,None,6,soft
+114,Nature of surface - qualifying terms,NATQUA,L,F,None,7,stiff
+114,Nature of surface - qualifying terms,NATQUA,L,F,None,8,volcanic
+114,Nature of surface - qualifying terms,NATQUA,L,F,None,9,calcareous
+114,Nature of surface - qualifying terms,NATQUA,L,F,None,10,hard
+123,Product,PRODCT,L,F,None,1,oil
+123,Product,PRODCT,L,F,None,2,gas
+123,Product,PRODCT,L,F,None,3,water
+123,Product,PRODCT,L,F,None,4,stone
+123,Product,PRODCT,L,F,None,5,coal
+123,Product,PRODCT,L,F,None,6,ore
+123,Product,PRODCT,L,F,None,7,chemicals
+123,Product,PRODCT,L,F,None,8,drinking water
+123,Product,PRODCT,L,F,None,9,milk
+123,Product,PRODCT,L,F,None,10,bauxite
+123,Product,PRODCT,L,F,None,11,coke
+123,Product,PRODCT,L,F,None,12,iron ingots
+123,Product,PRODCT,L,F,None,13,salt
+123,Product,PRODCT,L,F,None,14,sand
+123,Product,PRODCT,L,F,None,15,timber
+123,Product,PRODCT,L,F,None,16,sawdust / wood chips
+123,Product,PRODCT,L,F,None,17,scrap metal
+123,Product,PRODCT,L,F,None,18,liquified natural gas (LNG)
+123,Product,PRODCT,L,F,None,19,liquified petroleum gas (LPG)
+123,Product,PRODCT,L,F,None,20,wine
+123,Product,PRODCT,L,F,None,21,cement
+123,Product,PRODCT,L,F,None,22,grain
+125,Quality of sounding measurement,QUASOU,L,F,None,1,depth known
+125,Quality of sounding measurement,QUASOU,L,F,None,2,depth unknown
+125,Quality of sounding measurement,QUASOU,L,F,None,3,doubtful sounding
+125,Quality of sounding measurement,QUASOU,L,F,None,4,unreliable sounding
+125,Quality of sounding measurement,QUASOU,L,F,None,5,no bottom found at value shown
+125,Quality of sounding measurement,QUASOU,L,F,None,6,least depth known
+125,Quality of sounding measurement,QUASOU,L,F,None,7,"least depth unknown, safe clearance at value shown"
+125,Quality of sounding measurement,QUASOU,L,F,None,8,value reported (not surveyed)
+125,Quality of sounding measurement,QUASOU,L,F,None,9,value reported (not confirmed)
+125,Quality of sounding measurement,QUASOU,L,F,None,10,maintained depth
+125,Quality of sounding measurement,QUASOU,L,F,None,11,not reguraly maintained
+131,Restriction,RESTRN,L,F,None,1,anchoring prohibited
+131,Restriction,RESTRN,L,F,None,2,anchoring restricted
+131,Restriction,RESTRN,L,F,None,3,fishing prohibited
+131,Restriction,RESTRN,L,F,None,4,fishing restricted
+131,Restriction,RESTRN,L,F,None,5,trawling prohibited
+131,Restriction,RESTRN,L,F,None,6,trawling restricted
+131,Restriction,RESTRN,L,F,None,7,entry prohibited
+131,Restriction,RESTRN,L,F,None,8,entry restricted
+131,Restriction,RESTRN,L,F,None,9,dredging prohibited
+131,Restriction,RESTRN,L,F,None,10,dredging restricted
+131,Restriction,RESTRN,L,F,None,11,diving prohibited
+131,Restriction,RESTRN,L,F,None,12,diving restricted
+131,Restriction,RESTRN,L,F,None,13,no wake
+131,Restriction,RESTRN,L,F,None,14,area to be avoided
+131,Restriction,RESTRN,L,F,None,15,construction prohibited
+131,Restriction,RESTRN,L,F,None,16,discharging prohibited
+131,Restriction,RESTRN,L,F,None,17,discharging restricted
+131,Restriction,RESTRN,L,F,None,18,industrial or mineral exploration/development prohibited
+131,Restriction,RESTRN,L,F,None,19,industrial or mineral exploration/development restricted
+131,Restriction,RESTRN,L,F,None,20,drilling prohibited
+131,Restriction,RESTRN,L,F,None,21,drilling restricted
+131,Restriction,RESTRN,L,F,None,22,removal of historical artifacts prohibited
+131,Restriction,RESTRN,L,F,None,23,removal of historical artifacts restricted
+131,Restriction,RESTRN,L,F,None,24,dragging prohibited
+131,Restriction,RESTRN,L,F,None,25,stopping prohibited
+131,Restriction,RESTRN,L,F,None,26,landing prohibited
+131,Restriction,RESTRN,L,F,None,27,speed restricted
+140,Signal generation,SIGGEN,E,F,None,1,automatically
+140,Signal generation,SIGGEN,E,F,None,2,by wave action
+140,Signal generation,SIGGEN,E,F,None,3,by hand
+140,Signal generation,SIGGEN,E,F,None,4,by wind
+149,Status,STATUS,L,F,None,1,permanent
+149,Status,STATUS,L,F,None,2,occasional
+149,Status,STATUS,L,F,None,3,recommended
+149,Status,STATUS,L,F,None,4,not in use
+149,Status,STATUS,L,F,None,5,periodically/intermittent
+149,Status,STATUS,L,F,None,6,reserved
+149,Status,STATUS,L,F,None,7,temporary
+149,Status,STATUS,L,F,None,8,private
+149,Status,STATUS,L,F,None,9,mandatory
+149,Status,STATUS,L,F,None,11,extinguished
+149,Status,STATUS,L,F,None,12,illuminated
+149,Status,STATUS,L,F,None,13,historic
+149,Status,STATUS,L,F,None,14,public
+149,Status,STATUS,L,F,None,15,synchronized
+149,Status,STATUS,L,F,None,16,watched
+149,Status,STATUS,L,F,None,17,un-watched
+149,Status,STATUS,L,F,None,18,existence doubtful
+153,Survey type,SURTYP,L,F,None,1,reconnaissance/sketch survey
+153,Survey type,SURTYP,L,F,None,2,controlled survey
+153,Survey type,SURTYP,L,F,None,4,examintion survey
+153,Survey type,SURTYP,L,F,None,5,passage survey
+153,Survey type,SURTYP,L,F,None,6,remotely sensed
+156,Technique of sounding measurement,TECSOU,L,F,None,1,found by echo-sounder
+156,Technique of sounding measurement,TECSOU,L,F,None,2,found by side scan sonar
+156,Technique of sounding measurement,TECSOU,L,F,None,3,found by multi-beam
+156,Technique of sounding measurement,TECSOU,L,F,None,4,found by diver
+156,Technique of sounding measurement,TECSOU,L,F,None,5,found by lead-line
+156,Technique of sounding measurement,TECSOU,L,F,None,6,swept by wire-drag
+156,Technique of sounding measurement,TECSOU,L,F,None,7,found by laser
+156,Technique of sounding measurement,TECSOU,L,F,None,8,swept by vertical acoustic system
+156,Technique of sounding measurement,TECSOU,L,F,None,9,found by electromagnetic sensor
+156,Technique of sounding measurement,TECSOU,L,F,None,10,photogrammetry
+156,Technique of sounding measurement,TECSOU,L,F,None,11,satelite imagery
+156,Technique of sounding measurement,TECSOU,L,F,None,12,found by levelling
+156,Technique of sounding measurement,TECSOU,L,F,None,13,swept by side-scan sonar
+156,Technique of sounding measurement,TECSOU,L,F,None,14,computer generated
+161,Tide - accuracy of water level,T_ACWL,E,F,None,1,better than 0.1m and 10 minutes
+161,Tide - accuracy of water level,T_ACWL,E,F,None,2,worse than 0.1m or 10 minutes
+163,Tide - method of tidal prediction,T_MTOD,E,F,None,1,simplified harmonic method of tidal prediction
+163,Tide - method of tidal prediction,T_MTOD,E,F,None,2,full harmonic method of tidal prediction
+163,Tide - method of tidal prediction,T_MTOD,E,F,None,3,height and time difference non-harmonic method
+170,Tint,$TINTS,E,$,None,1,darkest blue
+170,Tint,$TINTS,E,$,None,2,medium blue
+170,Tint,$TINTS,E,$,None,3,lightest blue
+171,Topmark/daymark shape,TOPSHP,E,F,None,1,"cone, point up"
+171,Topmark/daymark shape,TOPSHP,E,F,None,2,"cone, point down"
+171,Topmark/daymark shape,TOPSHP,E,F,None,3,sphere
+171,Topmark/daymark shape,TOPSHP,E,F,None,4,2 sphere
+171,Topmark/daymark shape,TOPSHP,E,F,None,5,cylinder (can)
+171,Topmark/daymark shape,TOPSHP,E,F,None,6,board
+171,Topmark/daymark shape,TOPSHP,E,F,None,7,x-shape (St. Andrew's cross)
+171,Topmark/daymark shape,TOPSHP,E,F,None,8,upright cross (St. George cross)
+171,Topmark/daymark shape,TOPSHP,E,F,None,9,"cube, point up"
+171,Topmark/daymark shape,TOPSHP,E,F,None,10,"2 cones, point to point"
+171,Topmark/daymark shape,TOPSHP,E,F,None,11,"2 cones, base to base"
+171,Topmark/daymark shape,TOPSHP,E,F,None,12,rhombus (diamond)
+171,Topmark/daymark shape,TOPSHP,E,F,None,13,2 cones (points upward)
+171,Topmark/daymark shape,TOPSHP,E,F,None,14,2 cones (points downward)
+171,Topmark/daymark shape,TOPSHP,E,F,None,15,"besom, point up (broom or perch)"
+171,Topmark/daymark shape,TOPSHP,E,F,None,16,"besom, point down (broom or perch)"
+171,Topmark/daymark shape,TOPSHP,E,F,None,17,flag
+171,Topmark/daymark shape,TOPSHP,E,F,None,18,sphere over rhombus
+171,Topmark/daymark shape,TOPSHP,E,F,None,19,square
+171,Topmark/daymark shape,TOPSHP,E,F,None,20,"rectangle, horizontal"
+171,Topmark/daymark shape,TOPSHP,E,F,None,21,"rectangle, vertical"
+171,Topmark/daymark shape,TOPSHP,E,F,None,22,"trapezium, up"
+171,Topmark/daymark shape,TOPSHP,E,F,None,23,"trapezium, down"
+171,Topmark/daymark shape,TOPSHP,E,F,None,24,"triangle, point up"
+171,Topmark/daymark shape,TOPSHP,E,F,None,25,"triangle, point down"
+171,Topmark/daymark shape,TOPSHP,E,F,None,26,circle
+171,Topmark/daymark shape,TOPSHP,E,F,None,27,two upright crosses (one over the other)
+171,Topmark/daymark shape,TOPSHP,E,F,None,28,T-shape
+171,Topmark/daymark shape,TOPSHP,E,F,None,29,triangle pointing up over a circle
+171,Topmark/daymark shape,TOPSHP,E,F,None,30,upright cross over a circle
+171,Topmark/daymark shape,TOPSHP,E,F,None,31,rhombus over a circle
+171,Topmark/daymark shape,TOPSHP,E,F,None,32,circle over a triangle pointing up
+171,Topmark/daymark shape,TOPSHP,E,F,None,33,other shape (see INFORM)
+172,Traffic flow,TRAFIC,E,F,None,1,inbound
+172,Traffic flow,TRAFIC,E,F,None,2,outbound
+172,Traffic flow,TRAFIC,E,F,None,3,one-way
+172,Traffic flow,TRAFIC,E,F,None,4,two-way
+185,Vertical datum,VERDAT,E,F,None,1,Mean low water springs
+185,Vertical datum,VERDAT,E,F,None,2,Mean lower low water springs
+185,Vertical datum,VERDAT,E,F,None,3,Mean sea level
+185,Vertical datum,VERDAT,E,F,None,4,Lowest low water
+185,Vertical datum,VERDAT,E,F,None,5,Mean low water
+185,Vertical datum,VERDAT,E,F,None,6,Lowest low water springs
+185,Vertical datum,VERDAT,E,F,None,7,Approximate mean low water springs
+185,Vertical datum,VERDAT,E,F,None,8,Indian spring low water
+185,Vertical datum,VERDAT,E,F,None,9,Low water springs
+185,Vertical datum,VERDAT,E,F,None,10,Approximate lowest astronomical tide
+185,Vertical datum,VERDAT,E,F,None,11,Nearly lowest low water
+185,Vertical datum,VERDAT,E,F,None,12,Mean lower low water
+185,Vertical datum,VERDAT,E,F,None,13,Low water
+185,Vertical datum,VERDAT,E,F,None,14,Approximate mean low water
+185,Vertical datum,VERDAT,E,F,None,15,Approximate mean lower low water
+185,Vertical datum,VERDAT,E,F,None,16,Mean high water
+185,Vertical datum,VERDAT,E,F,None,17,Mean high water springs
+185,Vertical datum,VERDAT,E,F,None,18,High water
+185,Vertical datum,VERDAT,E,F,None,19,Approximate mean sea level
+185,Vertical datum,VERDAT,E,F,None,20,High water springs
+185,Vertical datum,VERDAT,E,F,None,21,Mean higher high water
+185,Vertical datum,VERDAT,E,F,None,22,Equinoctial spring low water
+185,Vertical datum,VERDAT,E,F,None,23,Lowest astronomical tide
+185,Vertical datum,VERDAT,E,F,None,24,Local datum
+185,Vertical datum,VERDAT,E,F,None,25,International Great Lakes Datum 1985
+185,Vertical datum,VERDAT,E,F,None,26,Mean water level
+185,Vertical datum,VERDAT,E,F,None,27,Lower low water large tide
+185,Vertical datum,VERDAT,E,F,None,28,Higher high water lage tide
+185,Vertical datum,VERDAT,E,F,None,29,Nearly highest high water
+185,Vertical datum,VERDAT,E,F,None,30,highest astronomical tide (HAT)
+187,Water level effect,WATLEV,E,F,None,1,partly submerged at high water
+187,Water level effect,WATLEV,E,F,None,2,always dry
+187,Water level effect,WATLEV,E,F,None,3,always under water/submerged
+187,Water level effect,WATLEV,E,F,None,4,covers and uncovers
+187,Water level effect,WATLEV,E,F,None,5,awash
+187,Water level effect,WATLEV,E,F,None,6,subject to inundation or flooding
+187,Water level effect,WATLEV,E,F,None,7,floating
+400,Horizontal datum,HORDAT,E,S,None,1,WGS 72
+400,Horizontal datum,HORDAT,E,S,None,2,WGS 84
+400,Horizontal datum,HORDAT,E,S,None,3,European 1950
+400,Horizontal datum,HORDAT,E,S,None,4,Potsdam Datum
+400,Horizontal datum,HORDAT,E,S,None,5,Adindan
+400,Horizontal datum,HORDAT,E,S,None,6,Afgooye
+400,Horizontal datum,HORDAT,E,S,None,7,Ain el Abd 1970
+400,Horizontal datum,HORDAT,E,S,None,8,Anna 1 Astro 1965
+400,Horizontal datum,HORDAT,E,S,None,9,Antigua Island Astro 1943
+400,Horizontal datum,HORDAT,E,S,None,10,Arc 1950
+400,Horizontal datum,HORDAT,E,S,None,11,Arc 1960
+400,Horizontal datum,HORDAT,E,S,None,12,Ascension Island 1958
+400,Horizontal datum,HORDAT,E,S,None,13,"Astro beacon \E\"" 1945"""
+400,Horizontal datum,HORDAT,E,S,None,14,Astro DOS 71/4
+400,Horizontal datum,HORDAT,E,S,None,15,Astro Tern Island (FRIG) 1961
+400,Horizontal datum,HORDAT,E,S,None,16,Astronimical Station 1952
+400,Horizontal datum,HORDAT,E,S,None,17,Australian Geodetic 1966
+400,Horizontal datum,HORDAT,E,S,None,18,Australian Geodetic 1984
+400,Horizontal datum,HORDAT,E,S,None,19,Ayabelle Lighthouse
+400,Horizontal datum,HORDAT,E,S,None,20,Bellevue (IGN)
+400,Horizontal datum,HORDAT,E,S,None,21,Bermuda 1957
+400,Horizontal datum,HORDAT,E,S,None,22,Bissau
+400,Horizontal datum,HORDAT,E,S,None,23,Bogota Observatory
+400,Horizontal datum,HORDAT,E,S,None,24,Bukit Rimpah
+400,Horizontal datum,HORDAT,E,S,None,25,Camp Area Astro
+400,Horizontal datum,HORDAT,E,S,None,26,Campo Inchauspe 1969
+400,Horizontal datum,HORDAT,E,S,None,27,Canton Astro 1966
+400,Horizontal datum,HORDAT,E,S,None,28,Cape
+400,Horizontal datum,HORDAT,E,S,None,29,Cape Canaveral
+400,Horizontal datum,HORDAT,E,S,None,30,Carthage
+400,Horizontal datum,HORDAT,E,S,None,31,Chatam Island Astro 1971
+400,Horizontal datum,HORDAT,E,S,None,32,Chua Astro
+400,Horizontal datum,HORDAT,E,S,None,33,Corrego Alegre
+400,Horizontal datum,HORDAT,E,S,None,34,Dabola
+400,Horizontal datum,HORDAT,E,S,None,35,Djakarta (Batavia)
+400,Horizontal datum,HORDAT,E,S,None,36,DOS 1968
+400,Horizontal datum,HORDAT,E,S,None,37,Easter Island 1967
+400,Horizontal datum,HORDAT,E,S,None,38,European 1979
+400,Horizontal datum,HORDAT,E,S,None,39,Fort Thomas 1955
+400,Horizontal datum,HORDAT,E,S,None,40,Gan 1970
+400,Horizontal datum,HORDAT,E,S,None,41,Geodetic Datum 1949
+400,Horizontal datum,HORDAT,E,S,None,42,Graciosa Base SW 1948
+400,Horizontal datum,HORDAT,E,S,None,43,Guam 1963
+400,Horizontal datum,HORDAT,E,S,None,44,Ganung Segara
+400,Horizontal datum,HORDAT,E,S,None,45,GUX 1 Astro
+400,Horizontal datum,HORDAT,E,S,None,46,Herat North
+400,Horizontal datum,HORDAT,E,S,None,47,Hjorsey 1955
+400,Horizontal datum,HORDAT,E,S,None,48,Hong Kong 1963
+400,Horizontal datum,HORDAT,E,S,None,49,Hu-Tzu-Shan
+400,Horizontal datum,HORDAT,E,S,None,50,Indian
+400,Horizontal datum,HORDAT,E,S,None,51,Indian 1954
+400,Horizontal datum,HORDAT,E,S,None,52,Indian 1975
+400,Horizontal datum,HORDAT,E,S,None,53,Ireland 1965
+400,Horizontal datum,HORDAT,E,S,None,54,ISTS 061 Astro 1968
+400,Horizontal datum,HORDAT,E,S,None,55,ISTS 073 Astro 1969
+400,Horizontal datum,HORDAT,E,S,None,56,Johnston Island 1961
+400,Horizontal datum,HORDAT,E,S,None,57,Kandawala
+400,Horizontal datum,HORDAT,E,S,None,58,Kerguelen Island 1949
+400,Horizontal datum,HORDAT,E,S,None,59,Kertau 1948
+400,Horizontal datum,HORDAT,E,S,None,60,Kusaie Astro 1951
+400,Horizontal datum,HORDAT,E,S,None,61,
+400,Horizontal datum,HORDAT,E,S,None,62,
+400,Horizontal datum,HORDAT,E,S,None,63,
+400,Horizontal datum,HORDAT,E,S,None,64,
+400,Horizontal datum,HORDAT,E,S,None,65,
+400,Horizontal datum,HORDAT,E,S,None,66,
+400,Horizontal datum,HORDAT,E,S,None,67,
+400,Horizontal datum,HORDAT,E,S,None,68,
+400,Horizontal datum,HORDAT,E,S,None,69,
+400,Horizontal datum,HORDAT,E,S,None,70,
+400,Horizontal datum,HORDAT,E,S,None,71,
+400,Horizontal datum,HORDAT,E,S,None,72,
+400,Horizontal datum,HORDAT,E,S,None,73,
+400,Horizontal datum,HORDAT,E,S,None,74,
+400,Horizontal datum,HORDAT,E,S,None,75,
+400,Horizontal datum,HORDAT,E,S,None,76,
+400,Horizontal datum,HORDAT,E,S,None,77,
+400,Horizontal datum,HORDAT,E,S,None,78,
+400,Horizontal datum,HORDAT,E,S,None,79,
+400,Horizontal datum,HORDAT,E,S,None,80,
+400,Horizontal datum,HORDAT,E,S,None,81,
+400,Horizontal datum,HORDAT,E,S,None,82,
+400,Horizontal datum,HORDAT,E,S,None,83,
+400,Horizontal datum,HORDAT,E,S,None,84,
+400,Horizontal datum,HORDAT,E,S,None,85,
+400,Horizontal datum,HORDAT,E,S,None,86,
+400,Horizontal datum,HORDAT,E,S,None,87,
+400,Horizontal datum,HORDAT,E,S,None,88,
+400,Horizontal datum,HORDAT,E,S,None,89,
+400,Horizontal datum,HORDAT,E,S,None,90,
+400,Horizontal datum,HORDAT,E,S,None,91,
+400,Horizontal datum,HORDAT,E,S,None,92,
+400,Horizontal datum,HORDAT,E,S,None,93,
+400,Horizontal datum,HORDAT,E,S,None,94,
+400,Horizontal datum,HORDAT,E,S,None,95,
+400,Horizontal datum,HORDAT,E,S,None,96,
+400,Horizontal datum,HORDAT,E,S,None,97,
+400,Horizontal datum,HORDAT,E,S,None,98,
+400,Horizontal datum,HORDAT,E,S,None,99,South Asia
+400,Horizontal datum,HORDAT,E,S,None,100,Tananarive Observatory 1925
+402,Quality of position,QUAPOS,E,S,None,1,surveyed
+402,Quality of position,QUAPOS,E,S,None,2,unsurveyed
+402,Quality of position,QUAPOS,E,S,None,3,inadequately surveyed
+402,Quality of position,QUAPOS,E,S,None,4,approximated
+402,Quality of position,QUAPOS,E,S,None,5,position doubtful
+402,Quality of position,QUAPOS,E,S,None,6,unreliable
+402,Quality of position,QUAPOS,E,S,None,7,reported (not surveyed)
+402,Quality of position,QUAPOS,E,S,None,8,reported (not confirmed)
+402,Quality of position,QUAPOS,E,S,None,9,estimated
+402,Quality of position,QUAPOS,E,S,None,10,precisely known
+402,Quality of position,QUAPOS,E,S,None,11,calculated
+1039,Coverage Object Type,cvgtyp,E,F,None,0,Boundary
+1039,Coverage Object Type,cvgtyp,E,F,None,1,Hole
+1297,Marker edit,mk_edi,E,F,None,1,Add
+1297,Marker edit,mk_edi,E,F,None,2,Delete
+1297,Marker edit,mk_edi,E,F,None,3,Modify
+1298,Outline for area object,areout,E,F,None,1,Yes
+1298,Outline for area object,areout,E,F,None,2,No
+2000,Description of cartographic action,descrp,E,F,None,1,New
+2000,Description of cartographic action,descrp,E,F,None,2,Update
+2000,Description of cartographic action,descrp,E,F,None,3,Delete
+2000,Description of cartographic action,descrp,E,F,None,4,Retain
+2000,Description of cartographic action,descrp,E,F,None,5,Not Addressed
+2001,Assignment flag,asgnmt,E,F,None,1,Unassigned
+2001,Assignment flag,asgnmt,E,F,None,2,Assigned
+2001,Assignment flag,asgnmt,E,F,None,3,For Info Only
+2002,Primary/Secondary status,prmsec,E,F,None,1,Primary
+2002,Primary/Secondary status,prmsec,E,F,None,2,Secondary
+2002,Primary/Secondary status,prmsec,E,F,None,3,Pending
+2005,Special feature type,sftype,E,F,None,1,ATON
+2005,Special feature type,sftype,E,F,None,2,AWOIS
+2005,Special feature type,sftype,E,F,None,3,DTON
+2005,Special feature type,sftype,E,F,None,4,Maritime Boundary
+2005,Special feature type,sftype,E,F,None,5,CEF
+2007,Acquisition status,acqsts,E,F,None,1,Investigate
+2007,Acquisition status,acqsts,E,F,None,2,Resolved
+10016,Marker status,mk_sta,E,F,None,1,Active
+10016,Marker status,mk_sta,E,F,None,2,Dismissed
+10016,Marker status,mk_sta,E,F,None,3,Closed
+10016,Marker status,mk_sta,E,F,None,4,Unknown
+10024,Category of bathymetric surface,srfcat,E,F,None,0,Standard
+10024,Category of bathymetric surface,srfcat,E,F,None,1,Product
+18687,Contour Slope,cntdir,E,F,None,0,Up
+18687,Contour Slope,cntdir,E,F,None,1,Down
+18689,Storage Type,srftyp,E,F,None,0,BASE Surface Grid (.hns)
+18689,Storage Type,srftyp,E,F,None,1,HIPS Weighted Grid (.def)
+18689,Storage Type,srftyp,E,F,None,2,CUBE Surface (.hcs)
+18689,Storage Type,srftyp,E,F,None,3,Multi-Resolution Surface (.bms)
+18689,Storage Type,srftyp,E,F,None,4,Sounding Set (.bps)
+18689,Storage Type,srftyp,E,F,None,5,BAG (.bag)
+18689,Storage Type,srftyp,E,F,None,6,CSAR Grid (.csar)
+18689,Storage Type,srftyp,E,F,None,7,CSAR Points (.csar)
+18690,Object State,objst8,E,F,None,0,Offline
+18690,Object State,objst8,E,F,None,1,Online

@@ -2,10 +2,7 @@ import os
 import arcpy
 import pathlib
 import json
-import geopandas as gpd
-import pandas as pd
-import fiona
-import shutil
+import yaml
 
 
 from csf_prf.engines.Engine import Engine
@@ -23,7 +20,6 @@ class S57ConversionEngine(Engine):
         self.param_lookup = param_lookup
         self.s57_name = pathlib.Path(param_lookup['enc_file'].valueAsText).stem
         self.gdb_name = f'fff_{self.s57_name}' # TODO add as a parameter 
-        self.output_db = False
         self.output_data = {}
         self.geometries = {
             "Point": {
@@ -40,37 +36,6 @@ class S57ConversionEngine(Engine):
             }
         }
 
-    def add_noaa_custom_attributes(self) -> None:
-        """Add string type columns for """
-        lookup_df = self.load_s57_lookups() # Create a lookup table dataframe
-        # gpkg_file = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
-        gdb = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / self.gdb_name
-        # processed_gpkg_path = gpkg_file.replace(".gpkg", "_processed5.gpkg")
-        # shutil.copyfile(gpkg_file, processed_gpkg_path) # make a copy of the original gpkg so we don't mess it up
-        # layers = fiona.listlayers(gpkg_file) # list all the available layers in the geopackage
-        # print("Available layers:", layers)  # Debug
-
-        # loop through each layer in the geopackage
-        layers = arcpy.ListFeatureClasses(str(gdb))
-        for layer_name in layers:
-            try:
-                print(f"Processing layer {layer_name}")
-                # use geopandas to read the geopackage layer and turn it into a gdf
-                # gdf = gpd.read_file(gpkg_file, layer=layer_name)
-                featureclass = str(gdb / layer_name)
-                gdf = pd.DataFrame.spatial.from_featureclass(featureclass)
-                
-                # run the function to replace the enumerations to actual text meanings in the attribute table
-                gdf_processed = self.replace_ids_with_meanings(gdf, lookup_df)
-                
-                # save the fixed gdf back to a layer in the new geopackage
-                # gdf_processed.to_file(processed_gpkg_path, layer=layer_name, driver="GPKG")
-                gdf_processed.spatial.to_featureclass(featureclass)
-                print(f"Finished processing layer {layer_name}")
-            except Exception as e:
-                print(f"Failed to process layer {layer_name}: {e}")
-
-
     def add_objl_string_to_S57(self) -> None:
         """Convert OBJL number to string name"""
         
@@ -78,10 +43,7 @@ class S57ConversionEngine(Engine):
         aton_count = 0
         aton_found = set()
         for feature_type in self.geometries.keys():
-            # print(self.geometries.keys())
-            # print(self.get_all_fields(self.geometries[feature_type]['output']))
             self.add_column_and_constant(self.geometries[feature_type]['output'], 'OBJL_NAME', nullable=True)
-            
             with arcpy.da.UpdateCursor(self.geometries[feature_type]['output'], ['OBJL', 'OBJL_NAME']) as updateCursor:
                 for row in updateCursor:
                     row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
@@ -91,6 +53,48 @@ class S57ConversionEngine(Engine):
                         updateCursor.deleteRow() 
                     else:
                         updateCursor.updateRow(row)
+
+    def convert_noaa_attributes(self) -> None:
+        with open(str(INPUTS / 'lookups' / 's57_lookup.yaml'), 'r') as lookup:
+            s57_lookup = yaml.safe_load(lookup)
+
+        for feature_type in self.geometries.keys():
+            arcpy.AddMessage(f'Update field values for: {feature_type}')
+            with arcpy.da.UpdateCursor(self.geometries[feature_type]['output'], ['*']) as updateCursor:
+                fields = updateCursor.fields
+                for row in updateCursor:
+                    # for each field name
+                    new_row = []
+                    for field_name in fields:
+                        # get value for current field
+                        field_index = fields.index(field_name)
+                        current_value = row[field_index]
+                        # get meaning from lookup using field name and value
+                        if field_name in s57_lookup:
+                            # arcpy.AddMessage(f'  -field {field_name} being converted: {current_value}')
+                            if current_value:
+                                try:
+                                    # check if current_value in s57_lookup[field_name]
+                                    new_value = s57_lookup[field_name][int(current_value)]
+                                    new_row.append(new_value)
+                                except ValueError as e:
+                                    arcpy.AddMessage(f'  -found multiple values: {current_value}')
+                                    # split multiple values in one field to get each string from lookup
+                                    multiple_values = current_value.split(',')
+                                    new_values = []
+                                    for val in multiple_values:
+                                        new_values.append(s57_lookup[field_name][int(val)])
+                                    new_row.append(','.join(new_values))
+                                    pass
+                                except KeyError as e:
+                                    arcpy.AddMessage(f'  -found weird value: {current_value}')
+                                    new_row.append(current_value)
+                                    pass
+                            else:
+                                new_row.append(current_value)
+                        else:
+                            new_row.append(current_value)
+                    updateCursor.updateRow(new_row)
 
     def build_output_layers(self) -> None:
         """Spatial query all of the ENC features against Sheets boundary"""
@@ -234,37 +238,6 @@ class S57ConversionEngine(Engine):
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
                         if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                             self.geometries[geom_type]['QUAPOS'].append({'geojson': feature_json})     
-
-    def load_s57_lookups(self):
-        """
-        Read the S57 CSV lookup files and merge them
-        :returns pandas.Dataframe: Merged CSV files
-        """
-
-        attributes_csv = str(INPUTS / 'lookups' / 's57attributes.csv')
-        expectedinput_csv = str(INPUTS / 'lookups' / 's57expectedinput.csv')
-         # make custom header for attributes pandas df because native header is messed up
-        columns = ['Code', 'Attribute', 'Acronym', 'Attributetype', 'Class', 'Unit']
-         # Don't use header in file (it has 5 fields, but the data all have 6)
-        attributes_df = pd.read_csv(attributes_csv, header=1, names=columns, encoding="utf-8")
-        expectedinput_df = pd.read_csv(expectedinput_csv, encoding="utf-8")
-        attributes_df['Code'] = attributes_df['Code'].astype(str).str.strip()
-        expectedinput_df['Code'] = expectedinput_df['Code'].astype(str).str.strip()
-        merged_df = pd.merge(attributes_df, expectedinput_df, on='Code', how='inner')
-        # print("Merged DataFrame:\n", merged_df.head(10))  # Debug
-        
-        return merged_df
-    
-    def replace_ids_with_meanings(self, gdf, lookup_df):
-        # We need to add in some definitions to the s57expectedinput.csv (hsdrec, for example, is missing in the csv file from the //HSTB/ecs/forms directory)
-        for col in gdf.columns:
-            if col in lookup_df['Acronym'].values:
-                print(f"Processing column: {col}")  # Debug - make sure we see which columns are working and not working
-                # Create a mapping of Id to Meaning for the current Acronym in the loop
-                mapping_dict = lookup_df[lookup_df['Acronym'] == col].set_index('ID')['Meaning'].to_dict()
-                # Apply the mapping to replace Ids with Meanings
-                gdf[col] = gdf[col].map(mapping_dict).fillna(gdf[col])
-        return gdf
     
     def open_file(self, enc_path):
         """
@@ -292,8 +265,8 @@ class S57ConversionEngine(Engine):
          
         self.build_output_layers()
         self.add_objl_string_to_S57() 
+        self.convert_noaa_attributes()
         self.export_enc_layers()
-        self.add_noaa_custom_attributes()
         self.write_to_geopackage()  
 
     def write_to_geopackage(self) -> None:
