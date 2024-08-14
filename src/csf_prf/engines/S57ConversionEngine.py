@@ -2,12 +2,18 @@ import os
 import arcpy
 import pathlib
 import json
+import geopandas as gpd
+import pandas as pd
+import fiona
+import shutil
+
 
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
+OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 
 
 class S57ConversionEngine(Engine):
@@ -33,6 +39,37 @@ class S57ConversionEngine(Engine):
                 "output": None
             }
         }
+
+    def add_noaa_custom_attributes(self) -> None:
+        """Add string type columns for """
+        lookup_df = self.load_s57_lookups() # Create a lookup table dataframe
+        # gpkg_file = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
+        gdb = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / self.gdb_name
+        # processed_gpkg_path = gpkg_file.replace(".gpkg", "_processed5.gpkg")
+        # shutil.copyfile(gpkg_file, processed_gpkg_path) # make a copy of the original gpkg so we don't mess it up
+        # layers = fiona.listlayers(gpkg_file) # list all the available layers in the geopackage
+        # print("Available layers:", layers)  # Debug
+
+        # loop through each layer in the geopackage
+        layers = arcpy.ListFeatureClasses(str(gdb))
+        for layer_name in layers:
+            try:
+                print(f"Processing layer {layer_name}")
+                # use geopandas to read the geopackage layer and turn it into a gdf
+                # gdf = gpd.read_file(gpkg_file, layer=layer_name)
+                featureclass = str(gdb / layer_name)
+                gdf = pd.DataFrame.spatial.from_featureclass(featureclass)
+                
+                # run the function to replace the enumerations to actual text meanings in the attribute table
+                gdf_processed = self.replace_ids_with_meanings(gdf, lookup_df)
+                
+                # save the fixed gdf back to a layer in the new geopackage
+                # gdf_processed.to_file(processed_gpkg_path, layer=layer_name, driver="GPKG")
+                gdf_processed.spatial.to_featureclass(featureclass)
+                print(f"Finished processing layer {layer_name}")
+            except Exception as e:
+                print(f"Failed to process layer {layer_name}: {e}")
+
 
     def add_objl_string_to_S57(self) -> None:
         """Convert OBJL number to string name"""
@@ -176,7 +213,6 @@ class S57ConversionEngine(Engine):
             for feature in layer:
                 if feature:
                     feature_json = json.loads(feature.ExportToJson())
-                    # TODO use lookup to add converted S57 columns
                     geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                     if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                         feature_json = self.set_none_to_null(feature_json) # TODO move to the base class
@@ -199,6 +235,37 @@ class S57ConversionEngine(Engine):
                         if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                             self.geometries[geom_type]['QUAPOS'].append({'geojson': feature_json})     
 
+    def load_s57_lookups(self):
+        """
+        Read the S57 CSV lookup files and merge them
+        :returns pandas.Dataframe: Merged CSV files
+        """
+
+        attributes_csv = str(INPUTS / 'lookups' / 's57attributes.csv')
+        expectedinput_csv = str(INPUTS / 'lookups' / 's57expectedinput.csv')
+         # make custom header for attributes pandas df because native header is messed up
+        columns = ['Code', 'Attribute', 'Acronym', 'Attributetype', 'Class', 'Unit']
+         # Don't use header in file (it has 5 fields, but the data all have 6)
+        attributes_df = pd.read_csv(attributes_csv, header=1, names=columns, encoding="utf-8")
+        expectedinput_df = pd.read_csv(expectedinput_csv, encoding="utf-8")
+        attributes_df['Code'] = attributes_df['Code'].astype(str).str.strip()
+        expectedinput_df['Code'] = expectedinput_df['Code'].astype(str).str.strip()
+        merged_df = pd.merge(attributes_df, expectedinput_df, on='Code', how='inner')
+        # print("Merged DataFrame:\n", merged_df.head(10))  # Debug
+        
+        return merged_df
+    
+    def replace_ids_with_meanings(self, gdf, lookup_df):
+        # We need to add in some definitions to the s57expectedinput.csv (hsdrec, for example, is missing in the csv file from the //HSTB/ecs/forms directory)
+        for col in gdf.columns:
+            if col in lookup_df['Acronym'].values:
+                print(f"Processing column: {col}")  # Debug - make sure we see which columns are working and not working
+                # Create a mapping of Id to Meaning for the current Acronym in the loop
+                mapping_dict = lookup_df[lookup_df['Acronym'] == col].set_index('ID')['Meaning'].to_dict()
+                # Apply the mapping to replace Ids with Meanings
+                gdf[col] = gdf[col].map(mapping_dict).fillna(gdf[col])
+        return gdf
+    
     def open_file(self, enc_path):
         """
         Open a single input ENC file
@@ -226,6 +293,7 @@ class S57ConversionEngine(Engine):
         self.build_output_layers()
         self.add_objl_string_to_S57() 
         self.export_enc_layers()
+        self.add_noaa_custom_attributes()
         self.write_to_geopackage()  
 
     def write_to_geopackage(self) -> None:

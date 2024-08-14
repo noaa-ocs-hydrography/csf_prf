@@ -321,8 +321,8 @@
 20521,"Depth of Activity","depact","F","?",None
 20522,"Depth of Layer","deplyr","F","?",None
 20523,"Distance from Small Bottom Object","discon","F","?",None
-20524,"Diver’s Thrust Test Depth","dttdep","E","?",None
-20525,"Diver’s Thrust Test Number","dttnum","I","?",None
+20524,"Diverâ€™s Thrust Test Depth","dttdep","E","?",None
+20525,"Diverâ€™s Thrust Test Number","dttnum","I","?",None
 20526,"Diving Activity","divact","E","?",None
 20527,"Draught of Vessel","vesdgh","F","?",None
 20528,"Exit Usability","exitus","E","?",None
