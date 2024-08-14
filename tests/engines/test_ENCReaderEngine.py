@@ -2,6 +2,7 @@ import pytest
 import pathlib
 import os
 import arcpy
+import yaml
 
 from osgeo import ogr
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
@@ -11,10 +12,12 @@ Unit tests need to havea  .pth file set in your conda ENV that points to CSF-PRF
 """
 
 REPO = pathlib.Path(__file__).parents[2]
+# LOOKUP = 
 INPUTS = REPO / 'inputs'
 ENC_FILE = str(INPUTS / 'US4GA17M.000')
 SHP_FILE_1 = str(INPUTS / 'test_shapefile_1.shp')
 SHP_FILE_2 = str(INPUTS / 'test_shapefile_2.shp')
+SHP_POLYGON_FILE_1 = str(INPUTS / 'test_shapefile_polygons_1.shp')
 S57_FILE = str(INPUTS / 'test_S57_files/US5GA20M_S57_testfile.000') # 1 line, 2 points, 2 polygons
 MULTIPLE_ENC = S57_FILE # + ';' + str(INPUTS / 'US5SC21M.000')
 
@@ -195,9 +198,15 @@ def test_run_query(): # TODO double check this should be skipped
 
 
 def test_set_assigned_invreq(victim):
-    victim.geometries['Point']['features_layers']['assigned'] = SHP_FILE_1
-    victim.geometries['Point']['features_layers']['unassigned'] = SHP_FILE_2
-    victim.set_assigned_invreq()
+    # victim.geometries['Point']['features_layers']['assigned'] = SHP_FILE_1
+    # victim.geometries['Point']['features_layers']['unassigned'] = SHP_FILE_2
+    victim.geometries['Polygon']['features_layers']['assigned'] = SHP_POLYGON_FILE_1
+    with open(str(INPUTS / 'lookups' / 'invreq_lookup.yaml'), 'r') as lookup:
+        objl_lookup = yaml.safe_load(lookup)
+    victim.set_assigned_invreq('Polygon', objl_lookup, objl_lookup['OPTIONS'])
+    value = victim.geometries['Polygon']['features_layers']['assigned']['invreq']['SBDARE'].values()
+    #row.getValue(field.name)
+    assert 'FFF with descrp=retain' in value
     # TODO do I need to recreate the conditions for each if statement
     # print(victim.)
     # assert
