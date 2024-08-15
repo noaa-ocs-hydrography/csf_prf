@@ -4,13 +4,23 @@ import pathlib
 import json
 import yaml
 
-
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
+
+
+class MultipleValueException(ValueError):
+    """Custom error for multiple values found in one S57 field"""
+
+    pass
+
+
+class InvalidValueException(KeyError):
+    """Custom error for invalid values in S57 fields"""
+    pass
 
 
 class S57ConversionEngine(Engine):
@@ -55,6 +65,8 @@ class S57ConversionEngine(Engine):
                         updateCursor.updateRow(row)
 
     def convert_noaa_attributes(self) -> None:
+        """Obtain string values for all numerical S57 fields"""
+
         with open(str(INPUTS / 'lookups' / 's57_lookup.yaml'), 'r') as lookup:
             s57_lookup = yaml.safe_load(lookup)
 
@@ -63,30 +75,20 @@ class S57ConversionEngine(Engine):
             with arcpy.da.UpdateCursor(self.geometries[feature_type]['output'], ['*']) as updateCursor:
                 fields = updateCursor.fields
                 for row in updateCursor:
-                    # for each field name
                     new_row = []
                     for field_name in fields:
-                        # get value for current field
                         field_index = fields.index(field_name)
                         current_value = row[field_index]
-                        # get meaning from lookup using field name and value
                         if field_name in s57_lookup:
-                            # arcpy.AddMessage(f'  -field {field_name} being converted: {current_value}')
                             if current_value:
                                 try:
-                                    # check if current_value in s57_lookup[field_name]
                                     new_value = s57_lookup[field_name][int(current_value)]
                                     new_row.append(new_value)
-                                except ValueError as e:
-                                    arcpy.AddMessage(f'  -field {field_name} had multiple values: {current_value}')
-                                    # split multiple values in one field to get each string from lookup
-                                    multiple_values = current_value.split(',')
-                                    new_values = []
-                                    for val in multiple_values:
-                                        new_values.append(s57_lookup[field_name][int(val)])
-                                    new_row.append(','.join(new_values))
+                                except MultipleValueException as e:
+                                    multiple_value_result = self.get_multiple_values_from_field(field_name, current_value, s57_lookup, new_row)
+                                    new_row.append(multiple_value_result)
                                     pass
-                                except KeyError as e:
+                                except InvalidValueException as e:
                                     arcpy.AddMessage(f'  -field {field_name} has weird value: {current_value}')
                                     new_row.append(current_value)
                                     pass
@@ -239,6 +241,25 @@ class S57ConversionEngine(Engine):
                         if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                             self.geometries[geom_type]['QUAPOS'].append({'geojson': feature_json})     
     
+    def get_multiple_values_from_field(self, field_name, current_value, s57_lookup):
+        """
+        Isolating logic for handling multiple values being found in one S57 field
+
+        :param str field_name: Field name from attribute value
+        :param str current_value: Current value from field in row
+        :param dict[dict[str]] s57_lookup: YAML lookup dictionary for S57 fields
+        :returns str: Concatenated string of multiple values
+        """
+
+        arcpy.AddMessage(f'  -field {field_name} had multiple values: {current_value}')
+        multiple_values = current_value.split(',')
+        new_values = []
+        for val in multiple_values:
+            new_values.append(s57_lookup[field_name][int(val)])
+
+        multiple_value_result = ','.join(new_values)
+        return multiple_value_result
+        
     def open_file(self, enc_path):
         """
         Open a single input ENC file
