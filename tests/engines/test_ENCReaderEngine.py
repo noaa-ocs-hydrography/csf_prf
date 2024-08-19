@@ -74,13 +74,21 @@ def test_add_objl_string(victim):
     arcpy.management.DeleteField(victim.geometries['Point']['features_layers']['assigned'], 'OBJL_NAME')
     arcpy.management.DeleteField(victim.geometries['Point']['features_layers']['unassigned'], 'OBJL_NAME')
     victim.add_objl_string()
-    # TODO I'll have to make sure the OBJL values get added back too, but not here
-    # TODO add more for the loop
+    
+    # TODO add more for the loop, this is a bit confusing for the ATON values, they might be missing
 
 
 @pytest.mark.skip(reason="This function runs 1 other function.")
 def test_asgnmt_column():
     ...    
+
+
+def test_download_gc(victim): # TODO 
+    ...
+
+
+def test_download_gcs(victim): # TODO 
+    ...
 
 
 def test_feature_covered_by_upper_scale(victim):
@@ -98,6 +106,9 @@ def test_feature_covered_by_upper_scale(victim):
     }
     result = victim.feature_covered_by_upper_scale(feature_json, 4)
     assert result
+
+
+def test_filter_gc_features(victim): # TODO, need gc layer
 
 
 def test_get_all_fields(victim):
@@ -152,9 +163,8 @@ def test_get_gc_data():
     ...    
 
 
-pytest.mark.skip(reason="")
-def test_get_sql(): # TODO test it
-    ...     
+def test_get_sql(): # TODO what to do with sql.read()
+    victim.get_sql('GetRelatedENC.sql')
 
 
 def test_get_vector_records(victim):
@@ -164,10 +174,17 @@ def test_get_vector_records(victim):
     assert victim.geometries['Point']['QUAPOS'][0]['geojson']['properties']['QUAPOS'] == 4
 
 
+def test_merge_gc_features(victim):    
+
+
 def test_open_file(victim):
     victim.open_file(ENC_FILE)
     results = victim.driver.GetName()
     assert results == 'S57'
+
+
+def test_perform_spatial_filter(victim): # TODO
+
 
 
 def test_print_feature_total(victim):
@@ -178,6 +195,11 @@ def test_print_feature_total(victim):
     # assert victim.points == 6
     # assert int(arcpy.management.GetCount(victim.geometries['Point']['features_layers']['assigned']).getOutput(0)) == 6
     # assert int(arcpy.management.GetCount(victim.geometries['Point']['features_layers']['unassigned']).getOutput(0)) == 6
+
+
+pytest.mark.skip(reason="This function runs the arcpy.AddMessage function.")
+def test_print_geometries(): # TODO double check this should be skipped
+    ...
 
 
 def test_join_quapos_to_features(victim): # TODO need to make quapos layers, they will get joined, then check quapos is there
@@ -197,19 +219,43 @@ def test_run_query(): # TODO double check this should be skipped
     ...   
 
 
-def test_set_assigned_invreq(victim):
-    # victim.geometries['Point']['features_layers']['assigned'] = SHP_FILE_1
-    # victim.geometries['Point']['features_layers']['unassigned'] = SHP_FILE_2
+# TODO verify through engine results
+def test_set_assigned_invreq(victim): # TODO delete all 'invreq' first
     victim.geometries['Polygon']['features_layers']['assigned'] = SHP_POLYGON_FILE_1
     with open(str(INPUTS / 'lookups' / 'invreq_lookup.yaml'), 'r') as lookup:
         objl_lookup = yaml.safe_load(lookup)
     victim.set_assigned_invreq('Polygon', objl_lookup, objl_lookup['OPTIONS'])
-    value = victim.geometries['Polygon']['features_layers']['assigned']['invreq']['SBDARE'].values()
-    #row.getValue(field.name)
-    assert 'FFF with descrp=retain' in value
-    # TODO do I need to recreate the conditions for each if statement
-    # print(victim.)
-    # assert
+
+    with arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']) as cursor:
+        test_data = list(cursor)
+    # LNDARE check TODO may have to do something different here for the area
+    # assert '' in list(arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']))[0][0]
+
+    
+    # MORFAC check
+    # assert 'sumberged dolphins' in list(arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']))[1][0]
+    assert 'sumberged dolphins' in test_data[1][0] # TODO doube check this works
+
+    # assert 'contact PM/COR' in list(arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']))[2][0]
+
+    # # OBSTRN check, did part of this
+    # assert 'wellhead investigation' in list(arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']))[3][0]
+    # assert 'minimum depth' in list(arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']))[4][0]
+    # assert 'appropriate attribution' in list(arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']))[5][0]
+
+    # # SBDARE check 
+    # assert 'FFF with descrp=retain' in list(arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']))[6][0]
+
+    # # SLCONS check
+    # assert 'contact PM/COR' in list(arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']))[7][0]
+    # assert 'appropriate attribution' in list(arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']))[8][0]
+
+    # # UWTROC check
+    # assert 'appropriate attribution' in list(arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']))[9][0]
+    # assert 'submerged rock' in list(arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']))[10][0]
+
+    # # Missing check
+    # # assert '' in list(arcpy.da.SearchCursor(SHP_POLYGON_FILE_1, ['invreq']))[10][0]
 
 
 def test_set_driver(victim): 
@@ -235,10 +281,14 @@ def test_set_none_to_null(victim):
     assert results['properties']['type'] == ''
 
 
+def test_set_unassigned_invreq(victim): # TODO more to add 
+    victim.geometries['Point']['features_layers']['unassigned'] = SHP_FILE_2
+
+
 def test_split_multipoint_env(victim):
     victim.split_multipoint_env()
     assert os.environ["OGR_S57_OPTIONS"] == "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
 
-def test_set_unassigned_invreq(victim): # slightly shorter, more to add still
-    victim.geometries['Point']['features_layers']['unassigned'] = SHP_FILE_2
+def test_store_gc_names(victim): # TODO
+
