@@ -48,7 +48,6 @@ def download_gc(download_inputs) -> None:
     """
 
     output_folder, enc, path, basefilename = download_inputs
-
     enc_folder = output_folder / 'geographic_cells' / enc
     enc_folder.mkdir(parents=True, exist_ok=True)
     dreg_api = get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
@@ -443,7 +442,7 @@ class ENCReaderEngine(Engine):
                     arcpy.management.AddSpatialJoin(
                     feature_records,
                     vector_records,
-                    match_option=overlap_types[feature_type],
+                    match_option=overlap_types[feature_type]
                 )
 
     def open_file(self, enc_path):
@@ -653,19 +652,19 @@ class ENCReaderEngine(Engine):
                 elif row[indx['OBJL_NAME']] == 'MORFAC':
                     if indx['CATMOR']:
                         catmor = row[indx["CATMOR"]]
-                        if catmor == 1:
+                        if catmor == '1':
                             row[indx['invreq']] = invreq_options.get(10, '')
-                        elif catmor in [2, 3, 4, 5, 6, 7]:
+                        elif catmor in ['2', '3', '4', '5', '6', '7']:
                             row[indx['invreq']] = invreq_options.get(1, '')
                 # CATOBS column needed for OBSTRN
                 elif row[indx['OBJL_NAME']] == 'OBSTRN':
                     if indx['CATOBS']:
                         catobs = row[indx["CATOBS"]]
-                        if catobs == 2:
+                        if catobs == '2':
                             row[indx['invreq']] = invreq_options.get(12, '')
-                        elif catobs == 5:
+                        elif catobs == '5':
                             row[indx['invreq']] = invreq_options.get(8, '')
-                        elif catobs in [None, 1, 3, 4, 6, 7, 8, 9, 10]:
+                        elif catobs in [None, '1', '3', '4', '6', '7', '8', '9', '10']:
                             row[indx['invreq']] = invreq_options.get(5, '')
                 elif row[indx['OBJL_NAME']] == 'SBDARE':
                     row[indx['invreq']] = invreq_options.get(13, '')
@@ -673,17 +672,17 @@ class ENCReaderEngine(Engine):
                 elif row[indx['OBJL_NAME']] == 'SLCONS':
                     if indx['CONDTN']:
                         condtn = row[indx["CONDTN"]]
-                        if condtn in [1, 3, 4, 5]:
+                        if condtn in ['1', '3', '4', '5']:
                             row[indx['invreq']] = invreq_options.get(1, '')
-                        elif condtn == 2:
+                        elif condtn == '2':
                             row[indx['invreq']] = invreq_options.get(5, '')
                 # WATLEV column needed for UWTROC
                 elif row[indx['OBJL_NAME']] == 'UWTROC':
                     if indx['WATLEV']:
                         condtn = row[indx["WATLEV"]]
-                        if condtn in [1, 2, 4, 5, 6, 7]:
+                        if condtn in ['1', '2', '4', '5', '6', '7']:
                             row[indx['invreq']] = invreq_options.get(5, '')
-                        elif condtn == 3:
+                        elif condtn == '3':
                             row[indx['invreq']] = invreq_options.get(7, '')
                 else:
                     # Set to OTHER value if missing
