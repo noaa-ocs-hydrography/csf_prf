@@ -6,6 +6,8 @@ import pathlib
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
 arcpy.env.overwriteOutput = True
+# arcpy.env.qualifiedFieldNames = False # Force use of field name alias
+
 
 CSF_PRF = pathlib.Path(__file__).parents[1]
 
@@ -27,7 +29,6 @@ class CompositeSourceCreatorEngine(Engine):
         self.output_name = 'csf_prf_geopackage'
         self.gdb_name = 'csf_features'
         self.output_db = False
-        self.split_features = []
         self.sheets_layer = None
         self.output_data = {key: None for key in list(self.param_lookup.keys())[:-1]} # skip output_folder
 
