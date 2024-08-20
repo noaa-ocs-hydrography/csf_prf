@@ -253,7 +253,7 @@ class ENCReaderEngine(Engine):
         Build a unique list of all field names
         :param dict[dict[str]] features: GeoJSON of string values for all features
         :returns set[str]: Unique list of all fields
-        """                 
+        """
 
         fields = set()
         for feature in features:
@@ -339,7 +339,7 @@ class ENCReaderEngine(Engine):
                 # if features_missing_coords > 0:
                 #     arcpy.AddMessage(f"Found ({features_missing_coords}) features but missing coordinates")
         arcpy.AddMessage(f'  - Removed {intersected} supersession features')
-    
+
     def merge_gc_features(self) -> None:
         """Read and store all features from GC shapefiles"""
 
