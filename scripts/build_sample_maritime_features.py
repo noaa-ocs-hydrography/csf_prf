@@ -16,9 +16,9 @@ with open(str(INPUTS / 'maritime_master_layerfile.lyrx'), 'r') as reader:
 layer_dict = json.loads(layer_file)
 
 
-points = {"name": '', "featureTemplates": [], "groups": []}
-lines = {"name": '', "featureTemplates": [], "groups": []}
-polygons = {"name": '', "featureTemplates": [], "groups": []}
+points = {"name": '', "featureTemplates": [], "groups": [], "labelClasses": []}
+lines = {"name": '', "featureTemplates": [], "groups": [], "labelClasses": []}
+polygons = {"name": '', "featureTemplates": [], "groups": [], "labelClasses": []}
 
 
 # Join all featureTemplates and groups arrays
@@ -36,8 +36,10 @@ for layer in layer_dict["layerDefinitions"]:
         polygons["name"] = "Polygon"
         polygons["featureTemplates"] += layer["featureTemplates"]
         polygons["groups"] += layer["renderer"]["groups"]
+    
 
 
+# Create new unique subtype codes
 for geom in [points, lines, polygons]:
     codes = []
     new_subtype_codes = {}
@@ -64,16 +66,15 @@ for geom in [points, lines, polygons]:
                 codes.append(code)
     # update codes in groups section
     for group in geom['groups']:
+
+        # Sort groups alphabetically for AGS Pro display
+
         for subtype in group['classes']:
             subtype_string = subtype['label']
             name = '_'.join(subtype_string.split('_')[:-1])
             if name in new_subtype_codes:
                 new_code = new_subtype_codes[name]
                 subtype['values'][0]['fieldValues'][0] = str(new_code)
-    print(geom["name"])
-    print(codes)
-    print(new_subtype_codes)
-
 
 output = {
     'Point': points,
@@ -82,58 +83,91 @@ output = {
 }
 
 
+
+# Create output layer file with new code lists
 with open(str(INPUTS / 'maritime_layerfile_template.lyrx'), 'r') as reader:
     layer_file = reader.read()
 layer_dict = json.loads(layer_file)
 
 for layer in layer_dict["layerDefinitions"]:
     if layer['name'] in output:
-        # featureTemplates = json.dumps(output[layer['name']]['featureTemplates'], indent=4)
-        # groups = json.dumps(output[layer['name']]['groups'], indent=4)
-        featureTemplates = output[layer['name']]['featureTemplates']
+        layer["featureTable"]["dataConnection"] = {
+            "type" : "CIMStandardDataConnection",
+            "workspaceConnectionString" : "DATABASE=.\\maritime_layers.gdb",
+            "workspaceFactory" : "FileGDB",
+            "dataset" : f"{layer['name']}_maritime_subtype",
+            "datasetType" : "esriDTFeatureClass"
+        }
+        # Sort the featureTemplates
+        featureTemplates = sorted(output[layer['name']]['featureTemplates'], key=lambda data: data['name'])
         groups = output[layer['name']]['groups']
+        # groups = sorted(output[layer['name']]['groups'], key=lambda data: data['classes'][0]['label'])
+        labelClasses = output[layer['name']]['labelClasses']
+
         layer['featureTemplates'] = featureTemplates
+        layer['labelClasses'] = []
+        for i, group in enumerate(groups):
+            if i > 0:
+                group['heading'] = ""
         layer["renderer"]["groups"] = groups
-with open(str(OUTPUTS / 'maritime_layerfile.lyrx'), 'w') as writer:
+with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'w') as writer:
     writer.writelines(json.dumps(layer_dict, indent=4))
 
 
-# get list of subtypes
-# with open(r'C:\Users\Stephen.Patterson\Data\Repos\csf_prf\inputs\lookups\all_subtypes.yaml', 'r') as lookup:
-#     subtype_lookup = yaml.safe_load(lookup)
 
-gdb = arcpy.CreateFileGDB_management(str(OUTPUTS), 'maritime_layers')
+# Create sample output GDB for test layers
+gdb_path = os.path.join(str(OUTPUTS), 'maritime_layers.gdb')
+if not arcpy.Exists(gdb_path):
+    arcpy.CreateFileGDB_management(str(OUTPUTS), 'maritime_layers')
+
 geom_lookup = {
     'Point': 'POINT',
     'LineString': 'POLYLINE',
     'Polygon': 'POLYGON'
 }
 
+
+
+# Add subtypes to each geom type featureclass
+def add_subtypes_to_fc(featureclass, data):
+    arcpy.management.SetSubtypeField(featureclass, "FCSubtype")
+    print('Finished creating data')
+
+    print('\nStarting subtypes')
+    # TODO update list for setting subtypes
+    for subtype in data['featureTemplates']:
+        for i, value in enumerate(subtype['defaultValues']['propertySetItems']):
+            if value == 'fcsubtype':
+                code = subtype['defaultValues']['propertySetItems'][i+1]
+                arcpy.management.AddSubtype(featureclass, code, subtype['name']) 
+
+
+
+# Build test layers in output GDB
 for geom, data in output.items():
-    codes = []
-    new_subtype_codes = {}
     fc_name = f'{geom}_maritime_subtype'
-    featureclass = os.path.join(gdb, fc_name)
-    arcpy.management.CreateFeatureclass(gdb, fc_name, geom_lookup[geom])
+    featureclass = os.path.join(gdb_path, fc_name)
+    arcpy.management.CreateFeatureclass(gdb_path, fc_name, geom_lookup[geom])
     arcpy.management.AddField(featureclass, 'FCSubtype', 'LONG')
 
     with arcpy.da.InsertCursor(featureclass, ['FCSubtype', 'SHAPE@XY']) as cursor:
         if geom == 'Point':
             x = -79.873184
             y = 32.680892
-            half = len(data['featureTemplates']) / 2
+            half = int(len(data['featureTemplates']) / 2)
             count = 0
-            for subtype in data['featureTemplates']:
+            for i, subtype in enumerate(data['featureTemplates']):
                 location = (x, y)
-                for i, value in subtype['defaultValues']['propertySetItems']:
+                for j, value in enumerate(subtype['defaultValues']['propertySetItems']):
                     if value == 'fcsubtype':
-                        code = subtype['defaultValues']['propertySetItems'][i+1]
+                        code = subtype['defaultValues']['propertySetItems'][j+1]
                 cursor.insertRow([code, location])
                 x += .001
                 count += .001
                 if i == half:
                     x -= count
                     y += .006
+            add_subtypes_to_fc(featureclass, data)
         elif geom == 'LineString':
             # TODO build lines
             continue
@@ -141,68 +175,6 @@ for geom, data in output.items():
             # TODO build polygons
             continue
 
-
-    arcpy.management.SetSubtypeField(featureclass, "FCSubtype")
-    print('Finished creating data')
-
-    print('\nStarting subtypes')
-    # TODO update list for setting subtypes
-    for subtype, data in subtype_lookup[geom_type].items():
-        if subtype in new_subtype_codes:
-            code = new_subtype_codes[subtype]
-        else:
-            code = data['code']
-        print(subtype, code)
-        arcpy.management.AddSubtype(featureclass, code, data['objl_string']) 
     print('Finished adding subtypes')
 
-
-# for geom_type, subtypes in subtype_lookup.items():
-#     if geom_type == 'Point':
-#         # TODO build location geometry for linestring and polygon to automate
-#         # TODO certain subtypes have wrong code in output, ie: WRECKS 
-#         codes = []
-#         new_subtype_codes = {}
-#         fc_name = f'{geom_type}_maritime_subtype'
-#         featureclass = os.path.join(gdb, fc_name)
-#         arcpy.management.CreateFeatureclass(gdb, fc_name, geom_lookup[geom_type])
-#         arcpy.management.AddField(featureclass, 'FCSubtype', 'LONG')
-#         with arcpy.da.InsertCursor(featureclass, ['FCSubtype', 'SHAPE@XY']) as cursor:
-#             x = -79.873184
-#             y = 32.680892
-#             half = len(subtypes.keys()) / 2
-#             count = 0
-#             for i, subtype in enumerate(subtypes.keys()):
-#                 data = subtypes[subtype]
-#                 location = (x, y)
-#                 code = data['code']
-#                 if code in codes:
-#                     new_code = code + 1000
-#                     while new_code in codes:
-#                         new_code += 1
-#                     codes.append(new_code)
-# #                     print('"' + subtype + '" : ' + str(new_code) + ',')
-#                     new_subtype_codes[subtype] = new_code
-#                     cursor.insertRow([new_code, location])
-#                 else:
-#                     codes.append(code)
-#                     cursor.insertRow([code, location])
-#                 x += .001
-#                 count += .001
-#                 if i == half:
-#                     x -= count
-#                     y += .006
-#         arcpy.management.SetSubtypeField(featureclass, "FCSubtype")
-#         print('Finished creating data')
-
-#         print('\nStarting subtypes')
-#         for subtype, data in subtype_lookup[geom_type].items():
-#             if subtype in new_subtype_codes:
-#                 code = new_subtype_codes[subtype]
-#             else:
-#                 code = data['code']
-#             print(subtype, code)
-#             arcpy.management.AddSubtype(featureclass, code, data['objl_string']) 
-#         print('Finished adding subtypes')
-            
 print('Done')
