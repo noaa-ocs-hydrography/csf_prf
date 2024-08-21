@@ -48,7 +48,6 @@ def download_gc(download_inputs) -> None:
     """
 
     output_folder, enc, path, basefilename = download_inputs
-
     enc_folder = output_folder / 'geographic_cells' / enc
     enc_folder.mkdir(parents=True, exist_ok=True)
     dreg_api = get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
@@ -120,19 +119,21 @@ class ENCReaderEngine(Engine):
         self.add_invreq_column()
         self.add_subtype_column()
 
-    def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=255, code_block='', nullable=False) -> None:
-        """
-        Add the asgnment column and 
-        :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
-        """                          
+    # def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=255, code_block='', nullable=False) -> None:
+    #     """
+    #     Add the asgnment column and 
+    #     :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
+    #     """
 
-        if nullable:
-            arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
-        else:
-            arcpy.management.AddField(layer, column, field_type, field_length=field_length)
-            arcpy.management.CalculateField(
-                layer, column, expression, expression_type="PYTHON3", field_type=field_type, code_block=code_block
-            )
+    #     # TODO add code_block parameter to Engine.py
+
+    #     if nullable:
+    #         arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
+    #     else:
+    #         arcpy.management.AddField(layer, column, field_type, field_length=field_length)
+    #         arcpy.management.CalculateField(
+    #             layer, column, expression, expression_type="PYTHON3", field_type=field_type, code_block=code_block
+    #         )
 
     def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
@@ -268,28 +269,6 @@ class ENCReaderEngine(Engine):
             lines_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
             self.geometries['LineString']['GC_layers']['assigned'] = lines_assigned
             self.geometries['LineString']['GC_layers']['unassigned'] = lines_unassigned
-
-    def get_all_fields(self, features) -> None:
-        """
-        Build a unique list of all field names
-        :param dict[dict[str]] features: GeoJSON of string values for all features
-        :returns set[str]: Unique list of all fields
-        """
-
-        fields = set()
-        for feature in features:
-            for field in feature['geojson']['properties'].keys():
-                fields.add(field)
-        return fields
-    
-    def get_aton_lookup(self):
-        """
-        Return ATON values that are not allowed in CSF
-        :return list[str]: ATON attributes
-        """
-
-        with open(str(INPUTS / 'lookups' / 'aton_lookup.yaml'), 'r') as lookup:
-            return yaml.safe_load(lookup)
         
     def get_cursor(self):
         """
@@ -463,7 +442,7 @@ class ENCReaderEngine(Engine):
                     arcpy.management.AddSpatialJoin(
                     feature_records,
                     vector_records,
-                    match_option=overlap_types[feature_type],
+                    match_option=overlap_types[feature_type]
                 )
 
     def open_file(self, enc_path):
@@ -610,11 +589,6 @@ class ENCReaderEngine(Engine):
             for feature in self.geometries[feature_type]:
                 arcpy.AddMessage(f"\n - {feature['type']}:{feature['geojson']}")
 
-    def return_primitives_env(self) -> None:
-        """Reset S57 ENV for primitives only"""
-
-        os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
-
     def run_query(self, cursor, sql):
         """
         Execute a SQL query
@@ -625,23 +599,6 @@ class ENCReaderEngine(Engine):
 
         cursor.execute(sql)
         return cursor.fetchall()
-
-    def set_driver(self) -> None:
-        """Set the S57 driver for GDAL"""
-
-        self.driver = ogr.GetDriverByName('S57')
-
-    def set_none_to_null(self, feature_json):
-        """
-        Convert undesirable text to empty string
-        :param dict[dict[]] feature_json: JSON object of ENC Vector features
-        :returns dict[dict[]]: Updated JSON object
-        """
-        
-        for key, value in feature_json['properties'].items():
-            if value == 'None' or value is None:
-                feature_json['properties'][key] = ''
-        return feature_json
 
     def set_assigned_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
         """
@@ -673,19 +630,19 @@ class ENCReaderEngine(Engine):
                 elif row[indx['OBJL_NAME']] == 'MORFAC':
                     if indx['CATMOR']:
                         catmor = row[indx["CATMOR"]]
-                        if catmor == 1:
+                        if catmor == '1':
                             row[indx['invreq']] = invreq_options.get(10, '')
-                        elif catmor in [2, 3, 4, 5, 6, 7]:
+                        elif catmor in ['2', '3', '4', '5', '6', '7']:
                             row[indx['invreq']] = invreq_options.get(1, '')
                 # CATOBS column needed for OBSTRN
                 elif row[indx['OBJL_NAME']] == 'OBSTRN':
                     if indx['CATOBS']:
                         catobs = row[indx["CATOBS"]]
-                        if catobs == 2:
+                        if catobs == '2':
                             row[indx['invreq']] = invreq_options.get(12, '')
-                        elif catobs == 5:
+                        elif catobs == '5':
                             row[indx['invreq']] = invreq_options.get(8, '')
-                        elif catobs in [None, 1, 3, 4, 6, 7, 8, 9, 10]:
+                        elif catobs in [None, '1', '3', '4', '6', '7', '8', '9', '10']:
                             row[indx['invreq']] = invreq_options.get(5, '')
                 elif row[indx['OBJL_NAME']] == 'SBDARE':
                     row[indx['invreq']] = invreq_options.get(13, '')
@@ -693,17 +650,17 @@ class ENCReaderEngine(Engine):
                 elif row[indx['OBJL_NAME']] == 'SLCONS':
                     if indx['CONDTN']:
                         condtn = row[indx["CONDTN"]]
-                        if condtn in [1, 3, 4, 5]:
+                        if condtn in ['1', '3', '4', '5']:
                             row[indx['invreq']] = invreq_options.get(1, '')
-                        elif condtn == 2:
+                        elif condtn == '2':
                             row[indx['invreq']] = invreq_options.get(5, '')
                 # WATLEV column needed for UWTROC
                 elif row[indx['OBJL_NAME']] == 'UWTROC':
                     if indx['WATLEV']:
                         condtn = row[indx["WATLEV"]]
-                        if condtn in [1, 2, 4, 5, 6, 7]:
+                        if condtn in ['1', '2', '4', '5', '6', '7']:
                             row[indx['invreq']] = invreq_options.get(5, '')
-                        elif condtn == 3:
+                        elif condtn == '3':
                             row[indx['invreq']] = invreq_options.get(7, '')
                 else:
                     # Set to OTHER value if missing
@@ -729,11 +686,6 @@ class ENCReaderEngine(Engine):
                     else:
                         row[1] = invreq_options.get(14)
                     updateCursor.updateRow(row)
-
-    def split_multipoint_env(self) -> None:
-        """Reset S57 ENV for split multipoint only"""
-
-        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
 
     def store_gc_names(self, gc_rows) -> None:
         """Create property of all current GC names"""

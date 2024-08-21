@@ -3,6 +3,7 @@
 
 from csf_prf.ags_tools.CompositeSourceCreator import CompositeSourceCreator
 from csf_prf.ags_tools.ENCDownloader import ENCDownloader
+from csf_prf.ags_tools.S57Conversion import S57Conversion
 
 class Toolbox:
     def __init__(self):
@@ -11,4 +12,4 @@ class Toolbox:
         self.label = "CSF/PRF Toolbox"
         self.alias = "csf_prf_tools"
 
-        self.tools = [ENCDownloader, CompositeSourceCreator]
+        self.tools = [ENCDownloader, CompositeSourceCreator, S57Conversion]

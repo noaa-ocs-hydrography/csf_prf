@@ -33,6 +33,9 @@ def victim():
             'output_folder': Param(str(OUTPUTS))})
     return victim
 
+@pytest.mark.skip(reason="This function runs 3 other functions.")
+def add_columns():
+    ...
 
 def test_add_column_and_constant(victim):
     

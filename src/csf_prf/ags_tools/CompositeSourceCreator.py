@@ -102,6 +102,7 @@ class CompositeSourceCreator:
         #     parameterType="Optional",
         #     direction="Input"
         # )
+
         enc_file = arcpy.Parameter(
             displayName="ENC File(s):",
             name="enc_files",
@@ -110,6 +111,8 @@ class CompositeSourceCreator:
             direction="Input",
             multiValue=True
         )
+        enc_file.filter.list = ['000']
+
         output_folder = arcpy.Parameter(
             displayName="CSF, PRF & Tide .000 Output File Folder:",
             name="output_folder",
