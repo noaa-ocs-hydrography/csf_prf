@@ -3,6 +3,7 @@ import  yaml
 import pathlib
 import os
 import zipfile
+import arcpy
 
 from osgeo import ogr
 
@@ -10,6 +11,34 @@ INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 
 
 class Engine:
+
+    def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=255, nullable=False) -> None:
+        """
+        Add the asgnment column and 
+        :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
+        """
+
+        if nullable:
+            arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
+        else:
+            arcpy.management.AddField(layer, column, field_type, field_length=field_length)
+            arcpy.management.CalculateField(
+                layer, column, expression, expression_type="PYTHON3", field_type=field_type
+            )
+
+    def create_output_gdb(self, gdb_name='csf_features') -> None:
+        """
+        Build the output geodatabase for data storage
+        :param str gdb_name: Name of the geodatabase
+        """
+
+        output_folder = str(self.param_lookup['output_folder'].valueAsText)
+        if arcpy.Exists(os.path.join(output_folder, gdb_name + '.gdb')):
+            arcpy.AddMessage('Output GDB already exists')
+        else:
+            arcpy.AddMessage(f'Creating output geodatabase in {output_folder}')
+            arcpy.management.CreateFileGDB(output_folder, gdb_name)
+
     def feature_covered_by_upper_scale(self, feature_json, enc_scale):
         """
         Determine if a current Point, LineString, or Polygon intersects an upper scale level ENC extent
@@ -39,6 +68,28 @@ class Engine:
                 inside = True
         return inside
     
+    def get_all_fields(self, features) -> None:
+        """
+        Build a unique list of all field names
+        :param dict[dict[str]] features: GeoJSON of string values for all features
+        :returns set[str]: Unique list of all fields
+        """
+
+        fields = set()
+        for feature in features:
+            for field in feature['geojson']['properties'].keys():
+                fields.add(field)
+        return fields 
+
+    def get_aton_lookup(self):
+        """
+        Return ATON values that are not allowed in CSF
+        :return list[str]: ATON attributes
+        """
+
+        with open(str(INPUTS / 'lookups' / 'aton_lookup.yaml'), 'r') as lookup:
+            return yaml.safe_load(lookup)       
+    
     def get_config_item(self, parent: str, child: str=False) -> tuple[str, int]:
         """Load config and return speciific key"""
 
@@ -49,6 +100,11 @@ class Engine:
                 return parent_item[child]
             else:
                 return parent_item
+            
+    def return_primitives_env(self) -> None:
+        """Reset S57 ENV for primitives only"""
+
+        os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"            
 
     def reverse(self, geom_list):
         """
@@ -60,6 +116,28 @@ class Engine:
         """
 
         return list(reversed(geom_list))
+    
+    def set_driver(self) -> None:
+        """Set the S57 driver for GDAL"""
+
+        self.driver = ogr.GetDriverByName('S57')
+
+    def set_none_to_null(self, feature_json):
+        """
+        Convert undesirable text to empty string
+        :param dict[dict[]] feature_json: JSON object of ENC Vector features
+        :returns dict[dict[]]: Updated JSON object
+        """
+        
+        for key, value in feature_json['properties'].items():
+            if value == 'None' or value is None:
+                feature_json['properties'][key] = ''
+        return feature_json    
+
+    def split_multipoint_env(self) -> None:
+        """Reset S57 ENV for split multipoint only"""
+
+        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON,ADD_SOUNDG_DEPTH=ON"    
     
     def unzip_enc_files(self, output_folder, file_ending) -> None:
         """Unzip all zip fileis in a folder"""

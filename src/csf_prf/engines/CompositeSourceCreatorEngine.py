@@ -173,16 +173,6 @@ class CompositeSourceCreatorEngine(Engine):
                 else:
                     self.export_to_geopackage(csfprf_output_path, enc_feature_type, feature_class)
 
-    def create_output_gdb(self) -> None:
-        """Build the output geodatabase for data storage"""
-
-        output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        if arcpy.Exists(os.path.join(output_folder, self.gdb_name + '.gdb')):
-            arcpy.AddMessage('Output GDB already exists')
-        else:
-            arcpy.AddMessage(f'Creating output geodatabase in {output_folder}')
-            arcpy.management.CreateFileGDB(output_folder, self.gdb_name)
-
     def download_enc_files(self):
         csf_prf_toolbox = str(CSF_PRF / 'CSF_PRF_Toolbox.pyt')
         arcpy.ImportToolbox(csf_prf_toolbox)
@@ -392,7 +382,7 @@ class CompositeSourceCreatorEngine(Engine):
         """Main method to begin process"""
 
         start = time.time()
-        self.create_output_gdb()
+        self.create_output_gdb() # TODO move to the base class
         self.convert_sheets()
         self.convert_junctions()
         self.convert_bottom_samples()
@@ -443,7 +433,7 @@ class CompositeSourceCreatorEngine(Engine):
         if self.param_lookup['caris_export'].value:
             self.create_caris_export()
         else:
-            if not self.output_db:
+            if not self.output_db: # TODO double check is self.output_db needs to be used
                 output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.output_name)
                 arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}')
                 arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
