@@ -119,22 +119,6 @@ class ENCReaderEngine(Engine):
         self.add_invreq_column()
         self.add_subtype_column()
 
-    # def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=255, code_block='', nullable=False) -> None:
-    #     """
-    #     Add the asgnment column and 
-    #     :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
-    #     """
-
-    #     # TODO add code_block parameter to Engine.py
-
-    #     if nullable:
-    #         arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
-    #     else:
-    #         arcpy.management.AddField(layer, column, field_type, field_length=field_length)
-    #         arcpy.management.CalculateField(
-    #             layer, column, expression, expression_type="PYTHON3", field_type=field_type, code_block=code_block
-    #         )
-
     def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
 

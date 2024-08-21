@@ -11,11 +11,17 @@ INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 
 
 class Engine:
-
-    def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=255, nullable=False) -> None:
+    def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=255, code_block='', nullable=False) -> None:
         """
-        Add the asgnment column and 
+        Add the asgnment column and optionally set a value
+
         :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
+        :param str column: Attribute column name
+        :param str expression: Simple field calculation expression for a constant
+        :param str field_type: Data type for the field
+        :param int field_length: Length of the field
+        :param str code_block: Advanced string of a Python function as code block 
+        :param boolean nullable: Check if the field can be left blank
         """
 
         if nullable:
@@ -23,7 +29,7 @@ class Engine:
         else:
             arcpy.management.AddField(layer, column, field_type, field_length=field_length)
             arcpy.management.CalculateField(
-                layer, column, expression, expression_type="PYTHON3", field_type=field_type
+                layer, column, expression, expression_type="PYTHON3", field_type=field_type, code_block=code_block
             )
 
     def create_output_gdb(self, gdb_name='csf_features') -> None:
