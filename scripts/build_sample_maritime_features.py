@@ -36,7 +36,6 @@ for layer in layer_dict["layerDefinitions"]:
         polygons["name"] = "Polygon"
         polygons["featureTemplates"] += layer["featureTemplates"]
         polygons["groups"] += layer["renderer"]["groups"]
-    
 
 
 # Create new unique subtype codes
@@ -58,17 +57,24 @@ for geom in [points, lines, polygons]:
                 codes.append(new_code)
                 # update the code
                 new_subtype_codes[name] = new_code
-                
+
                 for i, item in enumerate(propertySetItems):
                     if item == 'fcsubtype':
                         feature['defaultValues']['propertySetItems'][i+1] = new_code
             else:
                 codes.append(code)
+
     # update codes in groups section
+    group_classes = []
     for group in geom['groups']:
+        group_classes += group['classes']
+    geom["groups"] = [{"type": "CIMUniqueValueGroup", "classes": group_classes}]
 
+
+    for group in geom['groups']:
         # Sort groups alphabetically for AGS Pro display
-
+        sorted_classes = sorted(group['classes'], key=lambda data: data['label'])
+        group['classes'] = sorted_classes
         for subtype in group['classes']:
             subtype_string = subtype['label']
             name = '_'.join(subtype_string.split('_')[:-1])
@@ -81,7 +87,6 @@ output = {
     'LineString': lines,
     'Polygon': polygons
 }
-
 
 
 # Create output layer file with new code lists
@@ -101,18 +106,15 @@ for layer in layer_dict["layerDefinitions"]:
         # Sort the featureTemplates
         featureTemplates = sorted(output[layer['name']]['featureTemplates'], key=lambda data: data['name'])
         groups = output[layer['name']]['groups']
-        # groups = sorted(output[layer['name']]['groups'], key=lambda data: data['classes'][0]['label'])
         labelClasses = output[layer['name']]['labelClasses']
 
         layer['featureTemplates'] = featureTemplates
         layer['labelClasses'] = []
         for i, group in enumerate(groups):
-            if i > 0:
-                group['heading'] = ""
+            group['heading'] = "FCSubtype"
         layer["renderer"]["groups"] = groups
 with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'w') as writer:
     writer.writelines(json.dumps(layer_dict, indent=4))
-
 
 
 # Create sample output GDB for test layers
@@ -127,7 +129,6 @@ geom_lookup = {
 }
 
 
-
 # Add subtypes to each geom type featureclass
 def add_subtypes_to_fc(featureclass, data):
     arcpy.management.SetSubtypeField(featureclass, "FCSubtype")
@@ -140,7 +141,6 @@ def add_subtypes_to_fc(featureclass, data):
             if value == 'fcsubtype':
                 code = subtype['defaultValues']['propertySetItems'][i+1]
                 arcpy.management.AddSubtype(featureclass, code, subtype['name']) 
-
 
 
 # Build test layers in output GDB
