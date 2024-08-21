@@ -117,6 +117,7 @@ class ENCReaderEngine(Engine):
         self.add_objl_string()
         self.add_asgnmt_column()
         self.add_invreq_column()
+        self.add_subtype_column()
 
     def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
@@ -177,6 +178,24 @@ class ENCReaderEngine(Engine):
     #     else:
     #         arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
 
+    def add_subtype_column(self) -> None:
+        """Add and popuplate FCSubtype field"""
+
+        with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
+            subtype_lookup = yaml.safe_load(lookup)
+
+        for feature_type in self.geometries.keys():   
+            subtypes = subtype_lookup[feature_type]
+            code_block = f"""def get_stcode(objl_name):
+                '''Code block to use OBJL_NAME field with lookup'''
+                return {subtypes}[objl_name]['code']"""
+            expression = "get_stcode(!OBJL_NAME!)"
+            arcpy.AddMessage(f" - Adding 'FCSubtype' column: {feature_type}")
+            data = ['assigned', 'unassigned']
+            for data_type in data:
+                self.add_column_and_constant(self.geometries[feature_type]['features_layers'][data_type], 'FCSubtype', 
+                                             expression, field_type='LONG', code_block=code_block)
+
     def download_gcs(self, gc_rows) -> None:
         """
         Download any GCs for current ENC files
@@ -220,6 +239,7 @@ class ENCReaderEngine(Engine):
         """Spatial query GC features within Sheets layer"""
 
         # TODO Run tool and see if GC_layers are identical to features from ENC files
+        # TODO is supersession an issue with GC features?
         if self.gc_points:
             points_assigned = arcpy.management.SelectLayerByLocation(self.gc_points, 'INTERSECT', self.sheets_layer)
             points_assigned_layer = arcpy.management.MakeFeatureLayer(points_assigned)
@@ -666,7 +686,6 @@ class ENCReaderEngine(Engine):
     
     def start(self) -> None:
         if self.param_lookup['download_geographic_cells'].value:
-            # TODO check if "Class" types [COALNE, SLCONS, LNDARE] are in the GC tables
             # TODO consolidate calls to get enc_files values
             rows = self.get_gc_data()
             self.store_gc_names(rows)
@@ -682,6 +701,7 @@ class ENCReaderEngine(Engine):
         self.perform_spatial_filter()
         self.print_feature_total()
         self.add_columns()
+        self.write_output_layer_file()
         self.join_quapos_to_features()
 
         # Run times in seconds
@@ -692,3 +712,9 @@ class ENCReaderEngine(Engine):
         # perform_spatial_filter - 668. 656 651 176
         # add_columns - 8.
         # join_quapos_to_features - 12.
+
+    def write_output_layer_file(self) -> None:
+        # open layer file in INPUTS
+        # string replacement on {~} for output GDB path
+        # copy new file to the output folder
+        pass

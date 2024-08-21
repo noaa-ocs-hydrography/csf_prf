@@ -2,6 +2,7 @@ import os
 import arcpy
 import time
 import pathlib
+import yaml
 
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
@@ -9,6 +10,8 @@ arcpy.env.overwriteOutput = True
 # arcpy.env.qualifiedFieldNames = False # Force use of field name alias
 
 
+INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
+OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 CSF_PRF = pathlib.Path(__file__).parents[1]
 
 
@@ -48,7 +51,25 @@ class CompositeSourceCreatorEngine(Engine):
             arcpy.management.CalculateField(
                 layer, column, expression, expression_type="PYTHON3", field_type=field_type
             )
-            
+
+    def add_subtypes_to_data(self) -> None:
+        """Add subtype objects to all output featureclasses"""
+
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        arcpy.env.workspace =  str(output_folder / 'csf_features.gdb')
+        featureclasses = arcpy.ListFeatureClasses()
+        
+        with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
+            subtype_lookup = yaml.safe_load(lookup)
+
+        for geometry_type in subtype_lookup.keys():
+            for featureclass in featureclasses: 
+                if geometry_type in featureclass:
+                    arcpy.management.SetSubtypeField(featureclass, "FCSubtype")
+                    for data in subtype_lookup[geometry_type].values():
+                        featureclass_path = os.path.join(arcpy.env.workspace, featureclass)
+                        arcpy.management.AddSubtype(featureclass_path, data['code'], data['objl_string']) 
+
     def convert_bottom_samples(self) -> None:
         """Process the Bottom Samples input parameter"""
 
@@ -389,6 +410,8 @@ class CompositeSourceCreatorEngine(Engine):
         self.convert_maritime_datasets()
         # self.convert_tides()
         self.convert_enc_files()
+        self.add_subtypes_to_data()
+        self.write_layerfile()
         self.write_to_geopackage()
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
@@ -425,6 +448,16 @@ class CompositeSourceCreatorEngine(Engine):
                 polygon = list(vertices)
                 cursor.insertRow([polygon] + list(feature['attributes'][2:]))
         self.output_data[output_data_type] = output_name
+
+    def write_layerfile(self):   
+        with open(str(INPUTS / 'MaritimeSchema.lyrx'), 'r') as reader:
+            layer_file = reader.readlines()
+        output_layer_file = layer_file.replace("{~}", ".\\csf_features.gdb")   
+
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+
+        with open(str(OUTPUTS / 'csf_prf_apply_maritime_scheme.lyrx'), 'w') as writer:
+            writer.write(output_layer_file)
 
     def write_to_geopackage(self) -> None:
         """Copy the output feature classes to Geopackage"""
