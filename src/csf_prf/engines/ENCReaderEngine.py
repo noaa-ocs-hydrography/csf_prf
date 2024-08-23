@@ -153,7 +153,7 @@ class ENCReaderEngine(Engine):
                             updateCursor.deleteRow()
                         else:
                             updateCursor.updateRow(row)
-        arcpy.AddMessage(f'Removed {aton_count} ATON features containing {str(aton_found)}')
+        arcpy.AddMessage(f'  - Removed {aton_count} ATON features containing {str(aton_found)}')
 
     # def download_gc(self, download_inputs) -> None:
     #     """
@@ -184,8 +184,10 @@ class ENCReaderEngine(Engine):
         with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
             subtype_lookup = yaml.safe_load(lookup)
 
+        # Make unique code values
+        unique_subtype_lookup = self.get_unique_subtype_codes(subtype_lookup)
         for feature_type in self.geometries.keys():   
-            subtypes = subtype_lookup[feature_type]
+            subtypes = unique_subtype_lookup[feature_type]
             code_block = f"""def get_stcode(objl_name):
                 '''Code block to use OBJL_NAME field with lookup'''
                 return {subtypes}[objl_name]['code']"""
@@ -701,8 +703,8 @@ class ENCReaderEngine(Engine):
         self.perform_spatial_filter()
         self.print_feature_total()
         self.add_columns()
-        self.write_output_layer_file()
         self.join_quapos_to_features()
+        self.write_output_layer_file()
 
         # Run times in seconds
         # download_gcs - 75.
@@ -714,7 +716,17 @@ class ENCReaderEngine(Engine):
         # join_quapos_to_features - 12.
 
     def write_output_layer_file(self) -> None:
-        # open layer file in INPUTS
-        # string replacement on {~} for output GDB path
-        # copy new file to the output folder
-        pass
+        """Update layer file for output gdb"""
+
+        with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'r') as reader:
+            layer_file = reader.read()
+        layer_dict = json.loads(layer_file)
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        output_gdb = output_folder / f'{self.gdb_name}.gdb'
+        for layer in layer_dict['layerDefinitions']:
+            if 'featureTable' in layer:
+                layer['featureTable']['dataConnection']['workspaceConnectionString'] = f"DATABASE={output_gdb}"
+        
+        with open(str(output_folder / 'maritime_layerfile.lyrx'), 'w') as writer:
+            writer.writelines(json.dumps(layer_dict, indent=4))
+
