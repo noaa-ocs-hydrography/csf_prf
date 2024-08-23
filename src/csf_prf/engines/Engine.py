@@ -107,6 +107,28 @@ class Engine:
             else:
                 return parent_item
             
+    def get_unique_subtype_codes(self, subtype_lookup):
+        """
+        Create unique codes for all subtypes
+
+        :param dict[str] subtype_lookup: all_subtypes.yaml as dictionary
+        :returns dict[str]: Updated dictionary with unique codes
+        """
+
+        for geom_type in subtype_lookup.keys():
+            codes = []
+            for subtype in subtype_lookup[geom_type].values():
+                code = subtype['code']
+                if code in codes:
+                    new_code = code + 1000
+                    while new_code in codes:
+                        new_code += 1
+                    subtype['code'] = new_code
+                    codes.append(new_code)
+                else:
+                    codes.append(code)
+        return subtype_lookup
+            
     def return_primitives_env(self) -> None:
         """Reset S57 ENV for primitives only"""
 

@@ -56,7 +56,7 @@
                     "type": "CIMStandardDataConnection",
                     "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
                     "workspaceFactory": "FileGDB",
-                    "dataset": "Point_features_unassigned",
+                    "dataset": "Point_features_assigned",
                     "datasetType": "esriDTFeatureClass"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
@@ -17791,7 +17791,7 @@
                     "type": "CIMStandardDataConnection",
                     "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
                     "workspaceFactory": "FileGDB",
-                    "dataset": "LineString_features_unassigned",
+                    "dataset": "LineString_features_assigned",
                     "datasetType": "esriDTFeatureClass"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
@@ -27733,7 +27733,7 @@
                     "type": "CIMStandardDataConnection",
                     "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
                     "workspaceFactory": "FileGDB",
-                    "dataset": "Polygon_features_unassigned",
+                    "dataset": "Polygon_features_assigned",
                     "datasetType": "esriDTFeatureClass"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
@@ -47206,9 +47206,7 @@
             "refreshRateUnit": "esriTimeUnitsSeconds",
             "blendingMode": "Alpha",
             "allowDrapingOnIntegratedMesh": true,
-            "standaloneTables": [
-                "CIMPATH=map/plts_collections.json"
-            ],
+            "standaloneTables": [],
             "layers": [
                 "CIMPATH=map/Point_features_assigned.xml",
                 "CIMPATH=map/Point_features_unassigned.xml",

@@ -1480,9 +1480,7 @@
       "refreshRateUnit" : "esriTimeUnitsSeconds",
       "blendingMode" : "Alpha",
       "allowDrapingOnIntegratedMesh" : true,
-      "standaloneTables" : [
-        "CIMPATH=map/plts_collections.json"
-      ],
+      "standaloneTables" : [],
       "layers" : [
         "CIMPATH=map/Point_features_assigned.xml",
         "CIMPATH=map/Point_features_unassigned.xml",

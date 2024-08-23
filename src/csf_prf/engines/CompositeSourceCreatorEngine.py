@@ -7,7 +7,7 @@ import yaml
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
 arcpy.env.overwriteOutput = True
-# arcpy.env.qualifiedFieldNames = False # Force use of field name alias
+arcpy.env.qualifiedFieldNames = False # Force use of field name alias
 
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
@@ -55,20 +55,25 @@ class CompositeSourceCreatorEngine(Engine):
     def add_subtypes_to_data(self) -> None:
         """Add subtype objects to all output featureclasses"""
 
-        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-        arcpy.env.workspace =  str(output_folder / 'csf_features.gdb')
-        featureclasses = arcpy.ListFeatureClasses()
+        arcpy.AddMessage('Adding subtype values to output layers')
+        output_folder = self.param_lookup['output_folder'].valueAsText
+        output_gdb = os.path.join(output_folder, 'csf_features.gdb')
         
         with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
             subtype_lookup = yaml.safe_load(lookup)
 
-        for geometry_type in subtype_lookup.keys():
-            for featureclass in featureclasses: 
+        # Make unique code values
+        unique_subtype_lookup = self.get_unique_subtype_codes(subtype_lookup)
+        arcpy.env.workspace = output_gdb
+        feature_classes = arcpy.ListFeatureClasses()
+
+        for featureclass in feature_classes: 
+            for geometry_type in unique_subtype_lookup.keys():
                 if geometry_type in featureclass:
-                    arcpy.management.SetSubtypeField(featureclass, "FCSubtype")
-                    for data in subtype_lookup[geometry_type].values():
-                        featureclass_path = os.path.join(arcpy.env.workspace, featureclass)
-                        arcpy.management.AddSubtype(featureclass_path, data['code'], data['objl_string']) 
+                    field = [field.name for field in arcpy.ListFields(featureclass) if 'FCSubtype' in field.name][0]
+                    arcpy.management.SetSubtypeField(featureclass, field)
+                    for data in unique_subtype_lookup[geometry_type].values():
+                        arcpy.management.AddSubtype(featureclass, data['code'], data['objl_string']) 
 
     def convert_bottom_samples(self) -> None:
         """Process the Bottom Samples input parameter"""
@@ -194,7 +199,9 @@ class CompositeSourceCreatorEngine(Engine):
                 else:
                     self.export_to_geopackage(csfprf_output_path, enc_feature_type, feature_class)
 
-    def download_enc_files(self):
+    def download_enc_files(self) -> None:
+        """Factory function to download project ENC files"""
+
         csf_prf_toolbox = str(CSF_PRF / 'CSF_PRF_Toolbox.pyt')
         arcpy.ImportToolbox(csf_prf_toolbox)
         sheet_parameter = self.param_lookup['sheets'].valueAsText
@@ -449,14 +456,16 @@ class CompositeSourceCreatorEngine(Engine):
                 cursor.insertRow([polygon] + list(feature['attributes'][2:]))
         self.output_data[output_data_type] = output_name
 
-    def write_layerfile(self):   
-        with open(str(INPUTS / 'MaritimeSchema.lyrx'), 'r') as reader:
-            layer_file = reader.readlines()
-        output_layer_file = layer_file.replace("{~}", ".\\csf_features.gdb")   
+    def write_layerfile(self) -> None:
+        """Create output layerfile in output folder for viewing data"""
 
+        arcpy.AddMessage('Writing output maritime layerfile')
+        with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'r') as reader:
+            layer_file = reader.read()
+        
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-
-        with open(str(OUTPUTS / 'csf_prf_apply_maritime_scheme.lyrx'), 'w') as writer:
+        output_layer_file = layer_file.replace("{~}", f"{output_folder / 'csf_features.gdb'}")   
+        with open(str(output_folder / 'csf_prf_maritime_schema.lyrx'), 'w') as writer:
             writer.write(output_layer_file)
 
     def write_to_geopackage(self) -> None:

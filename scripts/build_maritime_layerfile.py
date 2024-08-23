@@ -1,9 +1,8 @@
 import json
 import pathlib
 import arcpy
-import yaml
 import json
-import os
+import copy
 arcpy.env.overwriteOutput = True
 
 
@@ -113,14 +112,14 @@ csf_prf_layers = []
 for layer in layer_dict["layerDefinitions"]:
     output_types = ['assigned', 'unassigned']
     for output_type in output_types:
-        current_layer = layer.copy()
+        current_layer = copy.deepcopy(layer)
         if 'featureTable' in current_layer:
-            fc_name = f"{layer['name']}_features_{output_type}"
+            fc_name = f"{current_layer['name']}_features_{output_type}"
             current_layer["featureTable"]["dataConnection"] = {
                 "type" : "CIMStandardDataConnection",
                 "workspaceConnectionString" : "DATABASE=.\\{~}.gdb",
                 "workspaceFactory" : "FileGDB",
-                "dataset" : fc_name,
+                "dataset" : fc_name,  # this is always the second index
                 "datasetType" : "esriDTFeatureClass"
             }
             current_layer["name"] = fc_name

@@ -153,7 +153,7 @@ class ENCReaderEngine(Engine):
                             updateCursor.deleteRow()
                         else:
                             updateCursor.updateRow(row)
-        arcpy.AddMessage(f'Removed {aton_count} ATON features containing {str(aton_found)}')
+        arcpy.AddMessage(f'  - Removed {aton_count} ATON features containing {str(aton_found)}')
 
     # def download_gc(self, download_inputs) -> None:
     #     """
@@ -184,8 +184,10 @@ class ENCReaderEngine(Engine):
         with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
             subtype_lookup = yaml.safe_load(lookup)
 
+        # Make unique code values
+        unique_subtype_lookup = self.get_unique_subtype_codes(subtype_lookup)
         for feature_type in self.geometries.keys():   
-            subtypes = subtype_lookup[feature_type]
+            subtypes = unique_subtype_lookup[feature_type]
             code_block = f"""def get_stcode(objl_name):
                 '''Code block to use OBJL_NAME field with lookup'''
                 return {subtypes}[objl_name]['code']"""
@@ -716,7 +718,7 @@ class ENCReaderEngine(Engine):
     def write_output_layer_file(self) -> None:
         """Update layer file for output gdb"""
 
-        with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'r+') as reader:
+        with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'r') as reader:
             layer_file = reader.read()
         layer_dict = json.loads(layer_file)
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
