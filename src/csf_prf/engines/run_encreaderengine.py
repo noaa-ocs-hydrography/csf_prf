@@ -1,5 +1,6 @@
 import pathlib
 import arcpy
+import time
 
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
 from csf_prf.helpers.tools import Param # TODO verify this still works
@@ -66,8 +67,10 @@ if __name__ == '__main__':
         # 'enc_files': Param(str(str(INPUTS / 'US2EC02M.000') + ';' + str(INPUTS / 'US3GA10M.000'))),
         'enc_files': Param(str(INPUTS / 'US3GA10M.000')),
         'output_folder': Param(str(OUTPUTS)),
-        'download_geographic_cells': Param(True)
+        'download_geographic_cells': Param(False)
     }
     sheets_layer = convert_sheets(param_lookup['sheets'].valueAsText)
     engine = ENCReaderEngine(param_lookup, sheets_layer)
+    start = time.time()
     engine.start()
+    print(f'Run time: {(time.time() - start) / 60}')
