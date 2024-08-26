@@ -117,20 +117,7 @@ class ENCReaderEngine(Engine):
         self.add_objl_string()
         self.add_asgnmt_column()
         self.add_invreq_column()
-
-    def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=255, nullable=False) -> None:
-        """
-        Add the asgnment column and 
-        :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
-        """
-
-        if nullable:
-            arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
-        else:
-            arcpy.management.AddField(layer, column, field_type, field_length=field_length)
-            arcpy.management.CalculateField(
-                layer, column, expression, expression_type="PYTHON3", field_type=field_type
-            )
+        self.add_subtype_column()
 
     def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
@@ -166,7 +153,7 @@ class ENCReaderEngine(Engine):
                             updateCursor.deleteRow()
                         else:
                             updateCursor.updateRow(row)
-        arcpy.AddMessage(f'Removed {aton_count} ATON features containing {str(aton_found)}')
+        arcpy.AddMessage(f'  - Removed {aton_count} ATON features containing {str(aton_found)}')
 
     # def download_gc(self, download_inputs) -> None:
     #     """
@@ -190,6 +177,26 @@ class ENCReaderEngine(Engine):
     #                 file.write(chunk)
     #     else:
     #         arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
+
+    def add_subtype_column(self) -> None:
+        """Add and popuplate FCSubtype field"""
+
+        with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
+            subtype_lookup = yaml.safe_load(lookup)
+
+        # Make unique code values
+        unique_subtype_lookup = self.get_unique_subtype_codes(subtype_lookup)
+        for feature_type in self.geometries.keys():   
+            subtypes = unique_subtype_lookup[feature_type]
+            code_block = f"""def get_stcode(objl_name):
+                '''Code block to use OBJL_NAME field with lookup'''
+                return {subtypes}[objl_name]['code']"""
+            expression = "get_stcode(!OBJL_NAME!)"
+            arcpy.AddMessage(f" - Adding 'FCSubtype' column: {feature_type}")
+            data = ['assigned', 'unassigned']
+            for data_type in data:
+                self.add_column_and_constant(self.geometries[feature_type]['features_layers'][data_type], 'FCSubtype', 
+                                             expression, field_type='LONG', code_block=code_block)
 
     def download_gcs(self, gc_rows) -> None:
         """
@@ -234,6 +241,7 @@ class ENCReaderEngine(Engine):
         """Spatial query GC features within Sheets layer"""
 
         # TODO Run tool and see if GC_layers are identical to features from ENC files
+        # TODO is supersession an issue with GC features?
         if self.gc_points:
             points_assigned = arcpy.management.SelectLayerByLocation(self.gc_points, 'INTERSECT', self.sheets_layer)
             points_assigned_layer = arcpy.management.MakeFeatureLayer(points_assigned)
@@ -247,28 +255,6 @@ class ENCReaderEngine(Engine):
             lines_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
             self.geometries['LineString']['GC_layers']['assigned'] = lines_assigned
             self.geometries['LineString']['GC_layers']['unassigned'] = lines_unassigned
-
-    def get_all_fields(self, features) -> None:
-        """
-        Build a unique list of all field names
-        :param dict[dict[str]] features: GeoJSON of string values for all features
-        :returns set[str]: Unique list of all fields
-        """
-
-        fields = set()
-        for feature in features:
-            for field in feature['geojson']['properties'].keys():
-                fields.add(field)
-        return fields
-    
-    def get_aton_lookup(self):
-        """
-        Return ATON values that are not allowed in CSF
-        :return list[str]: ATON attributes
-        """
-
-        with open(str(INPUTS / 'lookups' / 'aton_lookup.yaml'), 'r') as lookup:
-            return yaml.safe_load(lookup)
         
     def get_cursor(self):
         """
@@ -438,12 +424,15 @@ class ENCReaderEngine(Engine):
             for output_type in output_types:
                 feature_records = self.geometries[feature_type]['features_layers'][output_type]
                 vector_records = self.geometries[feature_type]['QUAPOS_layers'][output_type]
-                self.geometries[feature_type]["features_layers"][output_type] = \
-                    arcpy.management.AddSpatialJoin(
-                    feature_records,
-                    vector_records,
-                    match_option=overlap_types[feature_type]
-                )
+                quapos_count = int(arcpy.management.GetCount(vector_records)[0])
+                if quapos_count > 0: # Joining an empty vector_records layer caused duplicate fields
+                    if feature_records is not None or vector_records is not None:
+                        self.geometries[feature_type]["features_layers"][output_type] = \
+                            arcpy.management.AddSpatialJoin(
+                            feature_records,
+                            vector_records,
+                            match_option=overlap_types[feature_type]
+                        )
 
     def open_file(self, enc_path):
         """
@@ -589,11 +578,6 @@ class ENCReaderEngine(Engine):
             for feature in self.geometries[feature_type]:
                 arcpy.AddMessage(f"\n - {feature['type']}:{feature['geojson']}")
 
-    def return_primitives_env(self) -> None:
-        """Reset S57 ENV for primitives only"""
-
-        os.environ["OGR_S57_OPTIONS"] = "RETURN_PRIMITIVES=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
-
     def run_query(self, cursor, sql):
         """
         Execute a SQL query
@@ -604,23 +588,6 @@ class ENCReaderEngine(Engine):
 
         cursor.execute(sql)
         return cursor.fetchall()
-
-    def set_driver(self) -> None:
-        """Set the S57 driver for GDAL"""
-
-        self.driver = ogr.GetDriverByName('S57')
-
-    def set_none_to_null(self, feature_json):
-        """
-        Convert undesirable text to empty string
-        :param dict[dict[]] feature_json: JSON object of ENC Vector features
-        :returns dict[dict[]]: Updated JSON object
-        """
-        
-        for key, value in feature_json['properties'].items():
-            if value == 'None' or value is None:
-                feature_json['properties'][key] = ''
-        return feature_json
 
     def set_assigned_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
         """
@@ -709,11 +676,6 @@ class ENCReaderEngine(Engine):
                         row[1] = invreq_options.get(14)
                     updateCursor.updateRow(row)
 
-    def split_multipoint_env(self) -> None:
-        """Reset S57 ENV for split multipoint only"""
-
-        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON"
-
     def store_gc_names(self, gc_rows) -> None:
         """Create property of all current GC names"""
 
@@ -729,7 +691,6 @@ class ENCReaderEngine(Engine):
     
     def start(self) -> None:
         if self.param_lookup['download_geographic_cells'].value:
-            # TODO check if "Class" types [COALNE, SLCONS, LNDARE] are in the GC tables
             # TODO consolidate calls to get enc_files values
             rows = self.get_gc_data()
             self.store_gc_names(rows)
@@ -746,6 +707,7 @@ class ENCReaderEngine(Engine):
         self.print_feature_total()
         self.add_columns()
         self.join_quapos_to_features()
+        self.write_output_layer_file()
 
         # Run times in seconds
         # download_gcs - 75.
@@ -755,3 +717,19 @@ class ENCReaderEngine(Engine):
         # perform_spatial_filter - 668. 656 651 176
         # add_columns - 8.
         # join_quapos_to_features - 12.
+
+    def write_output_layer_file(self) -> None:
+        """Update layer file for output gdb"""
+
+        with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'r') as reader:
+            layer_file = reader.read()
+        layer_dict = json.loads(layer_file)
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        output_gdb = output_folder / f'{self.gdb_name}.gdb'
+        for layer in layer_dict['layerDefinitions']:
+            if 'featureTable' in layer:
+                layer['featureTable']['dataConnection']['workspaceConnectionString'] = f"DATABASE={output_gdb}"
+        
+        with open(str(output_folder / 'maritime_layerfile.lyrx'), 'w') as writer:
+            writer.writelines(json.dumps(layer_dict, indent=4))
+

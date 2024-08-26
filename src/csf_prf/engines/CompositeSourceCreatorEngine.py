@@ -2,13 +2,16 @@ import os
 import arcpy
 import time
 import pathlib
+import yaml
 
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
 arcpy.env.overwriteOutput = True
-# arcpy.env.qualifiedFieldNames = False # Force use of field name alias
+arcpy.env.qualifiedFieldNames = False # Force use of field name alias
 
 
+INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
+OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 CSF_PRF = pathlib.Path(__file__).parents[1]
 
 
@@ -48,7 +51,30 @@ class CompositeSourceCreatorEngine(Engine):
             arcpy.management.CalculateField(
                 layer, column, expression, expression_type="PYTHON3", field_type=field_type
             )
-            
+
+    def add_subtypes_to_data(self) -> None:
+        """Add subtype objects to all output featureclasses"""
+
+        arcpy.AddMessage('Adding subtype values to output layers')
+        output_folder = self.param_lookup['output_folder'].valueAsText
+        output_gdb = os.path.join(output_folder, 'csf_features.gdb')
+        
+        with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
+            subtype_lookup = yaml.safe_load(lookup)
+
+        # Make unique code values
+        unique_subtype_lookup = self.get_unique_subtype_codes(subtype_lookup)
+        arcpy.env.workspace = output_gdb
+        feature_classes = arcpy.ListFeatureClasses()
+
+        for featureclass in feature_classes: 
+            for geometry_type in unique_subtype_lookup.keys():
+                if geometry_type in featureclass:
+                    field = [field.name for field in arcpy.ListFields(featureclass) if 'FCSubtype' in field.name][0]
+                    arcpy.management.SetSubtypeField(featureclass, field)
+                    for data in unique_subtype_lookup[geometry_type].values():
+                        arcpy.management.AddSubtype(featureclass, data['code'], data['objl_string']) 
+
     def convert_bottom_samples(self) -> None:
         """Process the Bottom Samples input parameter"""
 
@@ -173,17 +199,9 @@ class CompositeSourceCreatorEngine(Engine):
                 else:
                     self.export_to_geopackage(csfprf_output_path, enc_feature_type, feature_class)
 
-    def create_output_gdb(self) -> None:
-        """Build the output geodatabase for data storage"""
+    def download_enc_files(self) -> None:
+        """Factory function to download project ENC files"""
 
-        output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        if arcpy.Exists(os.path.join(output_folder, self.gdb_name + '.gdb')):
-            arcpy.AddMessage('Output GDB already exists')
-        else:
-            arcpy.AddMessage(f'Creating output geodatabase in {output_folder}')
-            arcpy.management.CreateFileGDB(output_folder, self.gdb_name)
-
-    def download_enc_files(self):
         csf_prf_toolbox = str(CSF_PRF / 'CSF_PRF_Toolbox.pyt')
         arcpy.ImportToolbox(csf_prf_toolbox)
         sheet_parameter = self.param_lookup['sheets'].valueAsText
@@ -392,13 +410,15 @@ class CompositeSourceCreatorEngine(Engine):
         """Main method to begin process"""
 
         start = time.time()
-        self.create_output_gdb()
+        self.create_output_gdb() # TODO move to the base class
         self.convert_sheets()
         self.convert_junctions()
         self.convert_bottom_samples()
         self.convert_maritime_datasets()
         # self.convert_tides()
         self.convert_enc_files()
+        self.add_subtypes_to_data()
+        self.write_layerfile()
         self.write_to_geopackage()
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
@@ -436,6 +456,18 @@ class CompositeSourceCreatorEngine(Engine):
                 cursor.insertRow([polygon] + list(feature['attributes'][2:]))
         self.output_data[output_data_type] = output_name
 
+    def write_layerfile(self) -> None:
+        """Create output layerfile in output folder for viewing data"""
+
+        arcpy.AddMessage('Writing output maritime layerfile')
+        with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'r') as reader:
+            layer_file = reader.read()
+        
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        output_layer_file = layer_file.replace("{~}", f"{output_folder / 'csf_features.gdb'}")   
+        with open(str(output_folder / 'csf_prf_maritime_schema.lyrx'), 'w') as writer:
+            writer.write(output_layer_file)
+
     def write_to_geopackage(self) -> None:
         """Copy the output feature classes to Geopackage"""
 
@@ -443,7 +475,7 @@ class CompositeSourceCreatorEngine(Engine):
         if self.param_lookup['caris_export'].value:
             self.create_caris_export()
         else:
-            if not self.output_db:
+            if not self.output_db: # TODO double check is self.output_db needs to be used
                 output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.output_name)
                 arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}')
                 arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
