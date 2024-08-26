@@ -11,7 +11,7 @@ INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 
 
 class Engine:
-    def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=255, code_block='', nullable=False) -> None:
+    def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=300, code_block='', nullable=False) -> None:
         """
         Add the asgnment column and optionally set a value
 

@@ -424,12 +424,15 @@ class ENCReaderEngine(Engine):
             for output_type in output_types:
                 feature_records = self.geometries[feature_type]['features_layers'][output_type]
                 vector_records = self.geometries[feature_type]['QUAPOS_layers'][output_type]
-                self.geometries[feature_type]["features_layers"][output_type] = \
-                    arcpy.management.AddSpatialJoin(
-                    feature_records,
-                    vector_records,
-                    match_option=overlap_types[feature_type]
-                )
+                quapos_count = int(arcpy.management.GetCount(vector_records)[0])
+                if quapos_count > 0: # Joining an empty vector_records layer caused duplicate fields
+                    if feature_records is not None or vector_records is not None:
+                        self.geometries[feature_type]["features_layers"][output_type] = \
+                            arcpy.management.AddSpatialJoin(
+                            feature_records,
+                            vector_records,
+                            match_option=overlap_types[feature_type]
+                        )
 
     def open_file(self, enc_path):
         """
