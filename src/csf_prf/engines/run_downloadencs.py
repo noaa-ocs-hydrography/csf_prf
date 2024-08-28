@@ -16,7 +16,7 @@ if __name__ == '__main__':
             return self.path
         
     param_lookup = {
-        'sheets': Param(str(INPUTS / 'enc_downloader_boundary.shp')),
+        'sheets': Param(str(INPUTS / 'test_shapefiles' / 'enc_downloader_boundary.shp')),
         'output_folder': Param(str(OUTPUTS)),
     }
     engine = DownloadEncEngine(param_lookup)

@@ -16,15 +16,15 @@ REPO = pathlib.Path(__file__).parents[2]
 # LOOKUP = 
 INPUTS = REPO / 'inputs'
 OUTPUTS = REPO / 'outputs'
+
 ENC_FILE = str(INPUTS / 'US4GA17M.000')
-SHEETS_LAYER = str(INPUTS / 'test_shapefiles/G322_Sheets_01302024.shp') 
-SHP_POINT_FILE_1 = str(INPUTS / 'test_shapefiles/test_point_shapefile_1.shp')
-SHP_POINT_FILE_2 = str(INPUTS / 'test_shapefiles/test_point_shapefile_2.shp')
-SHP_LINE_FILE = str(INPUTS / 'test_shapefiles/test_line_shapefile.shp')
-SHP_LINE_FILE = str(INPUTS / 'test_shapefiles/test_line_shapefile.shp')
-SHP_POLYGON_FILE = str(INPUTS / 'test_shapefiles/test_polygon_shapefile.shp')
-JSON_POINT_FILE = str(INPUTS / 'test_point_json.geojson')
-S57_FILE = str(INPUTS / 'test_S57_files/US5GA20M_S57_testfile.000') # 1 line, 2 points, 2 polygons
+SHEETS_LAYER = str(INPUTS / 'test_shapefiles' / 'G322_Sheets_01302024.shp') 
+SHP_POINT_FILE_1 = str(INPUTS / 'test_shapefiles' / 'test_point_shapefile_1.shp')
+SHP_POINT_FILE_2 = str(INPUTS / 'test_shapefiles' / 'test_point_shapefile_2.shp')
+SHP_LINE_FILE = str(INPUTS / 'test_shapefiles' / 'test_line_shapefile.shp')
+SHP_LINE_FILE = str(INPUTS / 'test_shapefiles' / 'test_line_shapefile.shp')
+SHP_POLYGON_FILE = str(INPUTS / 'test_shapefiles' / 'test_polygon_shapefile.shp')
+S57_FILE = str(INPUTS / 'test_S57_files' / 'US5GA20M_S57_testfile.000') # 1 line, 2 points, 2 polygons
 ENC_FILE = str(INPUTS / 'US4GA17M.000')
 MULTIPLE_ENC = ENC_FILE + ';' + str(INPUTS / 'US5SC21M.000')
 
@@ -256,7 +256,7 @@ def test_print_geometries():
 
 
 def test_join_quapos_to_features(victim):
-    SHP_POINT_FILE_3 = str(INPUTS / 'test_shapefiles/test_point_shapefile_3.shp')
+    SHP_POINT_FILE_3 = str(INPUTS / 'test_shapefiles' / 'test_point_shapefile_3.shp')
     arcpy.management.CopyFeatures(SHP_POINT_FILE_1, SHP_POINT_FILE_3)
     victim.geometries['Point']['features_layers']['assigned'] =  SHP_POINT_FILE_3
     # victim.geometries['Point']['features_layers']['unassigned'] = layer
@@ -340,12 +340,12 @@ def test_set_none_to_null(victim):
 
 
 def test_set_unassigned_invreq(victim): 
-    layer = arcpy.management.CopyFeatures(SHP_POINT_FILE_2, r'memory\test_layer')
+    layer = arcpy.management.CopyFeatures(SHP_POINT_FILE_1, r'memory\test_layer')
     victim.geometries['Point']['features_layers']['unassigned'] = layer
     with open(str(INPUTS / 'lookups' / 'invreq_lookup.yaml'), 'r') as lookup:
         objl_lookup = yaml.safe_load(lookup)
     victim.set_unassigned_invreq('Point', objl_lookup, objl_lookup['OPTIONS'])
-    with arcpy.da.SearchCursor(layer, ['invreq', 'OBJL_NAME']) as cursor:
+    with arcpy.da.SearchCursor(layer, ['invreq']) as cursor:
         test_data = list(cursor)
     option_14 = 'See HSSD Section 7.3.1, Unassigned Features'
     assert test_data[13][0] == ' ' # SBDARE check
