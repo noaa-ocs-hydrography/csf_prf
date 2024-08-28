@@ -11,8 +11,8 @@ Unit tests need to havea .pth file set in your conda ENV that points to CSF-PRF 
 REPO = pathlib.Path(__file__).parents[2]
 INPUTS = REPO / 'inputs'
 OUTPUTS = REPO / 'outputs'
-SHEETS = str(INPUTS / 'G322_Sheets_01302024.shp')
-JUNCTIONS = str(INPUTS / 'G322_Junctions_01302024.shp')
+SHEETS = str(INPUTS / 'test_shapefiles' / 'G322_Sheets_01302024.shp')
+JUNCTIONS = str(INPUTS / 'test_shapefiles' / 'G322_Junctions_01302024.shp')
 
 
 class Param:
