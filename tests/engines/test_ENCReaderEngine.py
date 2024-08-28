@@ -21,7 +21,6 @@ SHEETS_LAYER = str(INPUTS / 'test_shapefiles' / 'G322_Sheets_01302024.shp')
 SHP_POINT_FILE_1 = str(INPUTS / 'test_shapefiles' / 'test_point_shapefile_1.shp')
 SHP_POINT_FILE_2 = str(INPUTS / 'test_shapefiles' / 'test_point_shapefile_2.shp')
 SHP_LINE_FILE = str(INPUTS / 'test_shapefiles' / 'test_line_shapefile.shp')
-SHP_LINE_FILE = str(INPUTS / 'test_shapefiles' / 'test_line_shapefile.shp')
 SHP_POLYGON_FILE = str(INPUTS / 'test_shapefiles' / 'test_polygon_shapefile.shp')
 S57_FILE = str(INPUTS / 'test_S57_files' / 'US5GA20M_S57_testfile.000') # 1 line, 2 points, 2 polygons
 ENC_FILE = str(INPUTS / 'US4GA17M.000')
