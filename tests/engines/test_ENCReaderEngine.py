@@ -13,7 +13,6 @@ Unit tests need to havea  .pth file set in your conda ENV that points to CSF-PRF
 """
 
 REPO = pathlib.Path(__file__).parents[2]
-# LOOKUP = 
 INPUTS = REPO / 'inputs'
 OUTPUTS = REPO / 'outputs'
 
@@ -38,10 +37,6 @@ class Param:
 
 @pytest.fixture
 def victim():
-    # class Param:
-    #     @property
-    #     def valueAsText(self):
-    #         return ENC_FILE
 
     victim = ENCReaderEngine(
         param_lookup={"enc_files": Param(S57_FILE), "output_folder": Param(OUTPUTS)}, 
@@ -184,7 +179,7 @@ def test_get_sql(victim):
 
 
 def test_get_vector_records(victim):
-    victim.return_primitives_env() # self.param_lookup['enc_files'] should point to S57_FILE
+    victim.return_primitives_env()
     victim.get_vector_records()
     assert 'QUAPOS' in victim.geometries['Point'].keys()
     assert victim.geometries['Point']['QUAPOS'][0]['geojson']['properties']['QUAPOS'] == 4
@@ -255,13 +250,12 @@ def test_print_geometries():
     ...
 
 
-def test_join_quapos_to_features(victim):
+def test_join_quapos_to_features(victim): 
+    # spatialjoin won't add column to an in memory layer
     SHP_POINT_FILE_3 = str(INPUTS / 'test_shapefiles' / 'test_point_shapefile_3.shp')
     arcpy.management.CopyFeatures(SHP_POINT_FILE_1, SHP_POINT_FILE_3)
     victim.geometries['Point']['features_layers']['assigned'] =  SHP_POINT_FILE_3
-    # victim.geometries['Point']['features_layers']['unassigned'] = layer
     victim.geometries['Point']['QUAPOS_layers']['assigned'] = SHP_POINT_FILE_2
-    # victim.geometries['Point']['QUAPOS_layers']['unassigned'] = SHP_POINT_FILE_2
     fields = [field.name for field in arcpy.ListFields(SHP_POINT_FILE_3)]
     assert 'QUAPOS' not in fields
     victim.join_quapos_to_features()
@@ -296,7 +290,7 @@ def test_set_assigned_invreq(victim):
     # MORFAC check 
     assert 'contact PM/COR' in test_data[1][0]
 
-    # # OBSTRN check, did part of this
+    # # OBSTRN check
     assert 'wellhead investigation' in test_data[2][0]
     assert 'minimum depth' in test_data[3][0]
     assert 'appropriate attribution' in test_data[4][0]
@@ -361,7 +355,7 @@ def test_split_multipoint_env(victim):
 def test_store_gc_names(victim): 
     gc_rows =  [('GC_test_filename.zip', 'US5GA20M_S57_testfile', 'Review Complete', '2014\\GC'),
               ('GC11099.zip', 'US4AK55M', 'Review Complete', '2014\\GC')]
-    victim.store_gc_names(gc_rows) # self.param_lookup['enc_files'] should point to S57_FILE
+    victim.store_gc_names(gc_rows) 
     results = victim.gc_files
     assert 'GC_test_filename' in results
     assert len(results) == 1 # testing to verify the second row is ignored
