@@ -424,9 +424,9 @@ class ENCReaderEngine(Engine):
             for output_type in output_types:
                 feature_records = self.geometries[feature_type]['features_layers'][output_type]
                 vector_records = self.geometries[feature_type]['QUAPOS_layers'][output_type]
-                quapos_count = int(arcpy.management.GetCount(vector_records)[0])
-                if quapos_count > 0: # Joining an empty vector_records layer caused duplicate fields
-                    if feature_records is not None or vector_records is not None:
+                if feature_records is not None or vector_records is not None:
+                    quapos_count = int(arcpy.management.GetCount(vector_records)[0])
+                    if quapos_count > 0: # Joining an empty vector_records layer caused duplicate fields
                         self.geometries[feature_type]["features_layers"][output_type] = \
                             arcpy.management.AddSpatialJoin(
                             feature_records,

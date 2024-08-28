@@ -20,7 +20,7 @@ if __name__ == '__main__':
             return self.path
         
     param_lookup = {
-        'sheets': Param(str(INPUTS / 'G322_Sheets_01302024.shp')),
+        'sheets': Param(str(INPUTS / 'test_shapefiles/G322_Sheets_01302024.shp')),
         'junctions': Param(''),
         'maritime_boundary_pts': Param(''),
         'maritime_boundary_features': Param(''),
