@@ -228,12 +228,12 @@ def test_perform_spatial_filter(victim):
         victim.geometries[geometry]['features'] = geojson_outputs        
 
     victim.perform_spatial_filter()
-    assert victim.geometries['Point']['features_layers']['assigned'] != None
-    assert victim.geometries['Point']['features_layers']['unassigned'] != None
-    assert victim.geometries['LineString']['features_layers']['assigned'] != None
-    assert victim.geometries['LineString']['features_layers']['unassigned'] != None
-    assert victim.geometries['Polygon']['features_layers']['assigned'] != None
-    assert victim.geometries['Polygon']['features_layers']['unassigned'] != None
+    assert victim.geometries['Point']['features_layers']['assigned'] is not None
+    assert victim.geometries['Point']['features_layers']['unassigned'] is not None
+    assert victim.geometries['LineString']['features_layers']['assigned'] is not None
+    assert victim.geometries['LineString']['features_layers']['unassigned'] is not None
+    assert victim.geometries['Polygon']['features_layers']['assigned'] is not None
+    assert victim.geometries['Polygon']['features_layers']['unassigned'] is not None
     assert int(arcpy.management.GetCount(victim.geometries['Point']['features_layers']['assigned'])[0]) == 11
     assert int(arcpy.management.GetCount(victim.geometries['LineString']['features_layers']['assigned'])[0]) == 2
     assert int(arcpy.management.GetCount(victim.geometries['Polygon']['features_layers']['assigned'])[0]) == 12
