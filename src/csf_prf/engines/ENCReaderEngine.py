@@ -15,7 +15,8 @@ from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
 arcpy.env.qualifiedFieldNames = False # Force use of field name alias
-
+# parallelProcessingFactor, transferGDBAttributeProperties
+arcpy.env.transferGDBAttributeProperties = True
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 
@@ -156,29 +157,6 @@ class ENCReaderEngine(Engine):
                             updateCursor.updateRow(row)
         arcpy.AddMessage(f'  - Removed {aton_count} ATON features containing {str(aton_found)}')
 
-    # def download_gc(self, download_inputs) -> None:
-    #     """
-    #     Download a specific geograhic cell associated with an ENC
-    #     :param pathlib.Path output_folder: The user supplied output folder
-    #     :param str enc: Name of the current ENC folder
-    #     :param str basefilename: Name of the GC to download
-    #     """
-
-    #     output_folder, enc, path, basefilename = download_inputs
-
-    #     enc_folder = output_folder / 'geographic_cells' / enc
-    #     enc_folder.mkdir(parents=True, exist_ok=True)
-    #     dreg_api = self.get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
-    #     output_file = enc_folder / basefilename
-    #     if not os.path.exists(output_file):
-    #         arcpy.AddMessage(f'Downloading GC: {basefilename}')
-    #         enc_zip = requests.get(dreg_api)
-    #         with open(output_file, 'wb') as file:
-    #             for chunk in enc_zip.iter_content(chunk_size=128):
-    #                 file.write(chunk)
-    #     else:
-    #         arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
-
     def add_subtype_column(self) -> None:
         """Add and popuplate FCSubtype field"""
 
@@ -220,7 +198,6 @@ class ENCReaderEngine(Engine):
             if len(gc_lookup[enc]) > 0:
                 arcpy.AddMessage(f'ENC {enc} has {len(gc_lookup[enc])} GCs')
             
-            # download_inputs = [[output_folder, enc, gc_data[5], gc_data[1]] for gc_data in gc_lookup[enc]]
             multiprocessing.set_executable(os.path.join(sys.exec_prefix, 'pythonw.exe'))
             processors = int(multiprocessing.cpu_count() * .75)
             deep_water = multiprocessing.Pool(processes=processors)
@@ -229,8 +206,6 @@ class ENCReaderEngine(Engine):
             deep_water.close()
             deep_water.join()
 
-            # for gc in gc_lookup[enc]:
-            #     self.download_gc(output_folder, enc, gc[5], gc[1])
         self.unzip_enc_files(str(output_folder / 'geographic_cells'), '.shp')
 
         gc_folder = output_folder / 'geographic_cells'
@@ -432,8 +407,7 @@ class ENCReaderEngine(Engine):
                             arcpy.management.AddSpatialJoin(
                             feature_records,
                             vector_records,
-                            match_option=overlap_types[feature_type],
-                            permanent_join='PERMANENT_FIELDS'  # requires AGS 3.2
+                            match_option=overlap_types[feature_type]
                         )
 
     def open_file(self, enc_path):

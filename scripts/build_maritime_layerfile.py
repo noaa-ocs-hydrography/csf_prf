@@ -56,11 +56,7 @@ for geom in [points, lines, polygons]:
             for i, item in enumerate(propertySetItems):
                 if item == 'fcsubtype':
                     code = feature['defaultValues']['propertySetItems'][i+1]
-                    # add new thing to list with field name
-                    
 
-                    # copy code to new field name
-                    # delete item and associated code
             if code in codes:
                 new_code = code + 1000
                 while new_code in codes:
@@ -73,13 +69,13 @@ for geom in [points, lines, polygons]:
                     if item == 'fcsubtype':
                         feature['defaultValues']['propertySetItems'][i+1] = new_code
                         # Add long field names as well as short field names
-                        # feature['defaultValues']['propertySetItems'].append(name_lookup[geom['name']])
-                        # feature['defaultValues']['propertySetItems'].append(new_code)
+                        feature['defaultValues']['propertySetItems'].append(name_lookup[geom['name']])
+                        feature['defaultValues']['propertySetItems'].append(new_code)
             else:
                 codes.append(code)
                 # Add long field names as well as short field names
-                # feature['defaultValues']['propertySetItems'].append(name_lookup[geom['name']])
-                # feature['defaultValues']['propertySetItems'].append(code)
+                feature['defaultValues']['propertySetItems'].append(name_lookup[geom['name']])
+                feature['defaultValues']['propertySetItems'].append(code)
                 
 
     # update codes in groups section

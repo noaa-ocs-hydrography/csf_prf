@@ -82,6 +82,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1018,
+                            "features_points_layer_FCSubtype",
                             1018
                         ]
                     }
@@ -105,6 +107,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1002,
+                            "features_points_layer_FCSubtype",
                             1002
                         ]
                     }
@@ -118,6 +122,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1,
+                            "features_points_layer_FCSubtype",
                             1
                         ]
                     }
@@ -131,6 +137,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            5,
+                            "features_points_layer_FCSubtype",
                             5
                         ]
                     }
@@ -144,6 +152,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            10,
+                            "features_points_layer_FCSubtype",
                             10
                         ]
                     }
@@ -157,6 +167,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            15,
+                            "features_points_layer_FCSubtype",
                             15
                         ]
                     }
@@ -170,6 +182,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            20,
+                            "features_points_layer_FCSubtype",
                             20
                         ]
                     }
@@ -193,6 +207,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1013,
+                            "features_points_layer_FCSubtype",
                             1013
                         ]
                     }
@@ -206,6 +222,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            25,
+                            "features_points_layer_FCSubtype",
                             25
                         ]
                     }
@@ -219,6 +237,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            30,
+                            "features_points_layer_FCSubtype",
                             30
                         ]
                     }
@@ -232,6 +252,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            35,
+                            "features_points_layer_FCSubtype",
                             35
                         ]
                     }
@@ -245,6 +267,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            40,
+                            "features_points_layer_FCSubtype",
                             40
                         ]
                     }
@@ -258,6 +282,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            45,
+                            "features_points_layer_FCSubtype",
                             45
                         ]
                     }
@@ -271,6 +297,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            50,
+                            "features_points_layer_FCSubtype",
                             50
                         ]
                     }
@@ -294,6 +322,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1005,
+                            "features_points_layer_FCSubtype",
                             1005
                         ]
                     }
@@ -317,6 +347,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1010,
+                            "features_points_layer_FCSubtype",
                             1010
                         ]
                     }
@@ -340,6 +372,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1015,
+                            "features_points_layer_FCSubtype",
                             1015
                         ]
                     }
@@ -363,6 +397,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1014,
+                            "features_points_layer_FCSubtype",
                             1014
                         ]
                     }
@@ -386,6 +422,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1016,
+                            "features_points_layer_FCSubtype",
                             1016
                         ]
                     }
@@ -409,6 +447,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1017,
+                            "features_points_layer_FCSubtype",
                             1017
                         ]
                     }
@@ -422,6 +462,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1003,
+                            "features_points_layer_FCSubtype",
                             1003
                         ]
                     }
@@ -445,6 +487,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1020,
+                            "features_points_layer_FCSubtype",
                             1020
                         ]
                     }
@@ -468,6 +512,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1024,
+                            "features_points_layer_FCSubtype",
                             1024
                         ]
                     }
@@ -491,6 +537,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1025,
+                            "features_points_layer_FCSubtype",
                             1025
                         ]
                     }
@@ -504,6 +552,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            55,
+                            "features_points_layer_FCSubtype",
                             55
                         ]
                     }
@@ -527,6 +577,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1022,
+                            "features_points_layer_FCSubtype",
                             1022
                         ]
                     }
@@ -540,6 +592,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            60,
+                            "features_points_layer_FCSubtype",
                             60
                         ]
                     }
@@ -563,6 +617,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1030,
+                            "features_points_layer_FCSubtype",
                             1030
                         ]
                     }
@@ -576,6 +632,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1011,
+                            "features_points_layer_FCSubtype",
                             1011
                         ]
                     }
@@ -599,6 +657,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1026,
+                            "features_points_layer_FCSubtype",
                             1026
                         ]
                     }
@@ -622,6 +682,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1032,
+                            "features_points_layer_FCSubtype",
                             1032
                         ]
                     }
@@ -645,6 +707,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1037,
+                            "features_points_layer_FCSubtype",
                             1037
                         ]
                     }
@@ -668,6 +732,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1042,
+                            "features_points_layer_FCSubtype",
                             1042
                         ]
                     }
@@ -681,6 +747,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            65,
+                            "features_points_layer_FCSubtype",
                             65
                         ]
                     }
@@ -694,6 +762,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            70,
+                            "features_points_layer_FCSubtype",
                             70
                         ]
                     }
@@ -707,6 +777,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            75,
+                            "features_points_layer_FCSubtype",
                             75
                         ]
                     }
@@ -730,6 +802,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1007,
+                            "features_points_layer_FCSubtype",
                             1007
                         ]
                     }
@@ -753,6 +827,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1006,
+                            "features_points_layer_FCSubtype",
                             1006
                         ]
                     }
@@ -776,6 +852,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1035,
+                            "features_points_layer_FCSubtype",
                             1035
                         ]
                     }
@@ -799,6 +877,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1028,
+                            "features_points_layer_FCSubtype",
                             1028
                         ]
                     }
@@ -822,6 +902,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1029,
+                            "features_points_layer_FCSubtype",
                             1029
                         ]
                     }
@@ -845,6 +927,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1031,
+                            "features_points_layer_FCSubtype",
                             1031
                         ]
                     }
@@ -868,6 +952,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1047,
+                            "features_points_layer_FCSubtype",
                             1047
                         ]
                     }
@@ -891,6 +977,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1004,
+                            "features_points_layer_FCSubtype",
                             1004
                         ]
                     }
@@ -904,6 +992,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1059,
+                            "features_points_layer_FCSubtype",
                             1059
                         ]
                     }
@@ -917,6 +1007,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1021,
+                            "features_points_layer_FCSubtype",
                             1021
                         ]
                     }
@@ -940,6 +1032,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1008,
+                            "features_points_layer_FCSubtype",
                             1008
                         ]
                     }
@@ -963,6 +1057,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1051,
+                            "features_points_layer_FCSubtype",
                             1051
                         ]
                     }
@@ -986,6 +1082,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1056,
+                            "features_points_layer_FCSubtype",
                             1056
                         ]
                     }
@@ -1009,6 +1107,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1009,
+                            "features_points_layer_FCSubtype",
                             1009
                         ]
                     }
@@ -1032,6 +1132,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1012,
+                            "features_points_layer_FCSubtype",
                             1012
                         ]
                     }
@@ -1055,6 +1157,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1054,
+                            "features_points_layer_FCSubtype",
                             1054
                         ]
                     }
@@ -1078,6 +1182,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1040,
+                            "features_points_layer_FCSubtype",
                             1040
                         ]
                     }
@@ -1101,6 +1207,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1045,
+                            "features_points_layer_FCSubtype",
                             1045
                         ]
                     }
@@ -1114,6 +1222,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            85,
+                            "features_points_layer_FCSubtype",
                             85
                         ]
                     }
@@ -1127,6 +1237,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            90,
+                            "features_points_layer_FCSubtype",
                             90
                         ]
                     }
@@ -1150,6 +1262,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1057,
+                            "features_points_layer_FCSubtype",
                             1057
                         ]
                     }
@@ -1173,6 +1287,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1058,
+                            "features_points_layer_FCSubtype",
                             1058
                         ]
                     }
@@ -1186,6 +1302,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            95,
+                            "features_points_layer_FCSubtype",
                             95
                         ]
                     }
@@ -1199,6 +1317,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            100,
+                            "features_points_layer_FCSubtype",
                             100
                         ]
                     }
@@ -1222,6 +1342,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1050,
+                            "features_points_layer_FCSubtype",
                             1050
                         ]
                     }
@@ -1245,6 +1367,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1061,
+                            "features_points_layer_FCSubtype",
                             1061
                         ]
                     }
@@ -1258,6 +1382,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            105,
+                            "features_points_layer_FCSubtype",
                             105
                         ]
                     }
@@ -1281,6 +1407,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1055,
+                            "features_points_layer_FCSubtype",
                             1055
                         ]
                     }
@@ -1304,6 +1432,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1019,
+                            "features_points_layer_FCSubtype",
                             1019
                         ]
                     }
@@ -1327,6 +1457,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1060,
+                            "features_points_layer_FCSubtype",
                             1060
                         ]
                     }
@@ -1350,6 +1482,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1066,
+                            "features_points_layer_FCSubtype",
                             1066
                         ]
                     }
@@ -1373,6 +1507,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1070,
+                            "features_points_layer_FCSubtype",
                             1070
                         ]
                     }
@@ -1396,6 +1532,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1001,
+                            "features_points_layer_FCSubtype",
                             1001
                         ]
                     }
@@ -1419,6 +1557,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1075,
+                            "features_points_layer_FCSubtype",
                             1075
                         ]
                     }
@@ -1442,6 +1582,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1027,
+                            "features_points_layer_FCSubtype",
                             1027
                         ]
                     }
@@ -1465,6 +1607,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1023,
+                            "features_points_layer_FCSubtype",
                             1023
                         ]
                     }
@@ -1488,6 +1632,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1033,
+                            "features_points_layer_FCSubtype",
                             1033
                         ]
                     }
@@ -1501,6 +1647,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            110,
+                            "features_points_layer_FCSubtype",
                             110
                         ]
                     }
@@ -1524,6 +1672,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1034,
+                            "features_points_layer_FCSubtype",
                             1034
                         ]
                     }
@@ -1547,6 +1697,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1039,
+                            "features_points_layer_FCSubtype",
                             1039
                         ]
                     }
@@ -1570,6 +1722,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1043,
+                            "features_points_layer_FCSubtype",
                             1043
                         ]
                     }
@@ -1593,6 +1747,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1048,
+                            "features_points_layer_FCSubtype",
                             1048
                         ]
                     }
@@ -1616,6 +1772,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1052,
+                            "features_points_layer_FCSubtype",
                             1052
                         ]
                     }
@@ -1639,6 +1797,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1065,
+                            "features_points_layer_FCSubtype",
                             1065
                         ]
                     }
@@ -1662,6 +1822,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1044,
+                            "features_points_layer_FCSubtype",
                             1044
                         ]
                     }
@@ -1685,6 +1847,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1049,
+                            "features_points_layer_FCSubtype",
                             1049
                         ]
                     }
@@ -1708,6 +1872,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1053,
+                            "features_points_layer_FCSubtype",
                             1053
                         ]
                     }
@@ -1721,6 +1887,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1036,
+                            "features_points_layer_FCSubtype",
                             1036
                         ]
                     }
@@ -1734,6 +1902,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1041,
+                            "features_points_layer_FCSubtype",
                             1041
                         ]
                     }
@@ -1757,6 +1927,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1038,
+                            "features_points_layer_FCSubtype",
                             1038
                         ]
                     }
@@ -1770,6 +1942,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1046,
+                            "features_points_layer_FCSubtype",
                             1046
                         ]
                     }
@@ -1960,6 +2134,7 @@
                 },
                 "defaultSymbolPatch": "Default",
                 "fields": [
+                    "features_points_layer_FCSubtype",
                     "FCSubtype"
                 ],
                 "groups": [
@@ -8950,6 +9125,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1018,
+                            "features_points_layer_FCSubtype",
                             1018
                         ]
                     }
@@ -8973,6 +9150,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1002,
+                            "features_points_layer_FCSubtype",
                             1002
                         ]
                     }
@@ -8986,6 +9165,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1,
+                            "features_points_layer_FCSubtype",
                             1
                         ]
                     }
@@ -8999,6 +9180,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            5,
+                            "features_points_layer_FCSubtype",
                             5
                         ]
                     }
@@ -9012,6 +9195,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            10,
+                            "features_points_layer_FCSubtype",
                             10
                         ]
                     }
@@ -9025,6 +9210,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            15,
+                            "features_points_layer_FCSubtype",
                             15
                         ]
                     }
@@ -9038,6 +9225,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            20,
+                            "features_points_layer_FCSubtype",
                             20
                         ]
                     }
@@ -9061,6 +9250,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1013,
+                            "features_points_layer_FCSubtype",
                             1013
                         ]
                     }
@@ -9074,6 +9265,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            25,
+                            "features_points_layer_FCSubtype",
                             25
                         ]
                     }
@@ -9087,6 +9280,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            30,
+                            "features_points_layer_FCSubtype",
                             30
                         ]
                     }
@@ -9100,6 +9295,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            35,
+                            "features_points_layer_FCSubtype",
                             35
                         ]
                     }
@@ -9113,6 +9310,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            40,
+                            "features_points_layer_FCSubtype",
                             40
                         ]
                     }
@@ -9126,6 +9325,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            45,
+                            "features_points_layer_FCSubtype",
                             45
                         ]
                     }
@@ -9139,6 +9340,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            50,
+                            "features_points_layer_FCSubtype",
                             50
                         ]
                     }
@@ -9162,6 +9365,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1005,
+                            "features_points_layer_FCSubtype",
                             1005
                         ]
                     }
@@ -9185,6 +9390,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1010,
+                            "features_points_layer_FCSubtype",
                             1010
                         ]
                     }
@@ -9208,6 +9415,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1015,
+                            "features_points_layer_FCSubtype",
                             1015
                         ]
                     }
@@ -9231,6 +9440,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1014,
+                            "features_points_layer_FCSubtype",
                             1014
                         ]
                     }
@@ -9254,6 +9465,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1016,
+                            "features_points_layer_FCSubtype",
                             1016
                         ]
                     }
@@ -9277,6 +9490,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1017,
+                            "features_points_layer_FCSubtype",
                             1017
                         ]
                     }
@@ -9290,6 +9505,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1003,
+                            "features_points_layer_FCSubtype",
                             1003
                         ]
                     }
@@ -9313,6 +9530,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1020,
+                            "features_points_layer_FCSubtype",
                             1020
                         ]
                     }
@@ -9336,6 +9555,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1024,
+                            "features_points_layer_FCSubtype",
                             1024
                         ]
                     }
@@ -9359,6 +9580,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1025,
+                            "features_points_layer_FCSubtype",
                             1025
                         ]
                     }
@@ -9372,6 +9595,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            55,
+                            "features_points_layer_FCSubtype",
                             55
                         ]
                     }
@@ -9395,6 +9620,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1022,
+                            "features_points_layer_FCSubtype",
                             1022
                         ]
                     }
@@ -9408,6 +9635,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            60,
+                            "features_points_layer_FCSubtype",
                             60
                         ]
                     }
@@ -9431,6 +9660,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1030,
+                            "features_points_layer_FCSubtype",
                             1030
                         ]
                     }
@@ -9444,6 +9675,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1011,
+                            "features_points_layer_FCSubtype",
                             1011
                         ]
                     }
@@ -9467,6 +9700,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1026,
+                            "features_points_layer_FCSubtype",
                             1026
                         ]
                     }
@@ -9490,6 +9725,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1032,
+                            "features_points_layer_FCSubtype",
                             1032
                         ]
                     }
@@ -9513,6 +9750,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1037,
+                            "features_points_layer_FCSubtype",
                             1037
                         ]
                     }
@@ -9536,6 +9775,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1042,
+                            "features_points_layer_FCSubtype",
                             1042
                         ]
                     }
@@ -9549,6 +9790,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            65,
+                            "features_points_layer_FCSubtype",
                             65
                         ]
                     }
@@ -9562,6 +9805,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            70,
+                            "features_points_layer_FCSubtype",
                             70
                         ]
                     }
@@ -9575,6 +9820,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            75,
+                            "features_points_layer_FCSubtype",
                             75
                         ]
                     }
@@ -9598,6 +9845,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1007,
+                            "features_points_layer_FCSubtype",
                             1007
                         ]
                     }
@@ -9621,6 +9870,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1006,
+                            "features_points_layer_FCSubtype",
                             1006
                         ]
                     }
@@ -9644,6 +9895,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1035,
+                            "features_points_layer_FCSubtype",
                             1035
                         ]
                     }
@@ -9667,6 +9920,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1028,
+                            "features_points_layer_FCSubtype",
                             1028
                         ]
                     }
@@ -9690,6 +9945,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1029,
+                            "features_points_layer_FCSubtype",
                             1029
                         ]
                     }
@@ -9713,6 +9970,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1031,
+                            "features_points_layer_FCSubtype",
                             1031
                         ]
                     }
@@ -9736,6 +9995,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1047,
+                            "features_points_layer_FCSubtype",
                             1047
                         ]
                     }
@@ -9759,6 +10020,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1004,
+                            "features_points_layer_FCSubtype",
                             1004
                         ]
                     }
@@ -9772,6 +10035,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1059,
+                            "features_points_layer_FCSubtype",
                             1059
                         ]
                     }
@@ -9785,6 +10050,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1021,
+                            "features_points_layer_FCSubtype",
                             1021
                         ]
                     }
@@ -9808,6 +10075,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1008,
+                            "features_points_layer_FCSubtype",
                             1008
                         ]
                     }
@@ -9831,6 +10100,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1051,
+                            "features_points_layer_FCSubtype",
                             1051
                         ]
                     }
@@ -9854,6 +10125,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1056,
+                            "features_points_layer_FCSubtype",
                             1056
                         ]
                     }
@@ -9877,6 +10150,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1009,
+                            "features_points_layer_FCSubtype",
                             1009
                         ]
                     }
@@ -9900,6 +10175,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1012,
+                            "features_points_layer_FCSubtype",
                             1012
                         ]
                     }
@@ -9923,6 +10200,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1054,
+                            "features_points_layer_FCSubtype",
                             1054
                         ]
                     }
@@ -9946,6 +10225,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1040,
+                            "features_points_layer_FCSubtype",
                             1040
                         ]
                     }
@@ -9969,6 +10250,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1045,
+                            "features_points_layer_FCSubtype",
                             1045
                         ]
                     }
@@ -9982,6 +10265,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            85,
+                            "features_points_layer_FCSubtype",
                             85
                         ]
                     }
@@ -9995,6 +10280,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            90,
+                            "features_points_layer_FCSubtype",
                             90
                         ]
                     }
@@ -10018,6 +10305,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1057,
+                            "features_points_layer_FCSubtype",
                             1057
                         ]
                     }
@@ -10041,6 +10330,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1058,
+                            "features_points_layer_FCSubtype",
                             1058
                         ]
                     }
@@ -10054,6 +10345,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            95,
+                            "features_points_layer_FCSubtype",
                             95
                         ]
                     }
@@ -10067,6 +10360,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            100,
+                            "features_points_layer_FCSubtype",
                             100
                         ]
                     }
@@ -10090,6 +10385,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1050,
+                            "features_points_layer_FCSubtype",
                             1050
                         ]
                     }
@@ -10113,6 +10410,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1061,
+                            "features_points_layer_FCSubtype",
                             1061
                         ]
                     }
@@ -10126,6 +10425,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            105,
+                            "features_points_layer_FCSubtype",
                             105
                         ]
                     }
@@ -10149,6 +10450,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1055,
+                            "features_points_layer_FCSubtype",
                             1055
                         ]
                     }
@@ -10172,6 +10475,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1019,
+                            "features_points_layer_FCSubtype",
                             1019
                         ]
                     }
@@ -10195,6 +10500,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1060,
+                            "features_points_layer_FCSubtype",
                             1060
                         ]
                     }
@@ -10218,6 +10525,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1066,
+                            "features_points_layer_FCSubtype",
                             1066
                         ]
                     }
@@ -10241,6 +10550,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1070,
+                            "features_points_layer_FCSubtype",
                             1070
                         ]
                     }
@@ -10264,6 +10575,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1001,
+                            "features_points_layer_FCSubtype",
                             1001
                         ]
                     }
@@ -10287,6 +10600,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1075,
+                            "features_points_layer_FCSubtype",
                             1075
                         ]
                     }
@@ -10310,6 +10625,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1027,
+                            "features_points_layer_FCSubtype",
                             1027
                         ]
                     }
@@ -10333,6 +10650,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1023,
+                            "features_points_layer_FCSubtype",
                             1023
                         ]
                     }
@@ -10356,6 +10675,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1033,
+                            "features_points_layer_FCSubtype",
                             1033
                         ]
                     }
@@ -10369,6 +10690,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            110,
+                            "features_points_layer_FCSubtype",
                             110
                         ]
                     }
@@ -10392,6 +10715,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1034,
+                            "features_points_layer_FCSubtype",
                             1034
                         ]
                     }
@@ -10415,6 +10740,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1039,
+                            "features_points_layer_FCSubtype",
                             1039
                         ]
                     }
@@ -10438,6 +10765,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1043,
+                            "features_points_layer_FCSubtype",
                             1043
                         ]
                     }
@@ -10461,6 +10790,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1048,
+                            "features_points_layer_FCSubtype",
                             1048
                         ]
                     }
@@ -10484,6 +10815,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1052,
+                            "features_points_layer_FCSubtype",
                             1052
                         ]
                     }
@@ -10507,6 +10840,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1065,
+                            "features_points_layer_FCSubtype",
                             1065
                         ]
                     }
@@ -10530,6 +10865,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1044,
+                            "features_points_layer_FCSubtype",
                             1044
                         ]
                     }
@@ -10553,6 +10890,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1049,
+                            "features_points_layer_FCSubtype",
                             1049
                         ]
                     }
@@ -10576,6 +10915,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1053,
+                            "features_points_layer_FCSubtype",
                             1053
                         ]
                     }
@@ -10589,6 +10930,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1036,
+                            "features_points_layer_FCSubtype",
                             1036
                         ]
                     }
@@ -10602,6 +10945,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1041,
+                            "features_points_layer_FCSubtype",
                             1041
                         ]
                     }
@@ -10625,6 +10970,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1038,
+                            "features_points_layer_FCSubtype",
                             1038
                         ]
                     }
@@ -10638,6 +10985,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1046,
+                            "features_points_layer_FCSubtype",
                             1046
                         ]
                     }
@@ -10828,6 +11177,7 @@
                 },
                 "defaultSymbolPatch": "Default",
                 "fields": [
+                    "features_points_layer_FCSubtype",
                     "FCSubtype"
                 ],
                 "groups": [
@@ -17817,6 +18167,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1019,
+                            "features_lines_layer_FCSubtype",
                             1019
                         ]
                     }
@@ -17840,6 +18192,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1013,
+                            "features_lines_layer_FCSubtype",
                             1013
                         ]
                     }
@@ -17863,6 +18217,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1001,
+                            "features_lines_layer_FCSubtype",
                             1001
                         ]
                     }
@@ -17886,6 +18242,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1014,
+                            "features_lines_layer_FCSubtype",
                             1014
                         ]
                     }
@@ -17909,6 +18267,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1017,
+                            "features_lines_layer_FCSubtype",
                             1017
                         ]
                     }
@@ -17932,6 +18292,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1005,
+                            "features_lines_layer_FCSubtype",
                             1005
                         ]
                     }
@@ -17952,6 +18314,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1011,
+                            "features_lines_layer_FCSubtype",
                             1011
                         ]
                     }
@@ -17975,6 +18339,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1,
+                            "features_lines_layer_FCSubtype",
                             1
                         ]
                     }
@@ -17998,6 +18364,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            15,
+                            "features_lines_layer_FCSubtype",
                             15
                         ]
                     }
@@ -18021,6 +18389,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1003,
+                            "features_lines_layer_FCSubtype",
                             1003
                         ]
                     }
@@ -18044,6 +18414,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1007,
+                            "features_lines_layer_FCSubtype",
                             1007
                         ]
                     }
@@ -18067,6 +18439,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1029,
+                            "features_lines_layer_FCSubtype",
                             1029
                         ]
                     }
@@ -18090,6 +18464,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1018,
+                            "features_lines_layer_FCSubtype",
                             1018
                         ]
                     }
@@ -18113,6 +18489,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1033,
+                            "features_lines_layer_FCSubtype",
                             1033
                         ]
                     }
@@ -18136,6 +18514,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1021,
+                            "features_lines_layer_FCSubtype",
                             1021
                         ]
                     }
@@ -18159,6 +18539,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            20,
+                            "features_lines_layer_FCSubtype",
                             20
                         ]
                     }
@@ -18182,6 +18564,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1002,
+                            "features_lines_layer_FCSubtype",
                             1002
                         ]
                     }
@@ -18205,6 +18589,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1025,
+                            "features_lines_layer_FCSubtype",
                             1025
                         ]
                     }
@@ -18228,6 +18614,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1004,
+                            "features_lines_layer_FCSubtype",
                             1004
                         ]
                     }
@@ -18251,6 +18639,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1009,
+                            "features_lines_layer_FCSubtype",
                             1009
                         ]
                     }
@@ -18274,6 +18664,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            30,
+                            "features_lines_layer_FCSubtype",
                             30
                         ]
                     }
@@ -18297,6 +18689,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1024,
+                            "features_lines_layer_FCSubtype",
                             1024
                         ]
                     }
@@ -18320,6 +18714,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1027,
+                            "features_lines_layer_FCSubtype",
                             1027
                         ]
                     }
@@ -18343,6 +18739,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1026,
+                            "features_lines_layer_FCSubtype",
                             1026
                         ]
                     }
@@ -18366,6 +18764,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1031,
+                            "features_lines_layer_FCSubtype",
                             1031
                         ]
                     }
@@ -18389,6 +18789,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1008,
+                            "features_lines_layer_FCSubtype",
                             1008
                         ]
                     }
@@ -18412,6 +18814,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1034,
+                            "features_lines_layer_FCSubtype",
                             1034
                         ]
                     }
@@ -18432,6 +18836,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1041,
+                            "features_lines_layer_FCSubtype",
                             1041
                         ]
                     }
@@ -18455,6 +18861,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1006,
+                            "features_lines_layer_FCSubtype",
                             1006
                         ]
                     }
@@ -18478,6 +18886,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            10,
+                            "features_lines_layer_FCSubtype",
                             10
                         ]
                     }
@@ -18501,6 +18911,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            35,
+                            "features_lines_layer_FCSubtype",
                             35
                         ]
                     }
@@ -18521,6 +18933,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1012,
+                            "features_lines_layer_FCSubtype",
                             1012
                         ]
                     }
@@ -18557,6 +18971,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1035,
+                            "features_lines_layer_FCSubtype",
                             1035
                         ]
                     }
@@ -18580,6 +18996,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1036,
+                            "features_lines_layer_FCSubtype",
                             1036
                         ]
                     }
@@ -18603,6 +19021,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            40,
+                            "features_lines_layer_FCSubtype",
                             40
                         ]
                     }
@@ -18626,6 +19046,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1010,
+                            "features_lines_layer_FCSubtype",
                             1010
                         ]
                     }
@@ -18649,6 +19071,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1037,
+                            "features_lines_layer_FCSubtype",
                             1037
                         ]
                     }
@@ -18672,6 +19096,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1038,
+                            "features_lines_layer_FCSubtype",
                             1038
                         ]
                     }
@@ -18695,6 +19121,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1039,
+                            "features_lines_layer_FCSubtype",
                             1039
                         ]
                     }
@@ -18718,6 +19146,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1016,
+                            "features_lines_layer_FCSubtype",
                             1016
                         ]
                     }
@@ -18741,6 +19171,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            45,
+                            "features_lines_layer_FCSubtype",
                             45
                         ]
                     }
@@ -18764,6 +19196,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            50,
+                            "features_lines_layer_FCSubtype",
                             50
                         ]
                     }
@@ -18787,6 +19221,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1022,
+                            "features_lines_layer_FCSubtype",
                             1022
                         ]
                     }
@@ -18810,6 +19246,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            5,
+                            "features_lines_layer_FCSubtype",
                             5
                         ]
                     }
@@ -18833,6 +19271,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1020,
+                            "features_lines_layer_FCSubtype",
                             1020
                         ]
                     }
@@ -18856,6 +19296,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1023,
+                            "features_lines_layer_FCSubtype",
                             1023
                         ]
                     }
@@ -18879,6 +19321,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1032,
+                            "features_lines_layer_FCSubtype",
                             1032
                         ]
                     }
@@ -18902,6 +19346,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1028,
+                            "features_lines_layer_FCSubtype",
                             1028
                         ]
                     }
@@ -18925,6 +19371,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1040,
+                            "features_lines_layer_FCSubtype",
                             1040
                         ]
                     }
@@ -18948,6 +19396,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1045,
+                            "features_lines_layer_FCSubtype",
                             1045
                         ]
                     }
@@ -18971,6 +19421,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            55,
+                            "features_lines_layer_FCSubtype",
                             55
                         ]
                     }
@@ -18994,6 +19446,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            25,
+                            "features_lines_layer_FCSubtype",
                             25
                         ]
                     }
@@ -19017,6 +19471,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1030,
+                            "features_lines_layer_FCSubtype",
                             1030
                         ]
                     }
@@ -19040,6 +19496,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1015,
+                            "features_lines_layer_FCSubtype",
                             1015
                         ]
                     }
@@ -19229,6 +19687,7 @@
                 },
                 "defaultSymbolPatch": "Default",
                 "fields": [
+                    "features_lines_layer_FCSubtype",
                     "FCSubtype"
                 ],
                 "groups": [
@@ -22788,6 +23247,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1019,
+                            "features_lines_layer_FCSubtype",
                             1019
                         ]
                     }
@@ -22811,6 +23272,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1013,
+                            "features_lines_layer_FCSubtype",
                             1013
                         ]
                     }
@@ -22834,6 +23297,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1001,
+                            "features_lines_layer_FCSubtype",
                             1001
                         ]
                     }
@@ -22857,6 +23322,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1014,
+                            "features_lines_layer_FCSubtype",
                             1014
                         ]
                     }
@@ -22880,6 +23347,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1017,
+                            "features_lines_layer_FCSubtype",
                             1017
                         ]
                     }
@@ -22903,6 +23372,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1005,
+                            "features_lines_layer_FCSubtype",
                             1005
                         ]
                     }
@@ -22923,6 +23394,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1011,
+                            "features_lines_layer_FCSubtype",
                             1011
                         ]
                     }
@@ -22946,6 +23419,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1,
+                            "features_lines_layer_FCSubtype",
                             1
                         ]
                     }
@@ -22969,6 +23444,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            15,
+                            "features_lines_layer_FCSubtype",
                             15
                         ]
                     }
@@ -22992,6 +23469,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1003,
+                            "features_lines_layer_FCSubtype",
                             1003
                         ]
                     }
@@ -23015,6 +23494,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1007,
+                            "features_lines_layer_FCSubtype",
                             1007
                         ]
                     }
@@ -23038,6 +23519,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1029,
+                            "features_lines_layer_FCSubtype",
                             1029
                         ]
                     }
@@ -23061,6 +23544,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1018,
+                            "features_lines_layer_FCSubtype",
                             1018
                         ]
                     }
@@ -23084,6 +23569,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1033,
+                            "features_lines_layer_FCSubtype",
                             1033
                         ]
                     }
@@ -23107,6 +23594,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1021,
+                            "features_lines_layer_FCSubtype",
                             1021
                         ]
                     }
@@ -23130,6 +23619,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            20,
+                            "features_lines_layer_FCSubtype",
                             20
                         ]
                     }
@@ -23153,6 +23644,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1002,
+                            "features_lines_layer_FCSubtype",
                             1002
                         ]
                     }
@@ -23176,6 +23669,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1025,
+                            "features_lines_layer_FCSubtype",
                             1025
                         ]
                     }
@@ -23199,6 +23694,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1004,
+                            "features_lines_layer_FCSubtype",
                             1004
                         ]
                     }
@@ -23222,6 +23719,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1009,
+                            "features_lines_layer_FCSubtype",
                             1009
                         ]
                     }
@@ -23245,6 +23744,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            30,
+                            "features_lines_layer_FCSubtype",
                             30
                         ]
                     }
@@ -23268,6 +23769,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1024,
+                            "features_lines_layer_FCSubtype",
                             1024
                         ]
                     }
@@ -23291,6 +23794,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1027,
+                            "features_lines_layer_FCSubtype",
                             1027
                         ]
                     }
@@ -23314,6 +23819,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1026,
+                            "features_lines_layer_FCSubtype",
                             1026
                         ]
                     }
@@ -23337,6 +23844,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1031,
+                            "features_lines_layer_FCSubtype",
                             1031
                         ]
                     }
@@ -23360,6 +23869,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1008,
+                            "features_lines_layer_FCSubtype",
                             1008
                         ]
                     }
@@ -23383,6 +23894,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1034,
+                            "features_lines_layer_FCSubtype",
                             1034
                         ]
                     }
@@ -23403,6 +23916,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1041,
+                            "features_lines_layer_FCSubtype",
                             1041
                         ]
                     }
@@ -23426,6 +23941,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1006,
+                            "features_lines_layer_FCSubtype",
                             1006
                         ]
                     }
@@ -23449,6 +23966,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            10,
+                            "features_lines_layer_FCSubtype",
                             10
                         ]
                     }
@@ -23472,6 +23991,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            35,
+                            "features_lines_layer_FCSubtype",
                             35
                         ]
                     }
@@ -23492,6 +24013,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1012,
+                            "features_lines_layer_FCSubtype",
                             1012
                         ]
                     }
@@ -23528,6 +24051,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1035,
+                            "features_lines_layer_FCSubtype",
                             1035
                         ]
                     }
@@ -23551,6 +24076,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1036,
+                            "features_lines_layer_FCSubtype",
                             1036
                         ]
                     }
@@ -23574,6 +24101,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            40,
+                            "features_lines_layer_FCSubtype",
                             40
                         ]
                     }
@@ -23597,6 +24126,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1010,
+                            "features_lines_layer_FCSubtype",
                             1010
                         ]
                     }
@@ -23620,6 +24151,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1037,
+                            "features_lines_layer_FCSubtype",
                             1037
                         ]
                     }
@@ -23643,6 +24176,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1038,
+                            "features_lines_layer_FCSubtype",
                             1038
                         ]
                     }
@@ -23666,6 +24201,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1039,
+                            "features_lines_layer_FCSubtype",
                             1039
                         ]
                     }
@@ -23689,6 +24226,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1016,
+                            "features_lines_layer_FCSubtype",
                             1016
                         ]
                     }
@@ -23712,6 +24251,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            45,
+                            "features_lines_layer_FCSubtype",
                             45
                         ]
                     }
@@ -23735,6 +24276,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            50,
+                            "features_lines_layer_FCSubtype",
                             50
                         ]
                     }
@@ -23758,6 +24301,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1022,
+                            "features_lines_layer_FCSubtype",
                             1022
                         ]
                     }
@@ -23781,6 +24326,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            5,
+                            "features_lines_layer_FCSubtype",
                             5
                         ]
                     }
@@ -23804,6 +24351,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1020,
+                            "features_lines_layer_FCSubtype",
                             1020
                         ]
                     }
@@ -23827,6 +24376,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1023,
+                            "features_lines_layer_FCSubtype",
                             1023
                         ]
                     }
@@ -23850,6 +24401,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1032,
+                            "features_lines_layer_FCSubtype",
                             1032
                         ]
                     }
@@ -23873,6 +24426,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1028,
+                            "features_lines_layer_FCSubtype",
                             1028
                         ]
                     }
@@ -23896,6 +24451,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1040,
+                            "features_lines_layer_FCSubtype",
                             1040
                         ]
                     }
@@ -23919,6 +24476,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1045,
+                            "features_lines_layer_FCSubtype",
                             1045
                         ]
                     }
@@ -23942,6 +24501,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            55,
+                            "features_lines_layer_FCSubtype",
                             55
                         ]
                     }
@@ -23965,6 +24526,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            25,
+                            "features_lines_layer_FCSubtype",
                             25
                         ]
                     }
@@ -23988,6 +24551,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1030,
+                            "features_lines_layer_FCSubtype",
                             1030
                         ]
                     }
@@ -24011,6 +24576,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1015,
+                            "features_lines_layer_FCSubtype",
                             1015
                         ]
                     }
@@ -24200,6 +24767,7 @@
                 },
                 "defaultSymbolPatch": "Default",
                 "fields": [
+                    "features_lines_layer_FCSubtype",
                     "FCSubtype"
                 ],
                 "groups": [
@@ -27759,6 +28327,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1008,
+                            "features_polygons_layer_FCSubtype",
                             1008
                         ]
                     }
@@ -27782,6 +28352,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1007,
+                            "features_polygons_layer_FCSubtype",
                             1007
                         ]
                     }
@@ -27805,6 +28377,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1013,
+                            "features_polygons_layer_FCSubtype",
                             1013
                         ]
                     }
@@ -27828,6 +28402,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1001,
+                            "features_polygons_layer_FCSubtype",
                             1001
                         ]
                     }
@@ -27851,6 +28427,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1019,
+                            "features_polygons_layer_FCSubtype",
                             1019
                         ]
                     }
@@ -27874,6 +28452,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1004,
+                            "features_polygons_layer_FCSubtype",
                             1004
                         ]
                     }
@@ -27897,6 +28477,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            5,
+                            "features_polygons_layer_FCSubtype",
                             5
                         ]
                     }
@@ -27920,6 +28502,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            10,
+                            "features_polygons_layer_FCSubtype",
                             10
                         ]
                     }
@@ -27943,6 +28527,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            15,
+                            "features_polygons_layer_FCSubtype",
                             15
                         ]
                     }
@@ -27966,6 +28552,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1006,
+                            "features_polygons_layer_FCSubtype",
                             1006
                         ]
                     }
@@ -27989,6 +28577,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1012,
+                            "features_polygons_layer_FCSubtype",
                             1012
                         ]
                     }
@@ -28012,6 +28602,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1003,
+                            "features_polygons_layer_FCSubtype",
                             1003
                         ]
                     }
@@ -28035,6 +28627,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1018,
+                            "features_polygons_layer_FCSubtype",
                             1018
                         ]
                     }
@@ -28058,6 +28652,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            20,
+                            "features_polygons_layer_FCSubtype",
                             20
                         ]
                     }
@@ -28081,6 +28677,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1022,
+                            "features_polygons_layer_FCSubtype",
                             1022
                         ]
                     }
@@ -28104,6 +28702,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1027,
+                            "features_polygons_layer_FCSubtype",
                             1027
                         ]
                     }
@@ -28127,6 +28727,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1021,
+                            "features_polygons_layer_FCSubtype",
                             1021
                         ]
                     }
@@ -28150,6 +28752,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1002,
+                            "features_polygons_layer_FCSubtype",
                             1002
                         ]
                     }
@@ -28173,6 +28777,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1031,
+                            "features_polygons_layer_FCSubtype",
                             1031
                         ]
                     }
@@ -28196,6 +28802,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1036,
+                            "features_polygons_layer_FCSubtype",
                             1036
                         ]
                     }
@@ -28219,6 +28827,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            25,
+                            "features_polygons_layer_FCSubtype",
                             25
                         ]
                     }
@@ -28242,6 +28852,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1041,
+                            "features_polygons_layer_FCSubtype",
                             1041
                         ]
                     }
@@ -28265,6 +28877,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1026,
+                            "features_polygons_layer_FCSubtype",
                             1026
                         ]
                     }
@@ -28288,6 +28902,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1078,
+                            "features_polygons_layer_FCSubtype",
                             1078
                         ]
                     }
@@ -28311,6 +28927,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1030,
+                            "features_polygons_layer_FCSubtype",
                             1030
                         ]
                     }
@@ -28334,6 +28952,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1034,
+                            "features_polygons_layer_FCSubtype",
                             1034
                         ]
                     }
@@ -28357,6 +28977,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1035,
+                            "features_polygons_layer_FCSubtype",
                             1035
                         ]
                     }
@@ -28380,6 +29002,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1051,
+                            "features_polygons_layer_FCSubtype",
                             1051
                         ]
                     }
@@ -28403,6 +29027,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1059,
+                            "features_polygons_layer_FCSubtype",
                             1059
                         ]
                     }
@@ -28426,6 +29052,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1039,
+                            "features_polygons_layer_FCSubtype",
                             1039
                         ]
                     }
@@ -28449,6 +29077,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1040,
+                            "features_polygons_layer_FCSubtype",
                             1040
                         ]
                     }
@@ -28472,6 +29102,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            30,
+                            "features_polygons_layer_FCSubtype",
                             30
                         ]
                     }
@@ -28495,6 +29127,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1056,
+                            "features_polygons_layer_FCSubtype",
                             1056
                         ]
                     }
@@ -28518,6 +29152,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1010,
+                            "features_polygons_layer_FCSubtype",
                             1010
                         ]
                     }
@@ -28541,6 +29177,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1062,
+                            "features_polygons_layer_FCSubtype",
                             1062
                         ]
                     }
@@ -28564,6 +29202,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1066,
+                            "features_polygons_layer_FCSubtype",
                             1066
                         ]
                     }
@@ -28587,6 +29227,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1045,
+                            "features_polygons_layer_FCSubtype",
                             1045
                         ]
                     }
@@ -28610,6 +29252,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1050,
+                            "features_polygons_layer_FCSubtype",
                             1050
                         ]
                     }
@@ -28633,6 +29277,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1070,
+                            "features_polygons_layer_FCSubtype",
                             1070
                         ]
                     }
@@ -28656,6 +29302,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1055,
+                            "features_polygons_layer_FCSubtype",
                             1055
                         ]
                     }
@@ -28679,6 +29327,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1061,
+                            "features_polygons_layer_FCSubtype",
                             1061
                         ]
                     }
@@ -28702,6 +29352,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1016,
+                            "features_polygons_layer_FCSubtype",
                             1016
                         ]
                     }
@@ -28725,6 +29377,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1075,
+                            "features_polygons_layer_FCSubtype",
                             1075
                         ]
                     }
@@ -28748,6 +29402,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1049,
+                            "features_polygons_layer_FCSubtype",
                             1049
                         ]
                     }
@@ -28771,6 +29427,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1068,
+                            "features_polygons_layer_FCSubtype",
                             1068
                         ]
                     }
@@ -28794,6 +29452,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1069,
+                            "features_polygons_layer_FCSubtype",
                             1069
                         ]
                     }
@@ -28817,6 +29477,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            35,
+                            "features_polygons_layer_FCSubtype",
                             35
                         ]
                     }
@@ -28840,6 +29502,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1072,
+                            "features_polygons_layer_FCSubtype",
                             1072
                         ]
                     }
@@ -28863,6 +29527,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1009,
+                            "features_polygons_layer_FCSubtype",
                             1009
                         ]
                     }
@@ -28886,6 +29552,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1085,
+                            "features_polygons_layer_FCSubtype",
                             1085
                         ]
                     }
@@ -28909,6 +29577,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1065,
+                            "features_polygons_layer_FCSubtype",
                             1065
                         ]
                     }
@@ -28932,6 +29602,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1014,
+                            "features_polygons_layer_FCSubtype",
                             1014
                         ]
                     }
@@ -28955,6 +29627,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            95,
+                            "features_polygons_layer_FCSubtype",
                             95
                         ]
                     }
@@ -28978,6 +29652,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1060,
+                            "features_polygons_layer_FCSubtype",
                             1060
                         ]
                     }
@@ -29001,6 +29677,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            70,
+                            "features_polygons_layer_FCSubtype",
                             70
                         ]
                     }
@@ -29024,6 +29702,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1081,
+                            "features_polygons_layer_FCSubtype",
                             1081
                         ]
                     }
@@ -29047,6 +29727,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1082,
+                            "features_polygons_layer_FCSubtype",
                             1082
                         ]
                     }
@@ -29070,6 +29752,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1083,
+                            "features_polygons_layer_FCSubtype",
                             1083
                         ]
                     }
@@ -29093,6 +29777,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1084,
+                            "features_polygons_layer_FCSubtype",
                             1084
                         ]
                     }
@@ -29116,6 +29802,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1086,
+                            "features_polygons_layer_FCSubtype",
                             1086
                         ]
                     }
@@ -29139,6 +29827,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1087,
+                            "features_polygons_layer_FCSubtype",
                             1087
                         ]
                     }
@@ -29162,6 +29852,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1088,
+                            "features_polygons_layer_FCSubtype",
                             1088
                         ]
                     }
@@ -29185,6 +29877,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1089,
+                            "features_polygons_layer_FCSubtype",
                             1089
                         ]
                     }
@@ -29208,6 +29902,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1090,
+                            "features_polygons_layer_FCSubtype",
                             1090
                         ]
                     }
@@ -29231,6 +29927,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1091,
+                            "features_polygons_layer_FCSubtype",
                             1091
                         ]
                     }
@@ -29249,6 +29947,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1064,
+                            "features_polygons_layer_FCSubtype",
                             1064
                         ]
                     }
@@ -29272,6 +29972,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1015,
+                            "features_polygons_layer_FCSubtype",
                             1015
                         ]
                     }
@@ -29295,6 +29997,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1005,
+                            "features_polygons_layer_FCSubtype",
                             1005
                         ]
                     }
@@ -29318,6 +30022,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1011,
+                            "features_polygons_layer_FCSubtype",
                             1011
                         ]
                     }
@@ -29341,6 +30047,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            75,
+                            "features_polygons_layer_FCSubtype",
                             75
                         ]
                     }
@@ -29364,6 +30072,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1017,
+                            "features_polygons_layer_FCSubtype",
                             1017
                         ]
                     }
@@ -29387,6 +30097,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            80,
+                            "features_polygons_layer_FCSubtype",
                             80
                         ]
                     }
@@ -29410,6 +30122,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1038,
+                            "features_polygons_layer_FCSubtype",
                             1038
                         ]
                     }
@@ -29433,6 +30147,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            40,
+                            "features_polygons_layer_FCSubtype",
                             40
                         ]
                     }
@@ -29456,6 +30172,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            45,
+                            "features_polygons_layer_FCSubtype",
                             45
                         ]
                     }
@@ -29479,6 +30197,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1054,
+                            "features_polygons_layer_FCSubtype",
                             1054
                         ]
                     }
@@ -29502,6 +30222,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1073,
+                            "features_polygons_layer_FCSubtype",
                             1073
                         ]
                     }
@@ -29525,6 +30247,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1044,
+                            "features_polygons_layer_FCSubtype",
                             1044
                         ]
                     }
@@ -29548,6 +30272,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1048,
+                            "features_polygons_layer_FCSubtype",
                             1048
                         ]
                     }
@@ -29571,6 +30297,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            105,
+                            "features_polygons_layer_FCSubtype",
                             105
                         ]
                     }
@@ -29594,6 +30322,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1074,
+                            "features_polygons_layer_FCSubtype",
                             1074
                         ]
                     }
@@ -29617,6 +30347,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            50,
+                            "features_polygons_layer_FCSubtype",
                             50
                         ]
                     }
@@ -29640,6 +30372,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            55,
+                            "features_polygons_layer_FCSubtype",
                             55
                         ]
                     }
@@ -29663,6 +30397,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1023,
+                            "features_polygons_layer_FCSubtype",
                             1023
                         ]
                     }
@@ -29686,6 +30422,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1076,
+                            "features_polygons_layer_FCSubtype",
                             1076
                         ]
                     }
@@ -29709,6 +30447,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            60,
+                            "features_polygons_layer_FCSubtype",
                             60
                         ]
                     }
@@ -29732,6 +30472,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1,
+                            "features_polygons_layer_FCSubtype",
                             1
                         ]
                     }
@@ -29755,6 +30497,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1077,
+                            "features_polygons_layer_FCSubtype",
                             1077
                         ]
                     }
@@ -29778,6 +30522,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            85,
+                            "features_polygons_layer_FCSubtype",
                             85
                         ]
                     }
@@ -29801,6 +30547,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1032,
+                            "features_polygons_layer_FCSubtype",
                             1032
                         ]
                     }
@@ -29824,6 +30572,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            110,
+                            "features_polygons_layer_FCSubtype",
                             110
                         ]
                     }
@@ -29847,6 +30597,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1047,
+                            "features_polygons_layer_FCSubtype",
                             1047
                         ]
                     }
@@ -29870,6 +30622,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1079,
+                            "features_polygons_layer_FCSubtype",
                             1079
                         ]
                     }
@@ -29893,6 +30647,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            115,
+                            "features_polygons_layer_FCSubtype",
                             115
                         ]
                     }
@@ -29916,6 +30672,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1033,
+                            "features_polygons_layer_FCSubtype",
                             1033
                         ]
                     }
@@ -29939,6 +30697,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1053,
+                            "features_polygons_layer_FCSubtype",
                             1053
                         ]
                     }
@@ -29962,6 +30722,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1058,
+                            "features_polygons_layer_FCSubtype",
                             1058
                         ]
                     }
@@ -29985,6 +30747,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1063,
+                            "features_polygons_layer_FCSubtype",
                             1063
                         ]
                     }
@@ -30008,6 +30772,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1067,
+                            "features_polygons_layer_FCSubtype",
                             1067
                         ]
                     }
@@ -30031,6 +30797,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1037,
+                            "features_polygons_layer_FCSubtype",
                             1037
                         ]
                     }
@@ -30054,6 +30822,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1043,
+                            "features_polygons_layer_FCSubtype",
                             1043
                         ]
                     }
@@ -30077,6 +30847,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1046,
+                            "features_polygons_layer_FCSubtype",
                             1046
                         ]
                     }
@@ -30100,6 +30872,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1052,
+                            "features_polygons_layer_FCSubtype",
                             1052
                         ]
                     }
@@ -30123,6 +30897,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1057,
+                            "features_polygons_layer_FCSubtype",
                             1057
                         ]
                     }
@@ -30146,6 +30922,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            65,
+                            "features_polygons_layer_FCSubtype",
                             65
                         ]
                     }
@@ -30169,6 +30947,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1071,
+                            "features_polygons_layer_FCSubtype",
                             1071
                         ]
                     }
@@ -30192,6 +30972,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1024,
+                            "features_polygons_layer_FCSubtype",
                             1024
                         ]
                     }
@@ -30215,6 +30997,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1028,
+                            "features_polygons_layer_FCSubtype",
                             1028
                         ]
                     }
@@ -30238,6 +31022,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1029,
+                            "features_polygons_layer_FCSubtype",
                             1029
                         ]
                     }
@@ -30261,6 +31047,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1080,
+                            "features_polygons_layer_FCSubtype",
                             1080
                         ]
                     }
@@ -30284,6 +31072,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1020,
+                            "features_polygons_layer_FCSubtype",
                             1020
                         ]
                     }
@@ -30307,6 +31097,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1042,
+                            "features_polygons_layer_FCSubtype",
                             1042
                         ]
                     }
@@ -30330,6 +31122,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1025,
+                            "features_polygons_layer_FCSubtype",
                             1025
                         ]
                     }
@@ -30533,6 +31327,7 @@
                 },
                 "defaultSymbolPatch": "Default",
                 "fields": [
+                    "features_polygons_layer_FCSubtype",
                     "FCSubtype"
                 ],
                 "groups": [
@@ -37507,6 +38302,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1008,
+                            "features_polygons_layer_FCSubtype",
                             1008
                         ]
                     }
@@ -37530,6 +38327,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1007,
+                            "features_polygons_layer_FCSubtype",
                             1007
                         ]
                     }
@@ -37553,6 +38352,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1013,
+                            "features_polygons_layer_FCSubtype",
                             1013
                         ]
                     }
@@ -37576,6 +38377,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1001,
+                            "features_polygons_layer_FCSubtype",
                             1001
                         ]
                     }
@@ -37599,6 +38402,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1019,
+                            "features_polygons_layer_FCSubtype",
                             1019
                         ]
                     }
@@ -37622,6 +38427,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1004,
+                            "features_polygons_layer_FCSubtype",
                             1004
                         ]
                     }
@@ -37645,6 +38452,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            5,
+                            "features_polygons_layer_FCSubtype",
                             5
                         ]
                     }
@@ -37668,6 +38477,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            10,
+                            "features_polygons_layer_FCSubtype",
                             10
                         ]
                     }
@@ -37691,6 +38502,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            15,
+                            "features_polygons_layer_FCSubtype",
                             15
                         ]
                     }
@@ -37714,6 +38527,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1006,
+                            "features_polygons_layer_FCSubtype",
                             1006
                         ]
                     }
@@ -37737,6 +38552,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1012,
+                            "features_polygons_layer_FCSubtype",
                             1012
                         ]
                     }
@@ -37760,6 +38577,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1003,
+                            "features_polygons_layer_FCSubtype",
                             1003
                         ]
                     }
@@ -37783,6 +38602,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1018,
+                            "features_polygons_layer_FCSubtype",
                             1018
                         ]
                     }
@@ -37806,6 +38627,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            20,
+                            "features_polygons_layer_FCSubtype",
                             20
                         ]
                     }
@@ -37829,6 +38652,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1022,
+                            "features_polygons_layer_FCSubtype",
                             1022
                         ]
                     }
@@ -37852,6 +38677,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1027,
+                            "features_polygons_layer_FCSubtype",
                             1027
                         ]
                     }
@@ -37875,6 +38702,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1021,
+                            "features_polygons_layer_FCSubtype",
                             1021
                         ]
                     }
@@ -37898,6 +38727,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1002,
+                            "features_polygons_layer_FCSubtype",
                             1002
                         ]
                     }
@@ -37921,6 +38752,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1031,
+                            "features_polygons_layer_FCSubtype",
                             1031
                         ]
                     }
@@ -37944,6 +38777,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1036,
+                            "features_polygons_layer_FCSubtype",
                             1036
                         ]
                     }
@@ -37967,6 +38802,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            25,
+                            "features_polygons_layer_FCSubtype",
                             25
                         ]
                     }
@@ -37990,6 +38827,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1041,
+                            "features_polygons_layer_FCSubtype",
                             1041
                         ]
                     }
@@ -38013,6 +38852,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1026,
+                            "features_polygons_layer_FCSubtype",
                             1026
                         ]
                     }
@@ -38036,6 +38877,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1078,
+                            "features_polygons_layer_FCSubtype",
                             1078
                         ]
                     }
@@ -38059,6 +38902,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1030,
+                            "features_polygons_layer_FCSubtype",
                             1030
                         ]
                     }
@@ -38082,6 +38927,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1034,
+                            "features_polygons_layer_FCSubtype",
                             1034
                         ]
                     }
@@ -38105,6 +38952,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1035,
+                            "features_polygons_layer_FCSubtype",
                             1035
                         ]
                     }
@@ -38128,6 +38977,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1051,
+                            "features_polygons_layer_FCSubtype",
                             1051
                         ]
                     }
@@ -38151,6 +39002,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1059,
+                            "features_polygons_layer_FCSubtype",
                             1059
                         ]
                     }
@@ -38174,6 +39027,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1039,
+                            "features_polygons_layer_FCSubtype",
                             1039
                         ]
                     }
@@ -38197,6 +39052,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1040,
+                            "features_polygons_layer_FCSubtype",
                             1040
                         ]
                     }
@@ -38220,6 +39077,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            30,
+                            "features_polygons_layer_FCSubtype",
                             30
                         ]
                     }
@@ -38243,6 +39102,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1056,
+                            "features_polygons_layer_FCSubtype",
                             1056
                         ]
                     }
@@ -38266,6 +39127,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1010,
+                            "features_polygons_layer_FCSubtype",
                             1010
                         ]
                     }
@@ -38289,6 +39152,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1062,
+                            "features_polygons_layer_FCSubtype",
                             1062
                         ]
                     }
@@ -38312,6 +39177,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1066,
+                            "features_polygons_layer_FCSubtype",
                             1066
                         ]
                     }
@@ -38335,6 +39202,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1045,
+                            "features_polygons_layer_FCSubtype",
                             1045
                         ]
                     }
@@ -38358,6 +39227,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1050,
+                            "features_polygons_layer_FCSubtype",
                             1050
                         ]
                     }
@@ -38381,6 +39252,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1070,
+                            "features_polygons_layer_FCSubtype",
                             1070
                         ]
                     }
@@ -38404,6 +39277,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1055,
+                            "features_polygons_layer_FCSubtype",
                             1055
                         ]
                     }
@@ -38427,6 +39302,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1061,
+                            "features_polygons_layer_FCSubtype",
                             1061
                         ]
                     }
@@ -38450,6 +39327,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1016,
+                            "features_polygons_layer_FCSubtype",
                             1016
                         ]
                     }
@@ -38473,6 +39352,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1075,
+                            "features_polygons_layer_FCSubtype",
                             1075
                         ]
                     }
@@ -38496,6 +39377,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1049,
+                            "features_polygons_layer_FCSubtype",
                             1049
                         ]
                     }
@@ -38519,6 +39402,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1068,
+                            "features_polygons_layer_FCSubtype",
                             1068
                         ]
                     }
@@ -38542,6 +39427,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1069,
+                            "features_polygons_layer_FCSubtype",
                             1069
                         ]
                     }
@@ -38565,6 +39452,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            35,
+                            "features_polygons_layer_FCSubtype",
                             35
                         ]
                     }
@@ -38588,6 +39477,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1072,
+                            "features_polygons_layer_FCSubtype",
                             1072
                         ]
                     }
@@ -38611,6 +39502,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1009,
+                            "features_polygons_layer_FCSubtype",
                             1009
                         ]
                     }
@@ -38634,6 +39527,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1085,
+                            "features_polygons_layer_FCSubtype",
                             1085
                         ]
                     }
@@ -38657,6 +39552,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1065,
+                            "features_polygons_layer_FCSubtype",
                             1065
                         ]
                     }
@@ -38680,6 +39577,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1014,
+                            "features_polygons_layer_FCSubtype",
                             1014
                         ]
                     }
@@ -38703,6 +39602,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            95,
+                            "features_polygons_layer_FCSubtype",
                             95
                         ]
                     }
@@ -38726,6 +39627,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1060,
+                            "features_polygons_layer_FCSubtype",
                             1060
                         ]
                     }
@@ -38749,6 +39652,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            70,
+                            "features_polygons_layer_FCSubtype",
                             70
                         ]
                     }
@@ -38772,6 +39677,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1081,
+                            "features_polygons_layer_FCSubtype",
                             1081
                         ]
                     }
@@ -38795,6 +39702,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1082,
+                            "features_polygons_layer_FCSubtype",
                             1082
                         ]
                     }
@@ -38818,6 +39727,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1083,
+                            "features_polygons_layer_FCSubtype",
                             1083
                         ]
                     }
@@ -38841,6 +39752,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1084,
+                            "features_polygons_layer_FCSubtype",
                             1084
                         ]
                     }
@@ -38864,6 +39777,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1086,
+                            "features_polygons_layer_FCSubtype",
                             1086
                         ]
                     }
@@ -38887,6 +39802,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1087,
+                            "features_polygons_layer_FCSubtype",
                             1087
                         ]
                     }
@@ -38910,6 +39827,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1088,
+                            "features_polygons_layer_FCSubtype",
                             1088
                         ]
                     }
@@ -38933,6 +39852,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1089,
+                            "features_polygons_layer_FCSubtype",
                             1089
                         ]
                     }
@@ -38956,6 +39877,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1090,
+                            "features_polygons_layer_FCSubtype",
                             1090
                         ]
                     }
@@ -38979,6 +39902,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1091,
+                            "features_polygons_layer_FCSubtype",
                             1091
                         ]
                     }
@@ -38997,6 +39922,8 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
+                            1064,
+                            "features_polygons_layer_FCSubtype",
                             1064
                         ]
                     }
@@ -39020,6 +39947,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1015,
+                            "features_polygons_layer_FCSubtype",
                             1015
                         ]
                     }
@@ -39043,6 +39972,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1005,
+                            "features_polygons_layer_FCSubtype",
                             1005
                         ]
                     }
@@ -39066,6 +39997,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1011,
+                            "features_polygons_layer_FCSubtype",
                             1011
                         ]
                     }
@@ -39089,6 +40022,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            75,
+                            "features_polygons_layer_FCSubtype",
                             75
                         ]
                     }
@@ -39112,6 +40047,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1017,
+                            "features_polygons_layer_FCSubtype",
                             1017
                         ]
                     }
@@ -39135,6 +40072,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            80,
+                            "features_polygons_layer_FCSubtype",
                             80
                         ]
                     }
@@ -39158,6 +40097,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1038,
+                            "features_polygons_layer_FCSubtype",
                             1038
                         ]
                     }
@@ -39181,6 +40122,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            40,
+                            "features_polygons_layer_FCSubtype",
                             40
                         ]
                     }
@@ -39204,6 +40147,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            45,
+                            "features_polygons_layer_FCSubtype",
                             45
                         ]
                     }
@@ -39227,6 +40172,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1054,
+                            "features_polygons_layer_FCSubtype",
                             1054
                         ]
                     }
@@ -39250,6 +40197,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1073,
+                            "features_polygons_layer_FCSubtype",
                             1073
                         ]
                     }
@@ -39273,6 +40222,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1044,
+                            "features_polygons_layer_FCSubtype",
                             1044
                         ]
                     }
@@ -39296,6 +40247,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1048,
+                            "features_polygons_layer_FCSubtype",
                             1048
                         ]
                     }
@@ -39319,6 +40272,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            105,
+                            "features_polygons_layer_FCSubtype",
                             105
                         ]
                     }
@@ -39342,6 +40297,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1074,
+                            "features_polygons_layer_FCSubtype",
                             1074
                         ]
                     }
@@ -39365,6 +40322,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            50,
+                            "features_polygons_layer_FCSubtype",
                             50
                         ]
                     }
@@ -39388,6 +40347,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            55,
+                            "features_polygons_layer_FCSubtype",
                             55
                         ]
                     }
@@ -39411,6 +40372,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1023,
+                            "features_polygons_layer_FCSubtype",
                             1023
                         ]
                     }
@@ -39434,6 +40397,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1076,
+                            "features_polygons_layer_FCSubtype",
                             1076
                         ]
                     }
@@ -39457,6 +40422,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            60,
+                            "features_polygons_layer_FCSubtype",
                             60
                         ]
                     }
@@ -39480,6 +40447,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1,
+                            "features_polygons_layer_FCSubtype",
                             1
                         ]
                     }
@@ -39503,6 +40472,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1077,
+                            "features_polygons_layer_FCSubtype",
                             1077
                         ]
                     }
@@ -39526,6 +40497,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            85,
+                            "features_polygons_layer_FCSubtype",
                             85
                         ]
                     }
@@ -39549,6 +40522,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1032,
+                            "features_polygons_layer_FCSubtype",
                             1032
                         ]
                     }
@@ -39572,6 +40547,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            110,
+                            "features_polygons_layer_FCSubtype",
                             110
                         ]
                     }
@@ -39595,6 +40572,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1047,
+                            "features_polygons_layer_FCSubtype",
                             1047
                         ]
                     }
@@ -39618,6 +40597,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1079,
+                            "features_polygons_layer_FCSubtype",
                             1079
                         ]
                     }
@@ -39641,6 +40622,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            115,
+                            "features_polygons_layer_FCSubtype",
                             115
                         ]
                     }
@@ -39664,6 +40647,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1033,
+                            "features_polygons_layer_FCSubtype",
                             1033
                         ]
                     }
@@ -39687,6 +40672,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1053,
+                            "features_polygons_layer_FCSubtype",
                             1053
                         ]
                     }
@@ -39710,6 +40697,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1058,
+                            "features_polygons_layer_FCSubtype",
                             1058
                         ]
                     }
@@ -39733,6 +40722,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1063,
+                            "features_polygons_layer_FCSubtype",
                             1063
                         ]
                     }
@@ -39756,6 +40747,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1067,
+                            "features_polygons_layer_FCSubtype",
                             1067
                         ]
                     }
@@ -39779,6 +40772,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1037,
+                            "features_polygons_layer_FCSubtype",
                             1037
                         ]
                     }
@@ -39802,6 +40797,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1043,
+                            "features_polygons_layer_FCSubtype",
                             1043
                         ]
                     }
@@ -39825,6 +40822,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1046,
+                            "features_polygons_layer_FCSubtype",
                             1046
                         ]
                     }
@@ -39848,6 +40847,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1052,
+                            "features_polygons_layer_FCSubtype",
                             1052
                         ]
                     }
@@ -39871,6 +40872,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1057,
+                            "features_polygons_layer_FCSubtype",
                             1057
                         ]
                     }
@@ -39894,6 +40897,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            65,
+                            "features_polygons_layer_FCSubtype",
                             65
                         ]
                     }
@@ -39917,6 +40922,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1071,
+                            "features_polygons_layer_FCSubtype",
                             1071
                         ]
                     }
@@ -39940,6 +40947,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1024,
+                            "features_polygons_layer_FCSubtype",
                             1024
                         ]
                     }
@@ -39963,6 +40972,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1028,
+                            "features_polygons_layer_FCSubtype",
                             1028
                         ]
                     }
@@ -39986,6 +40997,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1029,
+                            "features_polygons_layer_FCSubtype",
                             1029
                         ]
                     }
@@ -40009,6 +41022,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1080,
+                            "features_polygons_layer_FCSubtype",
                             1080
                         ]
                     }
@@ -40032,6 +41047,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1020,
+                            "features_polygons_layer_FCSubtype",
                             1020
                         ]
                     }
@@ -40055,6 +41072,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1042,
+                            "features_polygons_layer_FCSubtype",
                             1042
                         ]
                     }
@@ -40078,6 +41097,8 @@
                             "nis_products",
                             1,
                             "fcsubtype",
+                            1025,
+                            "features_polygons_layer_FCSubtype",
                             1025
                         ]
                     }
@@ -40281,6 +41302,7 @@
                 },
                 "defaultSymbolPatch": "Default",
                 "fields": [
+                    "features_polygons_layer_FCSubtype",
                     "FCSubtype"
                 ],
                 "groups": [

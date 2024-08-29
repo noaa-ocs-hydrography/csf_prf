@@ -477,7 +477,8 @@
         },
         "defaultSymbolPatch": "Default",
         "fields": [
-          "FCSubtype"
+            "features_points_layer_FCSubtype",
+            "FCSubtype"
         ],
         "groups": "{point_groups}",
         "useDefaultSymbol": true,
@@ -954,7 +955,8 @@
         },
         "defaultSymbolPatch": "Default",
         "fields": [
-          "FCSubtype"
+            "features_lines_layer_FCSubtype",
+            "FCSubtype"
         ],
         "groups": "{linestring_groups}",
         "useDefaultSymbol": true,
@@ -1445,7 +1447,8 @@
         },
         "defaultSymbolPatch": "Default",
         "fields": [
-          "FCSubtype"
+            "features_polygons_layer_FCSubtype",
+            "FCSubtype"
         ],
         "groups": "{polygon_groups}",
         "useDefaultSymbol": true,
