@@ -69,7 +69,8 @@ class CompositeSourceCreatorEngine(Engine):
 
         for featureclass in feature_classes: 
             for geometry_type in unique_subtype_lookup.keys():
-                if geometry_type in featureclass:
+                # Skip GC fc's
+                if geometry_type in featureclass and 'GC' not in featureclass:
                     field = [field.name for field in arcpy.ListFields(featureclass) if 'FCSubtype' in field.name][0]
                     arcpy.management.SetSubtypeField(featureclass, field)
                     for data in unique_subtype_lookup[geometry_type].values():
@@ -417,7 +418,10 @@ class CompositeSourceCreatorEngine(Engine):
         self.convert_maritime_datasets()
         # self.convert_tides()
         self.convert_enc_files()
+        # subtype_start = time.time()
         self.add_subtypes_to_data()
+        # subtype_end = time.time()
+        # arcpy.AddMessage(f'Subtype runtime: {(subtype_end - subtype_start) / 60}')
         self.write_layerfile()
         self.write_to_geopackage()
         arcpy.AddMessage('Done')

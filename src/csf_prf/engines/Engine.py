@@ -11,7 +11,7 @@ INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 
 
 class Engine:
-    def add_column_and_constant(self, layer, column, expression='', field_type='TEXT', field_length=300, code_block='', nullable=False) -> None:
+    def add_column_and_constant(self, layer, column, expression='', field_alias='', field_type='TEXT', field_length=300, code_block='', nullable=False) -> None:
         """
         Add the asgnment column and optionally set a value
 
@@ -25,9 +25,9 @@ class Engine:
         """
 
         if nullable:
-            arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
+            arcpy.management.AddField(layer, column, field_type, field_alias=field_alias, field_length=field_length, field_is_nullable='NULLABLE')
         else:
-            arcpy.management.AddField(layer, column, field_type, field_length=field_length)
+            arcpy.management.AddField(layer, column, field_type, field_alias=field_alias, field_length=field_length)
             arcpy.management.CalculateField(
                 layer, column, expression, expression_type="PYTHON3", field_type=field_type, code_block=code_block
             )
