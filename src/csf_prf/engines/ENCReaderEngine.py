@@ -14,6 +14,7 @@ from osgeo import ogr
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
+arcpy.env.qualifiedFieldNames = False # Force use of field name alias
 
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
@@ -196,7 +197,7 @@ class ENCReaderEngine(Engine):
             data = ['assigned', 'unassigned']
             for data_type in data:
                 self.add_column_and_constant(self.geometries[feature_type]['features_layers'][data_type], 'FCSubtype', 
-                                             expression, field_type='LONG', code_block=code_block)
+                                             expression, field_alias='FCSubtype', field_type='LONG', code_block=code_block)
 
     def download_gcs(self, gc_rows) -> None:
         """
@@ -431,7 +432,8 @@ class ENCReaderEngine(Engine):
                             arcpy.management.AddSpatialJoin(
                             feature_records,
                             vector_records,
-                            match_option=overlap_types[feature_type]
+                            match_option=overlap_types[feature_type],
+                            permanent_join='PERMANENT_FIELDS'  # requires AGS 3.2
                         )
 
     def open_file(self, enc_path):

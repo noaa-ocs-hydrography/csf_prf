@@ -69,11 +69,16 @@ class CompositeSourceCreatorEngine(Engine):
 
         for featureclass in feature_classes: 
             for geometry_type in unique_subtype_lookup.keys():
-                if geometry_type in featureclass:
-                    field = [field.name for field in arcpy.ListFields(featureclass) if 'FCSubtype' in field.name][0]
-                    arcpy.management.SetSubtypeField(featureclass, field)
+                # Skip GC fc's
+                if geometry_type in featureclass and 'GC' not in featureclass:
+
+                    # field = [field.baseName for field in arcpy.ListFields(featureclass) if 'FCSubtype' in field.aliasName][0]
+                    # arcpy.AddMessage(f'field: {field}')
+                    arcpy.management.SetSubtypeField(featureclass, 'FCSubtype')
                     for data in unique_subtype_lookup[geometry_type].values():
                         arcpy.management.AddSubtype(featureclass, data['code'], data['objl_string']) 
+                    # TODO need to set default? or not? ¯\_(ツ)_/¯
+                    # arcpy.SetDefaultSubtype_management(inFeatures, "0")
 
     def convert_bottom_samples(self) -> None:
         """Process the Bottom Samples input parameter"""
@@ -417,8 +422,11 @@ class CompositeSourceCreatorEngine(Engine):
         self.convert_maritime_datasets()
         # self.convert_tides()
         self.convert_enc_files()
-        self.add_subtypes_to_data()
-        self.write_layerfile()
+        # subtype_start = time.time()
+        # self.add_subtypes_to_data()
+        # subtype_end = time.time()
+        # arcpy.AddMessage(f'Subtype runtime: {(subtype_end - subtype_start) / 60}')
+        # self.write_layerfile()
         self.write_to_geopackage()
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')

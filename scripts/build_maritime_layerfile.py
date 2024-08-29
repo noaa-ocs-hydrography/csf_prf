@@ -37,10 +37,17 @@ for layer in layer_dict["layerDefinitions"]:
         polygons["groups"] += layer["renderer"]["groups"]
 
 
+name_lookup = {
+    'Point': 'features_points_layer_FCSubtype',
+    'LineString': 'features_lines_layer_FCSubtype',
+    'Polygon': 'features_polygons_layer_FCSubtype',
+}
+
 # Create new unique subtype codes
 for geom in [points, lines, polygons]:
     codes = []
     new_subtype_codes = {}
+
     # update codes in featureTemplates section
     for feature in geom['featureTemplates']:
         name = '_'.join(feature['name'].split('_')[:-1])
@@ -49,6 +56,11 @@ for geom in [points, lines, polygons]:
             for i, item in enumerate(propertySetItems):
                 if item == 'fcsubtype':
                     code = feature['defaultValues']['propertySetItems'][i+1]
+                    # add new thing to list with field name
+                    
+
+                    # copy code to new field name
+                    # delete item and associated code
             if code in codes:
                 new_code = code + 1000
                 while new_code in codes:
@@ -60,8 +72,15 @@ for geom in [points, lines, polygons]:
                 for i, item in enumerate(propertySetItems):
                     if item == 'fcsubtype':
                         feature['defaultValues']['propertySetItems'][i+1] = new_code
+                        # Add long field names as well as short field names
+                        # feature['defaultValues']['propertySetItems'].append(name_lookup[geom['name']])
+                        # feature['defaultValues']['propertySetItems'].append(new_code)
             else:
                 codes.append(code)
+                # Add long field names as well as short field names
+                # feature['defaultValues']['propertySetItems'].append(name_lookup[geom['name']])
+                # feature['defaultValues']['propertySetItems'].append(code)
+                
 
     # update codes in groups section
     group_classes = []
