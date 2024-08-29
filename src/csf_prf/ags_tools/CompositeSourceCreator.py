@@ -104,7 +104,7 @@ class CompositeSourceCreator:
         # )
 
         enc_file = arcpy.Parameter(
-            displayName="ENC File(s):",
+            displayName="ENC File(s) (Leave empty to automatically download ENC files):",
             name="enc_files",
             datatype="DEFile",
             parameterType="Optional",
@@ -135,6 +135,14 @@ class CompositeSourceCreator:
             parameterType="Optional",
             direction="Input",
         )
+        layerfile_export = arcpy.Parameter(
+            displayName="Create layerfile to view output data like an ENC chart?",
+            name="layerfile_export",
+            datatype="GPBoolean",
+            parameterType="Optional",
+            direction="Input",
+        )
+        layerfile_export.value = False
 
         return [
             sheets_shapefile,
@@ -147,7 +155,8 @@ class CompositeSourceCreator:
             enc_file,
             output_folder,
             download_geographic_cells,
-            caris_export
+            caris_export,
+            layerfile_export
         ]
     
     @property
@@ -176,7 +185,8 @@ class CompositeSourceCreator:
             'enc_files',
             'output_folder',
             'download_geographic_cells',
-            'caris_export'
+            'caris_export',
+            'layerfile_export'
         ]
 
         lookup = {}
