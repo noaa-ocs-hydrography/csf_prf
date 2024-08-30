@@ -33,7 +33,14 @@ class CompositeSourceCreatorEngine(Engine):
         self.gdb_name = 'csf_features'
         self.output_db = False
         self.sheets_layer = None
-        self.output_data = {key: None for key in list(self.param_lookup.keys())[:-1]} # skip output_folder
+        self.output_data = {
+            'sheets': None,
+            'junctions': None,
+            'bottom_samples': None,
+            'maritime_boundary_pts': None,
+            'maritime_boundary_features': None,
+            'maritime_boundary_baselines': None
+        }
 
     def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT', field_length=255, nullable=False) -> None:
         """
@@ -58,7 +65,7 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.AddMessage('Adding subtype values to output layers')
         output_folder = self.param_lookup['output_folder'].valueAsText
         output_gdb = os.path.join(output_folder, 'csf_features.gdb')
-        
+
         with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
             subtype_lookup = yaml.safe_load(lookup)
 
@@ -183,20 +190,29 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.management.CreateSQLiteDatabase(csfprf_output_path, spatial_type='GEOPACKAGE')
         for enc_feature_type, feature_class in self.output_data.items():
             if feature_class:
-                if 'enc' in enc_feature_type and enc_feature_type != 'enc_files':
-                    output_path = os.path.join(self.param_lookup['output_folder'].valueAsText, enc_feature_type)
+                arcpy.AddMessage(f" - Exporting: {enc_feature_type}")
+                if (
+                    "enc" in enc_feature_type
+                    and "GC" not in enc_feature_type
+                    and enc_feature_type != "enc_files"
+                ):  # TODO is 'enc_files' even an option anymore?
+                    output_path = os.path.join(
+                        self.param_lookup["output_folder"].valueAsText, enc_feature_type
+                    )
                     arcpy.management.CreateSQLiteDatabase(output_path, spatial_type='GEOPACKAGE')
-                    objl_name_field = [field.name for field in arcpy.ListFields(feature_class) if 'OBJL_NAME' in field.name][0]
-                    objl_names = self.get_unique_values(feature_class, objl_name_field)
-                    for objl_name in objl_names:
-                        query = f'{objl_name_field} = ' + f"'{objl_name}'"
-                        rows = arcpy.management.SelectLayerByAttribute(feature_class,'NEW_SELECTION', query)
-                        gpkg_data = os.path.join(output_path + ".gpkg", objl_name)
-                        try:
-                            arcpy.AddMessage(f" - Exporting: {enc_feature_type}")
-                            arcpy.conversion.ExportFeatures(rows, gpkg_data, use_field_alias_as_name="USE_ALIAS")
-                        except CompositeSourceCreatorException as e:
-                            arcpy.AddMessage(f'Error writing {objl_name} to {output_path} : \n{e}')
+                    objl_name_check = [field.name for field in arcpy.ListFields(feature_class) if 'OBJL_NAME' in field.name]
+                    if objl_name_check:
+                        objl_name_field = objl_name_check[0]
+                        objl_names = self.get_unique_values(feature_class, objl_name_field)
+                        for objl_name in objl_names:
+                            query = f'{objl_name_field} = ' + f"'{objl_name}'"
+                            rows = arcpy.management.SelectLayerByAttribute(feature_class,'NEW_SELECTION', query)
+                            gpkg_data = os.path.join(output_path + ".gpkg", objl_name)
+                            try:
+                                arcpy.AddMessage(f"   - {objl_name}")
+                                arcpy.conversion.ExportFeatures(rows, gpkg_data, use_field_alias_as_name="USE_ALIAS")
+                            except CompositeSourceCreatorException as e:
+                                arcpy.AddMessage(f'Error writing {objl_name} to {output_path} : \n{e}')
                 else:
                     self.export_to_geopackage(csfprf_output_path, enc_feature_type, feature_class)
 
@@ -296,7 +312,7 @@ class CompositeSourceCreatorEngine(Engine):
             field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
         layer = arcpy.management.MakeFeatureLayer(junctions, field_info=field_info)
         return layer
-    
+
     def make_maritime_boundary_pts_layer(self):
         """
         Create in memory layer for processing.
@@ -349,7 +365,7 @@ class CompositeSourceCreatorEngine(Engine):
 
         layer = arcpy.management.Merge(maritime_pts + maritime_features, r'memory\maritime_features_layer')
         return layer
-    
+
     def set_enc_files_param(self, output_folder: pathlib.Path) -> None:
         enc_files = []
         arcpy.AddMessage('ENC files found:')
@@ -358,7 +374,7 @@ class CompositeSourceCreatorEngine(Engine):
             arcpy.AddMessage(f' - {enc_file}')
             enc_files.append(enc_file)
         self.param_lookup['enc_files'].value = ';'.join(enc_files)
-    
+
     def split_inner_polygons(self, layer):
         """
         Get all inner and outer polygon feature geometries
@@ -467,7 +483,7 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.AddMessage('Writing output maritime layerfile')
         with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'r') as reader:
             layer_file = reader.read()
-        
+
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         output_layer_file = layer_file.replace("{~}", f"{output_folder / 'csf_features.gdb'}")   
         with open(str(output_folder / 'csf_prf_maritime_schema.lyrx'), 'w') as writer:
@@ -490,4 +506,3 @@ class CompositeSourceCreatorEngine(Engine):
             for param_name, feature_class in self.output_data.items():
                 if feature_class:
                     self.export_to_geopackage(output_db_path, param_name, feature_class)
-        
