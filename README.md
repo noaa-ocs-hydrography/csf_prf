@@ -6,27 +6,30 @@ the Composite Source File/Project Reference File(CSF/PRF).
 ## Location of Tools
 The repository currently contains an ArcGIS Python Toolbox and associated Tools.
 
-**The Toolbox file:** *root/src/csf-prf/CSF_PRF_Toolbox.pyt*
+**The Toolbox file:** *csf_prf/src/csf_prf/CSF_PRF_Toolbox.pyt*
 
 **Tools:**
-1. *root/src/csf-prf/ags_tools/CompositeSourceCreator.py*
-2. *root/src/csf-prf/ags_tools/ENCDownloader.py*
+1. *csf_prf/src/csf_prf/CompositeSourceCreatorTool.py*
+2. *csf_prf/src/csf_prf/ENCDownloaderTool.py*
+3. *csf_prf/src/csf_prf/S57ConversionTool.py*
 
-## Setup .pth file
-The respository needs a .pth file in your ArcGIS Pro Conda environment in order to access the code.
-1. Open the *Python Command Prompt* to see your Conda environment
-2. Type *conda env list* to find the path to your Conda environment
-3. In Windows Explorer, navigate to *your/conda/environment/Lib/site-packages/
-4. Create a file in that location called *noaa.pth*
-5. Open that file in a text editor and paste in the path to the CSF-PRF repository like the following: *C:\path\to\your\respository\csf_prf\src*
+## Accessing the tools
+Once the files are downloaded, you will need to open ArcGIS Pro and add a Folder Connection.
+1. Open ArcGIS Pro
+2. Open an existing project or create a new project
+3. Access the Catalog Pane: **Click View, then click Catalog Pane**
+4. Right click on **Folders**, then click on **Add Folder Connection**
+5. Choose a folder that lets you access the tools; **ex: c:\Users\xxxxx\Downloads**
+6. In the Catalog Pane, expand Folders and expand the new folder you just added
+7. Navigate to the CSF/PRF toolbox; **ex: c:\Users\xxxxx\Downloads\csf_prf\src\csf_prf\CSF_PRF_Toolbox.pyt**
 
 ## Use of Tools
-1. Request copy of files from HSTB or clone repository
-2. Set up the .pth file as documented above
-3. Open ArcGIS Pro and add a folder connection to the repository files
-4. Expand the CSF_PRF_Toolbox file to view the inner tools
-5. Double click one of the tools to open the user interface
-6. Add the required parameters for the tool or any optional parameters
-7. Add the output folder for the tool to export files
-8. Click run and view the log messages for tool status
-9. View the output folder you selected to see the output data
+1. Double click on the CSF_PRF_Toolbox.pyt file to open it
+2. Double click one of the tools to open the user interface
+3. Add the required parameters for the tool or any optional parameters
+4. Add the output folder for the tool to export files
+5. Click run to start the tool
+6. Click *View Details* to see log messages that show the status of the tool
+7. View the output folder you selected to see the output data
+8. If running the Composite Source Creator Tool, an optional *maritime_layerfile.lyrx* file <br>is added to the output folder to view the data like an ENC chart
+9. Drag the *maritime_layerfile.lyrx* file into a map
