@@ -175,13 +175,6 @@ class ENCReaderEngine(Engine):
             for data_type in data:
                 self.add_column_and_constant(self.geometries[feature_type]['features_layers'][data_type], 'FCSubtype', 
                                              expression, field_alias='FCSubtype', field_type='LONG', code_block=code_block)
-                
-    def get_translated_mcd_auth(self, key, auth):
-        """Obtain MCD information"""
-
-        from cryptography.fernet import Fernet
-        setup = Fernet(key)
-        return setup.decrypt(auth).decode()
 
     def download_gc(self, number, download_inputs) -> None:
         """
@@ -335,6 +328,13 @@ class ENCReaderEngine(Engine):
                 #     arcpy.AddMessage(f"Found ({features_missing_coords}) features but missing coordinates")
         arcpy.AddMessage(f'  - Removed {intersected} supersession features')
 
+    def get_translated_mcd_auth(self, key, auth):
+        """Obtain MCD information"""
+
+        from cryptography.fernet import Fernet
+        setup = Fernet(key)
+        return setup.decrypt(auth).decode()
+    
     def merge_gc_features(self) -> None:
         """Read and store all features from GC shapefiles"""
 
