@@ -57,18 +57,28 @@ def get_columns(cursor):
     return [column[0] for column in cursor.description]
 
 
+def get_translated_mcd_auth(key, auth):
+        """Obtain MCD information"""
+
+        from cryptography.fernet import Fernet
+        setup = Fernet(key)
+        return setup.decrypt(auth).decode()
+
+
 def get_cursor():
     """
     Connected to MCD SQL Server and obtain an OBDC cursor
     :returns pyodbc.Cursor: MCD database cursor
     """
 
-    pwd = get_config_item('GC', 'SQL_PW')
+    key = get_config_item('GC', 'MCD_KEY')
+    auth = get_config_item('GC', 'MCD_AUTH')
+    translate_auth = get_translated_mcd_auth(key, auth)
     connection = pyodbc.connect('Driver={SQL Server};'
                                 'Server=OCS-VS-SQLT2PRD;'
                                 'Database=mcd;'
                                 'UID=DREGreader;'
-                                f'PWD={pwd};')
+                                f'PWD={translate_auth};')
     return connection.cursor()
 
     

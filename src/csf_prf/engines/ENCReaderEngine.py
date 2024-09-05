@@ -175,6 +175,13 @@ class ENCReaderEngine(Engine):
             for data_type in data:
                 self.add_column_and_constant(self.geometries[feature_type]['features_layers'][data_type], 'FCSubtype', 
                                              expression, field_alias='FCSubtype', field_type='LONG', code_block=code_block)
+                
+    def get_translated_mcd_auth(self, key, auth):
+        """Obtain MCD information"""
+
+        from cryptography.fernet import Fernet
+        setup = Fernet(key)
+        return setup.decrypt(auth).decode()
 
     def download_gc(self, number, download_inputs) -> None:
         """
@@ -262,12 +269,14 @@ class ENCReaderEngine(Engine):
         :returns pyodbc.Cursor: MCD database cursor
         """
 
-        pwd = self.get_config_item('GC', 'SQL_PW')
+        key = self.get_config_item('GC', 'MCD_KEY')
+        auth = self.get_config_item('GC', 'MCD_AUTH')
+        translate_auth = self.get_translated_mcd_auth(key, auth)
         connection = pyodbc.connect('Driver={SQL Server};'
                                     'Server=OCS-VS-SQLT2PRD;'
                                     'Database=mcd;'
                                     'UID=DREGreader;'
-                                    f'PWD={pwd};')
+                                    f'PWD={translate_auth};')
         return connection.cursor()
         
     def get_enc_bounds(self) -> None:
