@@ -288,6 +288,7 @@ class S57ConversionEngine(Engine):
         self.add_objl_string_to_S57() 
         self.convert_noaa_attributes()
         self.export_enc_layers()
+        self.set_gcs_to_wgs84()
         self.write_to_geopackage()  
 
     def write_to_geopackage(self) -> None:
