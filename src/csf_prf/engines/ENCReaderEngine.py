@@ -64,7 +64,6 @@ def download_gc(download_inputs) -> None:
     else:
         arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
 
-
 class ENCReaderEngine(Engine):
     """
     Class for handling all reading and processing
@@ -177,6 +176,28 @@ class ENCReaderEngine(Engine):
                 self.add_column_and_constant(self.geometries[feature_type]['features_layers'][data_type], 'FCSubtype', 
                                              expression, field_alias='FCSubtype', field_type='LONG', code_block=code_block)
 
+    def download_gc(self, number, download_inputs) -> None:
+        """
+        Download a specific geograhic cell associated with an ENC
+        :param int number: Current GC file count
+        :param list[list] download_inputs:  Prepared array of output_folder, enc, path, basefilename 
+        """
+
+        output_folder, enc, path, basefilename = download_inputs
+
+        enc_folder = output_folder / 'geographic_cells' / enc
+        enc_folder.mkdir(parents=True, exist_ok=True)
+        dreg_api = self.get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
+        output_file = enc_folder / basefilename
+        if not os.path.exists(output_file):
+            arcpy.AddMessage(f' - Downloading GC {number+1}: {basefilename}')
+            enc_zip = requests.get(dreg_api)
+            with open(output_file, 'wb') as file:
+                for chunk in enc_zip.iter_content(chunk_size=128):
+                    file.write(chunk)
+        else:
+            arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
+
     def download_gcs(self, gc_rows) -> None:
         """
         Download any GCs for current ENC files
@@ -194,23 +215,26 @@ class ENCReaderEngine(Engine):
                 gc_lookup[enc_name].append(gc)
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
 
+        # processors = int(multiprocessing.cpu_count() * .75)
         for enc in gc_lookup.keys():
             if len(gc_lookup[enc]) > 0:
                 arcpy.AddMessage(f'ENC {enc} has {len(gc_lookup[enc])} GCs')
-            
-            multiprocessing.set_executable(os.path.join(sys.exec_prefix, 'pythonw.exe'))
-            processors = int(multiprocessing.cpu_count() * .75)
-            deep_water = multiprocessing.Pool(processes=processors)
-            download_inputs = [[output_folder, enc, gc[3], gc[0]] for gc in gc_lookup[enc]]
-            deep_water.map(download_gc, download_inputs)
-            deep_water.close()
-            deep_water.join()
+            for number, gc in enumerate(gc_lookup[enc]):
+                download_inputs = [output_folder, enc, gc[3], gc[0]]
+                self.download_gc(number, download_inputs)
+            # TODO make DownloadGCS class and make Pool in __main__ section
+            # multiprocessing.set_executable(os.path.join(sys.exec_prefix, 'pythonw.exe'))
+            # deep_water = multiprocessing.Pool(processes=processors)
+            # download_inputs = [[output_folder, enc, gc[3], gc[0]] for gc in gc_lookup[enc]]
+            # deep_water.map(download_gc, download_inputs)
+            # deep_water.close()
+            # deep_water.join()
 
         self.unzip_enc_files(str(output_folder / 'geographic_cells'), '.shp')
 
         gc_folder = output_folder / 'geographic_cells'
         for gc_file in gc_folder.rglob('*.zip'):
-            arcpy.AddMessage(f'Remove unzipped: {gc_file.name}')
+            arcpy.AddMessage(f' - Remove unzipped: {gc_file.name}')
             gc_file.unlink()
     
     def filter_gc_features(self) -> None:

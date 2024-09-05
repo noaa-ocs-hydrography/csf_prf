@@ -1,4 +1,8 @@
 import pathlib
+CSFPRF_MODULE = pathlib.Path(__file__).parents[2]
+
+import sys
+sys.path.append(str(CSFPRF_MODULE))
 from csf_prf.engines.ClipEncEngine import ClipEncEngine
 
 
