@@ -13,7 +13,7 @@ OUTPUTS = pathlib.Path(__file__).parents[3] / "outputs"
 
 if __name__ == "__main__":
     param_lookup = {
-        "enc_file": Param(str(INPUTS / "US3GA10M.000")),
+        "enc_file": Param(str(INPUTS / "H13384_FFF.000")),
         "output_folder": Param(str(OUTPUTS)),
     }
     engine = S57ConversionEngine(param_lookup)

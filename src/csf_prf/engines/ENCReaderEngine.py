@@ -434,16 +434,6 @@ class ENCReaderEngine(Engine):
                             match_option=overlap_types[feature_type]
                         )
 
-    def open_file(self, enc_path):
-        """
-        Open a single input ENC file
-        :param str enc_path: Path to an ENC file on disk
-        :returns GDAL.File: GDAL File object you can loop through
-        """
-
-        enc_file = self.driver.Open(enc_path, 0)
-        return enc_file
-
     def perform_spatial_filter(self) -> None:
         """Spatial query all of the ENC features against Sheets boundary"""
 

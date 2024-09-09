@@ -12,24 +12,13 @@ INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 
 
-class MultipleValueException(ValueError):
-    """Custom error for multiple values found in one S57 field"""
-
-    pass
-
-
-class InvalidValueException(KeyError):
-    """Custom error for invalid values in S57 fields"""
-    pass
-
-
 class S57ConversionEngine(Engine):
     """Class for converting S57 files to geopackage"""
 
     def __init__(self, param_lookup: dict):
         self.param_lookup = param_lookup
         self.s57_name = pathlib.Path(param_lookup['enc_file'].valueAsText).stem
-        self.gdb_name = f'fff_{self.s57_name}' # TODO add as a parameter 
+        self.gdb_name = f'{self.s57_name}' 
         self.output_data = {}
         self.geometries = {
             "Point": {
@@ -84,12 +73,12 @@ class S57ConversionEngine(Engine):
                                 try:
                                     new_value = s57_lookup[field_name][int(current_value)]
                                     new_row.append(new_value)
-                                except MultipleValueException as e:
-                                    multiple_value_result = self.get_multiple_values_from_field(field_name, current_value, s57_lookup, new_row)
+                                except ValueError as e: # current_value has multiple values
+                                    multiple_value_result = self.get_multiple_values_from_field(field_name, current_value, s57_lookup)
                                     new_row.append(multiple_value_result)
                                     pass
-                                except InvalidValueException as e:
-                                    arcpy.AddMessage(f'  -field {field_name} has weird value: {current_value}')
+                                except KeyError as e: # current_value is invalid ie. 2147483641
+                                    arcpy.AddMessage(f'  -field {field_name} has an invalid value: {current_value}')
                                     new_row.append(current_value)
                                     pass
                             else:
@@ -178,7 +167,16 @@ class S57ConversionEngine(Engine):
                             attribute_values[field_index] = str(attr)
                         polygons_cursor.insertRow(attribute_values)   
 
-            self.geometries['Polygon']['output'] = polygons_layer        
+            self.geometries['Polygon']['output'] = polygons_layer  
+
+    def delete_existing_feature_classes(self) -> None:
+        """Clear geodatabase of existing feature classes to prevent duplicates"""
+        
+        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
+        arcpy.env.workspace = gdb_path
+        feature_classes = arcpy.ListFeatureClasses()
+        for fc in feature_classes:
+            arcpy.management.Delete(f"{gdb_path}/{fc}")       
 
     def export_enc_layers(self) -> None:
         """ Write output layers to output folder """
@@ -188,9 +186,12 @@ class S57ConversionEngine(Engine):
             if self.geometries[geom_type]['output']:
                 assigned_name = f'{geom_type}_features'
                 arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
-                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
+                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name + '_nad83')
                 arcpy.management.CopyFeatures(self.geometries[geom_type]['output'], output_name)
-                self.output_data[geom_type] = output_name
+
+        self.set_gcs_to_wgs84()
+        for geom_type in self.geometries.keys():
+            self.output_data[geom_type] = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
 
     def export_to_geopackage(self, output_path, param_name, feature_class) -> None:
         """
@@ -213,7 +214,7 @@ class S57ConversionEngine(Engine):
 
         arcpy.AddMessage(' - Reading Feature records')
         enc_path = self.param_lookup['enc_file'].valueAsText
-        enc_file = self.open_file(enc_path) # TODO move to the base class
+        enc_file = self.open_file(enc_path) 
         for layer in enc_file:
             layer.ResetReading()
             for feature in layer:
@@ -221,7 +222,7 @@ class S57ConversionEngine(Engine):
                     feature_json = json.loads(feature.ExportToJson())
                     geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                     if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
-                        feature_json = self.set_none_to_null(feature_json) # TODO move to the base class
+                        feature_json = self.set_none_to_null(feature_json) 
                         self.geometries[geom_type]['features'].append({'geojson': feature_json})  
 
     def get_vector_records(self) -> None:
@@ -255,20 +256,47 @@ class S57ConversionEngine(Engine):
         multiple_values = current_value.split(',')
         new_values = []
         for val in multiple_values:
-            new_values.append(s57_lookup[field_name][int(val)])
+            if val:
+                new_values.append(s57_lookup[field_name][int(val)]) # TODO missing s57_lookup values
 
         multiple_value_result = ','.join(new_values)
-        return multiple_value_result
-        
-    def open_file(self, enc_path):
-        """
-        Open a single input ENC file
-        :param str enc_path: Path to an ENC file on disk
-        :returns GDAL.File: GDAL File object you can loop through
-        """
+        return multiple_value_result  
 
-        enc_file = self.driver.Open(enc_path, 0)
-        return enc_file     
+    def print_samples_points(self, fc, spatial_ref):
+        with arcpy.da.SearchCursor(fc, ["SHAPE@"]) as cursor:
+            for row in cursor:
+                geometry  = row[0]
+                point = geometry.firstPoint
+                print(f"Feature class: {fc}")
+                print(f"Spatial ref: {spatial_ref.name}, Sample point: X = {point.X}, Y = {point.Y}")
+                break
+
+    def set_gcs_to_wgs84(self) -> None: 
+        """Redefine the GCS to NAD83 then reproject from NAD83 to WGS84"""   
+
+        nad83_2011_spatial_ref = arcpy.SpatialReference(6318)
+        wgs84_spatial_ref = arcpy.SpatialReference(4326)
+        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
+        arcpy.env.workspace = gdb_path
+
+        feature_classes = arcpy.ListFeatureClasses()
+        arcpy.AddMessage("Reprojecting feature classes from NAD 83 (2011) to WGS 84.")
+        for fc in feature_classes:
+            self.print_samples_points(fc, arcpy.Describe(fc).spatialReference) 
+            if not '_nad83' in fc:
+                arcpy.management.Delete(f"{gdb_path}/{fc}") 
+
+            # Redefine the feature classes to be in NAD83 without changing point locations
+            arcpy.management.DefineProjection(fc, nad83_2011_spatial_ref)
+            self.print_samples_points(fc, arcpy.Describe(fc).spatialReference)
+
+            # Reprojection of the GSC to WGS84
+            nad83_fc = f"{gdb_path}/{fc}"
+            output_fc = arcpy.management.Project(nad83_fc, nad83_fc.replace('_nad83', ''), wgs84_spatial_ref)
+            self.print_samples_points(output_fc, arcpy.Describe(output_fc).spatialReference) 
+
+            # Delete the NAD83 feature classes from the gdb
+            arcpy.management.Delete(f"{gdb_path}/{fc}")      
 
     def split_multipoint_env(self) -> None:
         """Reset S57 ENV for split multipoint only"""
@@ -277,18 +305,17 @@ class S57ConversionEngine(Engine):
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON,ADD_SOUNDG_DEPTH=ON"                                                                     
 
     def start(self) -> None:
-        self.create_output_gdb(gdb_name=self.gdb_name)   
+        self.create_output_gdb(gdb_name=self.gdb_name)
         self.set_driver()
+        self.delete_existing_feature_classes()
         self.split_multipoint_env() 
         self.get_feature_records()
         # self.return_primitives_env() 
         # self.get_vector_records()
-         
         self.build_output_layers()
         self.add_objl_string_to_S57() 
         self.convert_noaa_attributes()
         self.export_enc_layers()
-        self.set_gcs_to_wgs84()
         self.write_to_geopackage()  
 
     def write_to_geopackage(self) -> None:

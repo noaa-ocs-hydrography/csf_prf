@@ -128,6 +128,16 @@ class Engine:
                 else:
                     codes.append(code)
         return subtype_lookup
+    
+    def open_file(self, enc_path):
+        """
+        Open a single input ENC file
+        :param str enc_path: Path to an ENC file on disk
+        :returns GDAL.File: GDAL File object you can loop through
+        """
+
+        enc_file = self.driver.Open(enc_path, 0)
+        return enc_file 
             
     def return_primitives_env(self) -> None:
         """Reset S57 ENV for primitives only"""
@@ -160,44 +170,7 @@ class Engine:
         for key, value in feature_json['properties'].items():
             if value == 'None' or value is None:
                 feature_json['properties'][key] = ''
-        return feature_json 
-       
-    def print_samples_points(self, fc, spatial_ref):
-        with arcpy.da.SearchCursor(fc, ["SHAPE@"]) as cursor:
-            for row in cursor:
-                geometry  = row[0]
-                point = geometry.firstPoint
-                print(f"Feature class: {fc}")
-                print(f"Spatial ref: {spatial_ref.name}, Sample point: X = {point.X}, Y = {point.Y}")
-                break
-
-    def set_gcs_to_wgs84(self) -> None: 
-        """Redefine the GCS to NAD83 then reproject from NAD83 to WGS84"""   
-
-        nad83_2011_spatial_ref = arcpy.SpatialReference(6318)
-        wgs84_spatial_ref = arcpy.SpatialReference(4326)
-        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
-        arcpy.env.workspace = gdb_path
-
-        feature_classes = arcpy.ListFeatureClasses()
-        for fc in feature_classes:
-            self.print_samples_points(fc, arcpy.Describe(fc).spatialReference)    
-
-        # Redefine the feature to be in NAD83 without changing point locations
-        for fc in feature_classes:
-            arcpy.management.DefineProjection(fc, nad83_2011_spatial_ref)
-            self.print_samples_points(fc, arcpy.Describe(output_fc).spatialReference)
-
-        arcpy.AddMessage("Reprojecting feature classes from NAD 83 (2011) to WGS 84.")
-        # Reprojection to WGS84: GCS is now WGS84 and points get moved to the WGS84 locations
-        for fc in feature_classes:
-            nad83_fc = f"{gdb_path}/{fc}"
-            output_fc = arcpy.management.Project(nad83_fc, f"{gdb_path}/{fc}_wgs84", wgs84_spatial_ref)
-            self.print_samples_points(output_fc, arcpy.Describe(output_fc).spatialReference) 
-
-        # Delete the NAD83 features 
-        for fc in feature_classes:
-            arcpy.management.Delete(f"{gdb_path}/{fc}")        
+        return feature_json        
 
     def split_multipoint_env(self) -> None:
         """Reset S57 ENV for split multipoint only"""
