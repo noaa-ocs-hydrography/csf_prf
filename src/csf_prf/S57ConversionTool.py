@@ -5,16 +5,16 @@ from csf_prf.engines.S57ConversionEngine import S57ConversionEngine
 class S57Conversion:
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = "S57 Conversion"
+        self.label = "S-57 to Geopackage"
         self.description = ""
 
     def getParameterInfo(self):
         """Define the tool parameters."""
         enc_file = arcpy.Parameter(
-            displayName="ENC File:",
+            displayName="ENC File (.000):",
             name="enc_file",
             datatype="DEFile",
-            parameterType="Optional",
+            parameterType="Required",
             direction="Input",
             multiValue=False
         )
