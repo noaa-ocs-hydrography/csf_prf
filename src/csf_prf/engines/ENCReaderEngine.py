@@ -74,6 +74,7 @@ class ENCReaderEngine(Engine):
         self.param_lookup = param_lookup
         self.sheets_layer = sheets_layer
         self.gdb_name = 'csf_features'
+        self.layerfile_name = 'maritime_layerfile'
         self.driver = None
         self.scale_bounds = {}
         self.scales = {}
@@ -155,26 +156,6 @@ class ENCReaderEngine(Engine):
                         else:
                             updateCursor.updateRow(row)
         arcpy.AddMessage(f'  - Removed {aton_count} ATON features containing {str(aton_found)}')
-
-    def add_subtype_column(self) -> None:
-        """Add and popuplate FCSubtype field"""
-
-        with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
-            subtype_lookup = yaml.safe_load(lookup)
-
-        # Make unique code values
-        unique_subtype_lookup = self.get_unique_subtype_codes(subtype_lookup)
-        for feature_type in self.geometries.keys():   
-            subtypes = unique_subtype_lookup[feature_type]
-            code_block = f"""def get_stcode(objl_name):
-                '''Code block to use OBJL_NAME field with lookup'''
-                return {subtypes}[objl_name]['code']"""
-            expression = "get_stcode(!OBJL_NAME!)"
-            arcpy.AddMessage(f" - Adding 'FCSubtype' column: {feature_type}")
-            data = ['assigned', 'unassigned']
-            for data_type in data:
-                self.add_column_and_constant(self.geometries[feature_type]['features_layers'][data_type], 'FCSubtype', 
-                                             expression, field_alias='FCSubtype', field_type='LONG', code_block=code_block)
 
     def download_gc(self, number, download_inputs) -> None:
         """
@@ -707,19 +688,4 @@ class ENCReaderEngine(Engine):
         # perform_spatial_filter - 668. 656 651 176
         # add_columns - 8.
         # join_quapos_to_features - 12.
-
-    def write_output_layer_file(self) -> None:
-        """Update layer file for output gdb"""
-
-        with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'r') as reader:
-            layer_file = reader.read()
-        layer_dict = json.loads(layer_file)
-        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-        output_gdb = output_folder / f'{self.gdb_name}.gdb'
-        for layer in layer_dict['layerDefinitions']:
-            if 'featureTable' in layer:
-                layer['featureTable']['dataConnection']['workspaceConnectionString'] = f"DATABASE={output_gdb}"
-        
-        with open(str(output_folder / 'maritime_layerfile.lyrx'), 'w') as writer:
-            writer.writelines(json.dumps(layer_dict, indent=4))
 

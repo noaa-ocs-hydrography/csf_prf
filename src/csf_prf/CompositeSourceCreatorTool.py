@@ -102,7 +102,6 @@ class CompositeSourceCreator:
         #     parameterType="Optional",
         #     direction="Input"
         # )
-
         enc_file = arcpy.Parameter(
             displayName="ENC File(s) (Leave empty to automatically download ENC files):",
             name="enc_files",
@@ -112,7 +111,7 @@ class CompositeSourceCreator:
             multiValue=True
         )
         enc_file.filter.list = ['000']
-
+        
         output_folder = arcpy.Parameter(
             displayName="CSF, PRF & Tide .000 Output File Folder:",
             name="output_folder",
@@ -120,7 +119,6 @@ class CompositeSourceCreator:
             parameterType="Required",
             direction="Input"
         )
-        
         download_geographic_cells = arcpy.Parameter(
             displayName="Get additional features from Geographic Cells?",
             name="download_geographic_cells",
@@ -142,7 +140,6 @@ class CompositeSourceCreator:
             parameterType="Optional",
             direction="Input",
         )
-        layerfile_export.value = False
 
         return [
             sheets_shapefile,

@@ -3,6 +3,7 @@ import arcpy
 import pathlib
 import json
 import yaml
+import time
 
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
@@ -17,9 +18,10 @@ class S57ConversionEngine(Engine):
 
     def __init__(self, param_lookup: dict):
         self.param_lookup = param_lookup
-        self.s57_name = pathlib.Path(param_lookup['enc_file'].valueAsText).stem
-        self.gdb_name = f'{self.s57_name}' 
+        self.gdb_name = pathlib.Path(param_lookup['enc_file'].valueAsText).stem
+        self.feature_classes = ['Point_features', 'LineString_features', 'Polygon_features']
         self.output_data = {}
+        self.layerfile_name = 'MCD_maritime_layerfile'
         self.geometries = {
             "Point": {
                 "features": [],
@@ -34,6 +36,13 @@ class S57ConversionEngine(Engine):
                 "output": None
             }
         }
+
+    def add_projected_columns(self):
+        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
+
+        for fc_name in self.feature_classes:
+            fc = os.path.join(gdb_path, fc_name)
+            arcpy.management.AddField(fc, 'transformed', field_type='TEXT', field_length=10, field_is_nullable='NULLABLE')
 
     def add_objl_string_to_S57(self) -> None:
         """Convert OBJL number to string name"""
@@ -61,6 +70,7 @@ class S57ConversionEngine(Engine):
 
         for feature_type in self.geometries.keys():
             arcpy.AddMessage(f'Update field values for: {feature_type}')
+            invalid_field_names = set()
             with arcpy.da.UpdateCursor(self.geometries[feature_type]['output'], ['*']) as updateCursor:
                 fields = updateCursor.fields
                 for row in updateCursor:
@@ -78,14 +88,15 @@ class S57ConversionEngine(Engine):
                                     new_row.append(multiple_value_result)
                                     pass
                                 except KeyError as e: # current_value is invalid ie. 2147483641
-                                    arcpy.AddMessage(f'  -field {field_name} has an invalid value: {current_value}')
                                     new_row.append(current_value)
+                                    invalid_field_names.add((field_name, current_value))
                                     pass
                             else:
                                 new_row.append(current_value)
                         else:
                             new_row.append(current_value)
                     updateCursor.updateRow(new_row)
+            arcpy.AddMessage(f' - fields with invalid values: {invalid_field_names}')
 
     def build_output_layers(self) -> None:
         """Spatial query all of the ENC features against Sheets boundary"""
@@ -101,7 +112,7 @@ class S57ConversionEngine(Engine):
             for field in sorted_point_fields:
                 arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
-            arcpy.AddMessage(' - Building point features')     
+            arcpy.AddMessage(' - Building Point features')     
             # 1. add geometry to fields
             cursor_fields = ['SHAPE@XY'] + sorted_point_fields
             with arcpy.da.InsertCursor(points_layer, cursor_fields, explicit=True) as point_cursor: 
@@ -129,7 +140,7 @@ class S57ConversionEngine(Engine):
             for field in sorted_line_fields:
                 arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
-            arcpy.AddMessage(' - Building line features')
+            arcpy.AddMessage(' - Building Line features')
             cursor_fields = ['SHAPE@JSON'] + sorted_line_fields
             with arcpy.da.InsertCursor(lines_layer, cursor_fields, explicit=True) as line_cursor: 
                 for feature in self.geometries['LineString'][feature_type]:
@@ -167,16 +178,7 @@ class S57ConversionEngine(Engine):
                             attribute_values[field_index] = str(attr)
                         polygons_cursor.insertRow(attribute_values)   
 
-            self.geometries['Polygon']['output'] = polygons_layer  
-
-    def delete_existing_feature_classes(self) -> None:
-        """Clear geodatabase of existing feature classes to prevent duplicates"""
-        
-        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
-        arcpy.env.workspace = gdb_path
-        feature_classes = arcpy.ListFeatureClasses()
-        for fc in feature_classes:
-            arcpy.management.Delete(f"{gdb_path}/{fc}")       
+            self.geometries['Polygon']['output'] = polygons_layer       
 
     def export_enc_layers(self) -> None:
         """ Write output layers to output folder """
@@ -186,12 +188,9 @@ class S57ConversionEngine(Engine):
             if self.geometries[geom_type]['output']:
                 assigned_name = f'{geom_type}_features'
                 arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
-                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name + '_nad83')
+                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
                 arcpy.management.CopyFeatures(self.geometries[geom_type]['output'], output_name)
-
-        self.set_gcs_to_wgs84()
-        for geom_type in self.geometries.keys():
-            self.output_data[geom_type] = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
+                self.output_data[f'enc_{assigned_name}'] = output_name
 
     def export_to_geopackage(self, output_path, param_name, feature_class) -> None:
         """
@@ -252,7 +251,6 @@ class S57ConversionEngine(Engine):
         :returns str: Concatenated string of multiple values
         """
 
-        arcpy.AddMessage(f'  -field {field_name} had multiple values: {current_value}')
         multiple_values = current_value.split(',')
         new_values = []
         for val in multiple_values:
@@ -262,41 +260,51 @@ class S57ConversionEngine(Engine):
         multiple_value_result = ','.join(new_values)
         return multiple_value_result  
 
-    def print_samples_points(self, fc, spatial_ref):
-        with arcpy.da.SearchCursor(fc, ["SHAPE@"]) as cursor:
-            for row in cursor:
-                geometry  = row[0]
-                point = geometry.firstPoint
-                print(f"Feature class: {fc}")
-                print(f"Spatial ref: {spatial_ref.name}, Sample point: X = {point.X}, Y = {point.Y}")
-                break
-
     def set_gcs_to_wgs84(self) -> None: 
         """Redefine the GCS to NAD83 then reproject from NAD83 to WGS84"""   
 
         nad83_2011_spatial_ref = arcpy.SpatialReference(6318)
         wgs84_spatial_ref = arcpy.SpatialReference(4326)
         gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
-        arcpy.env.workspace = gdb_path
+        output_folder = str(self.param_lookup['output_folder'].valueAsText)
 
-        feature_classes = arcpy.ListFeatureClasses()
-        arcpy.AddMessage("Reprojecting feature classes from NAD 83 (2011) to WGS 84.")
-        for fc in feature_classes:
-            self.print_samples_points(fc, arcpy.Describe(fc).spatialReference) 
-            if not '_nad83' in fc:
-                arcpy.management.Delete(f"{gdb_path}/{fc}") 
+        with open(str(INPUTS / 'lookups' / 's57_lookup.yaml'), 'r') as lookup:
+            objl_lookup = yaml.safe_load(lookup)
+        tescou_options = [val for key, val in objl_lookup['TECSOU'].items() if key in [1, 2, 3, 7]]
 
-            # Redefine the feature classes to be in NAD83 without changing point locations
+        arcpy.AddMessage("Reprojecting New or Updated objects from NAD 83 (2011) to WGS 84")
+        for fc_name in self.feature_classes:
+            fc = os.path.join(gdb_path, fc_name)
+            geom_type = fc.split('_')[0]
             arcpy.management.DefineProjection(fc, nad83_2011_spatial_ref)
-            self.print_samples_points(fc, arcpy.Describe(fc).spatialReference)
 
-            # Reprojection of the GSC to WGS84
-            nad83_fc = f"{gdb_path}/{fc}"
-            output_fc = arcpy.management.Project(nad83_fc, nad83_fc.replace('_nad83', ''), wgs84_spatial_ref)
-            self.print_samples_points(output_fc, arcpy.Describe(output_fc).spatialReference) 
+            fields = [field.name for field in arcpy.ListFields(fc)]
 
-            # Delete the NAD83 feature classes from the gdb
-            arcpy.management.Delete(f"{gdb_path}/{fc}")      
+            if 'descrp' and 'TECSOU' in fields:
+                with arcpy.da.UpdateCursor(fc, ['SHAPE@', 'descrp', 'TECSOU', 'transformed']) as cursor:
+                    for row in cursor:
+                        geometry = row[0]
+                        descrp_value = row[1]
+                        tecsou_value = row[2]
+
+                        if descrp_value in ['New', 'Update'] and tecsou_value in tescou_options:
+                            # point_original = geometry.firstPoint
+                            # print(f"Sample point original: X = {point_original.X}, Y = {point_original.Y}")
+                            projected_geometry = geometry.projectAs(wgs84_spatial_ref, 'NAD_1983_(2011)_to_WGS_1984_1')
+                            # point = projected_geometry.firstPoint
+                            # print(f"Sample point original: X = {point.X}, Y = {point.Y}")
+                            # print(f"Sample point: X = {point_original.X == point.X}, Y = {point_original.Y == point.Y}")
+                            row[0] = projected_geometry
+                            row[3] = 'True'
+                            cursor.updateRow(row)
+                arcpy.management.DefineProjection(fc, wgs84_spatial_ref)   
+
+            else:
+                arcpy.AddMessage(f'  -{fc_name} did not need a transformation.')
+
+        # for geom_type in self.geometries.keys():
+        #     assigned_name = f'{geom_type}_features'
+        #     self.output_data[geom_type] = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
 
     def split_multipoint_env(self) -> None:
         """Reset S57 ENV for split multipoint only"""
@@ -305,30 +313,23 @@ class S57ConversionEngine(Engine):
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON,ADD_SOUNDG_DEPTH=ON"                                                                     
 
     def start(self) -> None:
+        start = time.time()
         self.create_output_gdb(gdb_name=self.gdb_name)
         self.set_driver()
-        self.delete_existing_feature_classes()
         self.split_multipoint_env() 
         self.get_feature_records()
         # self.return_primitives_env() 
         # self.get_vector_records()
         self.build_output_layers()
         self.add_objl_string_to_S57() 
+        self.add_subtype_column()
         self.convert_noaa_attributes()
         self.export_enc_layers()
+        self.add_projected_columns()
+        self.set_gcs_to_wgs84()
+        if self.param_lookup['layerfile_export'].value:
+            self.add_subtypes_to_data()
+            self.write_output_layer_file()
         self.write_to_geopackage()  
-
-    def write_to_geopackage(self) -> None:
-        """Copy the output feature classes to Geopackage"""
-
-        arcpy.AddMessage('Writing to geopackage database')
-        output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
-        arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}')
-        arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
-
-        for geom_type, feature_class in self.output_data.items():
-            if feature_class:
-                self.export_to_geopackage(output_db_path, geom_type, feature_class)
-
-
-        
+        arcpy.AddMessage('Done')
+        arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
