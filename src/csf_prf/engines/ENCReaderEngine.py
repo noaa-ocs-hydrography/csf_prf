@@ -15,8 +15,8 @@ from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
 arcpy.env.qualifiedFieldNames = False # Force use of field name alias
-# parallelProcessingFactor, transferGDBAttributeProperties
 arcpy.env.transferGDBAttributeProperties = True
+
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 
@@ -27,42 +27,42 @@ class ENCReaderException(Exception):
     pass 
 
 
-def get_config_item(parent: str, child: str=False) -> tuple[str, int]:
-    """
-    Load config and return speciific key
-    - Standalone function because class methods can't be pickled
-    """
+# def get_config_item(parent: str, child: str=False) -> tuple[str, int]:
+#     """
+#     Load config and return speciific key
+#     - Standalone function because class methods can't be pickled
+#     """
 
-    with open(str(INPUTS / 'lookups' / 'config.yaml'), 'r') as lookup:
-        config = yaml.safe_load(lookup)
-        parent_item = config[parent]
-        if child:
-            return parent_item[child]
-        else:
-            return parent_item
+#     with open(str(INPUTS / 'lookups' / 'config.yaml'), 'r') as lookup:
+#         config = yaml.safe_load(lookup)
+#         parent_item = config[parent]
+#         if child:
+#             return parent_item[child]
+#         else:
+#             return parent_item
             
 
-def download_gc(download_inputs) -> None:
-    """
-    Download a specific geograhic cell associated with an ENC
-    - Standalone function because class methods can't be pickled
-    :param list[list] download_inputs:  Prepared array of output_folder, enc, path, basefilename 
-    """
+# def download_gc(download_inputs) -> None:
+#     """
+#     Download a specific geograhic cell associated with an ENC
+#     - Standalone function because class methods can't be pickled
+#     :param list[list] download_inputs:  Prepared array of output_folder, enc, path, basefilename 
+#     """
 
-    output_folder, enc, path, basefilename = download_inputs
-    enc_folder = output_folder / 'geographic_cells' / enc
-    enc_folder.mkdir(parents=True, exist_ok=True)
-    dreg_api = get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
-    gc_folder = enc_folder / basefilename.replace('.zip', '')
-    if not os.path.exists(gc_folder):
-        arcpy.AddMessage(f'Downloading GC: {basefilename}')
-        enc_zip = requests.get(dreg_api)
-        output_file = enc_folder / basefilename
-        with open(output_file, 'wb') as file:
-            for chunk in enc_zip.iter_content(chunk_size=128):
-                file.write(chunk)
-    else:
-        arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
+#     output_folder, enc, path, basefilename = download_inputs
+#     enc_folder = output_folder / 'geographic_cells' / enc
+#     enc_folder.mkdir(parents=True, exist_ok=True)
+#     dreg_api = get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
+#     gc_folder = enc_folder / basefilename.replace('.zip', '')
+#     if not os.path.exists(gc_folder):
+#         arcpy.AddMessage(f'Downloading GC: {basefilename}')
+#         enc_zip = requests.get(dreg_api)
+#         output_file = enc_folder / basefilename
+#         with open(output_file, 'wb') as file:
+#             for chunk in enc_zip.iter_content(chunk_size=128):
+#                 file.write(chunk)
+#     else:
+#         arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
 
 class ENCReaderEngine(Engine):
     """
@@ -430,7 +430,7 @@ class ENCReaderEngine(Engine):
             for field in sorted_point_fields:
                 arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
-            arcpy.AddMessage(' - Building point features')     
+            arcpy.AddMessage(' - Building Point features')     
             # 1. add geometry to fields
             cursor_fields = ['SHAPE@XY'] + sorted_point_fields
             with arcpy.da.InsertCursor(points_layer, cursor_fields, explicit=True) as point_cursor: 
@@ -462,7 +462,7 @@ class ENCReaderEngine(Engine):
             for field in sorted_line_fields:
                 arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
-            arcpy.AddMessage(' - Building line features')
+            arcpy.AddMessage(' - Building Line features')
             cursor_fields = ['SHAPE@JSON'] + sorted_line_fields
             with arcpy.da.InsertCursor(lines_layer, cursor_fields, explicit=True) as line_cursor: 
                 for feature in self.geometries['LineString'][feature_type]:

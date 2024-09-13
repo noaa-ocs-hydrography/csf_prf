@@ -326,7 +326,7 @@ class Engine:
         else:
             if not self.output_db: # TODO double check is self.output_db needs to be used
                 output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
-                arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}')
+                arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}.gpkg')
                 arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
                 self.output_db = True
             else:

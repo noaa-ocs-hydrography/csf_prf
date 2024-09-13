@@ -9,6 +9,7 @@ import json
 from osgeo import ogr
 from csf_prf.engines.Engine import Engine
 
+
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 

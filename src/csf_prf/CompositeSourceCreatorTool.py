@@ -36,7 +36,6 @@ class CompositeSourceCreator:
         engine = CompositeSourceCreatorEngine(param_lookup)
         engine.start()
         return
-        
 
     def postExecute(self, parameters):
         """This method takes place after outputs are processed and

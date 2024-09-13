@@ -9,6 +9,7 @@ from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
 
+
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 
@@ -21,6 +22,7 @@ class S57ConversionEngine(Engine):
         self.gdb_name = pathlib.Path(param_lookup['enc_file'].valueAsText).stem
         self.feature_classes = ['Point_features', 'LineString_features', 'Polygon_features']
         self.output_data = {}
+        self.output_db = False
         self.layerfile_name = 'MCD_maritime_layerfile'
         self.geometries = {
             "Point": {
@@ -37,7 +39,9 @@ class S57ConversionEngine(Engine):
             }
         }
 
-    def add_projected_columns(self):
+    def add_projected_columns(self) -> None:
+        """Add field for CSR verification"""
+
         gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
 
         for fc_name in self.feature_classes:
@@ -61,42 +65,6 @@ class S57ConversionEngine(Engine):
                         updateCursor.deleteRow() 
                     else:
                         updateCursor.updateRow(row)
-
-    def convert_noaa_attributes(self) -> None:
-        """Obtain string values for all numerical S57 fields"""
-
-        with open(str(INPUTS / 'lookups' / 's57_lookup.yaml'), 'r') as lookup:
-            s57_lookup = yaml.safe_load(lookup)
-
-        for feature_type in self.geometries.keys():
-            arcpy.AddMessage(f'Update field values for: {feature_type}')
-            invalid_field_names = set()
-            with arcpy.da.UpdateCursor(self.geometries[feature_type]['output'], ['*']) as updateCursor:
-                fields = updateCursor.fields
-                for row in updateCursor:
-                    new_row = []
-                    for field_name in fields:
-                        field_index = fields.index(field_name)
-                        current_value = row[field_index]
-                        if field_name in s57_lookup:
-                            if current_value:
-                                try:
-                                    new_value = s57_lookup[field_name][int(current_value)]
-                                    new_row.append(new_value)
-                                except ValueError as e: # current_value has multiple values
-                                    multiple_value_result = self.get_multiple_values_from_field(field_name, current_value, s57_lookup)
-                                    new_row.append(multiple_value_result)
-                                    pass
-                                except KeyError as e: # current_value is invalid ie. 2147483641
-                                    new_row.append(current_value)
-                                    invalid_field_names.add((field_name, current_value))
-                                    pass
-                            else:
-                                new_row.append(current_value)
-                        else:
-                            new_row.append(current_value)
-                    updateCursor.updateRow(new_row)
-            arcpy.AddMessage(f' - fields with invalid values: {invalid_field_names}')
 
     def build_output_layers(self) -> None:
         """Spatial query all of the ENC features against Sheets boundary"""
@@ -180,9 +148,46 @@ class S57ConversionEngine(Engine):
 
             self.geometries['Polygon']['output'] = polygons_layer       
 
+    def convert_noaa_attributes(self) -> None:
+        """Obtain string values for all numerical S57 fields"""
+
+        with open(str(INPUTS / 'lookups' / 's57_lookup.yaml'), 'r') as lookup:
+            s57_lookup = yaml.safe_load(lookup)
+
+        for feature_type in self.geometries.keys():
+            arcpy.AddMessage(f'Update field values for: {feature_type}')
+            invalid_field_names = set()
+            with arcpy.da.UpdateCursor(self.geometries[feature_type]['output'], ['*']) as updateCursor:
+                fields = updateCursor.fields
+                for row in updateCursor:
+                    new_row = []
+                    for field_name in fields:
+                        field_index = fields.index(field_name)
+                        current_value = row[field_index]
+                        if field_name in s57_lookup:
+                            if current_value:
+                                try:
+                                    new_value = s57_lookup[field_name][int(current_value)]
+                                    new_row.append(new_value)
+                                except ValueError as e: # current_value has multiple values
+                                    multiple_value_result = self.get_multiple_values_from_field(field_name, current_value, s57_lookup)
+                                    new_row.append(multiple_value_result)
+                                    pass
+                                except KeyError as e: # current_value is invalid ie. 2147483641
+                                    new_row.append(current_value)
+                                    invalid_field_names.add((field_name, current_value))
+                                    pass
+                            else:
+                                new_row.append(current_value)
+                        else:
+                            new_row.append(current_value)
+                    updateCursor.updateRow(new_row)
+            arcpy.AddMessage(f' - fields with invalid values: {invalid_field_names}')
+
     def export_enc_layers(self) -> None:
         """ Write output layers to output folder """
 
+        arcpy.AddMessage('Exporting ENC layers to geodatabase')
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         for geom_type in self.geometries.keys():
             if self.geometries[geom_type]['output']:
@@ -260,26 +265,25 @@ class S57ConversionEngine(Engine):
         multiple_value_result = ','.join(new_values)
         return multiple_value_result  
 
-    def set_gcs_to_wgs84(self) -> None: 
+    def project_rows_to_wgs84(self) -> None: 
         """Redefine the GCS to NAD83 then reproject from NAD83 to WGS84"""   
 
         nad83_2011_spatial_ref = arcpy.SpatialReference(6318)
         wgs84_spatial_ref = arcpy.SpatialReference(4326)
         gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
-        output_folder = str(self.param_lookup['output_folder'].valueAsText)
 
         with open(str(INPUTS / 'lookups' / 's57_lookup.yaml'), 'r') as lookup:
             objl_lookup = yaml.safe_load(lookup)
-        tescou_options = [val for key, val in objl_lookup['TECSOU'].items() if key in [1, 2, 3, 7]]
+        tecsou_options = [val for key, val in objl_lookup['TECSOU'].items() if key in [1, 2, 3, 7]]
 
         arcpy.AddMessage("Reprojecting New or Updated objects from NAD 83 (2011) to WGS 84")
         for fc_name in self.feature_classes:
+            updated_rows = 0
+            # Change CRS to NAD83.  It is mislabled as WGS84.
             fc = os.path.join(gdb_path, fc_name)
-            geom_type = fc.split('_')[0]
             arcpy.management.DefineProjection(fc, nad83_2011_spatial_ref)
 
             fields = [field.name for field in arcpy.ListFields(fc)]
-
             if 'descrp' and 'TECSOU' in fields:
                 with arcpy.da.UpdateCursor(fc, ['SHAPE@', 'descrp', 'TECSOU', 'transformed']) as cursor:
                     for row in cursor:
@@ -287,9 +291,11 @@ class S57ConversionEngine(Engine):
                         descrp_value = row[1]
                         tecsou_value = row[2]
 
-                        if descrp_value in ['New', 'Update'] and tecsou_value in tescou_options:
+                        # Only specific rows need to be projected to WGS84
+                        if descrp_value in ['New', 'Update'] and tecsou_value in tecsou_options:
                             # point_original = geometry.firstPoint
                             # print(f"Sample point original: X = {point_original.X}, Y = {point_original.Y}")
+                            # TODO will need to enhance transformation for NAD83 from different regions
                             projected_geometry = geometry.projectAs(wgs84_spatial_ref, 'NAD_1983_(2011)_to_WGS_1984_1')
                             # point = projected_geometry.firstPoint
                             # print(f"Sample point original: X = {point.X}, Y = {point.Y}")
@@ -297,14 +303,11 @@ class S57ConversionEngine(Engine):
                             row[0] = projected_geometry
                             row[3] = 'True'
                             cursor.updateRow(row)
+                            updated_rows += 1
                 arcpy.management.DefineProjection(fc, wgs84_spatial_ref)   
-
+                arcpy.AddMessage(f'  - {fc_name}: {updated_rows} features projected to WGS84 locations')
             else:
                 arcpy.AddMessage(f'  -{fc_name} did not need a transformation.')
-
-        # for geom_type in self.geometries.keys():
-        #     assigned_name = f'{geom_type}_features'
-        #     self.output_data[geom_type] = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
 
     def split_multipoint_env(self) -> None:
         """Reset S57 ENV for split multipoint only"""
@@ -326,7 +329,7 @@ class S57ConversionEngine(Engine):
         self.convert_noaa_attributes()
         self.export_enc_layers()
         self.add_projected_columns()
-        self.set_gcs_to_wgs84()
+        self.project_rows_to_wgs84()
         if self.param_lookup['layerfile_export'].value:
             self.add_subtypes_to_data()
             self.write_output_layer_file()
