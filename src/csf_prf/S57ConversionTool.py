@@ -5,16 +5,16 @@ from csf_prf.engines.S57ConversionEngine import S57ConversionEngine
 class S57Conversion:
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = "S57 Conversion"
+        self.label = "S-57 to Geopackage"
         self.description = ""
 
     def getParameterInfo(self):
         """Define the tool parameters."""
         enc_file = arcpy.Parameter(
-            displayName="ENC File:",
+            displayName="ENC File (.000):",
             name="enc_file",
             datatype="DEFile",
-            parameterType="Optional",
+            parameterType="Required",
             direction="Input",
             multiValue=False
         )
@@ -27,8 +27,22 @@ class S57Conversion:
             parameterType="Required",
             direction="Input"
         )
+        caris_export = arcpy.Parameter(
+            displayName="Create CARIS ready Geopackage?",
+            name="caris_export",
+            datatype="GPBoolean",
+            parameterType="Optional",
+            direction="Input",
+        )
+        layerfile_export = arcpy.Parameter(
+            displayName="Create layerfile to view output data like an ENC chart?",
+            name="layerfile_export",
+            datatype="GPBoolean",
+            parameterType="Optional",
+            direction="Input",
+        )
 
-        return [enc_file, output_folder]
+        return [enc_file, output_folder, caris_export, layerfile_export]
 
     def isLicensed(self):
         """Set whether the tool is licensed to execute."""
@@ -63,7 +77,9 @@ class S57Conversion:
 
         param_names = [
             'enc_file',
-            'output_folder'
+            'output_folder',
+            'caris_export',
+            'layerfile_export'
         ]
 
         lookup = {}

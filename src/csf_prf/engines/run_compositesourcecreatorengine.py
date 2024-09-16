@@ -32,7 +32,8 @@ if __name__ == '__main__':
         'enc_files': Param(str(str(INPUTS / 'US2EC02M.000') + ';' + str(INPUTS / 'US3GA10M.000'))),
         'output_folder': Param(str(OUTPUTS)),
         'download_geographic_cells': Param(False),
-        'caris_export': Param(False)
+        'caris_export': Param(False),
+        'layerfile_export': Param(False)
     }
     engine = CompositeSourceCreatorEngine(param_lookup)
     engine.start()

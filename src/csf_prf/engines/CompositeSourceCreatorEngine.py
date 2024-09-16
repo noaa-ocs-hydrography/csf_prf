@@ -15,12 +15,6 @@ OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 CSF_PRF = pathlib.Path(__file__).parents[1]
 
 
-class CompositeSourceCreatorException(Exception):
-    """Custom exception for tool"""
-
-    pass 
-
-
 class CompositeSourceCreatorEngine(Engine):
     """
     Class to hold the logic for transforming the 
@@ -29,7 +23,6 @@ class CompositeSourceCreatorEngine(Engine):
 
     def __init__(self, param_lookup: dict) -> None:
         self.param_lookup = param_lookup
-        self.output_name = 'csf_prf_geopackage'
         self.gdb_name = 'csf_features'
         self.output_db = False
         self.sheets_layer = None
@@ -58,31 +51,6 @@ class CompositeSourceCreatorEngine(Engine):
             arcpy.management.CalculateField(
                 layer, column, expression, expression_type="PYTHON3", field_type=field_type
             )
-
-    def add_subtypes_to_data(self) -> None:
-        """Add subtype objects to all output featureclasses"""
-
-        arcpy.AddMessage('Adding subtype values to output layers')
-        output_folder = self.param_lookup['output_folder'].valueAsText
-        output_gdb = os.path.join(output_folder, 'csf_features.gdb')
-
-        with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
-            subtype_lookup = yaml.safe_load(lookup)
-
-        # Make unique code values
-        unique_subtype_lookup = self.get_unique_subtype_codes(subtype_lookup)
-        arcpy.env.workspace = output_gdb
-        feature_classes = arcpy.ListFeatureClasses()
-
-        for featureclass in feature_classes: 
-            for geometry_type in unique_subtype_lookup.keys():
-                # Skip GC fc's
-                if geometry_type in featureclass and 'GC' not in featureclass:
-                    arcpy.AddMessage(f' - {featureclass}')
-                    field = [field.name for field in arcpy.ListFields(featureclass) if 'FCSubtype' in field.name][0]
-                    arcpy.management.SetSubtypeField(featureclass, field)
-                    for data in unique_subtype_lookup[geometry_type].values():
-                        arcpy.management.AddSubtype(featureclass, data['code'], data['objl_string']) 
 
     def convert_bottom_samples(self) -> None:
         """Process the Bottom Samples input parameter"""
@@ -180,42 +148,10 @@ class CompositeSourceCreatorEngine(Engine):
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         output_gdb = os.path.join(output_folder, self.gdb_name + '.gdb')
+        fc_path = os.path.join(output_gdb, feature_class_name)
         arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
-        arcpy.conversion.FeatureClassToFeatureClass(layer, output_gdb, feature_class_name)
-        self.output_data[output_data_type] = os.path.join(output_gdb, feature_class_name)
-
-    def create_caris_export(self) -> None:
-        """Output datasets to Geopackage by unique OBJL_NAME"""
-
-        csfprf_output_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.output_name)
-        arcpy.management.CreateSQLiteDatabase(csfprf_output_path, spatial_type='GEOPACKAGE')
-        for enc_feature_type, feature_class in self.output_data.items():
-            if feature_class:
-                arcpy.AddMessage(f" - Exporting: {enc_feature_type}")
-                if (
-                    "enc" in enc_feature_type
-                    and "GC" not in enc_feature_type
-                    and enc_feature_type != "enc_files"
-                ):  # TODO is 'enc_files' even an option anymore?
-                    output_path = os.path.join(
-                        self.param_lookup["output_folder"].valueAsText, enc_feature_type
-                    )
-                    arcpy.management.CreateSQLiteDatabase(output_path, spatial_type='GEOPACKAGE')
-                    objl_name_check = [field.name for field in arcpy.ListFields(feature_class) if 'OBJL_NAME' in field.name]
-                    if objl_name_check:
-                        objl_name_field = objl_name_check[0]
-                        objl_names = self.get_unique_values(feature_class, objl_name_field)
-                        for objl_name in objl_names:
-                            query = f'{objl_name_field} = ' + f"'{objl_name}'"
-                            rows = arcpy.management.SelectLayerByAttribute(feature_class,'NEW_SELECTION', query)
-                            gpkg_data = os.path.join(output_path + ".gpkg", objl_name)
-                            try:
-                                arcpy.AddMessage(f"   - {objl_name}")
-                                arcpy.conversion.ExportFeatures(rows, gpkg_data, use_field_alias_as_name="USE_ALIAS")
-                            except CompositeSourceCreatorException as e:
-                                arcpy.AddMessage(f'Error writing {objl_name} to {output_path} : \n{e}')
-                else:
-                    self.export_to_geopackage(csfprf_output_path, enc_feature_type, feature_class)
+        arcpy.conversion.ExportFeatures(layer, fc_path)
+        self.output_data[output_data_type] = fc_path
 
     def download_enc_files(self) -> None:
         """Factory function to download project ENC files"""
@@ -269,36 +205,6 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.management.DefineProjection(copied_layer, arcpy.SpatialReference(4326))
 
         self.output_data[output_data_type] = output_name
-
-    def export_to_geopackage(self, output_path, param_name, feature_class) -> None:
-        """
-        Export a feature class in GDB to a Geopackage
-        :param str output_path: Path to the output Geopackage
-        :param str param_name: Current OBJL_NAME to export
-        :param str feature_class: Current path to the .GDB feature class being exported
-        """
-
-        arcpy.AddMessage(f" - Exporting: {param_name}")
-        gpkg_data = os.path.join(output_path + ".gpkg", param_name)
-        try:
-            arcpy.conversion.ExportFeatures(
-                feature_class,
-                gpkg_data,
-                use_field_alias_as_name="USE_ALIAS",
-            )
-        except CompositeSourceCreatorException as e:
-            arcpy.AddMessage(f'Error writing {param_name} to {output_path} : \n{e}')
-
-    def get_unique_values(self, feature_class, attribute) -> list:
-        """
-        Get a list of unique values from a feature class
-        :param str feature_class: Current path to the .GDB feature class being exported
-        :param str attribute: Current OBJL_NAME to export
-        :return list[str]: List of unique OBJL_NAMES
-        """
-
-        with arcpy.da.SearchCursor(feature_class, [[attribute]]) as cursor:
-            return sorted({row[0] for row in cursor})
 
     def make_junctions_layer(self, junctions):
         """
@@ -441,7 +347,6 @@ class CompositeSourceCreatorEngine(Engine):
             self.add_subtypes_to_data()
             # subtype_end = time.time()
             # arcpy.AddMessage(f'Subtype runtime: {(subtype_end - subtype_start) / 60}')
-            self.write_layerfile()
         self.write_to_geopackage()
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
@@ -478,33 +383,3 @@ class CompositeSourceCreatorEngine(Engine):
                 polygon = list(vertices)
                 cursor.insertRow([polygon] + list(feature['attributes'][2:]))
         self.output_data[output_data_type] = output_name
-
-    def write_layerfile(self) -> None:
-        """Create output layerfile in output folder for viewing data"""
-
-        arcpy.AddMessage('Writing output maritime layerfile')
-        with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'r') as reader:
-            layer_file = reader.read()
-
-        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-        output_layer_file = layer_file.replace("{~}", f"{output_folder / 'csf_features.gdb'}")   
-        with open(str(output_folder / 'csf_prf_maritime_schema.lyrx'), 'w') as writer:
-            writer.write(output_layer_file)
-
-    def write_to_geopackage(self) -> None:
-        """Copy the output feature classes to Geopackage"""
-
-        arcpy.AddMessage('Writing to geopackage database')
-        if self.param_lookup['caris_export'].value:
-            self.create_caris_export()
-        else:
-            if not self.output_db: # TODO double check is self.output_db needs to be used
-                output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.output_name)
-                arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}')
-                arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
-                self.output_db = True
-            else:
-                arcpy.AddMessage(f'Output GeoPackage already exists')
-            for param_name, feature_class in self.output_data.items():
-                if feature_class:
-                    self.export_to_geopackage(output_db_path, param_name, feature_class)
