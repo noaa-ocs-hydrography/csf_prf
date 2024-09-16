@@ -300,7 +300,7 @@ class Engine:
         for key, value in feature_json['properties'].items():
             if value == 'None' or value is None:
                 feature_json['properties'][key] = ''
-        return feature_json        
+        return feature_json
 
     def split_multipoint_env(self) -> None:
         """Reset S57 ENV for split multipoint only"""
