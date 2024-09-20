@@ -223,7 +223,7 @@ CATLIT:
   13: "rear"
   14: "lower"
   15: "upper"
-  16: "moiré effect"
+  16: "moirï¿½ effect"
   17: "emergency"
   18: "bearing light"
   19: "horizontally disposed"
@@ -1172,6 +1172,12 @@ descrp:
   3: "Delete"
   4: "Retain"
   5: "Not Addressed"
+hsdrec:  
+  1: "New"
+  2: "Update"
+  3: "Delete"
+  4: "Retain"
+  5: "Not Addressed"  
 mk_edi:
   1: "Add"
   2: "Delete"
