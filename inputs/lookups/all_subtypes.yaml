@@ -29,6 +29,9 @@ LineString:
   DAMCON:
     code: 15
     objl_string: DAMCON_Dam
+  DEPARE:
+    code: 1
+    objl_string: DEPARE_DepthArea
   DEPCNT:
     code: 5
     objl_string: DEPCNT_DepthContour
