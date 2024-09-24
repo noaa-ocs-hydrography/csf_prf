@@ -31,7 +31,7 @@ def deploy_csf_to_pydro():
     shutil.copytree(INPUTS / 'lookups', CSF_PRF_TOOLBOX / 'inputs' / 'lookups', dirs_exist_ok=True)
     shutil.copytree(INPUTS / 'sql', CSF_PRF_TOOLBOX / 'inputs' / 'sql', dirs_exist_ok=True)
     shutil.copy2(INPUTS / 'maritime_layerfile.lyrx', CSF_PRF_TOOLBOX / 'inputs' / 'maritime_layerfile.lyrx')
-    # shutil.copy2(INPUTS / 'MCD_maritime_layerfile.lyrx', CSF_PRF_TOOLBOX / 'inputs' / 'MCD_maritime_layerfile.lyrx')
+    shutil.copy2(INPUTS / 'MCD_maritime_layerfile.lyrx', CSF_PRF_TOOLBOX / 'inputs' / 'MCD_maritime_layerfile.lyrx')
 
 
     # src/csf_prf 
