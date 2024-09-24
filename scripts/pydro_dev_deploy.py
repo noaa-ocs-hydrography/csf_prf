@@ -12,7 +12,7 @@ CSF_PRF = pathlib.Path(__file__).parents[1] / 'src' / 'csf_prf'
 SRC_FOLDER = CSF_PRF.parents[1]
 
 
-def deploy_crf_to_pydro():
+def deploy_csf_to_pydro():
     # Minimum files needed
     # inputs
     #   /lookups/*
@@ -51,5 +51,5 @@ def deploy_crf_to_pydro():
 
 
 if __name__ == "__main__":
-    deploy_crf_to_pydro()
+    deploy_csf_to_pydro()
     print('Done')
