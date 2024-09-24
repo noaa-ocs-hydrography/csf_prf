@@ -119,7 +119,8 @@ class ENCReaderEngine(Engine):
         self.add_objl_string()
         self.add_asgnmt_column()
         self.add_invreq_column()
-        self.add_subtype_column()
+        if self.param_lookup['layerfile_export'].value:
+            self.add_subtype_column()
 
     def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
@@ -687,7 +688,8 @@ class ENCReaderEngine(Engine):
         self.print_feature_total()
         self.add_columns()
         self.join_quapos_to_features()
-        self.write_output_layer_file()
+        if self.param_lookup['layerfile_export'].value:
+            self.write_output_layer_file()
 
         # Run times in seconds
         # download_gcs - 75.
