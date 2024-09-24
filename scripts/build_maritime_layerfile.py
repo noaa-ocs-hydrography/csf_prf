@@ -3,11 +3,35 @@ import pathlib
 import arcpy
 import json
 import copy
+import yaml
 arcpy.env.overwriteOutput = True
 
 
 OUTPUTS = pathlib.Path(__file__).parents[1] / 'outputs'
 INPUTS = pathlib.Path(__file__).parents[1] / 'inputs'
+
+
+def get_unique_subtype_codes(subtype_lookup):
+    """
+    Create unique codes for all subtypes
+
+    :param dict[str] subtype_lookup: all_subtypes.yaml as dictionary
+    :returns dict[str]: Updated dictionary with unique codes
+    """
+
+    for geom_type in subtype_lookup.keys():
+        codes = []
+        for subtype in subtype_lookup[geom_type].values():
+            code = subtype['code']
+            if code in codes:
+                new_code = code + 1000
+                while new_code in codes:
+                    new_code += 1
+                subtype['code'] = new_code
+                codes.append(new_code)
+            else:
+                codes.append(code)
+    return subtype_lookup
 
 
 with open(str(INPUTS / 'maritime_master_layerfile.lyrx'), 'r') as reader:
@@ -44,39 +68,46 @@ name_lookup = {
 }
 
 # Create new unique subtype codes
+with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
+    subtype_lookup = yaml.safe_load(lookup)
+unique_subtype_codes = get_unique_subtype_codes(subtype_lookup)
+
+
 for geom in [points, lines, polygons]:
-    codes = []
-    new_subtype_codes = {}
-
-    # update codes in featureTemplates section
     for feature in geom['featureTemplates']:
+        # Sample feature
+        # {
+        #   "type" : "CIMRowTemplate",
+        #   "name" : "BCNCAR_BeaconCardinal",
+        #   "tags" : "Point",
+        #   "defaultToolGUID" : "2a8b3331-5238-4025-972e-452a69535b06",
+        #   "defaultValues" : {
+        #     "type" : "PropertySet",
+        #     "propertySetItems" : [
+        #       "fcsubtype",
+        #       1
+        #     ]
+        #   }
+        # },
         name = '_'.join(feature['name'].split('_')[:-1])
-        if 'defaultValues' in feature:
-            propertySetItems = feature['defaultValues']['propertySetItems']
-            for i, item in enumerate(propertySetItems):
-                if item == 'fcsubtype':
-                    code = feature['defaultValues']['propertySetItems'][i+1]
+        # Sample unique_subtype_codes value
+        #   SOUNDG:
+        #     code: 1
+        #     objl_string: SOUNDG_Soundings
+        if name:
+            subtype_data = unique_subtype_codes[geom['name']][name]
 
-            if code in codes:
-                new_code = code + 1000
-                while new_code in codes:
-                    new_code += 1
-                codes.append(new_code)
-                # update the code
-                new_subtype_codes[name] = new_code
+            if 'defaultValues' in feature:
+                propertySetItems = feature['defaultValues']['propertySetItems']
 
                 for i, item in enumerate(propertySetItems):
                     if item == 'fcsubtype':
-                        feature['defaultValues']['propertySetItems'][i+1] = new_code
+                        feature['defaultValues']['propertySetItems'][i+1] = subtype_data['code']
+
                         # Add long field names as well as short field names
                         feature['defaultValues']['propertySetItems'].append(name_lookup[geom['name']])
-                        feature['defaultValues']['propertySetItems'].append(new_code)
-            else:
-                codes.append(code)
-                # Add long field names as well as short field names
-                feature['defaultValues']['propertySetItems'].append(name_lookup[geom['name']])
-                feature['defaultValues']['propertySetItems'].append(code)
-                
+                        feature['defaultValues']['propertySetItems'].append(subtype_data['code'])
+
 
     # update codes in groups section
     group_classes = []
@@ -92,9 +123,10 @@ for geom in [points, lines, polygons]:
         for subtype in group['classes']:
             subtype_string = subtype['label']
             name = '_'.join(subtype_string.split('_')[:-1])
-            if name in new_subtype_codes:
-                new_code = new_subtype_codes[name]
-                subtype['values'][0]['fieldValues'][0] = str(new_code)
+            if name in unique_subtype_codes[geom['name']]:
+                subtype_data = unique_subtype_codes[geom['name']][name]
+                subtype['values'][0]['fieldValues'][0] = str(subtype_data['code'])
+
 
 output = {
     'Point': points,
