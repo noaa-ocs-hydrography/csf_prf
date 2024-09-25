@@ -130,7 +130,7 @@ class CompositeSourceCreatorEngine(Engine):
             expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
             self.add_column_and_constant(layer, 'invreq', expression)
             outer_features, inner_features = self.split_inner_polygons(layer)
-            self.write_features_to_featureclass('sheets', layer, outer_features + inner_features, 'output_sheets')
+            self.write_sheets_to_featureclass('sheets', layer, outer_features + inner_features, 'output_sheets')
             self.sheets_layer = layer  # Set sheets layer for later use
 
     def convert_tides(self) -> None:
@@ -351,7 +351,7 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
 
-    def write_features_to_featureclass(self, output_data_type, template_layer, features, feature_class_name) -> None:
+    def write_sheets_to_featureclass(self, output_data_type, template_layer, features, feature_class_name) -> None:
         """
         Store processed layer as an output feature class
         :param str output_data_type: Name of input parameter type being stored; see param_lookup
@@ -377,7 +377,7 @@ class CompositeSourceCreatorEngine(Engine):
                     fields.append(field.name)
 
         with arcpy.da.InsertCursor(output_name, fields) as cursor:
-            # TODO update for points, lines, and polygons
+            # This adds the inner sheets polygons that were found to the output dataset
             for feature in features:
                 vertices = [(point.X, point.Y) for point in feature['geometry']]
                 polygon = list(vertices)

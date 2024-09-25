@@ -106,12 +106,9 @@ class Engine:
         arcpy.management.CreateSQLiteDatabase(csfprf_output_path, spatial_type='GEOPACKAGE')
         for enc_feature_type, feature_class in self.output_data.items():
             if feature_class:
-                arcpy.AddMessage(f" - Exporting: {enc_feature_type}")
-                if (
-                    "enc" in enc_feature_type
-                    and "GC" not in enc_feature_type
-                    and enc_feature_type != "enc_files"
-                ):  # TODO is 'enc_files' even an option anymore?
+                if ("enc" in enc_feature_type and "GC" not in enc_feature_type):
+                    # Export to csf_prf_geopackage.gpkg as well as CARIS gpkg files
+                    self.export_to_geopackage(csfprf_output_path, enc_feature_type, feature_class)
                     output_path = os.path.join(
                         self.param_lookup["output_folder"].valueAsText, enc_feature_type
                     )
