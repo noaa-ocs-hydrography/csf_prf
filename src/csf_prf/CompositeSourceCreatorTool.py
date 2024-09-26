@@ -62,45 +62,6 @@ class CompositeSourceCreator:
             direction="Input",
             multiValue=True
         )
-        bottom_sample_shapefile = arcpy.Parameter(
-            displayName="Bottom Sample Esri Shape File(s):",
-            name="bottom_samples",
-            datatype="GPFeatureLayer",
-            parameterType="Optional",
-            direction="Input",
-            multiValue=True
-        )
-        boundary_pts_shapefile = arcpy.Parameter(
-            displayName="Maritime Boundary Points Rocks Esri Shape File(s):",
-            name="maritime_boundary_pts",
-            datatype="GPFeatureLayer",
-            parameterType="Optional",
-            direction="Input",
-            multiValue=True
-        )
-        boundary_features_shapefile = arcpy.Parameter(
-            displayName="Maritime Boundary Additional Features Esri Shape File(s):",
-            name="maritime_boundary_features",
-            datatype="GPFeatureLayer",
-            parameterType="Optional",
-            direction="Input",
-            multiValue=True
-        )
-        boundary_baseline_shapefile = arcpy.Parameter(
-            displayName="Maritime Boundary Baseline Esri Shape File(s):",
-            name="maritime_boundary_baselines",
-            datatype="GPFeatureLayer",
-            parameterType="Optional",
-            direction="Input",
-            multiValue=True
-        )
-        # tides_mapinfo_tab = arcpy.Parameter(
-        #     displayName="Tides CORP Source MapInfo TAB File:",
-        #     name="tides",
-        #     datatype="GPFeatureLayer",
-        #     parameterType="Optional",
-        #     direction="Input"
-        # )
         enc_file = arcpy.Parameter(
             displayName="ENC File(s) (Leave empty to automatically download ENC files):",
             name="enc_files",
@@ -143,11 +104,6 @@ class CompositeSourceCreator:
         return [
             sheets_shapefile,
             junctions_shapefile,
-            bottom_sample_shapefile,
-            boundary_pts_shapefile,
-            boundary_features_shapefile,
-            boundary_baseline_shapefile,
-            # tides_mapinfo_tab,
             enc_file,
             output_folder,
             download_geographic_cells,
@@ -173,11 +129,6 @@ class CompositeSourceCreator:
         param_names = [
             'sheets',
             'junctions',
-            'bottom_samples',
-            'maritime_boundary_pts',
-            'maritime_boundary_features',
-            'maritime_boundary_baselines',
-            # 'tides',
             'enc_files',
             'output_folder',
             'download_geographic_cells',

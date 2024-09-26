@@ -52,11 +52,6 @@ class CompositeSourceCreatorEngine(Engine):
                 layer, column, expression, expression_type="PYTHON3", field_type=field_type
             )
 
-    def convert_bottom_samples(self) -> None:
-        """Process the Bottom Samples input parameter"""
-
-        return
-
     def convert_enc_files(self) -> None:
         """Process the ENC files input parameter"""
 
@@ -83,41 +78,6 @@ class CompositeSourceCreatorEngine(Engine):
             self.add_column_and_constant(layer, 'ORIENT', 45)
             self.export_to_feature_class('junctions', layer, 'output_junctions')
 
-    def convert_maritime_datasets(self) -> None:
-        """Process the 3 Maritime input parameters"""
-
-        # TODO can we process with only certain maritime files?
-        points_parameter = self.param_lookup['maritime_boundary_pts'].valueAsText
-        features_parameter = self.param_lookup['maritime_boundary_features'].valueAsText
-        baselines_parameter = self.param_lookup['maritime_boundary_baselines'].valueAsText
-        if points_parameter and features_parameter and baselines_parameter:
-            arcpy.AddMessage('converting maritime boundary files')
-            self.convert_maritime_boundary_baselines()
-            self.convert_maritime_boundary_points_and_features()
-
-    def convert_maritime_boundary_points_and_features(self) -> None:
-        """Merge and process maritime files"""
-
-        layer = self.merge_maritime_pts_and_features()
-        self.add_column_and_constant(layer, 'invreq', "'Verify the existence of the furthest offshore feature that is dry at MLLW. \
-                                     See Baseline Priorities.doc and section 8.1.4 Descriptive Report of the HSSD for further \
-                                     information. NOAA units, see FPM section 3.5.6 Maritime Boundary Delineation.'")
-        self.add_column_and_constant(layer, 'asgnment', 2, 'SHORT')
-        self.add_column_and_constant(layer, 'sftype', 4, 'SHORT')
-        self.copy_layer_to_feature_class('maritime_boundary_features', layer, 'output_maritime_features')
-
-    def convert_maritime_boundary_baselines(self) -> None:
-        """Process the maritime boundary baselines input parameter"""
-
-        points = self.param_lookup['maritime_boundary_pts'].valueAsText.replace("'", "").split(';')
-        layers = [self.make_maritime_boundary_pts_layer(points_file) for points_file in points]
-        layer = arcpy.management.Merge(layers, r'memory\maritime_pts_layer')
-        self.add_column_and_constant(layer, 'invreq', "'Current baseline point. See Baseline Priorities.doc for further \
-                                    information. NOAA units, see FPM section 3.5.6 Maritime Boundary Delineation.'")
-        self.add_column_and_constant(layer, 'asgnment', 3, 'SHORT')
-        self.add_column_and_constant(layer, 'sftype', 4, 'SHORT')
-        self.copy_layer_to_feature_class('maritime_boundary_baselines', layer, 'output_maritime_baselines')
-
     def convert_sheets(self) -> None:
         """Process the Sheets input parameter"""
 
@@ -132,11 +92,6 @@ class CompositeSourceCreatorEngine(Engine):
             outer_features, inner_features = self.split_inner_polygons(layer)
             self.write_sheets_to_featureclass('sheets', layer, outer_features + inner_features, 'output_sheets')
             self.sheets_layer = layer  # Set sheets layer for later use
-
-    def convert_tides(self) -> None:
-        """Process the Tides input parameter"""
-
-        return
 
     def copy_layer_to_feature_class(self, output_data_type, layer, feature_class_name) -> None:
         """
@@ -338,9 +293,6 @@ class CompositeSourceCreatorEngine(Engine):
         self.create_output_gdb() # TODO move to the base class
         self.convert_sheets()
         self.convert_junctions()
-        self.convert_bottom_samples()
-        self.convert_maritime_datasets()
-        # self.convert_tides()
         self.convert_enc_files()
         # subtype_start = time.time()
         if self.param_lookup['layerfile_export'].value:
