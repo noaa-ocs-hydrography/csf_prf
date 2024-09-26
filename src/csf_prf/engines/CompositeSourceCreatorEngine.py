@@ -72,8 +72,7 @@ class CompositeSourceCreatorEngine(Engine):
             arcpy.AddMessage('converting junctions')
             layers = [self.make_junctions_layer(junctions_file) for junctions_file in junctions]
             layer = arcpy.management.Merge(layers, r'memory\junctions_layer')
-            expression = "'Survey: ' + str(!survey!) + ', Platform: ' + str(!field_unit!) + ', Year: ' + str(!year!) + ', Scale: ' + str(!scale!)"
-            self.add_column_and_constant(layer, 'invreq', expression)
+            self.add_column_and_constant(layer, 'invreq', nullable=True)
             self.add_column_and_constant(layer, 'TRAFIC', 2)
             self.add_column_and_constant(layer, 'ORIENT', 45)
             self.export_to_feature_class('junctions', layer, 'output_junctions')
@@ -87,8 +86,7 @@ class CompositeSourceCreatorEngine(Engine):
             sheets = sheet_parameter.replace("'", "").split(';')
             layers = [self.make_sheets_layer(sheets_file) for sheets_file in sheets]
             layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
-            expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
-            self.add_column_and_constant(layer, 'invreq', expression)
+            self.add_column_and_constant(layer, 'invreq', nullable=True)
             outer_features, inner_features = self.split_inner_polygons(layer)
             self.write_sheets_to_featureclass('sheets', layer, outer_features + inner_features, 'output_sheets')
             self.sheets_layer = layer  # Set sheets layer for later use
