@@ -125,16 +125,16 @@ class ENCReaderEngine(Engine):
     def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
 
-        with open(str(INPUTS / 'lookups' / 'invreq_lookup.yaml'), 'r') as lookup:
-            objl_lookup = yaml.safe_load(lookup)
-        invreq_options = objl_lookup['OPTIONS']
+        # with open(str(INPUTS / 'lookups' / 'invreq_lookup.yaml'), 'r') as lookup:
+        #     objl_lookup = yaml.safe_load(lookup)
+        # invreq_options = objl_lookup['OPTIONS']
 
         for feature_type in self.geometries.keys():
             arcpy.AddMessage(f" - Adding 'invreq' column: {feature_type}")
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['assigned'], 'invreq', nullable=True)
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['unassigned'], 'invreq', nullable=True)
-            self.set_assigned_invreq(feature_type, objl_lookup, invreq_options)
-            self.set_unassigned_invreq(feature_type, objl_lookup, invreq_options)
+            # self.set_assigned_invreq(feature_type, objl_lookup, invreq_options)
+            # self.set_unassigned_invreq(feature_type, objl_lookup, invreq_options)
 
     def add_objl_string(self) -> None:
         """Convert OBJL number to string name"""
