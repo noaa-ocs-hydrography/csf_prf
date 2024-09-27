@@ -9,6 +9,7 @@ import os
 import sys
 import pyodbc
 import multiprocessing
+import copy
 
 from osgeo import ogr
 from csf_prf.engines.Engine import Engine
@@ -257,6 +258,7 @@ class ENCReaderEngine(Engine):
     def get_enc_bounds(self) -> None:
         """Create lookup for ENC extents by scale"""
 
+        scale_polygons = {}
         enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
@@ -268,10 +270,45 @@ class ENCReaderEngine(Engine):
             scale_level = metadata_json['properties']['DSID_INTU']
 
             enc_extent = enc_file.GetLayerByName('M_COVR').GetExtent()
-            if scale_level not in self.scale_bounds:
-                self.scale_bounds[enc_scale] = []
-            self.scale_bounds[enc_scale].append(enc_extent)
+            xMin, xMax, yMin, yMax = enc_extent
+            extent_array = arcpy.Array()
+            extent_array.add(arcpy.Point(xMin, yMin))
+            extent_array.add(arcpy.Point(xMin, yMax))
+            extent_array.add(arcpy.Point(xMax, yMax))
+            extent_array.add(arcpy.Point(xMax, yMin))
+            extent_array.add(arcpy.Point(xMin, yMin))
+            esri_extent_polygon = arcpy.Polygon(extent_array)
 
+            if scale_level not in scale_polygons:
+                scale_polygons[enc_scale] = []
+            scale_polygons[enc_scale].append(esri_extent_polygon)
+
+        # Make a single multi-part extent polygon for each scale
+        union_polygons = {}
+        for scale, polygons in scale_polygons.items():
+            polygon = polygons[0]
+            if len(polygons) > 1:
+                for add_polygon in polygons[1:]:
+                    # creates a multipart arpy.Polygon
+                    polygon = polygon.union(add_polygon)
+            union_polygons[scale] = polygon
+        
+        # Merge upper level extent polygons
+        scales = sorted(union_polygons) 
+        # [2, 3, 4, 5]
+        for i, scale in enumerate(scales):
+            # 0, 2
+            if scale + 1 in scales:
+                # if 2 covered by 3
+                supersession_polygon = union_polygons[scale + 1]
+                if scale + 2 in scales: # if there are 2 upper level scales, merge them
+                    upper_scales = scales[i + 2:]
+                    for upper_scale in upper_scales:
+                        supersession_polygon = supersession_polygon.union(union_polygons[upper_scale])
+                self.scale_bounds[scale] = supersession_polygon
+            else:
+                self.scale_bounds[scale] = False
+                
     def get_feature_records(self) -> None:
         """Read and store all features from ENC file"""
 
@@ -287,7 +324,7 @@ class ENCReaderEngine(Engine):
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
-                        if self.feature_covered_by_upper_scale(feature_json, enc_scale):
+                        if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
                             intersected += 1
                             continue
                         
@@ -379,7 +416,7 @@ class ENCReaderEngine(Engine):
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
-                        if self.feature_covered_by_upper_scale(feature_json, enc_scale):
+                        if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
                             intersected += 1
                             continue
 

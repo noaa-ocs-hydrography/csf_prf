@@ -47,7 +47,7 @@ class CompositeSourceCreator:
         """Set up the tool parameters"""
         
         sheets_shapefile = arcpy.Parameter(
-            displayName="Sheets in shp format (use template file in Project Planning Template for invreq to map):",
+            displayName="Sheets in shp format:",
             name="sheets",
             datatype="GPFeatureLayer",
             parameterType="Optional",
@@ -55,7 +55,7 @@ class CompositeSourceCreator:
             multiValue=True
         )
         junctions_shapefile = arcpy.Parameter(
-            displayName="Junctions in shp format (expected input as an export from SURDEX for invreq to map):",
+            displayName="Junctions in shp format:",
             name="junctions",
             datatype="GPFeatureLayer",
             parameterType="Optional",

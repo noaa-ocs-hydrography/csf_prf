@@ -171,25 +171,26 @@ class Engine:
 
         if feature_json['geometry'] is None:
             return False
-        feature_geometry = ogr.CreateGeometryFromJson(json.dumps(feature_json['geometry']))
-        upper_scale = int(enc_scale) + 1
+        # feature_geometry = ogr.CreateGeometryFromJson(json.dumps(feature_json['geometry']))
+        feature_geometry = arcpy.AsShape(json.dumps(feature_json['geometry']))
+        # upper_scale = int(enc_scale) + 1
         inside = False
-        if upper_scale in self.scale_bounds:
-            for xMin, xMax, yMin, yMax in self.scale_bounds[upper_scale]:
-                extent_geom = ogr.Geometry(ogr.wkbLinearRing)
-                extent_geom.AddPoint(xMin, yMin)
-                extent_geom.AddPoint(xMin, yMax)
-                extent_geom.AddPoint(xMax, yMax)
-                extent_geom.AddPoint(xMax, yMin)
-                extent_geom.AddPoint(xMin, yMin)
-                extent_polygon = ogr.Geometry(ogr.wkbPolygon)
-                extent_polygon.AddGeometry(extent_geom)
-            # TODO will there be polygons extending over edge of ENC?
-            # Might need to use Contains
-            if feature_geometry.Intersects(extent_polygon): 
-                inside = True
-        return inside
 
+        supersession_polygon = self.scale_bounds[enc_scale]
+        if supersession_polygon and not supersession_polygon.disjoint(feature_geometry):  # not disjoint means intersected
+            inside = True
+
+        # while upper_scale in self.scale_bounds:
+        #     # TODO need to check lower against all scale_levels, not just +1
+        #     for extent_polygon in self.scale_bounds[upper_scale]:
+        #         # TODO will there be polygons extending over edge of ENC?
+        #         # Might need to use Contains
+        #         if extent_polygon.contains(feature_geometry): 
+        #             inside = True
+        #             break
+        #         upper_scale += 1
+        return inside
+        
     def get_all_fields(self, features) -> None:
         """
         Build a unique list of all field names

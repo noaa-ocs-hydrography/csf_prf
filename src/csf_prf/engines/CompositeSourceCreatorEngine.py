@@ -73,8 +73,6 @@ class CompositeSourceCreatorEngine(Engine):
             layers = [self.make_junctions_layer(junctions_file) for junctions_file in junctions]
             layer = arcpy.management.Merge(layers, r'memory\junctions_layer')
             self.add_column_and_constant(layer, 'invreq', nullable=True)
-            self.add_column_and_constant(layer, 'TRAFIC', 2)
-            self.add_column_and_constant(layer, 'ORIENT', 45)
             self.export_to_feature_class('junctions', layer, 'output_junctions')
 
     def convert_sheets(self) -> None:
@@ -154,6 +152,7 @@ class CompositeSourceCreatorEngine(Engine):
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
         output_name = os.path.join(os.path.join(output_folder, self.gdb_name + '.gdb'), feature_class_name)
+        # TODO use Project() method to make a file instead of CopyFeatures.  Set to WGS84
         copied_layer = arcpy.management.CopyFeatures(template_layer, output_name)
         arcpy.management.DefineProjection(copied_layer, arcpy.SpatialReference(4326))
 
@@ -331,5 +330,6 @@ class CompositeSourceCreatorEngine(Engine):
             for feature in features:
                 vertices = [(point.X, point.Y) for point in feature['geometry']]
                 polygon = list(vertices)
+                # TODO make a geometry object and projectAs(wgs84)
                 cursor.insertRow([polygon] + list(feature['attributes'][2:]))
         self.output_data[output_data_type] = output_name
