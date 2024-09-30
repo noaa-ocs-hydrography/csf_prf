@@ -78,7 +78,7 @@ class ENCReaderEngine(Engine):
         self.layerfile_name = 'maritime_layerfile'
         self.driver = None
         self.scale_bounds = {}
-        self.scales = {}
+        self.feature_lookup = None
         self.gc_files = []
         self.gc_points = None
         self.gc_lines = None
@@ -269,7 +269,9 @@ class ENCReaderEngine(Engine):
             # resolution = metadata_json['properties']['DSPM_CSCL']
             scale_level = metadata_json['properties']['DSID_INTU']
 
+            # TODO CSFPRF-86 Review shape of data instead of extent
             enc_extent = enc_file.GetLayerByName('M_COVR').GetExtent()
+            arcpy.AddMessage(f"GDAL options: {dir(enc_file.GetLayerByName('M_COVR'))}")
             xMin, xMax, yMin, yMax = enc_extent
             extent_array = arcpy.Array()
             extent_array.add(arcpy.Point(xMin, yMin))
@@ -331,6 +333,11 @@ class ENCReaderEngine(Engine):
                         feature_json['properties']['SCALE_LVL'] = enc_scale
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                         if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
+                            # TODO skip based on self.feature_lookup
+                            
+                            if self.unapproved(geom_type, feature_json['properties']):
+                                continue
+
                             feature_json = self.set_none_to_null(feature_json)
                             self.geometries[geom_type]['features'].append({'geojson': feature_json, 'scale': enc_scale})
                         # elif geom_type == 'MultiPoint':
@@ -675,6 +682,10 @@ class ENCReaderEngine(Engine):
                     row[indx['invreq']] = invreq_options.get(invreq, '')
                 updateCursor.updateRow(row)
 
+    def set_feature_lookup(self):
+        with open(str(INPUTS / 'lookups' / 'unapproved_features.yaml'), 'r') as lookup:
+            self.feature_lookup = yaml.safe_load(lookup)
+
     def set_unassigned_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
         """
         Isolate logic for setting unassigned layer 'invreq' column
@@ -718,6 +729,7 @@ class ENCReaderEngine(Engine):
         self.set_driver()
         self.split_multipoint_env()
         self.get_enc_bounds()
+        self.set_feature_lookup()
         self.get_feature_records()
         self.return_primitives_env()
         self.get_vector_records()
@@ -736,4 +748,16 @@ class ENCReaderEngine(Engine):
         # perform_spatial_filter - 668. 656 651 176
         # add_columns - 8.
         # join_quapos_to_features - 12.
+
+    def unapproved(self, geom_type: str, properties: dict[str]) -> bool:
+        """Check to ignore unapproved feature types"""
+
+        objl_name = CLASS_CODES.get(int(properties['OBJL']), CLASS_CODES['OTHER'])[0]
+        unapproved_features = self.feature_lookup[geom_type]
+        unapproved = False
+        for feature in unapproved_features:
+            if feature == objl_name:
+                unapproved = True
+        return unapproved
+
 

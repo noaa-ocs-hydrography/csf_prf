@@ -171,24 +171,12 @@ class Engine:
 
         if feature_json['geometry'] is None:
             return False
-        # feature_geometry = ogr.CreateGeometryFromJson(json.dumps(feature_json['geometry']))
         feature_geometry = arcpy.AsShape(json.dumps(feature_json['geometry']))
-        # upper_scale = int(enc_scale) + 1
         inside = False
 
         supersession_polygon = self.scale_bounds[enc_scale]
         if supersession_polygon and not supersession_polygon.disjoint(feature_geometry):  # not disjoint means intersected
             inside = True
-
-        # while upper_scale in self.scale_bounds:
-        #     # TODO need to check lower against all scale_levels, not just +1
-        #     for extent_polygon in self.scale_bounds[upper_scale]:
-        #         # TODO will there be polygons extending over edge of ENC?
-        #         # Might need to use Contains
-        #         if extent_polygon.contains(feature_geometry): 
-        #             inside = True
-        #             break
-        #         upper_scale += 1
         return inside
         
     def get_all_fields(self, features) -> None:
