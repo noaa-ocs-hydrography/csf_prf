@@ -758,6 +758,7 @@ class ENCReaderEngine(Engine):
         for feature in unapproved_features:
             if feature == objl_name:
                 unapproved = True
+                break
         return unapproved
 
 
