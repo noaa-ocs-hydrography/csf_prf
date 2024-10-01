@@ -255,7 +255,7 @@ class ENCReaderEngine(Engine):
                                     f'PWD={translate_auth};')
         return connection.cursor()
         
-    def get_enc_bounds(self) -> None:
+    def get_enc_catcov(self) -> None:
         """Create lookup for ENC extents by scale"""
 
         scale_polygons = {}
@@ -269,17 +269,28 @@ class ENCReaderEngine(Engine):
             # resolution = metadata_json['properties']['DSPM_CSCL']
             scale_level = metadata_json['properties']['DSID_INTU']
 
-            # TODO CSFPRF-86 Review shape of data instead of extent
-            enc_extent = enc_file.GetLayerByName('M_COVR').GetExtent()
-            arcpy.AddMessage(f"GDAL options: {dir(enc_file.GetLayerByName('M_COVR'))}")
-            xMin, xMax, yMin, yMax = enc_extent
-            extent_array = arcpy.Array()
-            extent_array.add(arcpy.Point(xMin, yMin))
-            extent_array.add(arcpy.Point(xMin, yMax))
-            extent_array.add(arcpy.Point(xMax, yMax))
-            extent_array.add(arcpy.Point(xMax, yMin))
-            extent_array.add(arcpy.Point(xMin, yMin))
-            esri_extent_polygon = arcpy.Polygon(extent_array)
+            # get CATCOV 1 polygon
+            m_covr_layer = enc_file.GetLayerByName('M_COVR')
+            catcov = None
+            for feature in m_covr_layer:
+                feature_json = json.loads(feature.ExportToJson())
+                if feature_json['properties']['CATCOV'] == 1:
+                    catcov = feature_json
+                    break
+
+            if catcov is not None:
+                points = [arcpy.Point(*coords) for polygon in catcov['geometry']['coordinates'] for coords in polygon]
+                esri_extent_polygon = arcpy.Polygon(arcpy.Array(points))
+            else: 
+                # TODO Use rectangular extent if no CATCOV? 
+                xMin, xMax, yMin, yMax = enc_file.GetLayerByName('M_COVR').GetExtent()
+                extent_array = arcpy.Array()
+                extent_array.add(arcpy.Point(xMin, yMin))
+                extent_array.add(arcpy.Point(xMin, yMax))
+                extent_array.add(arcpy.Point(xMax, yMax))
+                extent_array.add(arcpy.Point(xMax, yMin))
+                extent_array.add(arcpy.Point(xMin, yMin))
+                esri_extent_polygon = arcpy.Polygon(extent_array)
 
             if scale_level not in scale_polygons:
                 scale_polygons[enc_scale] = []
@@ -728,7 +739,7 @@ class ENCReaderEngine(Engine):
             self.filter_gc_features()
         self.set_driver()
         self.split_multipoint_env()
-        self.get_enc_bounds()
+        self.get_enc_catcov()
         self.set_feature_lookup()
         self.get_feature_records()
         self.return_primitives_env()
