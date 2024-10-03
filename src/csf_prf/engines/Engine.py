@@ -102,16 +102,18 @@ class Engine:
     def create_caris_export(self) -> None:
         """Output datasets to Geopackage by unique OBJL_NAME"""
 
+        caris_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'caris_export'
+        caris_folder.mkdir(parents=True, exist_ok=True)
+
         csfprf_output_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
         arcpy.management.CreateSQLiteDatabase(csfprf_output_path, spatial_type='GEOPACKAGE')
-        for enc_feature_type, feature_class in self.output_data.items():
+        for feature_type, feature_class in self.output_data.items():
             if feature_class:
-                if ("enc" in enc_feature_type and "GC" not in enc_feature_type):
+                  # Don't export sheets or GC files to Caris gpkg
+                if ("GC" not in feature_type and feature_type.split('_')[0] in ['Point', 'LineString', 'Polygon']):
                     # Export to csf_prf_geopackage.gpkg as well as CARIS gpkg files
-                    self.export_to_geopackage(csfprf_output_path, enc_feature_type, feature_class)
-                    output_path = os.path.join(
-                        self.param_lookup["output_folder"].valueAsText, enc_feature_type
-                    )
+                    self.export_to_geopackage(csfprf_output_path, feature_type, feature_class)
+                    output_path = os.path.join( caris_folder, feature_type)
                     arcpy.management.CreateSQLiteDatabase(output_path, spatial_type='GEOPACKAGE')
                     objl_name_check = [field.name for field in arcpy.ListFields(feature_class) if 'OBJL_NAME' in field.name]
                     if objl_name_check:
@@ -127,7 +129,7 @@ class Engine:
                             except CompositeSourceCreatorException as e:
                                 arcpy.AddMessage(f'Error writing {objl_name} to {output_path} : \n{e}')
                 else:
-                    self.export_to_geopackage(csfprf_output_path, enc_feature_type, feature_class)
+                    self.export_to_geopackage(csfprf_output_path, feature_type, feature_class)
 
     def create_output_gdb(self, gdb_name='csf_features') -> None:
         """
@@ -146,7 +148,7 @@ class Engine:
         """
         Export a feature class in GDB to a Geopackage
         :param str output_path: Path to the output Geopackage
-        :param str param_name: Current OBJL_NAME to export
+        :param str param_name: Current output_data key for feature class
         :param str feature_class: Current path to the .GDB feature class being exported
         """
 
@@ -328,9 +330,9 @@ class Engine:
                 self.output_db = True
             else:
                 arcpy.AddMessage(f'Output GeoPackage already exists')
-            for param_name, feature_class in self.output_data.items():
+            for feature_type, feature_class in self.output_data.items():
                 if feature_class:
-                    self.export_to_geopackage(output_db_path, param_name, feature_class)                    
+                    self.export_to_geopackage(output_db_path, feature_type, feature_class)                    
 
     def write_output_layer_file(self) -> None:
         """Update layer file for output gdb"""

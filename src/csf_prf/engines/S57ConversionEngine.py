@@ -197,7 +197,7 @@ class S57ConversionEngine(Engine):
                 arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
                 output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
                 arcpy.management.CopyFeatures(self.geometries[geom_type]['output'], output_name)
-                self.output_data[f'enc_{assigned_name}'] = output_name
+                self.output_data[f'{assigned_name}'] = output_name
 
     def get_feature_records(self) -> None:
         """Read and store all features from ENC file"""
@@ -274,6 +274,7 @@ class S57ConversionEngine(Engine):
 
                         # Only specific rows need to be projected to WGS84
                         if descrp_value in ['New']:
+                            # TODO create a unit test that writes out normal and projected points as two datasets to review
                             point_original = geometry.firstPoint
                             # print(f"Sample point original: X = {round(point_original.X,6)}, Y = {round(point_original.Y,6)}")
                             projected_geometry = geometry.projectAs(wgs84_spatial_ref, 'WGS_1984_(ITRF08)_To_NAD_1983_2011')
