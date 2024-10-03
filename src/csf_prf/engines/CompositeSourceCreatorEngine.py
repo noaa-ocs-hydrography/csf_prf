@@ -133,13 +133,13 @@ class CompositeSourceCreatorEngine(Engine):
                     arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
                     output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
                     arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
-                    self.output_data[f'enc_{assigned_name}'] = output_name
+                    self.output_data[f'{assigned_name}'] = output_name
                 if enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned']:
                     unassigned_name = f'{geom_type}_{feature_type}_unassigned'
                     arcpy.AddMessage(f' - Writing output feature class: {unassigned_name}')
                     output_name = os.path.join(output_folder, self.gdb_name + '.gdb', unassigned_name)
                     arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
-                    self.output_data[f'enc_{unassigned_name}'] = output_name
+                    self.output_data[f'{unassigned_name}'] = output_name
 
     def export_to_feature_class(self, output_data_type, template_layer, feature_class_name) -> None:
         """

@@ -36,3 +36,7 @@ Once Pydro pulls the latest changes, you will need to open ArcGIS Pro and add a 
 7. View the output folder you selected to see the output data
 8. If running the Composite Source Creator Tool, an optional *maritime_layerfile.lyrx* file <br>is added to the output folder to view the data like an ENC chart
 9. Drag the *maritime_layerfile.lyrx* file into a map
+
+## Geotransformation
+The S-57 to Geopackage conversion tools performs a geotransformation for objects where the field 
+'descrp' = 'New'. The transformation used is NAD 83 (2011) to WGS 84 (ITRF08). These objects will have the transformation noted in the 'transformed' field.

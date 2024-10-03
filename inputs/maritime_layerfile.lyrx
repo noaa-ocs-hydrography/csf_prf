@@ -18903,9 +18903,9 @@
                             "nis_products",
                             1,
                             "fcsubtype",
-                            35,
+                            1023,
                             "features_lines_layer_FCSubtype",
-                            35
+                            1023
                         ]
                     }
                 },
@@ -18925,9 +18925,9 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
-                            1023,
+                            35,
                             "features_lines_layer_FCSubtype",
-                            1023
+                            35
                         ]
                     }
                 },
@@ -21770,7 +21770,7 @@
                                     {
                                         "type": "CIMUniqueValue",
                                         "fieldValues": [
-                                            "35"
+                                            "1023"
                                         ]
                                     }
                                 ],
@@ -21867,7 +21867,7 @@
                                     {
                                         "type": "CIMUniqueValue",
                                         "fieldValues": [
-                                            "1023"
+                                            "35"
                                         ]
                                     }
                                 ],
@@ -23983,9 +23983,9 @@
                             "nis_products",
                             1,
                             "fcsubtype",
-                            35,
+                            1023,
                             "features_lines_layer_FCSubtype",
-                            35
+                            1023
                         ]
                     }
                 },
@@ -24005,9 +24005,9 @@
                         "type": "PropertySet",
                         "propertySetItems": [
                             "fcsubtype",
-                            1023,
+                            35,
                             "features_lines_layer_FCSubtype",
-                            1023
+                            35
                         ]
                     }
                 },
@@ -26850,7 +26850,7 @@
                                     {
                                         "type": "CIMUniqueValue",
                                         "fieldValues": [
-                                            "35"
+                                            "1023"
                                         ]
                                     }
                                 ],
@@ -26947,7 +26947,7 @@
                                     {
                                         "type": "CIMUniqueValue",
                                         "fieldValues": [
-                                            "1023"
+                                            "35"
                                         ]
                                     }
                                 ],
