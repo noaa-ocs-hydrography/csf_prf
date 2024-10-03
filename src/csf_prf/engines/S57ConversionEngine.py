@@ -275,13 +275,11 @@ class S57ConversionEngine(Engine):
                         # Only specific rows need to be projected to WGS84
                         if descrp_value in ['New']:
                             # TODO create a unit test that writes out normal and projected points as two datasets to review
+                            # TODO remove print statements with this task
                             point_original = geometry.firstPoint
                             # print(f"Sample point original: X = {round(point_original.X,6)}, Y = {round(point_original.Y,6)}")
                             projected_geometry = geometry.projectAs(wgs84_spatial_ref, 'WGS_1984_(ITRF08)_To_NAD_1983_2011')
                             point = projected_geometry.firstPoint
-                            if '73.79321' in str(point_original.X):
-                                print(f"Sample point original: X = {round(point_original.X,7)}, Y = {round(point_original.Y,7)}")
-                                print(f"Sample point reprojected: X = {round(point.X, 7)}, Y = {round(point.Y, 7)}")
                             # print(f"Sample point: X = {point_original.X == point.X}, Y = {point_original.Y == point.Y}")
                             # Confirm difference in the point locations: NAD 83 to WGS 84
                             location_difference = np.subtract([point_original.X, point_original.Y], [point.X, point.Y])

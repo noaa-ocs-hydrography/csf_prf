@@ -340,11 +340,11 @@ class Engine:
         with open(str(INPUTS / f'{self.layerfile_name}.lyrx'), 'r') as reader:
             layer_file = reader.read()
         layer_dict = json.loads(layer_file)
-        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         output_gdb = f'{self.gdb_name}.gdb'
         for layer in layer_dict['layerDefinitions']:
             if 'featureTable' in layer:
                 layer['featureTable']['dataConnection']['workspaceConnectionString'] = f"DATABASE={output_gdb}"
         
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         with open(str(output_folder / f'{self.layerfile_name}.lyrx'), 'w') as writer:
             writer.writelines(json.dumps(layer_dict, indent=4))                  
