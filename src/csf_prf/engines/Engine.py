@@ -1,5 +1,5 @@
 import json
-import  yaml
+import yaml
 import pathlib
 import os
 import zipfile
@@ -339,7 +339,7 @@ class Engine:
             layer_file = reader.read()
         layer_dict = json.loads(layer_file)
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-        output_gdb = output_folder / f'{self.gdb_name}.gdb'
+        output_gdb = f'{self.gdb_name}.gdb'
         for layer in layer_dict['layerDefinitions']:
             if 'featureTable' in layer:
                 layer['featureTable']['dataConnection']['workspaceConnectionString'] = f"DATABASE={output_gdb}"

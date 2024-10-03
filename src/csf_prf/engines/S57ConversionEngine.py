@@ -4,6 +4,8 @@ import pathlib
 import json
 import yaml
 import time
+import numpy as np
+import math
 
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
@@ -46,7 +48,7 @@ class S57ConversionEngine(Engine):
 
         for fc_name in self.feature_classes:
             fc = os.path.join(gdb_path, fc_name)
-            arcpy.management.AddField(fc, 'transformed', field_type='TEXT', field_length=10, field_is_nullable='NULLABLE')
+            arcpy.management.AddField(fc, 'transformed', field_type='TEXT', field_length=50, field_is_nullable='NULLABLE')
 
     def add_objl_string_to_S57(self) -> None:
         """Convert OBJL number to string name"""
@@ -197,22 +199,6 @@ class S57ConversionEngine(Engine):
                 arcpy.management.CopyFeatures(self.geometries[geom_type]['output'], output_name)
                 self.output_data[f'enc_{assigned_name}'] = output_name
 
-    def export_to_geopackage(self, output_path, param_name, feature_class) -> None:
-        """
-        Export a feature class in GDB to a Geopackage
-        :param str output_path: Path to the output Geopackage
-        :param str param_name: Current OBJL_NAME to export
-        :param str feature_class: Current path to the .GDB feature class being exported
-        """
-
-        arcpy.AddMessage(f" - Exporting: {param_name}")
-        gpkg_data = os.path.join(output_path + ".gpkg", param_name)
-        arcpy.conversion.ExportFeatures(
-            feature_class,
-            gpkg_data,
-            use_field_alias_as_name="USE_ALIAS",
-        )
-
     def get_feature_records(self) -> None:
         """Read and store all features from ENC file"""
 
@@ -272,11 +258,7 @@ class S57ConversionEngine(Engine):
         wgs84_spatial_ref = arcpy.SpatialReference(4326)
         gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
 
-        with open(str(INPUTS / 'lookups' / 's57_lookup.yaml'), 'r') as lookup:
-            objl_lookup = yaml.safe_load(lookup)
-        tecsou_options = [val for key, val in objl_lookup['TECSOU'].items() if key in [1, 2, 3, 7]]
-
-        arcpy.AddMessage("Reprojecting New or Updated objects from NAD 83 (2011) to WGS 84")
+        arcpy.AddMessage("Reprojecting New or Updated objects from NAD 83 (2011) to WGS 84 (ITRF08)")
         for fc_name in self.feature_classes:
             updated_rows = 0
             # Change CRS to NAD83.  It is mislabled as WGS84.
@@ -284,24 +266,28 @@ class S57ConversionEngine(Engine):
             arcpy.management.DefineProjection(fc, nad83_2011_spatial_ref)
 
             fields = [field.name for field in arcpy.ListFields(fc)]
-            if 'descrp' and 'TECSOU' in fields:
-                with arcpy.da.UpdateCursor(fc, ['SHAPE@', 'descrp', 'TECSOU', 'transformed']) as cursor:
+            if 'descrp' in fields:
+                with arcpy.da.UpdateCursor(fc, ['SHAPE@', 'descrp', 'transformed']) as cursor:
                     for row in cursor:
                         geometry = row[0]
                         descrp_value = row[1]
-                        tecsou_value = row[2]
 
                         # Only specific rows need to be projected to WGS84
-                        if descrp_value in ['New', 'Update'] and tecsou_value in tecsou_options:
-                            # point_original = geometry.firstPoint
-                            # print(f"Sample point original: X = {point_original.X}, Y = {point_original.Y}")
-                            # TODO will need to enhance transformation for NAD83 from different regions
-                            projected_geometry = geometry.projectAs(wgs84_spatial_ref, 'NAD_1983_(2011)_to_WGS_1984_1')
-                            # point = projected_geometry.firstPoint
-                            # print(f"Sample point original: X = {point.X}, Y = {point.Y}")
+                        if descrp_value in ['New']:
+                            point_original = geometry.firstPoint
+                            # print(f"Sample point original: X = {round(point_original.X,6)}, Y = {round(point_original.Y,6)}")
+                            projected_geometry = geometry.projectAs(wgs84_spatial_ref, 'WGS_1984_(ITRF08)_To_NAD_1983_2011')
+                            point = projected_geometry.firstPoint
+                            if '73.79321' in str(point_original.X):
+                                print(f"Sample point original: X = {round(point_original.X,7)}, Y = {round(point_original.Y,7)}")
+                                print(f"Sample point reprojected: X = {round(point.X, 7)}, Y = {round(point.Y, 7)}")
                             # print(f"Sample point: X = {point_original.X == point.X}, Y = {point_original.Y == point.Y}")
+                            # Confirm difference in the point locations: NAD 83 to WGS 84
+                            location_difference = np.subtract([point_original.X, point_original.Y], [point.X, point.Y])
+                            location_difference = math.sqrt((location_difference[0]*110000)**2+(location_difference[1]*110000)**2)
+                            # print(f"Location difference (meters): {round(location_difference,4)}")
                             row[0] = projected_geometry
-                            row[3] = 'True'
+                            row[2] = 'NAD 83 (2011) to WGS 84 (ITRF08)'
                             cursor.updateRow(row)
                             updated_rows += 1
                 arcpy.management.DefineProjection(fc, wgs84_spatial_ref)   
@@ -325,7 +311,8 @@ class S57ConversionEngine(Engine):
         # self.get_vector_records()
         self.build_output_layers()
         self.add_objl_string_to_S57() 
-        self.add_subtype_column()
+        if self.param_lookup['layerfile_export'].value:
+            self.add_subtype_column()
         self.convert_noaa_attributes()
         self.export_enc_layers()
         self.add_projected_columns()

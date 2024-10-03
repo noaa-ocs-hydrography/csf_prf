@@ -95,11 +95,11 @@ LineString:
   OILBAR:
     code: 10
     objl_string: OILBAR_OilBarrier
-  PIPOHD:
-    code: 35
-    objl_string: PIPOHD_PipelineOverhead
-  PIPSOL:
+  PIPOHD: # PIPSOL and PIPOHD were switched
     code: 5
+    objl_string: PIPOHD_PipelineOverhead
+  PIPSOL: 
+    code: 35
     objl_string: PIPSOL_PipelineSubmarineOnLand
   PLTS:
     code: 0
