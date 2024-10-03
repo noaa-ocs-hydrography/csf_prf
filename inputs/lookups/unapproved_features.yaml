@@ -1,0 +1,28 @@
+Point:
+  # - LNDARE
+  # - LNDELV
+  # - PILPNT
+  # - MORFAC
+  - PIPSOL
+  - WEDKLP
+  - FSHFAC
+  - WATTUR
+  - SNDWAV
+LineString:
+  # - LNDELV
+  # - SBDARE
+  # - MORFAC
+  - PIPSOL
+  - FSHFAC
+  - WATTUR
+  - CBLSUB
+  - SNDWAV
+Polygon:
+  # - LNDARE
+  # - SBDARE
+  # - MORFAC
+  - DRGARE
+  - WEDKLP
+  - FSHFAC
+  - WATTUR
+  - SNDWAV

@@ -9,6 +9,7 @@ import os
 import sys
 import pyodbc
 import multiprocessing
+import copy
 
 from osgeo import ogr
 from csf_prf.engines.Engine import Engine
@@ -77,7 +78,7 @@ class ENCReaderEngine(Engine):
         self.layerfile_name = 'maritime_layerfile'
         self.driver = None
         self.scale_bounds = {}
-        self.scales = {}
+        self.feature_lookup = None
         self.gc_files = []
         self.gc_points = None
         self.gc_lines = None
@@ -125,16 +126,16 @@ class ENCReaderEngine(Engine):
     def add_invreq_column(self) -> None:
         """Add and populate the investigation required column for allowed features"""
 
-        with open(str(INPUTS / 'lookups' / 'invreq_lookup.yaml'), 'r') as lookup:
-            objl_lookup = yaml.safe_load(lookup)
-        invreq_options = objl_lookup['OPTIONS']
+        # with open(str(INPUTS / 'lookups' / 'invreq_lookup.yaml'), 'r') as lookup:
+        #     objl_lookup = yaml.safe_load(lookup)
+        # invreq_options = objl_lookup['OPTIONS']
 
         for feature_type in self.geometries.keys():
             arcpy.AddMessage(f" - Adding 'invreq' column: {feature_type}")
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['assigned'], 'invreq', nullable=True)
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['unassigned'], 'invreq', nullable=True)
-            self.set_assigned_invreq(feature_type, objl_lookup, invreq_options)
-            self.set_unassigned_invreq(feature_type, objl_lookup, invreq_options)
+            # self.set_assigned_invreq(feature_type, objl_lookup, invreq_options)
+            # self.set_unassigned_invreq(feature_type, objl_lookup, invreq_options)
 
     def add_objl_string(self) -> None:
         """Convert OBJL number to string name"""
@@ -254,9 +255,10 @@ class ENCReaderEngine(Engine):
                                     f'PWD={translate_auth};')
         return connection.cursor()
         
-    def get_enc_bounds(self) -> None:
+    def get_enc_catcov(self) -> None:
         """Create lookup for ENC extents by scale"""
 
+        scale_polygons = {}
         enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
@@ -267,11 +269,59 @@ class ENCReaderEngine(Engine):
             # resolution = metadata_json['properties']['DSPM_CSCL']
             scale_level = metadata_json['properties']['DSID_INTU']
 
-            enc_extent = enc_file.GetLayerByName('M_COVR').GetExtent()
-            if scale_level not in self.scale_bounds:
-                self.scale_bounds[enc_scale] = []
-            self.scale_bounds[enc_scale].append(enc_extent)
+            # get CATCOV 1 polygon
+            m_covr_layer = enc_file.GetLayerByName('M_COVR')
+            catcov = None
+            for feature in m_covr_layer:
+                feature_json = json.loads(feature.ExportToJson())
+                if feature_json['properties']['CATCOV'] == 1:
+                    catcov = feature_json
+                    break
 
+            if catcov is not None:
+                points = [arcpy.Point(*coords) for polygon in catcov['geometry']['coordinates'] for coords in polygon]
+                esri_extent_polygon = arcpy.Polygon(arcpy.Array(points))
+            else: 
+                # TODO Use rectangular extent if no CATCOV? 
+                xMin, xMax, yMin, yMax = enc_file.GetLayerByName('M_COVR').GetExtent()
+                extent_array = arcpy.Array()
+                extent_array.add(arcpy.Point(xMin, yMin))
+                extent_array.add(arcpy.Point(xMin, yMax))
+                extent_array.add(arcpy.Point(xMax, yMax))
+                extent_array.add(arcpy.Point(xMax, yMin))
+                extent_array.add(arcpy.Point(xMin, yMin))
+                esri_extent_polygon = arcpy.Polygon(extent_array)
+
+            if scale_level not in scale_polygons:
+                scale_polygons[enc_scale] = []
+            scale_polygons[enc_scale].append(esri_extent_polygon)
+
+        # Make a single multi-part extent polygon for each scale
+        union_polygons = {}
+        for scale, polygons in scale_polygons.items():
+            polygon = polygons[0]
+            if len(polygons) > 1:
+                for add_polygon in polygons[1:]:
+                    # creates a multipart arpy.Polygon
+                    polygon = polygon.union(add_polygon)
+            union_polygons[scale] = polygon
+        
+        # Merge upper level extent polygons
+        scales = sorted(union_polygons) 
+        # [2, 3, 4, 5]
+        for i, scale in enumerate(scales):
+            # 0, 2
+            if scale + 1 in scales:
+                # if 2 covered by 3
+                supersession_polygon = union_polygons[scale + 1]
+                if scale + 2 in scales: # if there are 2 upper level scales, merge them
+                    upper_scales = scales[i + 2:]
+                    for upper_scale in upper_scales:
+                        supersession_polygon = supersession_polygon.union(union_polygons[upper_scale])
+                self.scale_bounds[scale] = supersession_polygon
+            else:
+                self.scale_bounds[scale] = False
+                
     def get_feature_records(self) -> None:
         """Read and store all features from ENC file"""
 
@@ -287,13 +337,18 @@ class ENCReaderEngine(Engine):
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
-                        if self.feature_covered_by_upper_scale(feature_json, enc_scale):
+                        if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
                             intersected += 1
                             continue
                         
                         feature_json['properties']['SCALE_LVL'] = enc_scale
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                         if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
+                            # TODO skip based on self.feature_lookup
+                            
+                            if self.unapproved(geom_type, feature_json['properties']):
+                                continue
+
                             feature_json = self.set_none_to_null(feature_json)
                             self.geometries[geom_type]['features'].append({'geojson': feature_json, 'scale': enc_scale})
                         # elif geom_type == 'MultiPoint':
@@ -379,7 +434,7 @@ class ENCReaderEngine(Engine):
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
-                        if self.feature_covered_by_upper_scale(feature_json, enc_scale):
+                        if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
                             intersected += 1
                             continue
 
@@ -638,6 +693,10 @@ class ENCReaderEngine(Engine):
                     row[indx['invreq']] = invreq_options.get(invreq, '')
                 updateCursor.updateRow(row)
 
+    def set_feature_lookup(self):
+        with open(str(INPUTS / 'lookups' / 'unapproved_features.yaml'), 'r') as lookup:
+            self.feature_lookup = yaml.safe_load(lookup)
+
     def set_unassigned_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
         """
         Isolate logic for setting unassigned layer 'invreq' column
@@ -680,7 +739,8 @@ class ENCReaderEngine(Engine):
             self.filter_gc_features()
         self.set_driver()
         self.split_multipoint_env()
-        self.get_enc_bounds()
+        self.get_enc_catcov()
+        self.set_feature_lookup()
         self.get_feature_records()
         self.return_primitives_env()
         self.get_vector_records()
@@ -699,4 +759,17 @@ class ENCReaderEngine(Engine):
         # perform_spatial_filter - 668. 656 651 176
         # add_columns - 8.
         # join_quapos_to_features - 12.
+
+    def unapproved(self, geom_type: str, properties: dict[str]) -> bool:
+        """Check to ignore unapproved feature types"""
+
+        objl_name = CLASS_CODES.get(int(properties['OBJL']), CLASS_CODES['OTHER'])[0]
+        unapproved_features = self.feature_lookup[geom_type]
+        unapproved = False
+        for feature in unapproved_features:
+            if feature == objl_name:
+                unapproved = True
+                break
+        return unapproved
+
 

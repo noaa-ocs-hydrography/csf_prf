@@ -71,7 +71,8 @@ if __name__ == '__main__':
         'enc_files': Param(str(str(INPUTS / 'US2EC02M.000') + ';' + str(INPUTS / 'US3GA10M.000'))),
         # 'enc_files': Param(str(INPUTS / 'US3GA10M.000')),
         'output_folder': Param(str(OUTPUTS)),
-        'download_geographic_cells': Param(True)
+        'download_geographic_cells': Param(False),
+        'layerfile_export': Param(False)
     }
     sheets_layer = convert_sheets(param_lookup['sheets'].valueAsText)
     engine = ENCReaderEngine(param_lookup, sheets_layer)
