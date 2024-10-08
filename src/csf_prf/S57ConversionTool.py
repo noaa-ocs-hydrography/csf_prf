@@ -1,6 +1,5 @@
 import arcpy
 from csf_prf.engines.S57ConversionEngine import S57ConversionEngine
-arcpy.env.geographicTransformations = 'WGS_1984_(ITRF08)_To_NAD_1983_2011;'  # Force Python Tool to use this transformation
 
 
 class S57Conversion:
