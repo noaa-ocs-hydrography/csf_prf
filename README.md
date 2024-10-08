@@ -40,3 +40,4 @@ Once Pydro pulls the latest changes, you will need to open ArcGIS Pro and add a 
 ## Geotransformation
 The S-57 to Geopackage conversion tools performs a geotransformation for objects where the field 
 'descrp' = 'New'. The transformation used is NAD 83 (2011) to WGS 84 (ITRF08). These objects will have the transformation noted in the 'transformed' field.
+Additional documentation on NAD83 to WGS84 can be found here: [Choosing An Appropriate Transformation](https://desktop.arcgis.com/en/arcmap/latest/map/projections/choosing-an-appropriate-transformation.htm)
