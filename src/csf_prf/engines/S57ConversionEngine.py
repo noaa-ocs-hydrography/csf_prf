@@ -4,9 +4,8 @@ import pathlib
 import json
 import yaml
 import time
-import numpy as np
-import math
 
+from osgeo import osr, ogr
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
@@ -256,6 +255,16 @@ class S57ConversionEngine(Engine):
 
         nad83_2011_spatial_ref = arcpy.SpatialReference(6318)
         wgs84_spatial_ref = arcpy.SpatialReference(4326)
+        
+        nad83_gdal = osr.SpatialReference()
+        nad83_gdal.ImportFromEPSG(6318)
+        wgs84_gdal = osr.SpatialReference()
+        wgs84_gdal.ImportFromEPSG(4326)
+
+        coordinate_options = osr.CoordinateTransformationOptions()
+        coordinate_options.SetOperation("NAD_1983_To_WGS_1984_5")
+        gdal_transformation = osr.CoordinateTransformation(nad83_gdal, wgs84_gdal, coordinate_options)
+
         gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
 
         arcpy.AddMessage("Reprojecting New or Updated objects from NAD 83 (2011) to WGS 84 (ITRF08)")
@@ -274,19 +283,11 @@ class S57ConversionEngine(Engine):
 
                         # Only specific rows need to be projected to WGS84
                         if descrp_value in ['New']:
-                            # TODO create a unit test that writes out normal and projected points as two datasets to review
-                            # TODO remove print statements with this task
-                            point_original = geometry.firstPoint
-                            # print(f"Sample point original: X = {round(point_original.X,6)}, Y = {round(point_original.Y,6)}")
-                            projected_geometry = geometry.projectAs(wgs84_spatial_ref, 'WGS_1984_(ITRF08)_To_NAD_1983_2011')
-                            point = projected_geometry.firstPoint
-                            # print(f"Sample point: X = {point_original.X == point.X}, Y = {point_original.Y == point.Y}")
-                            # Confirm difference in the point locations: NAD 83 to WGS 84
-                            location_difference = np.subtract([point_original.X, point_original.Y], [point.X, point.Y])
-                            location_difference = math.sqrt((location_difference[0]*110000)**2+(location_difference[1]*110000)**2)
-                            # print(f"Location difference (meters): {round(location_difference,4)}")
+                            output_geometry = ogr.CreateGeometryFromWkb(geometry.WKB)
+                            output_geometry.Transform(gdal_transformation)
+                            projected_geometry = arcpy.FromWKB(output_geometry.ExportToWkb())
                             row[0] = projected_geometry
-                            row[2] = 'NAD 83 (2011) to WGS 84 (ITRF08)'
+                            row[2] = 'NAD_1983_To_WGS_1984_5'
                             cursor.updateRow(row)
                             updated_rows += 1
                 arcpy.management.DefineProjection(fc, wgs84_spatial_ref)   
