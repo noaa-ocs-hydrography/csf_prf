@@ -53,11 +53,722 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "Point_features_assigned",
-                    "datasetType": "esriDTFeatureClass"
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
+                    "workspaceFactory": "Sql",
+                    "dataset": "main.Point_features_assigned",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "select OBJECTID,Shape,AGEN,CATBRG,CATCAN,CATCBL,CATCOA,CATNAV,CATRUN,CATSLC,CATTRK,COLOUR,COLPAT,CONDTN,CONRAD,CONVIS,DATEND,DATSTA,DRVAL1,DRVAL2,ELEVAT,FFPT_RIND,FIDN,FIDS,GRUP,HEIGHT,HORACC,HORCLR,HORLEN,HORWID,ICEFAC,INFORM,LNAM,LNAM_REFS,NATCON,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,PICREP,PRIM,QUASOU,RCID,RECDAT,RECIND,RVER,SCALE_LVL,SCAMAX,SCAMIN,SORDAT,SORIND,SOUACC,STATUS,TECSOU,TRAFIC,TXTDSC,VALDCO,VERACC,VERCCL,VERCLR,VERCOP,VERCSA,VERDAT,VERLEN,WATLEV,hypcat,OBJL_NAME,asgnmt,invreq,FCSubtype from main.Point_features_assigned",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPoint",
+                    "queryFields": [
+                        {
+                            "name": "OBJECTID",
+                            "type": "esriFieldTypeBigInteger",
+                            "isNullable": false,
+                            "length": 8,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": true,
+                            "editable": false,
+                            "dbmsType": 11
+                        },
+                        {
+                            "name": "Shape",
+                            "type": "esriFieldTypeGeometry",
+                            "isNullable": true,
+                            "length": 8,
+                            "precision": 0,
+                            "scale": 0,
+                            "geometryDef": {
+                                "avgNumPoints": 0,
+                                "geometryType": "esriGeometryPolyline",
+                                "hasM": false,
+                                "hasZ": false,
+                                "spatialReference": {
+                                    "wkid": 4326,
+                                    "latestWkid": 4326,
+                                    "xyTolerance": 8.983152841195215e-09,
+                                    "zTolerance": 0.001,
+                                    "mTolerance": 0.001,
+                                    "falseX": -400,
+                                    "falseY": -400,
+                                    "xyUnits": 999999999.9999999,
+                                    "falseZ": -100000,
+                                    "zUnits": 10000,
+                                    "falseM": -100000,
+                                    "mUnits": 10000
+                                }
+                            },
+                            "dbmsType": 8
+                        },
+                        {
+                            "name": "AGEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATBRG",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCAN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCBL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCOA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATNAV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATRUN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATSLC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATTRK",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLOUR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLPAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONDTN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONRAD",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONVIS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DATEND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DATSTA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DRVAL1",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DRVAL2",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ELEVAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FFPT_RIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "GRUP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HEIGHT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORCLR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORWID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ICEFAC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "INFORM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM_REFS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NATCON",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NINFOM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NOBJNM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NTXTDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ORIENT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PEREND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PERSTA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PICREP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PRIM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "QUASOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RCID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RVER",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCALE_LVL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMAX",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMIN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SOUACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "STATUS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TECSOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TRAFIC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TXTDSC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VALDCO",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCCL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCLR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCOP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCSA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "WATLEV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "hypcat",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL_NAME",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "asgnmt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "invreq",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FCSubtype",
+                            "type": "esriFieldTypeInteger",
+                            "isNullable": true,
+                            "length": 4,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 2
+                        }
+                    ],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"
@@ -9092,11 +9803,722 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "Point_features_unassigned",
-                    "datasetType": "esriDTFeatureClass"
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
+                    "workspaceFactory": "Sql",
+                    "dataset": "main.Point_features_unassigned",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "select OBJECTID,Shape,AGEN,CATBRG,CATCAN,CATCBL,CATCOA,CATNAV,CATRUN,CATSLC,CATTRK,COLOUR,COLPAT,CONDTN,CONRAD,CONVIS,DATEND,DATSTA,DRVAL1,DRVAL2,ELEVAT,FFPT_RIND,FIDN,FIDS,GRUP,HEIGHT,HORACC,HORCLR,HORLEN,HORWID,ICEFAC,INFORM,LNAM,LNAM_REFS,NATCON,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,PICREP,PRIM,QUASOU,RCID,RECDAT,RECIND,RVER,SCALE_LVL,SCAMAX,SCAMIN,SORDAT,SORIND,SOUACC,STATUS,TECSOU,TRAFIC,TXTDSC,VALDCO,VERACC,VERCCL,VERCLR,VERCOP,VERCSA,VERDAT,VERLEN,WATLEV,hypcat,OBJL_NAME,asgnmt,invreq,FCSubtype from main.Point_features_unassigned",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPoint",
+                    "queryFields": [
+                        {
+                            "name": "OBJECTID",
+                            "type": "esriFieldTypeBigInteger",
+                            "isNullable": false,
+                            "length": 8,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": true,
+                            "editable": false,
+                            "dbmsType": 11
+                        },
+                        {
+                            "name": "Shape",
+                            "type": "esriFieldTypeGeometry",
+                            "isNullable": true,
+                            "length": 8,
+                            "precision": 0,
+                            "scale": 0,
+                            "geometryDef": {
+                                "avgNumPoints": 0,
+                                "geometryType": "esriGeometryPolyline",
+                                "hasM": false,
+                                "hasZ": false,
+                                "spatialReference": {
+                                    "wkid": 4326,
+                                    "latestWkid": 4326,
+                                    "xyTolerance": 8.983152841195215e-09,
+                                    "zTolerance": 0.001,
+                                    "mTolerance": 0.001,
+                                    "falseX": -400,
+                                    "falseY": -400,
+                                    "xyUnits": 999999999.9999999,
+                                    "falseZ": -100000,
+                                    "zUnits": 10000,
+                                    "falseM": -100000,
+                                    "mUnits": 10000
+                                }
+                            },
+                            "dbmsType": 8
+                        },
+                        {
+                            "name": "AGEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATBRG",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCAN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCBL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCOA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATNAV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATRUN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATSLC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATTRK",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLOUR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLPAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONDTN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONRAD",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONVIS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DATEND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DATSTA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DRVAL1",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DRVAL2",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ELEVAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FFPT_RIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "GRUP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HEIGHT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORCLR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORWID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ICEFAC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "INFORM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM_REFS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NATCON",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NINFOM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NOBJNM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NTXTDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ORIENT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PEREND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PERSTA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PICREP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PRIM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "QUASOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RCID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RVER",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCALE_LVL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMAX",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMIN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SOUACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "STATUS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TECSOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TRAFIC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TXTDSC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VALDCO",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCCL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCLR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCOP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCSA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "WATLEV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "hypcat",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL_NAME",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "asgnmt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "invreq",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FCSubtype",
+                            "type": "esriFieldTypeInteger",
+                            "isNullable": true,
+                            "length": 4,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 2
+                        }
+                    ],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"
@@ -18130,11 +19552,722 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "LineString_features_assigned",
-                    "datasetType": "esriDTFeatureClass"
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
+                    "workspaceFactory": "Sql",
+                    "dataset": "main.LineString_features_assigned",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "select OBJECTID,Shape,AGEN,CATBRG,CATCAN,CATCBL,CATCOA,CATNAV,CATRUN,CATSLC,CATTRK,COLOUR,COLPAT,CONDTN,CONRAD,CONVIS,DATEND,DATSTA,DRVAL1,DRVAL2,ELEVAT,FFPT_RIND,FIDN,FIDS,GRUP,HEIGHT,HORACC,HORCLR,HORLEN,HORWID,ICEFAC,INFORM,LNAM,LNAM_REFS,NATCON,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,PICREP,PRIM,QUASOU,RCID,RECDAT,RECIND,RVER,SCALE_LVL,SCAMAX,SCAMIN,SORDAT,SORIND,SOUACC,STATUS,TECSOU,TRAFIC,TXTDSC,VALDCO,VERACC,VERCCL,VERCLR,VERCOP,VERCSA,VERDAT,VERLEN,WATLEV,hypcat,OBJL_NAME,asgnmt,invreq,FCSubtype from main.LineString_features_assigned",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPolyline",
+                    "queryFields": [
+                        {
+                            "name": "OBJECTID",
+                            "type": "esriFieldTypeBigInteger",
+                            "isNullable": false,
+                            "length": 8,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": true,
+                            "editable": false,
+                            "dbmsType": 11
+                        },
+                        {
+                            "name": "Shape",
+                            "type": "esriFieldTypeGeometry",
+                            "isNullable": true,
+                            "length": 8,
+                            "precision": 0,
+                            "scale": 0,
+                            "geometryDef": {
+                                "avgNumPoints": 0,
+                                "geometryType": "esriGeometryPolyline",
+                                "hasM": false,
+                                "hasZ": false,
+                                "spatialReference": {
+                                    "wkid": 4326,
+                                    "latestWkid": 4326,
+                                    "xyTolerance": 8.983152841195215e-09,
+                                    "zTolerance": 0.001,
+                                    "mTolerance": 0.001,
+                                    "falseX": -400,
+                                    "falseY": -400,
+                                    "xyUnits": 999999999.9999999,
+                                    "falseZ": -100000,
+                                    "zUnits": 10000,
+                                    "falseM": -100000,
+                                    "mUnits": 10000
+                                }
+                            },
+                            "dbmsType": 8
+                        },
+                        {
+                            "name": "AGEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATBRG",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCAN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCBL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCOA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATNAV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATRUN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATSLC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATTRK",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLOUR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLPAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONDTN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONRAD",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONVIS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DATEND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DATSTA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DRVAL1",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DRVAL2",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ELEVAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FFPT_RIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "GRUP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HEIGHT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORCLR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORWID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ICEFAC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "INFORM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM_REFS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NATCON",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NINFOM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NOBJNM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NTXTDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ORIENT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PEREND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PERSTA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PICREP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PRIM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "QUASOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RCID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RVER",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCALE_LVL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMAX",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMIN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SOUACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "STATUS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TECSOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TRAFIC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TXTDSC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VALDCO",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCCL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCLR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCOP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCSA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "WATLEV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "hypcat",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL_NAME",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "asgnmt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "invreq",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FCSubtype",
+                            "type": "esriFieldTypeInteger",
+                            "isNullable": true,
+                            "length": 4,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 2
+                        }
+                    ],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"
@@ -23210,11 +25343,722 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "LineString_features_unassigned",
-                    "datasetType": "esriDTFeatureClass"
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
+                    "workspaceFactory": "Sql",
+                    "dataset": "main.LineString_features_unassigned",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "select OBJECTID,Shape,AGEN,CATBRG,CATCAN,CATCBL,CATCOA,CATNAV,CATRUN,CATSLC,CATTRK,COLOUR,COLPAT,CONDTN,CONRAD,CONVIS,DATEND,DATSTA,DRVAL1,DRVAL2,ELEVAT,FFPT_RIND,FIDN,FIDS,GRUP,HEIGHT,HORACC,HORCLR,HORLEN,HORWID,ICEFAC,INFORM,LNAM,LNAM_REFS,NATCON,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,PICREP,PRIM,QUASOU,RCID,RECDAT,RECIND,RVER,SCALE_LVL,SCAMAX,SCAMIN,SORDAT,SORIND,SOUACC,STATUS,TECSOU,TRAFIC,TXTDSC,VALDCO,VERACC,VERCCL,VERCLR,VERCOP,VERCSA,VERDAT,VERLEN,WATLEV,hypcat,OBJL_NAME,asgnmt,invreq,FCSubtype from main.LineString_features_unassigned",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPolyline",
+                    "queryFields": [
+                        {
+                            "name": "OBJECTID",
+                            "type": "esriFieldTypeBigInteger",
+                            "isNullable": false,
+                            "length": 8,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": true,
+                            "editable": false,
+                            "dbmsType": 11
+                        },
+                        {
+                            "name": "Shape",
+                            "type": "esriFieldTypeGeometry",
+                            "isNullable": true,
+                            "length": 8,
+                            "precision": 0,
+                            "scale": 0,
+                            "geometryDef": {
+                                "avgNumPoints": 0,
+                                "geometryType": "esriGeometryPolyline",
+                                "hasM": false,
+                                "hasZ": false,
+                                "spatialReference": {
+                                    "wkid": 4326,
+                                    "latestWkid": 4326,
+                                    "xyTolerance": 8.983152841195215e-09,
+                                    "zTolerance": 0.001,
+                                    "mTolerance": 0.001,
+                                    "falseX": -400,
+                                    "falseY": -400,
+                                    "xyUnits": 999999999.9999999,
+                                    "falseZ": -100000,
+                                    "zUnits": 10000,
+                                    "falseM": -100000,
+                                    "mUnits": 10000
+                                }
+                            },
+                            "dbmsType": 8
+                        },
+                        {
+                            "name": "AGEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATBRG",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCAN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCBL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCOA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATNAV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATRUN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATSLC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATTRK",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLOUR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLPAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONDTN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONRAD",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONVIS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DATEND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DATSTA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DRVAL1",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DRVAL2",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ELEVAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FFPT_RIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "GRUP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HEIGHT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORCLR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORWID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ICEFAC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "INFORM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM_REFS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NATCON",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NINFOM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NOBJNM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NTXTDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ORIENT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PEREND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PERSTA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PICREP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PRIM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "QUASOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RCID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RVER",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCALE_LVL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMAX",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMIN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SOUACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "STATUS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TECSOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TRAFIC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TXTDSC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VALDCO",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCCL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCLR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCOP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCSA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "WATLEV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "hypcat",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL_NAME",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "asgnmt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "invreq",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FCSubtype",
+                            "type": "esriFieldTypeInteger",
+                            "isNullable": true,
+                            "length": 4,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 2
+                        }
+                    ],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"
@@ -28290,11 +31134,722 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "Polygon_features_assigned",
-                    "datasetType": "esriDTFeatureClass"
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
+                    "workspaceFactory": "Sql",
+                    "dataset": "main.Polygon_features_assigned",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "select OBJECTID,Shape,AGEN,CATBRG,CATCAN,CATCBL,CATCOA,CATNAV,CATRUN,CATSLC,CATTRK,COLOUR,COLPAT,CONDTN,CONRAD,CONVIS,DATEND,DATSTA,DRVAL1,DRVAL2,ELEVAT,FFPT_RIND,FIDN,FIDS,GRUP,HEIGHT,HORACC,HORCLR,HORLEN,HORWID,ICEFAC,INFORM,LNAM,LNAM_REFS,NATCON,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,PICREP,PRIM,QUASOU,RCID,RECDAT,RECIND,RVER,SCALE_LVL,SCAMAX,SCAMIN,SORDAT,SORIND,SOUACC,STATUS,TECSOU,TRAFIC,TXTDSC,VALDCO,VERACC,VERCCL,VERCLR,VERCOP,VERCSA,VERDAT,VERLEN,WATLEV,hypcat,OBJL_NAME,asgnmt,invreq,FCSubtype from main.Polygon_features_assigned",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPolygon",
+                    "queryFields": [
+                        {
+                            "name": "OBJECTID",
+                            "type": "esriFieldTypeBigInteger",
+                            "isNullable": false,
+                            "length": 8,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": true,
+                            "editable": false,
+                            "dbmsType": 11
+                        },
+                        {
+                            "name": "Shape",
+                            "type": "esriFieldTypeGeometry",
+                            "isNullable": true,
+                            "length": 8,
+                            "precision": 0,
+                            "scale": 0,
+                            "geometryDef": {
+                                "avgNumPoints": 0,
+                                "geometryType": "esriGeometryPolyline",
+                                "hasM": false,
+                                "hasZ": false,
+                                "spatialReference": {
+                                    "wkid": 4326,
+                                    "latestWkid": 4326,
+                                    "xyTolerance": 8.983152841195215e-09,
+                                    "zTolerance": 0.001,
+                                    "mTolerance": 0.001,
+                                    "falseX": -400,
+                                    "falseY": -400,
+                                    "xyUnits": 999999999.9999999,
+                                    "falseZ": -100000,
+                                    "zUnits": 10000,
+                                    "falseM": -100000,
+                                    "mUnits": 10000
+                                }
+                            },
+                            "dbmsType": 8
+                        },
+                        {
+                            "name": "AGEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATBRG",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCAN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCBL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCOA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATNAV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATRUN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATSLC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATTRK",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLOUR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLPAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONDTN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONRAD",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONVIS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DATEND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DATSTA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DRVAL1",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DRVAL2",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ELEVAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FFPT_RIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "GRUP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HEIGHT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORCLR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORWID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ICEFAC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "INFORM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM_REFS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NATCON",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NINFOM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NOBJNM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NTXTDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ORIENT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PEREND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PERSTA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PICREP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PRIM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "QUASOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RCID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RVER",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCALE_LVL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMAX",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMIN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SOUACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "STATUS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TECSOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TRAFIC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TXTDSC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VALDCO",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCCL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCLR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCOP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCSA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "WATLEV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "hypcat",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL_NAME",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "asgnmt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "invreq",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FCSubtype",
+                            "type": "esriFieldTypeInteger",
+                            "isNullable": true,
+                            "length": 4,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 2
+                        }
+                    ],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"
@@ -38265,11 +41820,722 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "Polygon_features_unassigned",
-                    "datasetType": "esriDTFeatureClass"
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
+                    "workspaceFactory": "Sql",
+                    "dataset": "main.Polygon_features_unassigned",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "select OBJECTID,Shape,AGEN,CATBRG,CATCAN,CATCBL,CATCOA,CATNAV,CATRUN,CATSLC,CATTRK,COLOUR,COLPAT,CONDTN,CONRAD,CONVIS,DATEND,DATSTA,DRVAL1,DRVAL2,ELEVAT,FFPT_RIND,FIDN,FIDS,GRUP,HEIGHT,HORACC,HORCLR,HORLEN,HORWID,ICEFAC,INFORM,LNAM,LNAM_REFS,NATCON,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,PICREP,PRIM,QUASOU,RCID,RECDAT,RECIND,RVER,SCALE_LVL,SCAMAX,SCAMIN,SORDAT,SORIND,SOUACC,STATUS,TECSOU,TRAFIC,TXTDSC,VALDCO,VERACC,VERCCL,VERCLR,VERCOP,VERCSA,VERDAT,VERLEN,WATLEV,hypcat,OBJL_NAME,asgnmt,invreq,FCSubtype from main.Polygon_features_unassigned",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPolygon",
+                    "queryFields": [
+                        {
+                            "name": "OBJECTID",
+                            "type": "esriFieldTypeBigInteger",
+                            "isNullable": false,
+                            "length": 8,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": true,
+                            "editable": false,
+                            "dbmsType": 11
+                        },
+                        {
+                            "name": "Shape",
+                            "type": "esriFieldTypeGeometry",
+                            "isNullable": true,
+                            "length": 8,
+                            "precision": 0,
+                            "scale": 0,
+                            "geometryDef": {
+                                "avgNumPoints": 0,
+                                "geometryType": "esriGeometryPolyline",
+                                "hasM": false,
+                                "hasZ": false,
+                                "spatialReference": {
+                                    "wkid": 4326,
+                                    "latestWkid": 4326,
+                                    "xyTolerance": 8.983152841195215e-09,
+                                    "zTolerance": 0.001,
+                                    "mTolerance": 0.001,
+                                    "falseX": -400,
+                                    "falseY": -400,
+                                    "xyUnits": 999999999.9999999,
+                                    "falseZ": -100000,
+                                    "zUnits": 10000,
+                                    "falseM": -100000,
+                                    "mUnits": 10000
+                                }
+                            },
+                            "dbmsType": 8
+                        },
+                        {
+                            "name": "AGEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATBRG",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCAN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCBL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCOA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATNAV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATRUN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATSLC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATTRK",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLOUR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLPAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONDTN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONRAD",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONVIS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DATEND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DATSTA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DRVAL1",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "DRVAL2",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ELEVAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FFPT_RIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "GRUP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HEIGHT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORCLR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HORWID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ICEFAC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "INFORM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM_REFS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NATCON",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NINFOM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NOBJNM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NTXTDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ORIENT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PEREND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PERSTA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PICREP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PRIM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "QUASOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RCID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RVER",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCALE_LVL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMAX",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMIN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SOUACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "STATUS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TECSOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TRAFIC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TXTDSC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VALDCO",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCCL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCLR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCOP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERCSA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "WATLEV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "hypcat",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL_NAME",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "asgnmt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "invreq",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FCSubtype",
+                            "type": "esriFieldTypeInteger",
+                            "isNullable": true,
+                            "length": 4,
+                            "precision": 0,
+                            "scale": 0,
+                            "dbmsType": 2
+                        }
+                    ],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"

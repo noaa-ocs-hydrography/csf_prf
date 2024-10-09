@@ -54,9 +54,10 @@
                 },
                 "dataConnection": {
                     "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "Point_features",
+                    "workspaceConnectionString": "UTHENTICATION_MODE=OSA;DATABASE=.\\{~}.gpkg",
+                    "workspaceFactory": "Sql",
+                    "sqlQuery": "select OBJECTID_1,Shape,AGEN,BCNSHP,BOYSHP,BUISHP,CALSGN,CATBUA,CATDPG,CATFOG,CATLAM,CATLIT,CATLMK,                    CATLND,CATOBS,CATOFP,CATROS,CATSIL,CATSPM,CATWRK,CLSDEF,CLSNAM,COLOUR,COLPAT,COMCHA,CONDTN,CONRAD,CONVIS,CURVEL,                        DATEND,DATSTA,DEPTH,ELEVAT,ESTRNG,EXCLIT,EXPSOU,FFPT_RIND,FIDN,FIDS,FUNCTN,GRUP,HEIGHT,INFORM,LITCHR,LITVIS,LNAM,                            LNAM_REFS,MARSYS,MLTYLT,NATCON,NATION,NATQUA,NATSUR,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,                                PICREP,PRIM,PRODCT,QUASOU,RCID,RECDAT,RECIND,RESTRN,RVER,RYRMGV,SCALE_LVL,SCAMAX,SCAMIN,SECTR1,SECTR2,                                    SIGFRQ,SIGGEN,SIGGRP,SIGPER,SIGSEQ,SORDAT,SORIND,SOUACC,STATUS,SYMINS,TECSOU,TOPSHP,TXTDSC,VALACM,                                        VALMAG,VALMXR,VALNMR,VALSOU,VERACC,VERDAT,VERLEN,WATLEV,OBJL_NAME,asgnmt,invreq,FCSubtype,                                            OBJECTID,Join_Count,TARGET_FID,POSACC,QUAPOS,RCID_1,RCNM,RUIN,RVER_1,SCALE_LVL_1 from main.%Point_features",
+                    "dataset": "main.%Point_features",
                     "datasetType": "esriDTFeatureClass"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
@@ -9092,9 +9093,10 @@
                 },
                 "dataConnection": {
                     "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "LineString_features",
+                    "workspaceConnectionString": "UTHENTICATION_MODE=OSA;DATABASE=.\\{~}.gpkg",
+                    "workspaceFactory": "Sql",
+                    "sqlQuery": "select OBJECTID_1,Shape,AGEN,BCNSHP,BOYSHP,BUISHP,CALSGN,CATBUA,CATDPG,CATFOG,CATLAM,CATLIT,CATLMK,                    CATLND,CATOBS,CATOFP,CATROS,CATSIL,CATSPM,CATWRK,CLSDEF,CLSNAM,COLOUR,COLPAT,COMCHA,CONDTN,CONRAD,CONVIS,CURVEL,                        DATEND,DATSTA,DEPTH,ELEVAT,ESTRNG,EXCLIT,EXPSOU,FFPT_RIND,FIDN,FIDS,FUNCTN,GRUP,HEIGHT,INFORM,LITCHR,LITVIS,LNAM,                            LNAM_REFS,MARSYS,MLTYLT,NATCON,NATION,NATQUA,NATSUR,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,                                PICREP,PRIM,PRODCT,QUASOU,RCID,RECDAT,RECIND,RESTRN,RVER,RYRMGV,SCALE_LVL,SCAMAX,SCAMIN,SECTR1,SECTR2,                                    SIGFRQ,SIGGEN,SIGGRP,SIGPER,SIGSEQ,SORDAT,SORIND,SOUACC,STATUS,SYMINS,TECSOU,TOPSHP,TXTDSC,VALACM,                                        VALMAG,VALMXR,VALNMR,VALSOU,VERACC,VERDAT,VERLEN,WATLEV,OBJL_NAME,asgnmt,invreq,FCSubtype,                                            OBJECTID,Join_Count,TARGET_FID,POSACC,QUAPOS,RCID_1,RCNM,RUIN,RVER_1,SCALE_LVL_1 from main.%LineString_features",
+                    "dataset": "main.%LineString_features",
                     "datasetType": "esriDTFeatureClass"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
@@ -14172,9 +14174,10 @@
                 },
                 "dataConnection": {
                     "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "Polygon_features",
+                    "workspaceConnectionString": "UTHENTICATION_MODE=OSA;DATABASE=.\\{~}.gpkg",
+                    "workspaceFactory": "Sql",
+                    "sqlQuery": "select OBJECTID_1,Shape,AGEN,BCNSHP,BOYSHP,BUISHP,CALSGN,CATBUA,CATDPG,CATFOG,CATLAM,CATLIT,CATLMK,                    CATLND,CATOBS,CATOFP,CATROS,CATSIL,CATSPM,CATWRK,CLSDEF,CLSNAM,COLOUR,COLPAT,COMCHA,CONDTN,CONRAD,CONVIS,CURVEL,                        DATEND,DATSTA,DEPTH,ELEVAT,ESTRNG,EXCLIT,EXPSOU,FFPT_RIND,FIDN,FIDS,FUNCTN,GRUP,HEIGHT,INFORM,LITCHR,LITVIS,LNAM,                            LNAM_REFS,MARSYS,MLTYLT,NATCON,NATION,NATQUA,NATSUR,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,                                PICREP,PRIM,PRODCT,QUASOU,RCID,RECDAT,RECIND,RESTRN,RVER,RYRMGV,SCALE_LVL,SCAMAX,SCAMIN,SECTR1,SECTR2,                                    SIGFRQ,SIGGEN,SIGGRP,SIGPER,SIGSEQ,SORDAT,SORIND,SOUACC,STATUS,SYMINS,TECSOU,TOPSHP,TXTDSC,VALACM,                                        VALMAG,VALMXR,VALNMR,VALSOU,VERACC,VERDAT,VERLEN,WATLEV,OBJL_NAME,asgnmt,invreq,FCSubtype,                                            OBJECTID,Join_Count,TARGET_FID,POSACC,QUAPOS,RCID_1,RCNM,RUIN,RVER_1,SCALE_LVL_1 from main.%Polygon_features",
+                    "dataset": "main.%Polygon_features",
                     "datasetType": "esriDTFeatureClass"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",

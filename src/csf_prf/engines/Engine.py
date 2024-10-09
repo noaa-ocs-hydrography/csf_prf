@@ -286,7 +286,7 @@ class Engine:
         """
 
         for key, value in feature_json['properties'].items():
-            if value == 'None' or value is None:
+            if value in ['None', 2147483641.0] or value is None:
                 feature_json['properties'][key] = ''
         return feature_json
 
@@ -329,10 +329,10 @@ class Engine:
         with open(str(INPUTS / f'{self.layerfile_name}.lyrx'), 'r') as reader:
             layer_file = reader.read()
         layer_dict = json.loads(layer_file)
-        output_gdb = f'{self.gdb_name}.gdb'
+        output_gpkg = f'{self.gdb_name}.gpkg'
         for layer in layer_dict['layerDefinitions']:
             if 'featureTable' in layer:
-                layer['featureTable']['dataConnection']['workspaceConnectionString'] = f"DATABASE={output_gdb}"
+                layer['featureTable']['dataConnection']['workspaceConnectionString'] = f"AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}"
         
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         with open(str(output_folder / f'{self.layerfile_name}.lyrx'), 'w') as writer:

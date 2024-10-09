@@ -161,14 +161,9 @@ for layer in layer_dict["layerDefinitions"]:
         current_layer = copy.deepcopy(layer)
         if 'featureTable' in current_layer:
             fc_name = f"{current_layer['name']}_features_{output_type}"
-            current_layer["featureTable"]["dataConnection"] = {
-                "type" : "CIMStandardDataConnection",
-                "workspaceConnectionString" : "DATABASE=.\\{~}.gdb",
-                "workspaceFactory" : "FileGDB",
-                "dataset" : fc_name,  # this is always the second index
-                "datasetType" : "esriDTFeatureClass"
-            }
-            current_layer["name"] = fc_name
+            current_layer["featureTable"]["dataConnection"]["dataset"] = f'main.{fc_name}'
+            current_layer["featureTable"]["dataConnection"]["sqlQuery"] = f'select OBJECTID,Shape,AGEN,CATBRG,CATCAN,CATCBL,CATCOA,CATNAV,CATRUN,CATSLC,CATTRK,COLOUR,COLPAT,CONDTN,CONRAD,CONVIS,DATEND,DATSTA,DRVAL1,DRVAL2,ELEVAT,FFPT_RIND,FIDN,FIDS,GRUP,HEIGHT,HORACC,HORCLR,HORLEN,HORWID,ICEFAC,INFORM,LNAM,LNAM_REFS,NATCON,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,PICREP,PRIM,QUASOU,RCID,RECDAT,RECIND,RVER,SCALE_LVL,SCAMAX,SCAMIN,SORDAT,SORIND,SOUACC,STATUS,TECSOU,TRAFIC,TXTDSC,VALDCO,VERACC,VERCCL,VERCLR,VERCOP,VERCSA,VERDAT,VERLEN,WATLEV,hypcat,OBJL_NAME,asgnmt,invreq,FCSubtype from main.{fc_name}'
+            current_layer["name"] = f'{fc_name}'
             current_layer["uRI"] = f"CIMPATH=map/{fc_name}.xml"
             csf_prf_layers.append(current_layer)
 
@@ -187,7 +182,6 @@ with open(str(INPUTS / 'MCD_maritime_layerfile_template.lyrx'), 'r') as reader:
 MCD_layer_dict = json.loads(layer_file)
 
 for layer in MCD_layer_dict["layerDefinitions"]:
-    print(layer['name'], output.keys())
     if layer['name'] in output:
         # Sort the featureTemplates
         featureTemplates = sorted(output[layer['name']]['featureTemplates'], key=lambda data: data['name'])
@@ -207,12 +201,20 @@ for layer in MCD_layer_dict["layerDefinitions"]:
     if 'featureTable' in current_layer:
         fc_name = f"{current_layer['name']}_features"
         current_layer["featureTable"]["dataConnection"] = {
-            "type" : "CIMStandardDataConnection",
-            "workspaceConnectionString" : "DATABASE=.\\{~}.gdb",
-            "workspaceFactory" : "FileGDB",
-            "dataset" : fc_name,  # this is always the second index
-            "datasetType" : "esriDTFeatureClass"
-        }
+                "type" : "CIMStandardDataConnection",
+                "workspaceConnectionString" : "UTHENTICATION_MODE=OSA;DATABASE=.\\{~}.gpkg",
+                "workspaceFactory" : "Sql",
+                "sqlQuery" : f"select OBJECTID_1,Shape,AGEN,BCNSHP,BOYSHP,BUISHP,CALSGN,CATBUA,CATDPG,CATFOG,CATLAM,CATLIT,CATLMK,\
+                    CATLND,CATOBS,CATOFP,CATROS,CATSIL,CATSPM,CATWRK,CLSDEF,CLSNAM,COLOUR,COLPAT,COMCHA,CONDTN,CONRAD,CONVIS,CURVEL,\
+                        DATEND,DATSTA,DEPTH,ELEVAT,ESTRNG,EXCLIT,EXPSOU,FFPT_RIND,FIDN,FIDS,FUNCTN,GRUP,HEIGHT,INFORM,LITCHR,LITVIS,LNAM,\
+                            LNAM_REFS,MARSYS,MLTYLT,NATCON,NATION,NATQUA,NATSUR,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,\
+                                PICREP,PRIM,PRODCT,QUASOU,RCID,RECDAT,RECIND,RESTRN,RVER,RYRMGV,SCALE_LVL,SCAMAX,SCAMIN,SECTR1,SECTR2,\
+                                    SIGFRQ,SIGGEN,SIGGRP,SIGPER,SIGSEQ,SORDAT,SORIND,SOUACC,STATUS,SYMINS,TECSOU,TOPSHP,TXTDSC,VALACM,\
+                                        VALMAG,VALMXR,VALNMR,VALSOU,VERACC,VERDAT,VERLEN,WATLEV,OBJL_NAME,asgnmt,invreq,FCSubtype,\
+                                            OBJECTID,Join_Count,TARGET_FID,POSACC,QUAPOS,RCID_1,RCNM,RUIN,RVER_1,SCALE_LVL_1 from main.%{fc_name}",
+                "dataset" : f'main.%{fc_name}',  # this is always the second index
+                "datasetType" : "esriDTFeatureClass"
+            }
         current_layer["name"] = fc_name
         current_layer["uRI"] = f"CIMPATH=map/{fc_name}.xml"
         csf_prf_layers.append(current_layer)

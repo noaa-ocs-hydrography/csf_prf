@@ -345,7 +345,6 @@ class ENCReaderEngine(Engine):
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                         if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                             # TODO skip based on self.feature_lookup
-                            
                             if self.unapproved(geom_type, feature_json['properties']):
                                 continue
 
