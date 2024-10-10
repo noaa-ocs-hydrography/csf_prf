@@ -291,11 +291,6 @@ class CompositeSourceCreatorEngine(Engine):
         self.convert_sheets()
         self.convert_junctions()
         self.convert_enc_files()
-        # subtype_start = time.time()
-        if self.param_lookup['layerfile_export'].value:
-            self.add_subtypes_to_data()
-            # subtype_end = time.time()
-            # arcpy.AddMessage(f'Subtype runtime: {(subtype_end - subtype_start) / 60}')
         self.write_to_geopackage()
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')

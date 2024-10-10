@@ -44,7 +44,6 @@ class Engine:
         with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
             subtype_lookup = yaml.safe_load(lookup)
 
-        # Make unique code values
         unique_subtype_lookup = self.get_unique_subtype_codes(subtype_lookup)
         for feature_type in self.geometries.keys():   
             subtypes = unique_subtype_lookup[feature_type]
@@ -74,30 +73,30 @@ class Engine:
                         code_block=code_block,
                     )
 
-    def add_subtypes_to_data(self) -> None:
-        """Add subtype objects to all output featureclasses"""
+    # def add_subtypes_to_data(self) -> None:
+    #     """Add subtype objects to all output featureclasses"""
 
-        arcpy.AddMessage('Adding subtype values to output layers')
-        output_folder = self.param_lookup['output_folder'].valueAsText
-        output_gdb = os.path.join(output_folder, f'{self.gdb_name}.gdb')
+    #     arcpy.AddMessage('Adding subtype values to output layers')
+    #     output_folder = self.param_lookup['output_folder'].valueAsText
+    #     output_gdb = os.path.join(output_folder, f'{self.gdb_name}.gdb')
 
-        with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
-            subtype_lookup = yaml.safe_load(lookup)
+    #     with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
+    #         subtype_lookup = yaml.safe_load(lookup)
 
-        # Make unique code values
-        unique_subtype_lookup = self.get_unique_subtype_codes(subtype_lookup)
-        arcpy.env.workspace = output_gdb
-        feature_classes = arcpy.ListFeatureClasses()
+    #     # Make unique code values
+    #     unique_subtype_lookup = self.get_unique_subtype_codes(subtype_lookup)
+    #     arcpy.env.workspace = output_gdb
+    #     feature_classes = arcpy.ListFeatureClasses()
 
-        for featureclass in feature_classes: 
-            for geometry_type in unique_subtype_lookup.keys():
-                # Skip GC fc's
-                if geometry_type in featureclass and 'GC' not in featureclass:
-                    arcpy.AddMessage(f' - {featureclass}')
-                    field = [field.name for field in arcpy.ListFields(featureclass) if 'FCSubtype' in field.name][0]
-                    arcpy.management.SetSubtypeField(featureclass, field)
-                    for data in unique_subtype_lookup[geometry_type].values():
-                        arcpy.management.AddSubtype(featureclass, data['code'], data['objl_string'])  
+    #     for featureclass in feature_classes: 
+    #         for geometry_type in unique_subtype_lookup.keys():
+    #             # Skip GC fc's
+    #             if geometry_type in featureclass and 'GC' not in featureclass:
+    #                 arcpy.AddMessage(f' - {featureclass}')
+    #                 field = [field.name for field in arcpy.ListFields(featureclass) if 'FCSubtype' in field.name][0]
+    #                 arcpy.management.SetSubtypeField(featureclass, field)
+    #                 for data in unique_subtype_lookup[geometry_type].values():
+    #                     arcpy.management.AddSubtype(featureclass, data['code'], data['objl_string'])  
 
     def create_caris_export(self) -> None:
         """Output datasets to Geopackage by unique OBJL_NAME"""
@@ -330,10 +329,32 @@ class Engine:
             layer_file = reader.read()
         layer_dict = json.loads(layer_file)
         output_gpkg = f'{self.gdb_name}.gpkg'
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        dbmsType_lookup = {
+            'Integer': 2,
+            'String': 5,
+            'Geometry': 8,
+            'OID': 11,
+            'Double': 3
+        }
         for layer in layer_dict['layerDefinitions']:
             if 'featureTable' in layer:
-                layer['featureTable']['dataConnection']['workspaceConnectionString'] = f"AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}"
+                layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
+                fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.gdb', layer['name']))
+                field_names = [field.name for field in fields]
+                field_jsons = [{
+                            "name": field.name,
+                            "type": f"{'esriFieldTypeBigInteger' if field.type == 'OID' else 'esriFieldType' + field.type}",
+                            "isNullable": field.isNullable,
+                            "length": field.length,
+                            "precision": field.precision,
+                            "scale": field.scale,
+                            "required": field.required,
+                            "editable": field.editable,
+                            "dbmsType": dbmsType_lookup[field.type]
+                        } for field in fields]
+                layer['featureTable']['dataConnection']['sqlQuery'] = f'select {",".join(field_names)} from main.{layer["name"]}'
+                layer['featureTable']['dataConnection']['queryFields'] = field_jsons
         
-        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         with open(str(output_folder / f'{self.layerfile_name}.lyrx'), 'w') as writer:
             writer.writelines(json.dumps(layer_dict, indent=4))                  
