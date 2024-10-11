@@ -53,12 +53,33 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "UTHENTICATION_MODE=OSA;DATABASE=.\\{~}.gpkg",
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
                     "workspaceFactory": "Sql",
-                    "sqlQuery": "select OBJECTID_1,Shape,AGEN,BCNSHP,BOYSHP,BUISHP,CALSGN,CATBUA,CATDPG,CATFOG,CATLAM,CATLIT,CATLMK,                    CATLND,CATOBS,CATOFP,CATROS,CATSIL,CATSPM,CATWRK,CLSDEF,CLSNAM,COLOUR,COLPAT,COMCHA,CONDTN,CONRAD,CONVIS,CURVEL,                        DATEND,DATSTA,DEPTH,ELEVAT,ESTRNG,EXCLIT,EXPSOU,FFPT_RIND,FIDN,FIDS,FUNCTN,GRUP,HEIGHT,INFORM,LITCHR,LITVIS,LNAM,                            LNAM_REFS,MARSYS,MLTYLT,NATCON,NATION,NATQUA,NATSUR,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,                                PICREP,PRIM,PRODCT,QUASOU,RCID,RECDAT,RECIND,RESTRN,RVER,RYRMGV,SCALE_LVL,SCAMAX,SCAMIN,SECTR1,SECTR2,                                    SIGFRQ,SIGGEN,SIGGRP,SIGPER,SIGSEQ,SORDAT,SORIND,SOUACC,STATUS,SYMINS,TECSOU,TOPSHP,TXTDSC,VALACM,                                        VALMAG,VALMXR,VALNMR,VALSOU,VERACC,VERDAT,VERLEN,WATLEV,OBJL_NAME,asgnmt,invreq,FCSubtype,                                            OBJECTID,Join_Count,TARGET_FID,POSACC,QUAPOS,RCID_1,RCNM,RUIN,RVER_1,SCALE_LVL_1 from main.%Point_features",
-                    "dataset": "main.%Point_features",
-                    "datasetType": "esriDTFeatureClass"
+                    "dataset": "main.Point_features",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPoint",
+                    "queryFields": [],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"
@@ -9092,12 +9113,33 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "UTHENTICATION_MODE=OSA;DATABASE=.\\{~}.gpkg",
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
                     "workspaceFactory": "Sql",
-                    "sqlQuery": "select OBJECTID_1,Shape,AGEN,BCNSHP,BOYSHP,BUISHP,CALSGN,CATBUA,CATDPG,CATFOG,CATLAM,CATLIT,CATLMK,                    CATLND,CATOBS,CATOFP,CATROS,CATSIL,CATSPM,CATWRK,CLSDEF,CLSNAM,COLOUR,COLPAT,COMCHA,CONDTN,CONRAD,CONVIS,CURVEL,                        DATEND,DATSTA,DEPTH,ELEVAT,ESTRNG,EXCLIT,EXPSOU,FFPT_RIND,FIDN,FIDS,FUNCTN,GRUP,HEIGHT,INFORM,LITCHR,LITVIS,LNAM,                            LNAM_REFS,MARSYS,MLTYLT,NATCON,NATION,NATQUA,NATSUR,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,                                PICREP,PRIM,PRODCT,QUASOU,RCID,RECDAT,RECIND,RESTRN,RVER,RYRMGV,SCALE_LVL,SCAMAX,SCAMIN,SECTR1,SECTR2,                                    SIGFRQ,SIGGEN,SIGGRP,SIGPER,SIGSEQ,SORDAT,SORIND,SOUACC,STATUS,SYMINS,TECSOU,TOPSHP,TXTDSC,VALACM,                                        VALMAG,VALMXR,VALNMR,VALSOU,VERACC,VERDAT,VERLEN,WATLEV,OBJL_NAME,asgnmt,invreq,FCSubtype,                                            OBJECTID,Join_Count,TARGET_FID,POSACC,QUAPOS,RCID_1,RCNM,RUIN,RVER_1,SCALE_LVL_1 from main.%LineString_features",
-                    "dataset": "main.%LineString_features",
-                    "datasetType": "esriDTFeatureClass"
+                    "dataset": "main.LineString_features",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPolyline",
+                    "queryFields": [],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"
@@ -14173,12 +14215,33 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "UTHENTICATION_MODE=OSA;DATABASE=.\\{~}.gpkg",
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
                     "workspaceFactory": "Sql",
-                    "sqlQuery": "select OBJECTID_1,Shape,AGEN,BCNSHP,BOYSHP,BUISHP,CALSGN,CATBUA,CATDPG,CATFOG,CATLAM,CATLIT,CATLMK,                    CATLND,CATOBS,CATOFP,CATROS,CATSIL,CATSPM,CATWRK,CLSDEF,CLSNAM,COLOUR,COLPAT,COMCHA,CONDTN,CONRAD,CONVIS,CURVEL,                        DATEND,DATSTA,DEPTH,ELEVAT,ESTRNG,EXCLIT,EXPSOU,FFPT_RIND,FIDN,FIDS,FUNCTN,GRUP,HEIGHT,INFORM,LITCHR,LITVIS,LNAM,                            LNAM_REFS,MARSYS,MLTYLT,NATCON,NATION,NATQUA,NATSUR,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,                                PICREP,PRIM,PRODCT,QUASOU,RCID,RECDAT,RECIND,RESTRN,RVER,RYRMGV,SCALE_LVL,SCAMAX,SCAMIN,SECTR1,SECTR2,                                    SIGFRQ,SIGGEN,SIGGRP,SIGPER,SIGSEQ,SORDAT,SORIND,SOUACC,STATUS,SYMINS,TECSOU,TOPSHP,TXTDSC,VALACM,                                        VALMAG,VALMXR,VALNMR,VALSOU,VERACC,VERDAT,VERLEN,WATLEV,OBJL_NAME,asgnmt,invreq,FCSubtype,                                            OBJECTID,Join_Count,TARGET_FID,POSACC,QUAPOS,RCID_1,RCNM,RUIN,RVER_1,SCALE_LVL_1 from main.%Polygon_features",
-                    "dataset": "main.%Polygon_features",
-                    "datasetType": "esriDTFeatureClass"
+                    "dataset": "main.Polygon_features",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPolygon",
+                    "queryFields": [],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"

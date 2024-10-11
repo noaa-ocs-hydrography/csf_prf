@@ -162,7 +162,6 @@ for layer in layer_dict["layerDefinitions"]:
         if 'featureTable' in current_layer:
             fc_name = f"{current_layer['name']}_features_{output_type}"
             current_layer["featureTable"]["dataConnection"]["dataset"] = f'main.{fc_name}'
-            current_layer["featureTable"]["dataConnection"]["sqlQuery"] = f'select OBJECTID,Shape,AGEN,CATBRG,CATCAN,CATCBL,CATCOA,CATNAV,CATRUN,CATSLC,CATTRK,COLOUR,COLPAT,CONDTN,CONRAD,CONVIS,DATEND,DATSTA,DRVAL1,DRVAL2,ELEVAT,FFPT_RIND,FIDN,FIDS,GRUP,HEIGHT,HORACC,HORCLR,HORLEN,HORWID,ICEFAC,INFORM,LNAM,LNAM_REFS,NATCON,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,PICREP,PRIM,QUASOU,RCID,RECDAT,RECIND,RVER,SCALE_LVL,SCAMAX,SCAMIN,SORDAT,SORIND,SOUACC,STATUS,TECSOU,TRAFIC,TXTDSC,VALDCO,VERACC,VERCCL,VERCLR,VERCOP,VERCSA,VERDAT,VERLEN,WATLEV,hypcat,OBJL_NAME,asgnmt,invreq,FCSubtype from main.{fc_name}'
             current_layer["name"] = f'{fc_name}'
             current_layer["uRI"] = f"CIMPATH=map/{fc_name}.xml"
             csf_prf_layers.append(current_layer)
@@ -174,6 +173,8 @@ layer_dict["layerDefinitions"] = csf_prf_layers
 # Write out the final layerfile
 with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'w') as writer:
     writer.writelines(json.dumps(layer_dict, indent=4))
+
+
 
 
 # Setting featureTemplates and groups in the MCD_maritime_layerfile
@@ -194,32 +195,19 @@ for layer in MCD_layer_dict["layerDefinitions"]:
             group['heading'] = "FCSubtype"
         layer["renderer"]["groups"] = groups
 
-# Create layer definitions for CSF/PRF layers
+
+# Create layer definitions for MCD layers
 csf_prf_layers = []
 for layer in MCD_layer_dict["layerDefinitions"]:
     current_layer = copy.deepcopy(layer)
     if 'featureTable' in current_layer:
         fc_name = f"{current_layer['name']}_features"
-        current_layer["featureTable"]["dataConnection"] = {
-                "type" : "CIMStandardDataConnection",
-                "workspaceConnectionString" : "UTHENTICATION_MODE=OSA;DATABASE=.\\{~}.gpkg",
-                "workspaceFactory" : "Sql",
-                "sqlQuery" : f"select OBJECTID_1,Shape,AGEN,BCNSHP,BOYSHP,BUISHP,CALSGN,CATBUA,CATDPG,CATFOG,CATLAM,CATLIT,CATLMK,\
-                    CATLND,CATOBS,CATOFP,CATROS,CATSIL,CATSPM,CATWRK,CLSDEF,CLSNAM,COLOUR,COLPAT,COMCHA,CONDTN,CONRAD,CONVIS,CURVEL,\
-                        DATEND,DATSTA,DEPTH,ELEVAT,ESTRNG,EXCLIT,EXPSOU,FFPT_RIND,FIDN,FIDS,FUNCTN,GRUP,HEIGHT,INFORM,LITCHR,LITVIS,LNAM,\
-                            LNAM_REFS,MARSYS,MLTYLT,NATCON,NATION,NATQUA,NATSUR,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,ORIENT,PEREND,PERSTA,\
-                                PICREP,PRIM,PRODCT,QUASOU,RCID,RECDAT,RECIND,RESTRN,RVER,RYRMGV,SCALE_LVL,SCAMAX,SCAMIN,SECTR1,SECTR2,\
-                                    SIGFRQ,SIGGEN,SIGGRP,SIGPER,SIGSEQ,SORDAT,SORIND,SOUACC,STATUS,SYMINS,TECSOU,TOPSHP,TXTDSC,VALACM,\
-                                        VALMAG,VALMXR,VALNMR,VALSOU,VERACC,VERDAT,VERLEN,WATLEV,OBJL_NAME,asgnmt,invreq,FCSubtype,\
-                                            OBJECTID,Join_Count,TARGET_FID,POSACC,QUAPOS,RCID_1,RCNM,RUIN,RVER_1,SCALE_LVL_1 from main.%{fc_name}",
-                "dataset" : f'main.%{fc_name}',  # this is always the second index
-                "datasetType" : "esriDTFeatureClass"
-            }
+        current_layer["featureTable"]["dataConnection"]["dataset"] = f'main.{fc_name}'
         current_layer["name"] = fc_name
         current_layer["uRI"] = f"CIMPATH=map/{fc_name}.xml"
         csf_prf_layers.append(current_layer)
 
-# Reset layers to be only csf/prf layers and group layer
+# Reset layers to be only S57 to MCD and group layer
 csf_prf_layers.append(MCD_layer_dict["layerDefinitions"][-1])
 MCD_layer_dict["layerDefinitions"] = csf_prf_layers
 

@@ -18179,7 +18179,7 @@
                     "workspaceFactory": "Sql",
                     "dataset": "main.LineString_features_assigned",
                     "datasetType": "esriDTFeatureClass",
-                    "sqlQuery": "",                    
+                    "sqlQuery": "",
                     "srid": "4326",
                     "spatialReference": {
                         "wkid": 4326,
@@ -28383,7 +28383,7 @@
                     "workspaceFactory": "Sql",
                     "dataset": "main.Polygon_features_assigned",
                     "datasetType": "esriDTFeatureClass",
-                    "sqlQuery": "",                    
+                    "sqlQuery": "",
                     "srid": "4326",
                     "spatialReference": {
                         "wkid": 4326,
@@ -38380,7 +38380,7 @@
                     "workspaceFactory": "Sql",
                     "dataset": "main.Polygon_features_unassigned",
                     "datasetType": "esriDTFeatureClass",
-                    "sqlQuery": "",                    
+                    "sqlQuery": "",
                     "srid": "4326",
                     "spatialReference": {
                         "wkid": 4326,

@@ -16,7 +16,7 @@ if __name__ == "__main__":
         "enc_file": Param(str(INPUTS / "H13384_FFF.000")),
         "output_folder": Param(str(OUTPUTS)),
         "caris_export": Param(False),
-        "layerfile_export": Param(False)
+        "layerfile_export": Param(True)
     }
     engine = S57ConversionEngine(param_lookup)
     engine.start()
