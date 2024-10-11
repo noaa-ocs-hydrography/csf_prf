@@ -106,14 +106,17 @@ class Engine:
 
         csfprf_output_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
         arcpy.management.CreateSQLiteDatabase(csfprf_output_path, spatial_type='GEOPACKAGE')
+        caris_output_path = os.path.join( caris_folder, self.gdb_name)
+        arcpy.management.CreateSQLiteDatabase(caris_output_path, spatial_type='GEOPACKAGE')
+        letter_lookup = {'Point': 'P', 'LineString': 'L', 'Polygon': 'A'}
         for feature_type, feature_class in self.output_data.items():
             if feature_class:
                   # Don't export sheets or GC files to Caris gpkg
                 if ("GC" not in feature_type and feature_type.split('_')[0] in ['Point', 'LineString', 'Polygon']):
                     # Export to csf_prf_geopackage.gpkg as well as CARIS gpkg files
                     self.export_to_geopackage(csfprf_output_path, feature_type, feature_class)
-                    output_path = os.path.join( caris_folder, feature_type)
-                    arcpy.management.CreateSQLiteDatabase(output_path, spatial_type='GEOPACKAGE')
+
+                    feature_type_letter = letter_lookup[feature_type.split('_')[0]]
                     objl_name_check = [field.name for field in arcpy.ListFields(feature_class) if 'OBJL_NAME' in field.name]
                     if objl_name_check:
                         objl_name_field = objl_name_check[0]
@@ -121,12 +124,12 @@ class Engine:
                         for objl_name in objl_names:
                             query = f'{objl_name_field} = ' + f"'{objl_name}'"
                             rows = arcpy.management.SelectLayerByAttribute(feature_class,'NEW_SELECTION', query)
-                            gpkg_data = os.path.join(output_path + ".gpkg", objl_name)
+                            gpkg_data = os.path.join(caris_output_path + ".gpkg", f'{objl_name}_{feature_type_letter}')
                             try:
                                 arcpy.AddMessage(f"   - {objl_name}")
                                 arcpy.conversion.ExportFeatures(rows, gpkg_data, use_field_alias_as_name="USE_ALIAS")
                             except CompositeSourceCreatorException as e:
-                                arcpy.AddMessage(f'Error writing {objl_name} to {output_path} : \n{e}')
+                                arcpy.AddMessage(f'Error writing {objl_name} to {caris_output_path} : \n{e}')
                 else:
                     self.export_to_geopackage(csfprf_output_path, feature_type, feature_class)
 
@@ -325,6 +328,7 @@ class Engine:
     def write_output_layer_file(self) -> None:
         """Update layer file for output gdb"""
 
+        arcpy.AddMessage('Writing output layerfile')
         with open(str(INPUTS / f'{self.layerfile_name}.lyrx'), 'r') as reader:
             layer_file = reader.read()
         layer_dict = json.loads(layer_file)

@@ -75,7 +75,6 @@ class ENCReaderEngine(Engine):
         self.param_lookup = param_lookup
         self.sheets_layer = sheets_layer
         self.gdb_name = 'csf_features'
-        self.layerfile_name = 'maritime_layerfile'
         self.driver = None
         self.scale_bounds = {}
         self.feature_lookup = None
@@ -747,8 +746,6 @@ class ENCReaderEngine(Engine):
         self.print_feature_total()
         self.add_columns()
         self.join_quapos_to_features()
-        if self.param_lookup['layerfile_export'].value:
-            self.write_output_layer_file()
 
         # Run times in seconds
         # download_gcs - 75.
