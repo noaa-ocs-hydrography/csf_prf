@@ -24,6 +24,7 @@ class CompositeSourceCreatorEngine(Engine):
     def __init__(self, param_lookup: dict) -> None:
         self.param_lookup = param_lookup
         self.gdb_name = 'csf_features'
+        self.layerfile_name = 'maritime_layerfile'
         self.output_db = False
         self.sheets_layer = None
         self.output_data = {
@@ -58,7 +59,7 @@ class CompositeSourceCreatorEngine(Engine):
         if not self.param_lookup['enc_files'].valueAsText:
             self.download_enc_files()
 
-        arcpy.AddMessage('converting ENC files')
+        arcpy.AddMessage('Converting ENC files')
         enc_engine = ENCReaderEngine(self.param_lookup, self.sheets_layer)
         enc_engine.start()
         self.export_enc_layers(enc_engine)
@@ -69,7 +70,7 @@ class CompositeSourceCreatorEngine(Engine):
         junctions_parameter = self.param_lookup['junctions'].valueAsText
         if junctions_parameter:
             junctions = junctions_parameter.replace("'", "").split(';')
-            arcpy.AddMessage('converting junctions')
+            arcpy.AddMessage('Converting junctions')
             layers = [self.make_junctions_layer(junctions_file) for junctions_file in junctions]
             layer = arcpy.management.Merge(layers, r'memory\junctions_layer')
             self.add_column_and_constant(layer, 'invreq', nullable=True)
@@ -80,7 +81,7 @@ class CompositeSourceCreatorEngine(Engine):
 
         sheet_parameter = self.param_lookup['sheets'].valueAsText
         if sheet_parameter:
-            arcpy.AddMessage('converting sheets')
+            arcpy.AddMessage('Converting sheets')
             sheets = sheet_parameter.replace("'", "").split(';')
             layers = [self.make_sheets_layer(sheets_file) for sheets_file in sheets]
             layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
@@ -291,12 +292,9 @@ class CompositeSourceCreatorEngine(Engine):
         self.convert_sheets()
         self.convert_junctions()
         self.convert_enc_files()
-        # subtype_start = time.time()
-        if self.param_lookup['layerfile_export'].value:
-            self.add_subtypes_to_data()
-            # subtype_end = time.time()
-            # arcpy.AddMessage(f'Subtype runtime: {(subtype_end - subtype_start) / 60}')
         self.write_to_geopackage()
+        if self.param_lookup['layerfile_export'].value:
+            self.write_output_layer_file()
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
 

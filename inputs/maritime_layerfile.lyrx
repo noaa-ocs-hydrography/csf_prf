@@ -53,11 +53,33 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "Point_features_assigned",
-                    "datasetType": "esriDTFeatureClass"
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
+                    "workspaceFactory": "Sql",
+                    "dataset": "main.Point_features_assigned",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPoint",
+                    "queryFields": [],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"
@@ -9092,11 +9114,33 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "Point_features_unassigned",
-                    "datasetType": "esriDTFeatureClass"
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
+                    "workspaceFactory": "Sql",
+                    "dataset": "main.Point_features_unassigned",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPoint",
+                    "queryFields": [],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"
@@ -18130,11 +18174,33 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "LineString_features_assigned",
-                    "datasetType": "esriDTFeatureClass"
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
+                    "workspaceFactory": "Sql",
+                    "dataset": "main.LineString_features_assigned",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPolyline",
+                    "queryFields": [],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"
@@ -23210,11 +23276,33 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "LineString_features_unassigned",
-                    "datasetType": "esriDTFeatureClass"
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
+                    "workspaceFactory": "Sql",
+                    "dataset": "main.LineString_features_unassigned",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPolyline",
+                    "queryFields": [],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"
@@ -28290,11 +28378,33 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "Polygon_features_assigned",
-                    "datasetType": "esriDTFeatureClass"
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
+                    "workspaceFactory": "Sql",
+                    "dataset": "main.Polygon_features_assigned",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPolygon",
+                    "queryFields": [],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"
@@ -38265,11 +38375,33 @@
                     "returnType": "Default"
                 },
                 "dataConnection": {
-                    "type": "CIMStandardDataConnection",
-                    "workspaceConnectionString": "DATABASE=.\\{~}.gdb",
-                    "workspaceFactory": "FileGDB",
-                    "dataset": "Polygon_features_unassigned",
-                    "datasetType": "esriDTFeatureClass"
+                    "type": "CIMSqlQueryDataConnection",
+                    "workspaceConnectionString": "",
+                    "workspaceFactory": "Sql",
+                    "dataset": "main.Polygon_features_unassigned",
+                    "datasetType": "esriDTFeatureClass",
+                    "sqlQuery": "",
+                    "srid": "4326",
+                    "spatialReference": {
+                        "wkid": 4326,
+                        "latestWkid": 4326,
+                        "xyTolerance": 8.983152841195215e-09,
+                        "zTolerance": 0.001,
+                        "mTolerance": 0.001,
+                        "falseX": -400,
+                        "falseY": -400,
+                        "xyUnits": 999999999.9999999,
+                        "falseZ": -100000,
+                        "zUnits": 10000,
+                        "falseM": -100000,
+                        "mUnits": 10000
+                    },
+                    "oIDFields": "OBJECTID",
+                    "geometryType": "esriGeometryPolygon",
+                    "queryFields": [],
+                    "spatialStorageType": 11,
+                    "isTableBased": true,
+                    "mappedOIDFieldLength": "OID64Bit"
                 },
                 "studyAreaSpatialRel": "esriSpatialRelUndefined",
                 "searchOrder": "esriSearchOrderSpatial"

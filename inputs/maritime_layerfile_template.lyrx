@@ -52,13 +52,34 @@
           "expression": "left(Subtypename($feature),6) + \" - \" + $feature.OBJECTID",
           "returnType": "Default"
         },
-        "dataConnection": {
-          "type": "CIMFeatureDatasetDataConnection",
-          "featureDataset": "Nautical",
-          "workspaceConnectionString": "DATABASE=",
-          "workspaceFactory": "FileGDB",
-          "dataset": "Point",
-          "datasetType": "esriDTFeatureClass"
+        "dataConnection" : {
+          "type" : "CIMSqlQueryDataConnection",
+          "workspaceConnectionString" : "",
+          "workspaceFactory" : "Sql",
+          "dataset" : "",
+          "datasetType" : "esriDTFeatureClass",
+          "sqlQuery": "",
+          "srid" : "4326",
+          "spatialReference" : {
+            "wkid" : 4326,
+            "latestWkid" : 4326,
+            "xyTolerance" : 8.983152841195215e-09,
+            "zTolerance" : 0.001,
+            "mTolerance" : 0.001,
+            "falseX" : -400,
+            "falseY" : -400,
+            "xyUnits" : 999999999.99999988,
+            "falseZ" : -100000,
+            "zUnits" : 10000,
+            "falseM" : -100000,
+            "mUnits" : 10000
+          },
+          "oIDFields" : "OBJECTID",
+          "geometryType" : "esriGeometryPoint",
+          "queryFields": [],
+          "spatialStorageType" : 11,
+          "isTableBased" : true,
+          "mappedOIDFieldLength" : "OID64Bit"
         },
         "studyAreaSpatialRel": "esriSpatialRelUndefined",
         "searchOrder": "esriSearchOrderSpatial"
@@ -532,13 +553,34 @@
           "expression": "left(Subtypename($feature),6) + \" - \" + $feature.OBJECTID",
           "returnType": "Default"
         },
-        "dataConnection": {
-          "type": "CIMFeatureDatasetDataConnection",
-          "featureDataset": "Nautical",
-          "workspaceConnectionString": "DATABASE=",
-          "workspaceFactory": "FileGDB",
-          "dataset": "LineString",
-          "datasetType": "esriDTFeatureClass"
+        "dataConnection" : {
+          "type" : "CIMSqlQueryDataConnection",
+          "workspaceConnectionString" : "",
+          "workspaceFactory" : "Sql",
+          "dataset" : "",
+          "datasetType" : "esriDTFeatureClass",
+          "sqlQuery": "",
+          "srid" : "4326",
+          "spatialReference" : {
+            "wkid" : 4326,
+            "latestWkid" : 4326,
+            "xyTolerance" : 8.983152841195215e-09,
+            "zTolerance" : 0.001,
+            "mTolerance" : 0.001,
+            "falseX" : -400,
+            "falseY" : -400,
+            "xyUnits" : 999999999.99999988,
+            "falseZ" : -100000,
+            "zUnits" : 10000,
+            "falseM" : -100000,
+            "mUnits" : 10000
+          },
+          "oIDFields" : "OBJECTID",
+          "geometryType" : "esriGeometryPolyline",
+          "queryFields": [],
+          "spatialStorageType" : 11,
+          "isTableBased" : true,
+          "mappedOIDFieldLength" : "OID64Bit"
         },
         "studyAreaSpatialRel": "esriSpatialRelUndefined",
         "searchOrder": "esriSearchOrderSpatial"
@@ -1010,13 +1052,34 @@
           "expression": "left(Subtypename($feature),6) + \" - \" + $feature.OBJECTID",
           "returnType": "Default"
         },
-        "dataConnection": {
-          "type": "CIMFeatureDatasetDataConnection",
-          "featureDataset": "Nautical",
-          "workspaceConnectionString": "DATABASE=",
-          "workspaceFactory": "FileGDB",
-          "dataset": "Polygon",
-          "datasetType": "esriDTFeatureClass"
+        "dataConnection" : {
+          "type" : "CIMSqlQueryDataConnection",
+          "workspaceConnectionString" : "",
+          "workspaceFactory" : "Sql",
+          "dataset" : "",
+          "datasetType" : "esriDTFeatureClass",
+          "sqlQuery": "",
+          "srid" : "4326",
+          "spatialReference" : {
+            "wkid" : 4326,
+            "latestWkid" : 4326,
+            "xyTolerance" : 8.983152841195215e-09,
+            "zTolerance" : 0.001,
+            "mTolerance" : 0.001,
+            "falseX" : -400,
+            "falseY" : -400,
+            "xyUnits" : 999999999.99999988,
+            "falseZ" : -100000,
+            "zUnits" : 10000,
+            "falseM" : -100000,
+            "mUnits" : 10000
+          },
+          "oIDFields" : "OBJECTID",
+          "geometryType" : "esriGeometryPolygon",
+          "queryFields": [],
+          "spatialStorageType" : 11,
+          "isTableBased" : true,
+          "mappedOIDFieldLength" : "OID64Bit"
         },
         "studyAreaSpatialRel": "esriSpatialRelUndefined",
         "searchOrder": "esriSearchOrderSpatial"

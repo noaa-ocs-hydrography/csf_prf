@@ -75,7 +75,6 @@ class ENCReaderEngine(Engine):
         self.param_lookup = param_lookup
         self.sheets_layer = sheets_layer
         self.gdb_name = 'csf_features'
-        self.layerfile_name = 'maritime_layerfile'
         self.driver = None
         self.scale_bounds = {}
         self.feature_lookup = None
@@ -345,7 +344,6 @@ class ENCReaderEngine(Engine):
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                         if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                             # TODO skip based on self.feature_lookup
-                            
                             if self.unapproved(geom_type, feature_json['properties']):
                                 continue
 
@@ -500,8 +498,8 @@ class ENCReaderEngine(Engine):
             cursor_fields = ['SHAPE@XY'] + sorted_point_fields
             with arcpy.da.InsertCursor(points_layer, cursor_fields, explicit=True) as point_cursor: 
                 for feature in self.geometries['Point'][feature_type]:
-                    # Make new list all set to None
-                    attribute_values = [None for i in range(len(cursor_fields))]
+                    # Make new list all set to empty string.  Using None would leave some different
+                    attribute_values = ['' for i in range(len(cursor_fields))]
                     # Set geometry on first index
                     coords = feature['geojson']['geometry']['coordinates']
                     attribute_values[0] = (coords[0], coords[1])
@@ -531,7 +529,7 @@ class ENCReaderEngine(Engine):
             cursor_fields = ['SHAPE@JSON'] + sorted_line_fields
             with arcpy.da.InsertCursor(lines_layer, cursor_fields, explicit=True) as line_cursor: 
                 for feature in self.geometries['LineString'][feature_type]:
-                    attribute_values = [None for i in range(len(cursor_fields))]
+                    attribute_values = ['' for i in range(len(cursor_fields))]
                     geometry = feature['geojson']['geometry']
                     attribute_values[0] = arcpy.AsShape(geometry).JSON
                     for fieldname, attr in list(feature['geojson']['properties'].items()):
@@ -557,7 +555,7 @@ class ENCReaderEngine(Engine):
             cursor_fields = ['SHAPE@'] + sorted_polygon_fields
             with arcpy.da.InsertCursor(polygons_layer, cursor_fields, explicit=True) as polygons_cursor: 
                 for feature in self.geometries['Polygon'][feature_type]:
-                    attribute_values = [None for i in range(len(cursor_fields))]
+                    attribute_values = ['' for i in range(len(cursor_fields))]
                     polygons = feature['geojson']['geometry']['coordinates']
                     if polygons:
                         points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
@@ -748,8 +746,6 @@ class ENCReaderEngine(Engine):
         self.print_feature_total()
         self.add_columns()
         self.join_quapos_to_features()
-        if self.param_lookup['layerfile_export'].value:
-            self.write_output_layer_file()
 
         # Run times in seconds
         # download_gcs - 75.

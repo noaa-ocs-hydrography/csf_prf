@@ -51,7 +51,7 @@ class S57ConversionEngine(Engine):
 
     def add_objl_string_to_S57(self) -> None:
         """Convert OBJL number to string name"""
-        
+
         aton_values = self.get_aton_lookup()
         aton_count = 0
         aton_found = set()
@@ -99,7 +99,7 @@ class S57ConversionEngine(Engine):
                     point_cursor.insertRow(attribute_values)
 
             self.geometries['Point']['output'] = points_layer
-                    
+
             # LINES
             line_fields = self.get_all_fields(self.geometries['LineString'][feature_type])
             lines_layer = arcpy.management.CreateFeatureclass(
@@ -230,7 +230,7 @@ class S57ConversionEngine(Engine):
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
                         if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                             self.geometries[geom_type]['QUAPOS'].append({'geojson': feature_json})     
-    
+
     def get_multiple_values_from_field(self, field_name, current_value, s57_lookup):
         """
         Isolating logic for handling multiple values being found in one S57 field
@@ -255,7 +255,7 @@ class S57ConversionEngine(Engine):
 
         nad83_2011_spatial_ref = arcpy.SpatialReference(6318)
         wgs84_spatial_ref = arcpy.SpatialReference(4326)
-        
+
         nad83_gdal = osr.SpatialReference()
         nad83_gdal.ImportFromEPSG(6318)
         wgs84_gdal = osr.SpatialReference()
@@ -307,7 +307,7 @@ class S57ConversionEngine(Engine):
         self.set_driver()
         self.split_multipoint_env() 
         self.get_feature_records()
-        # self.return_primitives_env() 
+        # self.return_primitives_env()
         # self.get_vector_records()
         self.build_output_layers()
         self.add_objl_string_to_S57() 
@@ -318,7 +318,6 @@ class S57ConversionEngine(Engine):
         self.add_projected_columns()
         self.project_rows_to_wgs84()
         if self.param_lookup['layerfile_export'].value:
-            self.add_subtypes_to_data()
             self.write_output_layer_file()
         self.write_to_geopackage()  
         arcpy.AddMessage('Done')
