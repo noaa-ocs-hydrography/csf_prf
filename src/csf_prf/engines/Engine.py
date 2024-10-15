@@ -341,11 +341,12 @@ class Engine:
             'OID': 11,
             'Double': 3
         }
+        geom_fields = ['Shape_Length', 'Shape_Area']
         for layer in layer_dict['layerDefinitions']:
             if 'featureTable' in layer:
                 layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
                 fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.gdb', layer['name']))
-                field_names = [field.name for field in fields]
+                field_names = [field.name for field in fields if field.name not in geom_fields]
                 field_jsons = [{
                             "name": field.name,
                             "type": f"{'esriFieldTypeBigInteger' if field.type == 'OID' else 'esriFieldType' + field.type}",
@@ -356,7 +357,7 @@ class Engine:
                             "required": field.required,
                             "editable": field.editable,
                             "dbmsType": dbmsType_lookup[field.type]
-                        } for field in fields]
+                        } for field in fields if field.name not in geom_fields]
                 layer['featureTable']['dataConnection']['sqlQuery'] = f'select {",".join(field_names)} from main.{layer["name"]}'
                 layer['featureTable']['dataConnection']['queryFields'] = field_jsons
         
