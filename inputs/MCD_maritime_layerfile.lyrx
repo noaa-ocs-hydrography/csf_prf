@@ -22126,6 +22126,401 @@
                             },
                             {
                                 "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-Unknown",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMHSVColor",
+                                                    "values": [
+                                                        65,
+                                                        22,
+                                                        99,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-always dry",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidStroke",
+                                                "enable": true,
+                                                "capStyle": "Round",
+                                                "joinStyle": "Round",
+                                                "lineStyle3D": "Strip",
+                                                "miterLimit": 10,
+                                                "width": 0.4,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        100
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        242,
+                                                        230,
+                                                        179,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-always under water/submerged",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidStroke",
+                                                "effects": [
+                                                    {
+                                                        "type": "CIMGeometricEffectDashes",
+                                                        "dashTemplate": [
+                                                            3.5999999999999996,
+                                                            1.44
+                                                        ],
+                                                        "lineDashEnding": "NoConstraint",
+                                                        "controlPointEnding": "NoConstraint"
+                                                    }
+                                                ],
+                                                "enable": true,
+                                                "capStyle": "Butt",
+                                                "joinStyle": "Miter",
+                                                "lineStyle3D": "Strip",
+                                                "miterLimit": 10,
+                                                "width": 0.43200000000000005,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        100
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMCMYKColor",
+                                                    "values": [
+                                                        20,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-awash",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidStroke",
+                                                "effects": [
+                                                    {
+                                                        "type": "CIMGeometricEffectDashes",
+                                                        "dashTemplate": [
+                                                            3.5999999999999996,
+                                                            1.44
+                                                        ],
+                                                        "lineDashEnding": "NoConstraint",
+                                                        "controlPointEnding": "NoConstraint"
+                                                    }
+                                                ],
+                                                "enable": true,
+                                                "capStyle": "Butt",
+                                                "joinStyle": "Miter",
+                                                "lineStyle3D": "Strip",
+                                                "miterLimit": 10,
+                                                "width": 0.43200000000000005,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        100
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMCMYKColor",
+                                                    "values": [
+                                                        20,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-covers and uncovers",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidStroke",
+                                                "effects": [
+                                                    {
+                                                        "type": "CIMGeometricEffectDashes",
+                                                        "dashTemplate": [
+                                                            3.5999999999999996,
+                                                            1.44
+                                                        ],
+                                                        "lineDashEnding": "NoConstraint",
+                                                        "controlPointEnding": "NoConstraint"
+                                                    }
+                                                ],
+                                                "enable": true,
+                                                "capStyle": "Butt",
+                                                "joinStyle": "Miter",
+                                                "lineStyle3D": "Strip",
+                                                "miterLimit": 10,
+                                                "width": 0.43200000000000005,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        100
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        171,
+                                                        205,
+                                                        102,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-floating",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMHSVColor",
+                                                    "values": [
+                                                        281,
+                                                        15,
+                                                        99,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-partly submerged at high water",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMHSVColor",
+                                                    "values": [
+                                                        196,
+                                                        28,
+                                                        99,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-subject to inundation or flooding",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMHSVColor",
+                                                    "values": [
+                                                        153,
+                                                        24,
+                                                        99,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
                                 "label": "SLOGRD_SlopingGround",
                                 "patch": "Default",
                                 "symbol": {
@@ -23315,42 +23710,6 @@
                             },
                             {
                                 "type": "CIMUniqueValueClass",
-                                "label": "Unknown",
-                                "patch": "Default",
-                                "symbol": {
-                                    "type": "CIMSymbolReference",
-                                    "symbol": {
-                                        "type": "CIMPolygonSymbol",
-                                        "symbolLayers": [
-                                            {
-                                                "type": "CIMSolidFill",
-                                                "enable": true,
-                                                "color": {
-                                                    "type": "CIMHSVColor",
-                                                    "values": [
-                                                        65,
-                                                        22,
-                                                        99,
-                                                        100
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "angleAlignment": "Map"
-                                    }
-                                },
-                                "values": [
-                                    {
-                                        "type": "CIMUniqueValue",
-                                        "fieldValues": [
-                                            "-32767"
-                                        ]
-                                    }
-                                ],
-                                "visible": true
-                            },
-                            {
-                                "type": "CIMUniqueValueClass",
                                 "label": "VEGATN_Vegetation",
                                 "patch": "Default",
                                 "symbol": {
@@ -23792,365 +24151,6 @@
                                         "type": "CIMUniqueValue",
                                         "fieldValues": [
                                             "1092"
-                                        ]
-                                    }
-                                ],
-                                "visible": true
-                            },
-                            {
-                                "type": "CIMUniqueValueClass",
-                                "label": "always dry",
-                                "patch": "Default",
-                                "symbol": {
-                                    "type": "CIMSymbolReference",
-                                    "symbol": {
-                                        "type": "CIMPolygonSymbol",
-                                        "symbolLayers": [
-                                            {
-                                                "type": "CIMSolidStroke",
-                                                "enable": true,
-                                                "capStyle": "Round",
-                                                "joinStyle": "Round",
-                                                "lineStyle3D": "Strip",
-                                                "miterLimit": 10,
-                                                "width": 0.4,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        100
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "type": "CIMSolidFill",
-                                                "enable": true,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        242,
-                                                        230,
-                                                        179,
-                                                        100
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "angleAlignment": "Map"
-                                    }
-                                },
-                                "values": [
-                                    {
-                                        "type": "CIMUniqueValue",
-                                        "fieldValues": [
-                                            "2"
-                                        ]
-                                    }
-                                ],
-                                "visible": true
-                            },
-                            {
-                                "type": "CIMUniqueValueClass",
-                                "label": "always under water/submerged",
-                                "patch": "Default",
-                                "symbol": {
-                                    "type": "CIMSymbolReference",
-                                    "symbol": {
-                                        "type": "CIMPolygonSymbol",
-                                        "symbolLayers": [
-                                            {
-                                                "type": "CIMSolidStroke",
-                                                "effects": [
-                                                    {
-                                                        "type": "CIMGeometricEffectDashes",
-                                                        "dashTemplate": [
-                                                            3.5999999999999996,
-                                                            1.44
-                                                        ],
-                                                        "lineDashEnding": "NoConstraint",
-                                                        "controlPointEnding": "NoConstraint"
-                                                    }
-                                                ],
-                                                "enable": true,
-                                                "capStyle": "Butt",
-                                                "joinStyle": "Miter",
-                                                "lineStyle3D": "Strip",
-                                                "miterLimit": 10,
-                                                "width": 0.43200000000000005,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        100
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "type": "CIMSolidFill",
-                                                "enable": true,
-                                                "color": {
-                                                    "type": "CIMCMYKColor",
-                                                    "values": [
-                                                        20,
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        100
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "angleAlignment": "Map"
-                                    }
-                                },
-                                "values": [
-                                    {
-                                        "type": "CIMUniqueValue",
-                                        "fieldValues": [
-                                            "3"
-                                        ]
-                                    }
-                                ],
-                                "visible": true
-                            },
-                            {
-                                "type": "CIMUniqueValueClass",
-                                "label": "awash",
-                                "patch": "Default",
-                                "symbol": {
-                                    "type": "CIMSymbolReference",
-                                    "symbol": {
-                                        "type": "CIMPolygonSymbol",
-                                        "symbolLayers": [
-                                            {
-                                                "type": "CIMSolidStroke",
-                                                "effects": [
-                                                    {
-                                                        "type": "CIMGeometricEffectDashes",
-                                                        "dashTemplate": [
-                                                            3.5999999999999996,
-                                                            1.44
-                                                        ],
-                                                        "lineDashEnding": "NoConstraint",
-                                                        "controlPointEnding": "NoConstraint"
-                                                    }
-                                                ],
-                                                "enable": true,
-                                                "capStyle": "Butt",
-                                                "joinStyle": "Miter",
-                                                "lineStyle3D": "Strip",
-                                                "miterLimit": 10,
-                                                "width": 0.43200000000000005,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        100
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "type": "CIMSolidFill",
-                                                "enable": true,
-                                                "color": {
-                                                    "type": "CIMCMYKColor",
-                                                    "values": [
-                                                        20,
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        100
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "angleAlignment": "Map"
-                                    }
-                                },
-                                "values": [
-                                    {
-                                        "type": "CIMUniqueValue",
-                                        "fieldValues": [
-                                            "5"
-                                        ]
-                                    }
-                                ],
-                                "visible": true
-                            },
-                            {
-                                "type": "CIMUniqueValueClass",
-                                "label": "covers and uncovers",
-                                "patch": "Default",
-                                "symbol": {
-                                    "type": "CIMSymbolReference",
-                                    "symbol": {
-                                        "type": "CIMPolygonSymbol",
-                                        "symbolLayers": [
-                                            {
-                                                "type": "CIMSolidStroke",
-                                                "effects": [
-                                                    {
-                                                        "type": "CIMGeometricEffectDashes",
-                                                        "dashTemplate": [
-                                                            3.5999999999999996,
-                                                            1.44
-                                                        ],
-                                                        "lineDashEnding": "NoConstraint",
-                                                        "controlPointEnding": "NoConstraint"
-                                                    }
-                                                ],
-                                                "enable": true,
-                                                "capStyle": "Butt",
-                                                "joinStyle": "Miter",
-                                                "lineStyle3D": "Strip",
-                                                "miterLimit": 10,
-                                                "width": 0.43200000000000005,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        100
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "type": "CIMSolidFill",
-                                                "enable": true,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        171,
-                                                        205,
-                                                        102,
-                                                        100
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "angleAlignment": "Map"
-                                    }
-                                },
-                                "values": [
-                                    {
-                                        "type": "CIMUniqueValue",
-                                        "fieldValues": [
-                                            "4"
-                                        ]
-                                    }
-                                ],
-                                "visible": true
-                            },
-                            {
-                                "type": "CIMUniqueValueClass",
-                                "label": "floating",
-                                "patch": "Default",
-                                "symbol": {
-                                    "type": "CIMSymbolReference",
-                                    "symbol": {
-                                        "type": "CIMPolygonSymbol",
-                                        "symbolLayers": [
-                                            {
-                                                "type": "CIMSolidFill",
-                                                "enable": true,
-                                                "color": {
-                                                    "type": "CIMHSVColor",
-                                                    "values": [
-                                                        281,
-                                                        15,
-                                                        99,
-                                                        100
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "angleAlignment": "Map"
-                                    }
-                                },
-                                "values": [
-                                    {
-                                        "type": "CIMUniqueValue",
-                                        "fieldValues": [
-                                            "7"
-                                        ]
-                                    }
-                                ],
-                                "visible": true
-                            },
-                            {
-                                "type": "CIMUniqueValueClass",
-                                "label": "partly submerged at high water",
-                                "patch": "Default",
-                                "symbol": {
-                                    "type": "CIMSymbolReference",
-                                    "symbol": {
-                                        "type": "CIMPolygonSymbol",
-                                        "symbolLayers": [
-                                            {
-                                                "type": "CIMSolidFill",
-                                                "enable": true,
-                                                "color": {
-                                                    "type": "CIMHSVColor",
-                                                    "values": [
-                                                        196,
-                                                        28,
-                                                        99,
-                                                        100
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "angleAlignment": "Map"
-                                    }
-                                },
-                                "values": [
-                                    {
-                                        "type": "CIMUniqueValue",
-                                        "fieldValues": [
-                                            "1"
-                                        ]
-                                    }
-                                ],
-                                "visible": true
-                            },
-                            {
-                                "type": "CIMUniqueValueClass",
-                                "label": "subject to inundation or flooding",
-                                "patch": "Default",
-                                "symbol": {
-                                    "type": "CIMSymbolReference",
-                                    "symbol": {
-                                        "type": "CIMPolygonSymbol",
-                                        "symbolLayers": [
-                                            {
-                                                "type": "CIMSolidFill",
-                                                "enable": true,
-                                                "color": {
-                                                    "type": "CIMHSVColor",
-                                                    "values": [
-                                                        153,
-                                                        24,
-                                                        99,
-                                                        100
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "angleAlignment": "Map"
-                                    }
-                                },
-                                "values": [
-                                    {
-                                        "type": "CIMUniqueValue",
-                                        "fieldValues": [
-                                            "6"
                                         ]
                                     }
                                 ],
