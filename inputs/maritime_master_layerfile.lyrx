@@ -27145,7 +27145,7 @@
             "classes" : [
               {
                 "type" : "CIMUniqueValueClass",
-                "label" : "Unknown",
+                "label" : "SLCONS_ShorelineConstruction-Unknown",
                 "patch" : "Default",
                 "symbol" : {
                   "type" : "CIMSymbolReference",
@@ -27181,7 +27181,7 @@
               },
               {
                 "type" : "CIMUniqueValueClass",
-                "label" : "always dry",
+                "label" : "SLCONS_ShorelineConstruction-always dry",
                 "patch" : "Default",
                 "symbol" : {
                   "type" : "CIMSymbolReference",
@@ -27235,7 +27235,7 @@
               },
               {
                 "type" : "CIMUniqueValueClass",
-                "label" : "always under water/submerged",
+                "label" : "SLCONS_ShorelineConstruction-always under water/submerged",
                 "patch" : "Default",
                 "symbol" : {
                   "type" : "CIMSymbolReference",
@@ -27301,7 +27301,7 @@
               },
               {
                 "type" : "CIMUniqueValueClass",
-                "label" : "awash",
+                "label" : "SLCONS_ShorelineConstruction-awash",
                 "patch" : "Default",
                 "symbol" : {
                   "type" : "CIMSymbolReference",
@@ -27367,7 +27367,7 @@
               },
               {
                 "type" : "CIMUniqueValueClass",
-                "label" : "covers and uncovers",
+                "label" : "SLCONS_ShorelineConstruction-covers and uncovers",
                 "patch" : "Default",
                 "symbol" : {
                   "type" : "CIMSymbolReference",
@@ -27432,7 +27432,7 @@
               },
               {
                 "type" : "CIMUniqueValueClass",
-                "label" : "floating",
+                "label" : "SLCONS_ShorelineConstruction-floating",
                 "patch" : "Default",
                 "symbol" : {
                   "type" : "CIMSymbolReference",
@@ -27468,7 +27468,7 @@
               },
               {
                 "type" : "CIMUniqueValueClass",
-                "label" : "partly submerged at high water",
+                "label" : "SLCONS_ShorelineConstruction-partly submerged at high water",
                 "patch" : "Default",
                 "symbol" : {
                   "type" : "CIMSymbolReference",
@@ -27504,7 +27504,7 @@
               },
               {
                 "type" : "CIMUniqueValueClass",
-                "label" : "subject to inundation or flooding",
+                "label" : "SLCONS_ShorelineConstruction-subject to inundation or flooding",
                 "patch" : "Default",
                 "symbol" : {
                   "type" : "CIMSymbolReference",
