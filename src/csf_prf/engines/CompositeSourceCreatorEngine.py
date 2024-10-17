@@ -27,6 +27,7 @@ class CompositeSourceCreatorEngine(Engine):
         self.layerfile_name = 'maritime_layerfile'
         self.output_db = False
         self.sheets_layer = None
+        self.output_data = None
         self.output_data = {
             'sheets': None,
             'junctions': None,
@@ -62,7 +63,8 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.AddMessage('Converting ENC files')
         enc_engine = ENCReaderEngine(self.param_lookup, self.sheets_layer)
         enc_engine.start()
-        self.export_enc_layers(enc_engine)
+        self.output_data = {**self.output_data, **enc_engine.output_data}  # merge output from ENCReaderEngine
+        # Could use composition to pass around the base engine instance
 
     def convert_junctions(self) -> None:
         """Process the Junctions input parameter"""
@@ -119,28 +121,6 @@ class CompositeSourceCreatorEngine(Engine):
             # Function name is a built-in combo of class and toolbox alias
             arcpy.ENCDownloader_csf_prf_tools(sheet, str(output_folder))
         self.set_enc_files_param(output_folder)
-
-    def export_enc_layers(self, enc_engine) -> None:
-        """
-        Write out assigned and unassigned layers to output folder
-        :param ENCReaderEngine enc_engine: ENCReaderEngine object
-        """
-
-        output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        for geom_type in enc_engine.geometries.keys():
-            for feature_type in ['features', 'GC']:  # QUAPOS is joined later and not needing output
-                if enc_engine.geometries[geom_type][f'{feature_type}_layers']['assigned']:
-                    assigned_name = f'{geom_type}_{feature_type}_assigned'
-                    arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
-                    output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
-                    arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
-                    self.output_data[f'{assigned_name}'] = output_name
-                if enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned']:
-                    unassigned_name = f'{geom_type}_{feature_type}_unassigned'
-                    arcpy.AddMessage(f' - Writing output feature class: {unassigned_name}')
-                    output_name = os.path.join(output_folder, self.gdb_name + '.gdb', unassigned_name)
-                    arcpy.management.CopyFeatures(enc_engine.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
-                    self.output_data[f'{unassigned_name}'] = output_name
 
     def export_to_feature_class(self, output_data_type, template_layer, feature_class_name) -> None:
         """
