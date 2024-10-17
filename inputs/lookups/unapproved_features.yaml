@@ -1,8 +1,4 @@
 Point:
-  # - LNDARE
-  # - LNDELV
-  # - PILPNT
-  # - MORFAC
   - ACHARE
   - BCNCAR
   - BCNISD
@@ -27,7 +23,6 @@ Point:
   - FORSTC
   - GATCON
   - GRIDRN
-  - HRBFAC
   - HULKES
   - LNDMRK
   - LIGHTS
@@ -41,12 +36,8 @@ Point:
   - PIPSOL
   - PYLONS
   - RETRFL
-  - RTPBCN
   - SBDARE
-  - SILTNK
-  - SMCFAC
   - SNDWAV
-  - SPLARE
   - TOPMAR
   - TUNNEL
   - WATTUR
@@ -157,9 +148,6 @@ Point:
   - VEGATN
   - WATFAL
 LineString:
-  # - LNDELV
-  # - SBDARE
-  # - MORFAC
   - BRIDGE
   - CANALS
   - CAUSWY
@@ -290,9 +278,6 @@ LineString:
   - VEGATN
   - WATFAL
 Polygon:
-  # - LNDARE
-  # - SBDARE
-  # - MORFAC
   - ACHARE
   - BRIDGE
   - BUISGL
@@ -315,7 +300,6 @@ Polygon:
   - FORSTC
   - GATCON
   - GRIDRN
-  - HRBFAC
   - HULKES
   - LNDMRK
   - LOGPON
@@ -328,10 +312,7 @@ Polygon:
   - PYLONS
   - RESARE
   - RIVERS
-  - SILTNK
-  - SMCFAC
   - SNDWAV
-  - SPLARE
   - TUNNEL
   - WEDKLP
   - WATTUR

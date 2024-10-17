@@ -2,16 +2,13 @@ import time
 import pathlib
 import json
 import arcpy
+import arcpy.management
 import requests
 import yaml
 import glob
 import os
-import sys
 import pyodbc
-import multiprocessing
-import copy
 
-from osgeo import ogr
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
@@ -104,6 +101,7 @@ class ENCReaderEngine(Engine):
                 "GC_layers": {"assigned": None, "unassigned": None}
             }
         }
+        self.output_data = {}
 
     def add_asgnmt_column(self) -> None:
         """Populate the 'asgnmt' column for all feature layers"""
@@ -139,6 +137,7 @@ class ENCReaderEngine(Engine):
     def add_objl_string(self) -> None:
         """Convert OBJL number to string name"""
         
+        # TODO review if unapproved_features.yaml handles this same logic
         aton_values = self.get_aton_lookup()
         aton_count = 0
         aton_found = set()
@@ -218,6 +217,31 @@ class ENCReaderEngine(Engine):
         for gc_file in gc_folder.rglob('*.zip'):
             arcpy.AddMessage(f' - Remove unzipped: {gc_file.name}')
             gc_file.unlink()
+
+    def export_enc_layers(self) -> None:
+        """
+        Write out assigned and unassigned layers to output folder
+        - SpatialJoin adds file name to attributes if performed on an "memory" layer
+        - Copying features out to disk to force use of alias names for attributes to work with layerfile
+        - # Could also just create static layers initially instead of "memory" in perform_spatial_filter()
+        """
+
+        arcpy.env.qualifiedFieldNames = False
+        output_folder = str(self.param_lookup['output_folder'].valueAsText)
+        for geom_type in self.geometries.keys():
+            for feature_type in ['features', 'GC', 'QUAPOS']:
+                if self.geometries[geom_type][f'{feature_type}_layers']['assigned']:
+                    assigned_name = f'{geom_type}_{feature_type}_assigned'
+                    arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
+                    output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
+                    arcpy.management.CopyFeatures(self.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
+                    self.output_data[f'{assigned_name}'] = output_name
+                if self.geometries[geom_type][f'{feature_type}_layers']['unassigned']:
+                    unassigned_name = f'{geom_type}_{feature_type}_unassigned'
+                    arcpy.AddMessage(f' - Writing output feature class: {unassigned_name}')
+                    output_name = os.path.join(output_folder, self.gdb_name + '.gdb', unassigned_name)
+                    arcpy.management.CopyFeatures(self.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
+                    self.output_data[f'{unassigned_name}'] = output_name
     
     def filter_gc_features(self) -> None:
         """Spatial query GC features within Sheets layer"""
@@ -466,17 +490,29 @@ class ENCReaderEngine(Engine):
         for feature_type in self.geometries:
             output_types = ['assigned', 'unassigned']
             for output_type in output_types:
-                feature_records = self.geometries[feature_type]['features_layers'][output_type]
-                vector_records = self.geometries[feature_type]['QUAPOS_layers'][output_type]
+                feature_records = self.output_data[f'{feature_type}_features_{output_type}']
+                vector_records = self.output_data[f'{feature_type}_QUAPOS_{output_type}']
                 if feature_records is not None or vector_records is not None:
                     quapos_count = int(arcpy.management.GetCount(vector_records)[0])
                     if quapos_count > 0: # Joining an empty vector_records layer caused duplicate fields
-                        self.geometries[feature_type]["features_layers"][output_type] = \
-                            arcpy.management.AddSpatialJoin(
+                        output_name = vector_records + '_joined'
+                        arcpy.analysis.SpatialJoin(
                             feature_records,
                             vector_records,
+                            output_name,
                             match_option=overlap_types[feature_type]
                         )
+                        arcpy.management.Delete(feature_records)
+                        arcpy.management.Rename(output_name, feature_records)
+                        self.geometries[feature_type]["features_layers"][output_type] = feature_records
+
+        # Delete left over QUAPOS layers
+        arcpy.env.workspace = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name + '.gdb')
+        quapos_layers = arcpy.ListFeatureClasses('*QUAPOS*')
+        for layer in quapos_layers:
+            arcpy.management.Delete(layer)
+        # Remove QUAPOS from output_data
+        self.output_data = {output_name: data_path for output_name, data_path in self.output_data.items() if 'QUAPOS' not in output_name}
 
     def perform_spatial_filter(self) -> None:
         """Spatial query all of the ENC features against Sheets boundary"""
@@ -745,6 +781,7 @@ class ENCReaderEngine(Engine):
         self.perform_spatial_filter()
         self.print_feature_total()
         self.add_columns()
+        self.export_enc_layers()
         self.join_quapos_to_features()
 
         # Run times in seconds
