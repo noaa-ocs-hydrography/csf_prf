@@ -169,6 +169,7 @@ LineString:
   - PIPSOL
   - PONTON
   - RIVERS
+  - SBDARE
   - SNDWAV
   - TUNNEL
   - WATTUR
@@ -292,7 +293,7 @@ Polygon:
   - DOCARE
   - DRYDOC
   - DRGARE
-  - DYKCON
+  - DYKCON 
   - FAIRWY
   - FERYRT
   - FLODOC
@@ -312,6 +313,7 @@ Polygon:
   - PYLONS
   - RESARE
   - RIVERS
+  - SBDARE
   - SNDWAV
   - TUNNEL
   - WEDKLP

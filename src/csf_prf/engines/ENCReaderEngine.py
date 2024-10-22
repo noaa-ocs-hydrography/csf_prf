@@ -367,7 +367,6 @@ class ENCReaderEngine(Engine):
                         feature_json['properties']['SCALE_LVL'] = enc_scale
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                         if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
-                            # TODO skip based on self.feature_lookup
                             if self.unapproved(geom_type, feature_json['properties']):
                                 continue
 
@@ -393,6 +392,11 @@ class ENCReaderEngine(Engine):
         from cryptography.fernet import Fernet
         setup = Fernet(key)
         return setup.decrypt(auth).decode()
+    
+    def get_unapproved_names(self) -> list[str]:
+        """Obtain list of OBJL names to exclude that require subcategories"""
+
+        return ['LNDARE', 'MORFAC', 'SLCONS']
     
     def merge_gc_features(self) -> None:
         """Read and store all features from GC shapefiles"""
@@ -797,12 +801,28 @@ class ENCReaderEngine(Engine):
         """Check to ignore unapproved feature types"""
 
         objl_name = CLASS_CODES.get(int(properties['OBJL']), CLASS_CODES['OTHER'])[0]
+
+        if objl_name in self.get_unapproved_names():
+            return self.unapproved_subcategory(geom_type, objl_name, properties)
+
         unapproved_features = self.feature_lookup[geom_type]
         unapproved = False
-        for feature in unapproved_features:
-            if feature == objl_name:
-                unapproved = True
-                break
+        if objl_name in unapproved_features:
+            unapproved = True
         return unapproved
+    
+    def unapproved_subcategory(self, geom_type: str, objl_name: str, properties: dict[str]) -> bool:
+        """Check to ignore unapproved feature types that require a subcategory"""
 
-
+        # if objl_name == 'LNDARE':
+        #     if properties['islet'] < 100:
+        # TODO add unit test with US5SC21M.000 and MORFAC with CATMOR only 1
+        if objl_name == 'MORFAC':
+            arcpy.AddMessage(f'MORFAC: {properties["CATMOR"]}')
+            if properties['CATMOR'] != 1:
+                return True
+        elif objl_name == 'SLCONS':
+            arcpy.AddMessage(f'SLCONS: {properties["CONDTN"]}')
+            if properties['CONDTN'] == 2:
+                return True
+        return False
