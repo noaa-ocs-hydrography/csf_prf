@@ -816,13 +816,10 @@ class ENCReaderEngine(Engine):
 
         # if objl_name == 'LNDARE':
         #     if properties['islet'] < 100:
-        # TODO add unit test with US5SC21M.000 and MORFAC with CATMOR only 1
         if objl_name == 'MORFAC':
-            arcpy.AddMessage(f'MORFAC: {properties["CATMOR"]}')
             if properties['CATMOR'] != 1:
                 return True
         elif objl_name == 'SLCONS':
-            arcpy.AddMessage(f'SLCONS: {properties["CONDTN"]}')
             if properties['CONDTN'] == 2:
                 return True
         return False
