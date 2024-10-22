@@ -358,3 +358,23 @@ def test_store_gc_names(victim):
     results = victim.gc_files
     assert 'GC_test_filename' in results
     assert len(results) == 1 # testing to verify the second row is ignored
+
+
+def test_unapproved(victim):
+    victim.set_feature_lookup()
+    class_codes = {
+        'LIGHTS': 75,
+        'MORFAC': 84
+    }
+    unapproved_feature_subcategory = {'OBJL': class_codes['MORFAC'], 'CATMOR': 2}
+    catmor_not_one = victim.unapproved('Point', unapproved_feature_subcategory)
+    assert catmor_not_one
+    unapproved_feature = {'OBJL': class_codes['LIGHTS']}
+    unapproved_point_feature = victim.unapproved('Point', unapproved_feature)
+    assert unapproved_point_feature
+
+
+def test_unapproved_subcategory(victim):
+    unapproved_feature_subcategory = {'OBJL_NAME': 'SLCONS', 'CONDTN': 2}
+    slcons_condtn_is_two = victim.unapproved_subcategory('Point', 'SLCONS', unapproved_feature_subcategory)
+    assert slcons_condtn_is_two
