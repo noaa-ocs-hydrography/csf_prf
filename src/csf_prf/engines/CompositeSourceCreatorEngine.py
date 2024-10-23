@@ -15,6 +15,12 @@ OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 CSF_PRF = pathlib.Path(__file__).parents[1]
 
 
+class CompositeSourceCreatorException(Exception):
+    """Custom exception for tool"""
+
+    pass 
+
+
 class CompositeSourceCreatorEngine(Engine):
     """
     Class to hold the logic for transforming the 
@@ -42,6 +48,8 @@ class CompositeSourceCreatorEngine(Engine):
         Add the asgnment column and 
         :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
         """
+
+        # TODO this seems to be a duplicate of the method in the base class.  Review and delete
 
         fields = [field.name for field in arcpy.ListFields(layer)]
         if nullable:
@@ -106,6 +114,38 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
         arcpy.conversion.ExportFeatures(layer, fc_path)
         self.output_data[output_data_type] = fc_path
+
+    def create_caris_export(self) -> None:
+        """Output datasets to Geopackage by unique OBJL_NAME"""
+
+        caris_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'caris_export'
+        caris_folder.mkdir(parents=True, exist_ok=True)
+
+        csfprf_output_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
+        arcpy.management.CreateSQLiteDatabase(csfprf_output_path, spatial_type='GEOPACKAGE')
+        for feature_type, feature_class in self.output_data.items():
+            if feature_class:
+                  # Don't export sheets or GC files to Caris gpkg
+                if ("GC" not in feature_type and feature_type.split('_')[0] in ['Point', 'LineString', 'Polygon']):
+                    # Export to csf_prf_geopackage.gpkg as well as CARIS gpkg files
+                    self.export_to_geopackage(csfprf_output_path, feature_type, feature_class)
+                    output_path = os.path.join( caris_folder, feature_type)
+                    arcpy.management.CreateSQLiteDatabase(output_path, spatial_type='GEOPACKAGE')
+                    objl_name_check = [field.name for field in arcpy.ListFields(feature_class) if 'OBJL_NAME' in field.name]
+                    if objl_name_check:
+                        objl_name_field = objl_name_check[0]
+                        objl_names = self.get_unique_values(feature_class, objl_name_field)
+                        for objl_name in objl_names:
+                            query = f'{objl_name_field} = ' + f"'{objl_name}'"
+                            rows = arcpy.management.SelectLayerByAttribute(feature_class,'NEW_SELECTION', query)
+                            gpkg_data = os.path.join(output_path + ".gpkg", objl_name)
+                            try:
+                                arcpy.AddMessage(f"   - {objl_name}")
+                                arcpy.conversion.ExportFeatures(rows, gpkg_data, use_field_alias_as_name="USE_ALIAS")
+                            except CompositeSourceCreatorException as e:
+                                arcpy.AddMessage(f'Error writing {objl_name} to {output_path} : \n{e}')
+                else:
+                    self.export_to_geopackage(csfprf_output_path, feature_type, feature_class)
 
     def download_enc_files(self) -> None:
         """Factory function to download project ENC files"""

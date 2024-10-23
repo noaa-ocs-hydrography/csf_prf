@@ -15,6 +15,12 @@ INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 
 
+class S57ConversionEngineException(Exception):
+    """Custom exception for tool"""
+
+    pass 
+
+
 class S57ConversionEngine(Engine):
     """Class for converting S57 files to geopackage"""
 
@@ -147,7 +153,7 @@ class S57ConversionEngine(Engine):
                             attribute_values[field_index] = str(attr)
                         polygons_cursor.insertRow(attribute_values)   
 
-            self.geometries['Polygon']['output'] = polygons_layer       
+            self.geometries['Polygon']['output'] = polygons_layer    
 
     def convert_noaa_attributes(self) -> None:
         """Obtain string values for all numerical S57 fields"""
@@ -184,6 +190,41 @@ class S57ConversionEngine(Engine):
                             new_row.append(current_value)
                     updateCursor.updateRow(new_row)
             arcpy.AddMessage(f' - fields with invalid values: {invalid_field_names}')
+
+    def create_caris_export(self) -> None:
+        """Output datasets to a single Geopackage by unique OBJL_NAME"""
+
+        caris_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'caris_export'
+        caris_folder.mkdir(parents=True, exist_ok=True)
+
+        csfprf_output_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
+        arcpy.management.CreateSQLiteDatabase(csfprf_output_path, spatial_type='GEOPACKAGE')
+        caris_output_path = os.path.join( caris_folder, self.gdb_name)
+        arcpy.management.CreateSQLiteDatabase(caris_output_path, spatial_type='GEOPACKAGE')
+        letter_lookup = {'Point': 'P', 'LineString': 'L', 'Polygon': 'A'}
+        for feature_type, feature_class in self.output_data.items():
+            if feature_class:
+                  # Don't export sheets or GC files to Caris gpkg
+                if ("GC" not in feature_type and feature_type.split('_')[0] in ['Point', 'LineString', 'Polygon']):
+                    # Export to csf_prf_geopackage.gpkg as well as CARIS gpkg files
+                    self.export_to_geopackage(csfprf_output_path, feature_type, feature_class)
+
+                    feature_type_letter = letter_lookup[feature_type.split('_')[0]]
+                    objl_name_check = [field.name for field in arcpy.ListFields(feature_class) if 'OBJL_NAME' in field.name]
+                    if objl_name_check:
+                        objl_name_field = objl_name_check[0]
+                        objl_names = self.get_unique_values(feature_class, objl_name_field)
+                        for objl_name in objl_names:
+                            query = f'{objl_name_field} = ' + f"'{objl_name}'"
+                            rows = arcpy.management.SelectLayerByAttribute(feature_class,'NEW_SELECTION', query)
+                            gpkg_data = os.path.join(caris_output_path + ".gpkg", f'{objl_name}_{feature_type_letter}')
+                            try:
+                                arcpy.AddMessage(f"   - {objl_name}")
+                                arcpy.conversion.ExportFeatures(rows, gpkg_data, use_field_alias_as_name="USE_ALIAS")
+                            except S57ConversionEngineException as e:
+                                arcpy.AddMessage(f'Error writing {objl_name} to {caris_output_path} : \n{e}')
+                else:
+                    self.export_to_geopackage(csfprf_output_path, feature_type, feature_class)
 
     def export_enc_layers(self) -> None:
         """ Write output layers to output folder """
