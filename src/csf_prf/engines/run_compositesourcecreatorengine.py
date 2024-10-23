@@ -33,7 +33,7 @@ if __name__ == '__main__':
         'output_folder': Param(str(OUTPUTS)),
         'download_geographic_cells': Param(False),
         'caris_export': Param(False),
-        'layerfile_export': Param(True)
+        'layerfile_export': Param(False)
     }
     engine = CompositeSourceCreatorEngine(param_lookup)
     engine.start()
