@@ -10,7 +10,7 @@ from osgeo import ogr
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 
 
-class CompositeSourceCreatorException(Exception):
+class EngineException(Exception):
     """Custom exception for tool"""
 
     pass 
@@ -98,41 +98,6 @@ class Engine:
     #                 for data in unique_subtype_lookup[geometry_type].values():
     #                     arcpy.management.AddSubtype(featureclass, data['code'], data['objl_string'])  
 
-    def create_caris_export(self) -> None:
-        """Output datasets to Geopackage by unique OBJL_NAME"""
-
-        caris_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'caris_export'
-        caris_folder.mkdir(parents=True, exist_ok=True)
-
-        csfprf_output_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
-        arcpy.management.CreateSQLiteDatabase(csfprf_output_path, spatial_type='GEOPACKAGE')
-        caris_output_path = os.path.join( caris_folder, self.gdb_name)
-        arcpy.management.CreateSQLiteDatabase(caris_output_path, spatial_type='GEOPACKAGE')
-        letter_lookup = {'Point': 'P', 'LineString': 'L', 'Polygon': 'A'}
-        for feature_type, feature_class in self.output_data.items():
-            if feature_class:
-                  # Don't export sheets or GC files to Caris gpkg
-                if ("GC" not in feature_type and feature_type.split('_')[0] in ['Point', 'LineString', 'Polygon']):
-                    # Export to csf_prf_geopackage.gpkg as well as CARIS gpkg files
-                    self.export_to_geopackage(csfprf_output_path, feature_type, feature_class)
-
-                    feature_type_letter = letter_lookup[feature_type.split('_')[0]]
-                    objl_name_check = [field.name for field in arcpy.ListFields(feature_class) if 'OBJL_NAME' in field.name]
-                    if objl_name_check:
-                        objl_name_field = objl_name_check[0]
-                        objl_names = self.get_unique_values(feature_class, objl_name_field)
-                        for objl_name in objl_names:
-                            query = f'{objl_name_field} = ' + f"'{objl_name}'"
-                            rows = arcpy.management.SelectLayerByAttribute(feature_class,'NEW_SELECTION', query)
-                            gpkg_data = os.path.join(caris_output_path + ".gpkg", f'{objl_name}_{feature_type_letter}')
-                            try:
-                                arcpy.AddMessage(f"   - {objl_name}")
-                                arcpy.conversion.ExportFeatures(rows, gpkg_data, use_field_alias_as_name="USE_ALIAS")
-                            except CompositeSourceCreatorException as e:
-                                arcpy.AddMessage(f'Error writing {objl_name} to {caris_output_path} : \n{e}')
-                else:
-                    self.export_to_geopackage(csfprf_output_path, feature_type, feature_class)
-
     def create_output_gdb(self, gdb_name='csf_features') -> None:
         """
         Build the output geodatabase for data storage
@@ -162,7 +127,7 @@ class Engine:
                 gpkg_data,
                 use_field_alias_as_name="USE_ALIAS",
             )
-        except CompositeSourceCreatorException as e:
+        except EngineException as e:
             arcpy.AddMessage(f'Error writing {param_name} to {output_path} : \n{e}')            
 
     def feature_covered_by_upper_scale(self, feature_json, enc_scale):
@@ -308,22 +273,9 @@ class Engine:
                     zipped.extractall(str(download_folder))
 
     def write_to_geopackage(self) -> None:
-        """Copy the output feature classes to Geopackage"""
+        """Copy the output feature classes to Geopackage.  Override with child class"""
 
-        arcpy.AddMessage('Writing to geopackage database')
-        if self.param_lookup['caris_export'].value:
-            self.create_caris_export()
-        else:
-            if not self.output_db: # TODO double check is self.output_db needs to be used
-                output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
-                arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}.gpkg')
-                arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
-                self.output_db = True
-            else:
-                arcpy.AddMessage(f'Output GeoPackage already exists')
-            for feature_type, feature_class in self.output_data.items():
-                if feature_class:
-                    self.export_to_geopackage(output_db_path, feature_type, feature_class)                    
+        raise NotImplementedError               
 
     def write_output_layer_file(self) -> None:
         """Update layer file for output gdb"""
