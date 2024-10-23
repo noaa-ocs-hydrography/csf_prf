@@ -318,6 +318,24 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
 
+    def write_to_geopackage(self) -> None:
+        """Copy the output feature classes to Geopackage"""
+
+        arcpy.AddMessage('Writing to geopackage database')
+        if self.param_lookup['caris_export'].value:
+            self.create_caris_export()
+        else:
+            if not self.output_db: # TODO double check is self.output_db needs to be used
+                output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
+                arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}.gpkg')
+                arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
+                self.output_db = True
+            else:
+                arcpy.AddMessage(f'Output GeoPackage already exists')
+            for feature_type, feature_class in self.output_data.items():
+                if feature_class:
+                    self.export_to_geopackage(output_db_path, feature_type, feature_class)                    
+
     def write_sheets_to_featureclass(self, output_data_type, template_layer, features, feature_class_name) -> None:
         """
         Store processed layer as an output feature class

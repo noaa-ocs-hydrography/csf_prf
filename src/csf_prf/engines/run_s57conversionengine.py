@@ -14,9 +14,8 @@ OUTPUTS = pathlib.Path(__file__).parents[3] / "outputs"
 if __name__ == "__main__":
     param_lookup = {
         "enc_file": Param(str(INPUTS / "H13384_FFF.000")),
-        "output_folder": Param(str(OUTPUTS)),
-        "caris_export": Param(False),
-        "layerfile_export": Param(False)
+        "output_folder": Param(str(OUTPUTS)),        
+        "layerfile_export": Param(True)
     }
     engine = S57ConversionEngine(param_lookup)
     engine.start()

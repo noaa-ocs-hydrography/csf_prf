@@ -27,13 +27,6 @@ class S57Conversion:
             parameterType="Required",
             direction="Input"
         )
-        caris_export = arcpy.Parameter(
-            displayName="Create CARIS ready Geopackage?",
-            name="caris_export",
-            datatype="GPBoolean",
-            parameterType="Optional",
-            direction="Input",
-        )
         layerfile_export = arcpy.Parameter(
             displayName="Create layerfile to view output data like an ENC chart?",
             name="layerfile_export",
@@ -42,7 +35,7 @@ class S57Conversion:
             direction="Input",
         )
 
-        return [enc_file, output_folder, caris_export, layerfile_export]
+        return [enc_file, output_folder, layerfile_export]
 
     def isLicensed(self):
         """Set whether the tool is licensed to execute."""
@@ -61,7 +54,7 @@ class S57Conversion:
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
-                
+        
         param_lookup = self.setup_param_lookup(parameters)
         downloader = S57ConversionEngine(param_lookup)
         downloader.start()
@@ -78,7 +71,6 @@ class S57Conversion:
         param_names = [
             'enc_file',
             'output_folder',
-            'caris_export',
             'layerfile_export'
         ]
 

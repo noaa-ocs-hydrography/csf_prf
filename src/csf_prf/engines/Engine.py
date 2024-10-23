@@ -278,22 +278,9 @@ class Engine:
                     zipped.extractall(str(download_folder))
 
     def write_to_geopackage(self) -> None:
-        """Copy the output feature classes to Geopackage"""
+        """Copy the output feature classes to Geopackage.  Override with child class"""
 
-        arcpy.AddMessage('Writing to geopackage database')
-        if self.param_lookup['caris_export'].value:
-            self.create_caris_export()
-        else:
-            if not self.output_db: # TODO double check is self.output_db needs to be used
-                output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
-                arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}.gpkg')
-                arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
-                self.output_db = True
-            else:
-                arcpy.AddMessage(f'Output GeoPackage already exists')
-            for feature_type, feature_class in self.output_data.items():
-                if feature_class:
-                    self.export_to_geopackage(output_db_path, feature_type, feature_class)                    
+        raise NotImplementedError               
 
     def write_output_layer_file(self) -> None:
         """Update layer file for output gdb"""
