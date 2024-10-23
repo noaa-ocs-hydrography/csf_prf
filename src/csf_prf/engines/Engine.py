@@ -98,11 +98,6 @@ class Engine:
     #                 for data in unique_subtype_lookup[geometry_type].values():
     #                     arcpy.management.AddSubtype(featureclass, data['code'], data['objl_string'])  
 
-    def create_caris_export(self) -> None:
-        """Abtract base class method.  Override with child class"""
-        
-        raise NotImplementedError
-
     def create_output_gdb(self, gdb_name='csf_features') -> None:
         """
         Build the output geodatabase for data storage
