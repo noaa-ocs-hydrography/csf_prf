@@ -54,11 +54,11 @@
                 },
                 "dataConnection": {
                     "type": "CIMSqlQueryDataConnection",
-                    "workspaceConnectionString": "",
+                    "workspaceConnectionString": "AUTHENTICATION_MODE=OSA;DATABASE=H13776_FFF.gpkg",
                     "workspaceFactory": "Sql",
                     "dataset": "main.Point_features",
                     "datasetType": "esriDTFeatureClass",
-                    "sqlQuery": "",
+                    "sqlQuery": "select OBJECTID,Shape,AGEN,CATWED,CONVIS,ELEVAT,EXPSOU,FFPT_RIND,FIDN,FIDS,GRUP,INFORM,LNAM,LNAM_REFS,NATQUA,NATSUR,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,PICREP,PRIM,QUASOU,RCID,RECDAT,RECIND,RVER,SCAMAX,SCAMIN,SORDAT,SORIND,SOUACC,STATUS,TECSOU,TXTDSC,VALSOU,VERACC,VERDAT,WATLEV,acqsts,areout,asgnmt,cnthgt,dbkyid,descrp,hsdrec,images,invreq,keywrd,obsdpt,obstim,onotes,prkyid,prmsec,recomd,remrks,sftype,tidadj,tidfil,updtim,userid,OBJL_NAME,FCSubtype,transformed from main.Point_features",
                     "srid": "4326",
                     "spatialReference": {
                         "wkid": 4326,
@@ -76,7 +76,723 @@
                     },
                     "oIDFields": "OBJECTID",
                     "geometryType": "esriGeometryPoint",
-                    "queryFields": [],
+                    "queryFields": [
+                        {
+                            "name": "OBJECTID",
+                            "type": "esriFieldTypeBigInteger",
+                            "isNullable": false,
+                            "length": 4,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": true,
+                            "editable": false,
+                            "dbmsType": 11
+                        },
+                        {
+                            "name": "Shape",
+                            "type": "esriFieldTypeGeometry",
+                            "isNullable": true,
+                            "length": 0,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": true,
+                            "editable": true,
+                            "dbmsType": 8
+                        },
+                        {
+                            "name": "AGEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATWED",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONVIS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ELEVAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "EXPSOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FFPT_RIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "GRUP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "INFORM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM_REFS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NATQUA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NATSUR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NINFOM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NOBJNM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NTXTDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PICREP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PRIM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "QUASOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RCID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RVER",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMAX",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMIN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SOUACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "STATUS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TECSOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TXTDSC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VALSOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "WATLEV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "acqsts",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "areout",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "asgnmt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "cnthgt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "dbkyid",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "descrp",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "hsdrec",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "images",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "invreq",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "keywrd",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "obsdpt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "obstim",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "onotes",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "prkyid",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "prmsec",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "recomd",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "remrks",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "sftype",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "tidadj",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "tidfil",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "updtim",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "userid",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL_NAME",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FCSubtype",
+                            "type": "esriFieldTypeInteger",
+                            "isNullable": true,
+                            "length": 4,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 2
+                        },
+                        {
+                            "name": "transformed",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 50,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        }
+                    ],
                     "spatialStorageType": 11,
                     "isTableBased": true,
                     "mappedOIDFieldLength": "OID64Bit"
@@ -9114,11 +9830,11 @@
                 },
                 "dataConnection": {
                     "type": "CIMSqlQueryDataConnection",
-                    "workspaceConnectionString": "",
+                    "workspaceConnectionString": "AUTHENTICATION_MODE=OSA;DATABASE=H13776_FFF.gpkg",
                     "workspaceFactory": "Sql",
                     "dataset": "main.LineString_features",
                     "datasetType": "esriDTFeatureClass",
-                    "sqlQuery": "",
+                    "sqlQuery": "select OBJECTID,Shape,AGEN,CATCOA,COLOUR,CONRAD,CONVIS,ELEVAT,FFPT_RIND,FIDN,FIDS,GRUP,INFORM,LNAM,LNAM_REFS,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,PICREP,PRIM,RCID,RECDAT,RECIND,RVER,SCAMAX,SCAMIN,SORDAT,SORIND,TXTDSC,VERACC,VERDAT,acqsts,areout,asgnmt,cnthgt,dbkyid,descrp,hsdrec,images,invreq,keywrd,obsdpt,obstim,onotes,prkyid,prmsec,recomd,remrks,sftype,tidadj,tidfil,updtim,userid,OBJL_NAME,FCSubtype,transformed from main.LineString_features",
                     "srid": "4326",
                     "spatialReference": {
                         "wkid": 4326,
@@ -9136,7 +9852,646 @@
                     },
                     "oIDFields": "OBJECTID",
                     "geometryType": "esriGeometryPolyline",
-                    "queryFields": [],
+                    "queryFields": [
+                        {
+                            "name": "OBJECTID",
+                            "type": "esriFieldTypeBigInteger",
+                            "isNullable": false,
+                            "length": 4,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": true,
+                            "editable": false,
+                            "dbmsType": 11
+                        },
+                        {
+                            "name": "Shape",
+                            "type": "esriFieldTypeGeometry",
+                            "isNullable": true,
+                            "length": 0,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": true,
+                            "editable": true,
+                            "dbmsType": 8
+                        },
+                        {
+                            "name": "AGEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATCOA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLOUR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONRAD",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONVIS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "ELEVAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FFPT_RIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "GRUP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "INFORM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM_REFS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NINFOM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NOBJNM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NTXTDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PICREP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PRIM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RCID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RVER",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMAX",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMIN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TXTDSC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "acqsts",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "areout",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "asgnmt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "cnthgt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "dbkyid",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "descrp",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "hsdrec",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "images",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "invreq",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "keywrd",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "obsdpt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "obstim",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "onotes",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "prkyid",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "prmsec",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "recomd",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "remrks",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "sftype",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "tidadj",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "tidfil",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "updtim",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "userid",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL_NAME",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FCSubtype",
+                            "type": "esriFieldTypeInteger",
+                            "isNullable": true,
+                            "length": 4,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 2
+                        },
+                        {
+                            "name": "transformed",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 50,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        }
+                    ],
                     "spatialStorageType": 11,
                     "isTableBased": true,
                     "mappedOIDFieldLength": "OID64Bit"
@@ -10693,6 +12048,212 @@
                         "classes": [
                             {
                                 "type": "CIMUniqueValueClass",
+                                "label": "1, <Null>, 3",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMLineSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMVectorMarker",
+                                                "enable": true,
+                                                "colorLocked": true,
+                                                "anchorPoint": {
+                                                    "x": 0,
+                                                    "y": -1.623505154639175
+                                                },
+                                                "anchorPointUnits": "Absolute",
+                                                "dominantSizeAxis3D": "Z",
+                                                "size": 0.5669279999999999,
+                                                "billboardMode3D": "FaceNearPlane",
+                                                "markerPlacement": {
+                                                    "type": "CIMMarkerPlacementAlongLineSameSize",
+                                                    "placePerPart": true,
+                                                    "angleToLine": true,
+                                                    "endings": "NoConstraint",
+                                                    "offsetAlongLine": 1.5,
+                                                    "placementTemplate": [
+                                                        2
+                                                    ]
+                                                },
+                                                "frame": {
+                                                    "xmin": -2,
+                                                    "ymin": -2,
+                                                    "xmax": 2,
+                                                    "ymax": 2
+                                                },
+                                                "markerGraphics": [
+                                                    {
+                                                        "type": "CIMMarkerGraphic",
+                                                        "geometry": {
+                                                            "curveRings": [
+                                                                [
+                                                                    [
+                                                                        1.2246467991473532e-16,
+                                                                        2
+                                                                    ],
+                                                                    {
+                                                                        "a": [
+                                                                            [
+                                                                                1.2246467991473532e-16,
+                                                                                2
+                                                                            ],
+                                                                            [
+                                                                                4.593199222598311e-16,
+                                                                                0
+                                                                            ],
+                                                                            0,
+                                                                            1
+                                                                        ]
+                                                                    }
+                                                                ]
+                                                            ]
+                                                        },
+                                                        "symbol": {
+                                                            "type": "CIMPolygonSymbol",
+                                                            "symbolLayers": [
+                                                                {
+                                                                    "type": "CIMSolidFill",
+                                                                    "enable": true,
+                                                                    "color": {
+                                                                        "type": "CIMRGBColor",
+                                                                        "values": [
+                                                                            0,
+                                                                            0,
+                                                                            0,
+                                                                            100
+                                                                        ]
+                                                                    }
+                                                                }
+                                                            ],
+                                                            "angleAlignment": "Map"
+                                                        }
+                                                    }
+                                                ],
+                                                "respectFrame": true
+                                            },
+                                            {
+                                                "type": "CIMSolidStroke",
+                                                "enable": true,
+                                                "capStyle": "Butt",
+                                                "joinStyle": "Miter",
+                                                "lineStyle3D": "Strip",
+                                                "miterLimit": 10,
+                                                "width": 0.42519599999999996,
+                                                "color": {
+                                                    "type": "CIMCMYKColor",
+                                                    "values": [
+                                                        100,
+                                                        100,
+                                                        100,
+                                                        100,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1",
+                                            "<Null>",
+                                            "3"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "1, <Null>, 6",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMLineSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidStroke",
+                                                "enable": true,
+                                                "capStyle": "Butt",
+                                                "joinStyle": "Miter",
+                                                "lineStyle3D": "Strip",
+                                                "miterLimit": 10,
+                                                "width": 0.5669279999999999,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        245,
+                                                        255,
+                                                        255,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1",
+                                            "<Null>",
+                                            "6"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "5, <Null>, <Null>",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMLineSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidStroke",
+                                                "enable": true,
+                                                "capStyle": "Round",
+                                                "joinStyle": "Round",
+                                                "lineStyle3D": "Strip",
+                                                "miterLimit": 10,
+                                                "width": 0.28346399999999994,
+                                                "color": {
+                                                    "type": "CIMCMYKColor",
+                                                    "values": [
+                                                        100,
+                                                        100,
+                                                        100,
+                                                        100,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "5",
+                                            "<Null>",
+                                            "<Null>"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
                                 "label": "ASLXIS_ArchipelagicSeaLaneAxis",
                                 "patch": "Default",
                                 "symbol": {
@@ -11217,6 +12778,48 @@
                                         "type": "CIMUniqueValue",
                                         "fieldValues": [
                                             "1003"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "COALNE_Coastline, <Null>, <Null>",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMLineSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidStroke",
+                                                "enable": true,
+                                                "capStyle": "Round",
+                                                "joinStyle": "Round",
+                                                "lineStyle3D": "Strip",
+                                                "miterLimit": 10,
+                                                "width": 0.28346399999999994,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        1,
+                                                        1,
+                                                        10,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ]
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1004",
+                                            "<Null>",
+                                            "<Null>"
                                         ]
                                     }
                                 ],
@@ -13194,46 +14797,6 @@
                             },
                             {
                                 "type": "CIMUniqueValueClass",
-                                "label": "SLCONS_ShorelineConstruction",
-                                "patch": "Default",
-                                "symbol": {
-                                    "type": "CIMSymbolReference",
-                                    "symbol": {
-                                        "type": "CIMLineSymbol",
-                                        "symbolLayers": [
-                                            {
-                                                "type": "CIMSolidStroke",
-                                                "enable": true,
-                                                "capStyle": "Round",
-                                                "joinStyle": "Round",
-                                                "lineStyle3D": "Strip",
-                                                "miterLimit": 10,
-                                                "width": 0.28346399999999994,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        1,
-                                                        1,
-                                                        10,
-                                                        100
-                                                    ]
-                                                }
-                                            }
-                                        ]
-                                    }
-                                },
-                                "values": [
-                                    {
-                                        "type": "CIMUniqueValue",
-                                        "fieldValues": [
-                                            "1034"
-                                        ]
-                                    }
-                                ],
-                                "visible": true
-                            },
-                            {
-                                "type": "CIMUniqueValueClass",
                                 "label": "SLOTOP_SlopeTopline",
                                 "patch": "Default",
                                 "symbol": {
@@ -14008,11 +15571,11 @@
                 },
                 "dataConnection": {
                     "type": "CIMSqlQueryDataConnection",
-                    "workspaceConnectionString": "",
+                    "workspaceConnectionString": "AUTHENTICATION_MODE=OSA;DATABASE=H13776_FFF.gpkg",
                     "workspaceFactory": "Sql",
                     "dataset": "main.Polygon_features",
                     "datasetType": "esriDTFeatureClass",
-                    "sqlQuery": "",
+                    "sqlQuery": "select OBJECTID,Shape,AGEN,CATOBS,COLOUR,CONDTN,EXPSOU,FFPT_RIND,FIDN,FIDS,GRUP,HEIGHT,INFORM,LNAM,LNAM_REFS,NATCON,NATQUA,NATSUR,NINFOM,NOBJNM,NTXTDS,OBJL,OBJNAM,PICREP,PRIM,PRODCT,QUASOU,RCID,RECDAT,RECIND,RVER,SCAMAX,SCAMIN,SORDAT,SORIND,SOUACC,STATUS,TECSOU,TXTDSC,VALSOU,VERACC,VERDAT,VERLEN,WATLEV,acqsts,areout,asgnmt,cnthgt,dbkyid,descrp,hsdrec,images,invreq,keywrd,obsdpt,obstim,onotes,prkyid,prmsec,recomd,remrks,sftype,tidadj,tidfil,updtim,userid,OBJL_NAME,FCSubtype,transformed from main.Polygon_features",
                     "srid": "4326",
                     "spatialReference": {
                         "wkid": 4326,
@@ -14030,7 +15593,767 @@
                     },
                     "oIDFields": "OBJECTID",
                     "geometryType": "esriGeometryPolygon",
-                    "queryFields": [],
+                    "queryFields": [
+                        {
+                            "name": "OBJECTID",
+                            "type": "esriFieldTypeBigInteger",
+                            "isNullable": false,
+                            "length": 4,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": true,
+                            "editable": false,
+                            "dbmsType": 11
+                        },
+                        {
+                            "name": "Shape",
+                            "type": "esriFieldTypeGeometry",
+                            "isNullable": true,
+                            "length": 0,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": true,
+                            "editable": true,
+                            "dbmsType": 8
+                        },
+                        {
+                            "name": "AGEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CATOBS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "COLOUR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "CONDTN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "EXPSOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FFPT_RIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FIDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "GRUP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "HEIGHT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "INFORM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "LNAM_REFS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NATCON",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NATQUA",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NATSUR",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NINFOM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NOBJNM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "NTXTDS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJNAM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PICREP",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PRIM",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "PRODCT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "QUASOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RCID",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RECIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "RVER",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMAX",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SCAMIN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SORIND",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "SOUACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "STATUS",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TECSOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "TXTDSC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VALSOU",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERACC",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERDAT",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "VERLEN",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "WATLEV",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "acqsts",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "areout",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "asgnmt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "cnthgt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "dbkyid",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "descrp",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "hsdrec",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "images",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "invreq",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "keywrd",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "obsdpt",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "obstim",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "onotes",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "prkyid",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "prmsec",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "recomd",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "remrks",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "sftype",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "tidadj",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "tidfil",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "updtim",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "userid",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "OBJL_NAME",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 300,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        },
+                        {
+                            "name": "FCSubtype",
+                            "type": "esriFieldTypeInteger",
+                            "isNullable": true,
+                            "length": 4,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 2
+                        },
+                        {
+                            "name": "transformed",
+                            "type": "esriFieldTypeString",
+                            "isNullable": true,
+                            "length": 50,
+                            "precision": 0,
+                            "scale": 0,
+                            "required": false,
+                            "editable": true,
+                            "dbmsType": 5
+                        }
+                    ],
                     "spatialStorageType": 11,
                     "isTableBased": true,
                     "mappedOIDFieldLength": "OID64Bit"
@@ -21918,7 +24241,97 @@
                             },
                             {
                                 "type": "CIMUniqueValueClass",
-                                "label": "SLCONS_ShorelineConstruction",
+                                "label": "SLCONS_ShorelineConstruction-Unknown",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMHSVColor",
+                                                    "values": [
+                                                        65,
+                                                        22,
+                                                        99,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-always dry",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidStroke",
+                                                "enable": true,
+                                                "capStyle": "Round",
+                                                "joinStyle": "Round",
+                                                "lineStyle3D": "Strip",
+                                                "miterLimit": 10,
+                                                "width": 0.4,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        100
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        242,
+                                                        230,
+                                                        179,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-always under water/submerged",
                                 "patch": "Default",
                                 "symbol": {
                                     "type": "CIMSymbolReference",
@@ -21964,6 +24377,245 @@
                                                         0,
                                                         0,
                                                         0,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-awash",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidStroke",
+                                                "effects": [
+                                                    {
+                                                        "type": "CIMGeometricEffectDashes",
+                                                        "dashTemplate": [
+                                                            3.5999999999999996,
+                                                            1.44
+                                                        ],
+                                                        "lineDashEnding": "NoConstraint",
+                                                        "controlPointEnding": "NoConstraint"
+                                                    }
+                                                ],
+                                                "enable": true,
+                                                "capStyle": "Butt",
+                                                "joinStyle": "Miter",
+                                                "lineStyle3D": "Strip",
+                                                "miterLimit": 10,
+                                                "width": 0.43200000000000005,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        100
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMCMYKColor",
+                                                    "values": [
+                                                        20,
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-covers and uncovers",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidStroke",
+                                                "effects": [
+                                                    {
+                                                        "type": "CIMGeometricEffectDashes",
+                                                        "dashTemplate": [
+                                                            3.5999999999999996,
+                                                            1.44
+                                                        ],
+                                                        "lineDashEnding": "NoConstraint",
+                                                        "controlPointEnding": "NoConstraint"
+                                                    }
+                                                ],
+                                                "enable": true,
+                                                "capStyle": "Butt",
+                                                "joinStyle": "Miter",
+                                                "lineStyle3D": "Strip",
+                                                "miterLimit": 10,
+                                                "width": 0.43200000000000005,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        0,
+                                                        0,
+                                                        0,
+                                                        100
+                                                    ]
+                                                }
+                                            },
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMRGBColor",
+                                                    "values": [
+                                                        171,
+                                                        205,
+                                                        102,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-floating",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMHSVColor",
+                                                    "values": [
+                                                        281,
+                                                        15,
+                                                        99,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-partly submerged at high water",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMHSVColor",
+                                                    "values": [
+                                                        196,
+                                                        28,
+                                                        99,
+                                                        100
+                                                    ]
+                                                }
+                                            }
+                                        ],
+                                        "angleAlignment": "Map"
+                                    }
+                                },
+                                "values": [
+                                    {
+                                        "type": "CIMUniqueValue",
+                                        "fieldValues": [
+                                            "1064"
+                                        ]
+                                    }
+                                ],
+                                "visible": true
+                            },
+                            {
+                                "type": "CIMUniqueValueClass",
+                                "label": "SLCONS_ShorelineConstruction-subject to inundation or flooding",
+                                "patch": "Default",
+                                "symbol": {
+                                    "type": "CIMSymbolReference",
+                                    "symbol": {
+                                        "type": "CIMPolygonSymbol",
+                                        "symbolLayers": [
+                                            {
+                                                "type": "CIMSolidFill",
+                                                "enable": true,
+                                                "color": {
+                                                    "type": "CIMHSVColor",
+                                                    "values": [
+                                                        153,
+                                                        24,
+                                                        99,
                                                         100
                                                     ]
                                                 }
