@@ -396,7 +396,7 @@ class ENCReaderEngine(Engine):
     def get_unapproved_names(self) -> list[str]:
         """Obtain list of OBJL names to exclude that require subcategories"""
 
-        return ['LNDARE', 'MORFAC', 'SLCONS']
+        return ['LNDARE', 'MORFAC', 'SLCONS', 'OBSTRN', 'UWTROC', 'WRECKS']
     
     def merge_gc_features(self) -> None:
         """Read and store all features from GC shapefiles"""
@@ -820,6 +820,27 @@ class ENCReaderEngine(Engine):
             if properties['CATMOR'] != 1:
                 return True
         elif objl_name == 'SLCONS':
+            # TODO Does one property take priority? CONDTN check might skip WATLEV
             if properties['CONDTN'] == 2:
+                return True
+            elif properties['WATLEV'] != 3:
+                return True
+        elif objl_name == 'OBSTRN':
+            if geom_type == 'Point':
+                if properties['CATOBS'] != 2:
+                    return True
+            elif geom_type == 'Polygon':
+                if properties['CATOBS'] != 5:
+                    return True
+        elif objl_name == 'UWTROC':
+            if geom_type == 'Point':
+                if properties['WATLEV'] != 3:
+                    return True    
+            elif geom_type != 'Point':
+                # only allow point UWTROC
+                return True
+        elif objl_name == 'WRECKS': 
+            # only allow point and area WRECKS
+            if geom_type == 'LineString':
                 return True
         return False

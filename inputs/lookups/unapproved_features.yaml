@@ -1,5 +1,6 @@
 Point:
   - ACHARE
+  - AIRARE
   - BCNCAR
   - BCNISD
   - BCNLAT
@@ -28,6 +29,7 @@ Point:
   - LIGHTS
   - LITFLT
   - LITVES
+  - LOCMAG
   - LOGPON
   - MARCUL
   - MIPARE
@@ -35,6 +37,7 @@ Point:
   - PIPARE
   - PIPSOL
   - PYLONS
+  - RAPIDS
   - RETRFL
   - SBDARE
   - SNDWAV
@@ -78,7 +81,7 @@ Point:
   - ICEARE
   - ICNARE
   - ISTZNE
-  - LAKAE
+  - LAKARE
   - LAKSHR
   - LNDRGN
   - LOKBSN
@@ -148,6 +151,7 @@ Point:
   - VEGATN
   - WATFAL
 LineString:
+  - AIRARE
   - BRIDGE
   - CANALS
   - CAUSWY
@@ -163,11 +167,13 @@ LineString:
   - FSHFAC
   - FORSTC
   - GATCON
+  - LOCMAG
   - MARCUL
   - OILBAR
   - PIPOHD
   - PIPSOL
   - PONTON
+  - RAPIDS
   - RIVERS
   - SBDARE
   - SNDWAV
@@ -209,7 +215,7 @@ LineString:
   - ICEARE
   - ICNARE
   - ISTZNE
-  - LAKAE
+  - LAKARE
   - LAKSHR
   - LNDRGN
   - LOKBSN
@@ -280,6 +286,7 @@ LineString:
   - WATFAL
 Polygon:
   - ACHARE
+  - AIRARE
   - BRIDGE
   - BUISGL
   - CANALS
@@ -303,6 +310,7 @@ Polygon:
   - GRIDRN
   - HULKES
   - LNDMRK
+  - LOCMAG
   - LOGPON
   - MARCUL
   - MIPARE
@@ -311,6 +319,7 @@ Polygon:
   - PIPARE
   - PONTON
   - PYLONS
+  - RAPIDS
   - RESARE
   - RIVERS
   - SBDARE
@@ -354,7 +363,7 @@ Polygon:
   - ICEARE
   - ICNARE
   - ISTZNE
-  - LAKAE
+  - LAKARE
   - LAKSHR
   - LNDRGN
   - LOKBSN
