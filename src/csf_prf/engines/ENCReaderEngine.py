@@ -770,6 +770,7 @@ class ENCReaderEngine(Engine):
     def start(self) -> None:
         if self.param_lookup['download_geographic_cells'].value:
             # TODO consolidate calls to get enc_files values
+            # TODO add try block for not being on VPN
             rows = self.get_gc_data()
             self.store_gc_names(rows)
             self.download_gcs(rows)
