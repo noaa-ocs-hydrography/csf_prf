@@ -232,6 +232,9 @@ class CompositeSourceCreatorEngine(Engine):
                 field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
             else:
                 field_info.addField(field.name, field.name, 'HIDDEN', 'NONE')
+        if arcpy.Describe(sheets).spatialReference.projectionCode != 4326:
+            arcpy.AddMessage(f' - Sheets layer was projected to WGS84')
+            sheets = arcpy.management.Project(sheets, r'memory\projected_sheets', 4326)
         layer = arcpy.management.MakeFeatureLayer(sheets, field_info=field_info)
         return layer
 

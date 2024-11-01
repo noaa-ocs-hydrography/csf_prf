@@ -769,12 +769,15 @@ class ENCReaderEngine(Engine):
     
     def start(self) -> None:
         if self.param_lookup['download_geographic_cells'].value:
-            # TODO consolidate calls to get enc_files values
-            rows = self.get_gc_data()
-            self.store_gc_names(rows)
-            self.download_gcs(rows)
-            self.merge_gc_features()
-            self.filter_gc_features()
+            try:
+                rows = self.get_gc_data()
+                self.store_gc_names(rows)
+                self.download_gcs(rows)
+                self.merge_gc_features()
+                self.filter_gc_features()
+            except pyodbc.OperationalError as e:
+                arcpy.AddMessage(f' - Unable to download GC files.  Check VPN connection. \n - Error: {e}')
+                pass
         self.set_driver()
         self.split_multipoint_env()
         self.get_enc_catcov()
