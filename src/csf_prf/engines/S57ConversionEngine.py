@@ -362,3 +362,111 @@ class S57ConversionEngine(Engine):
         arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}.gpkg')
         arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
         self.create_gpkg_export()
+
+    def get_layerfile_body(self) -> None:
+        return """{
+            "type": "CIMLayerDocument",
+            "version": "3.1.0",
+            "build": 41833,
+            "layers": [
+                "CIMPATH=map/editing_enc.xml"
+            ],
+            "layerDefinitions": [],
+            "binaryReferences": [],
+            "tableDefinitions": [],
+            "rGBColorProfile": "sRGB IEC61966-2.1",
+            "cMYKColorProfile": "U.S. Web Coated (SWOP) v2",
+            "elevationSurfaceLayerDefinitions": [
+                {
+                    "type": "CIMElevationSurfaceLayer",
+                    "name": "Ground",
+                    "uRI": "CIMPATH=Map/ea91a8d2bee14056897e4443c4eac17f.json",
+                    "sourceModifiedTime": {
+                        "type": "TimeInstant"
+                    },
+                    "useSourceMetadata": true,
+                    "description": "Ground",
+                    "expanded": true,
+                    "layerType": "Operational",
+                    "showLegends": false,
+                    "visibility": true,
+                    "displayCacheType": "Permanent",
+                    "maxDisplayCacheAge": 5,
+                    "showPopups": true,
+                    "serviceLayerID": -1,
+                    "refreshRate": -1,
+                    "refreshRateUnit": "esriTimeUnitsSeconds",
+                    "blendingMode": "Alpha",
+                    "allowDrapingOnIntegratedMesh": true,
+                    "elevationMode": "BaseGlobeSurface",
+                    "verticalExaggeration": 1,
+                    "color": {
+                        "type": "CIMRGBColor",
+                        "values": [
+                            255,
+                            255,
+                            255,
+                            100
+                        ]
+                    },
+                    "surfaceTINShadingMode": "Smooth"
+                }
+            ]
+        }"""
+    
+    def write_output_layer_file(self) -> None:
+        """Update layer file for output gdb"""
+
+        arcpy.AddMessage('Writing output layerfile')
+        layer_dict = json.loads(self.get_layerfile_body())
+        output_gpkg = f'{self.gdb_name}.gpkg'
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        dbmsType_lookup = {
+            'Integer': 2,
+            'String': 5,
+            'Geometry': 8,
+            'OID': 11,
+            'Double': 3
+        }
+        geom_fields = ['Shape_Length', 'Shape_Area']
+        
+
+
+    def write_output_layer_file(self) -> None:
+        """Update layer file for output gdb"""
+
+        arcpy.AddMessage('Writing output layerfile')
+        with open(str(INPUTS / f'{self.layerfile_name}.lyrx'), 'r') as reader:
+            layer_file = reader.read()
+        layer_dict = json.loads(layer_file)
+        output_gpkg = f'{self.gdb_name}.gpkg'
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        dbmsType_lookup = {
+            'Integer': 2,
+            'String': 5,
+            'Geometry': 8,
+            'OID': 11,
+            'Double': 3
+        }
+        geom_fields = ['Shape_Length', 'Shape_Area']
+        for layer in layer_dict['layerDefinitions']:
+            if 'featureTable' in layer:
+                layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
+                fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.gdb', layer['name']))
+                field_names = [field.name for field in fields if field.name not in geom_fields]
+                field_jsons = [{
+                            "name": field.name,
+                            "type": f"{'esriFieldTypeBigInteger' if field.type == 'OID' else 'esriFieldType' + field.type}",
+                            "isNullable": field.isNullable,
+                            "length": field.length,
+                            "precision": field.precision,
+                            "scale": field.scale,
+                            "required": field.required,
+                            "editable": field.editable,
+                            "dbmsType": dbmsType_lookup[field.type]
+                        } for field in fields if field.name not in geom_fields]
+                layer['featureTable']['dataConnection']['sqlQuery'] = f'select {",".join(field_names)} from main.{layer["name"]}'
+                layer['featureTable']['dataConnection']['queryFields'] = field_jsons
+        
+        with open(str(output_folder / f'{self.layerfile_name}.lyrx'), 'w') as writer:
+            writer.writelines(json.dumps(layer_dict, indent=4))     
