@@ -1,5 +1,6 @@
 {
     "PointLayer": {
+        "expanded": true,
         "type": "CIMFeatureLayer",
         "name": "Point",
         "uRI": "CIMPATH=map/Point_features.xml",
@@ -168,100 +169,6 @@
         "renderer": {
             "type": "CIMUniqueValueRenderer",
             "sampleSize": 10000,
-            "defaultLabel": "<all other values>",
-            "defaultSymbol": {
-                "type": "CIMSymbolReference",
-                "symbol": {
-                    "type": "CIMPointSymbol",
-                    "symbolLayers": [
-                        {
-                            "type": "CIMVectorMarker",
-                            "enable": true,
-                            "anchorPointUnits": "Relative",
-                            "dominantSizeAxis3D": "Z",
-                            "size": 4,
-                            "billboardMode3D": "FaceNearPlane",
-                            "frame": {
-                                "xmin": -2,
-                                "ymin": -2,
-                                "xmax": 2,
-                                "ymax": 2
-                            },
-                            "markerGraphics": [
-                                {
-                                    "type": "CIMMarkerGraphic",
-                                    "geometry": {
-                                        "curveRings": [
-                                            [
-                                                [
-                                                    1.2246467991473532e-16,
-                                                    2
-                                                ],
-                                                {
-                                                    "a": [
-                                                        [
-                                                            1.2246467991473532e-16,
-                                                            2
-                                                        ],
-                                                        [
-                                                            1.9639843619522576e-15,
-                                                            0
-                                                        ],
-                                                        0,
-                                                        1
-                                                    ]
-                                                }
-                                            ]
-                                        ]
-                                    },
-                                    "symbol": {
-                                        "type": "CIMPolygonSymbol",
-                                        "symbolLayers": [
-                                            {
-                                                "type": "CIMSolidStroke",
-                                                "enable": true,
-                                                "capStyle": "Round",
-                                                "joinStyle": "Round",
-                                                "lineStyle3D": "Strip",
-                                                "miterLimit": 10,
-                                                "width": 1,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        100
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "type": "CIMSolidFill",
-                                                "enable": true,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        72,
-                                                        0,
-                                                        135,
-                                                        100
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "angleAlignment": "Map"
-                                    }
-                                }
-                            ],
-                            "respectFrame": true
-                        }
-                    ],
-                    "haloSize": 1,
-                    "scaleX": 1,
-                    "angleAlignment": "Map"
-                }
-            },
-            "defaultSymbolPatch": "Default",
             "fields": [
                 "features_points_layer_FCSubtype",
                 "FCSubtype"
@@ -274,6 +181,7 @@
         "snappable": true
     },
     "LineStringLayer": {
+        "expanded": true,
         "type": "CIMFeatureLayer",
         "name": "LineString",
         "uRI": "CIMPATH=map/LineString_features.xml",
@@ -440,100 +348,6 @@
         "renderer": {
             "type": "CIMUniqueValueRenderer",
             "sampleSize": 10000,
-            "defaultLabel": "<all other values>",
-            "defaultSymbol": {
-                "type": "CIMSymbolReference",
-                "symbol": {
-                    "type": "CIMPointSymbol",
-                    "symbolLayers": [
-                        {
-                            "type": "CIMVectorMarker",
-                            "enable": true,
-                            "anchorPointUnits": "Relative",
-                            "dominantSizeAxis3D": "Z",
-                            "size": 4,
-                            "billboardMode3D": "FaceNearPlane",
-                            "frame": {
-                                "xmin": -2,
-                                "ymin": -2,
-                                "xmax": 2,
-                                "ymax": 2
-                            },
-                            "markerGraphics": [
-                                {
-                                    "type": "CIMMarkerGraphic",
-                                    "geometry": {
-                                        "curveRings": [
-                                            [
-                                                [
-                                                    1.2246467991473532e-16,
-                                                    2
-                                                ],
-                                                {
-                                                    "a": [
-                                                        [
-                                                            1.2246467991473532e-16,
-                                                            2
-                                                        ],
-                                                        [
-                                                            5.741692459696822e-16,
-                                                            0
-                                                        ],
-                                                        0,
-                                                        1
-                                                    ]
-                                                }
-                                            ]
-                                        ]
-                                    },
-                                    "symbol": {
-                                        "type": "CIMPolygonSymbol",
-                                        "symbolLayers": [
-                                            {
-                                                "type": "CIMSolidStroke",
-                                                "enable": true,
-                                                "capStyle": "Round",
-                                                "joinStyle": "Round",
-                                                "lineStyle3D": "Strip",
-                                                "miterLimit": 10,
-                                                "width": 1,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        100
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "type": "CIMSolidFill",
-                                                "enable": true,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        163,
-                                                        0,
-                                                        52,
-                                                        100
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "angleAlignment": "Map"
-                                    }
-                                }
-                            ],
-                            "respectFrame": true
-                        }
-                    ],
-                    "haloSize": 1,
-                    "scaleX": 1,
-                    "angleAlignment": "Map"
-                }
-            },
-            "defaultSymbolPatch": "Default",
             "fields": [
                 "features_lines_layer_FCSubtype",
                 "FCSubtype"
@@ -546,6 +360,7 @@
         "snappable": true
     },
     "PolygonLayer": {
+        "expanded": true,
         "type": "CIMFeatureLayer",
         "name": "Polygon",
         "uRI": "CIMPATH=map/Polygon_features.xml",
@@ -726,100 +541,6 @@
                 "minAlpha": 100,
                 "maxAlpha": 100
             },
-            "defaultLabel": "<all other values>",
-            "defaultSymbol": {
-                "type": "CIMSymbolReference",
-                "symbol": {
-                    "type": "CIMPointSymbol",
-                    "symbolLayers": [
-                        {
-                            "type": "CIMVectorMarker",
-                            "enable": true,
-                            "anchorPointUnits": "Relative",
-                            "dominantSizeAxis3D": "Z",
-                            "size": 4,
-                            "billboardMode3D": "FaceNearPlane",
-                            "frame": {
-                                "xmin": -2,
-                                "ymin": -2,
-                                "xmax": 2,
-                                "ymax": 2
-                            },
-                            "markerGraphics": [
-                                {
-                                    "type": "CIMMarkerGraphic",
-                                    "geometry": {
-                                        "curveRings": [
-                                            [
-                                                [
-                                                    1.2246467991473532e-16,
-                                                    2
-                                                ],
-                                                {
-                                                    "a": [
-                                                        [
-                                                            1.2246467991473532e-16,
-                                                            2
-                                                        ],
-                                                        [
-                                                            5.741692459696822e-16,
-                                                            0
-                                                        ],
-                                                        0,
-                                                        1
-                                                    ]
-                                                }
-                                            ]
-                                        ]
-                                    },
-                                    "symbol": {
-                                        "type": "CIMPolygonSymbol",
-                                        "symbolLayers": [
-                                            {
-                                                "type": "CIMSolidStroke",
-                                                "enable": true,
-                                                "capStyle": "Round",
-                                                "joinStyle": "Round",
-                                                "lineStyle3D": "Strip",
-                                                "miterLimit": 10,
-                                                "width": 1,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        0,
-                                                        0,
-                                                        0,
-                                                        100
-                                                    ]
-                                                }
-                                            },
-                                            {
-                                                "type": "CIMSolidFill",
-                                                "enable": true,
-                                                "color": {
-                                                    "type": "CIMRGBColor",
-                                                    "values": [
-                                                        163,
-                                                        0,
-                                                        52,
-                                                        100
-                                                    ]
-                                                }
-                                            }
-                                        ],
-                                        "angleAlignment": "Map"
-                                    }
-                                }
-                            ],
-                            "respectFrame": true
-                        }
-                    ],
-                    "haloSize": 1,
-                    "scaleX": 1,
-                    "angleAlignment": "Map"
-                }
-            },
-            "defaultSymbolPatch": "Default",
             "fields": [
                 "features_polygons_layer_FCSubtype",
                 "FCSubtype"
@@ -858,11 +579,7 @@
         "blendingMode": "Alpha",
         "allowDrapingOnIntegratedMesh": true,
         "standaloneTables": [],
-        "layers": [
-            "CIMPATH=map/Point_features.xml",
-            "CIMPATH=map/LineString_features.xml",
-            "CIMPATH=map/Polygon_features.xml"
-        ]
+        "layers": []
     },
     "Document": {
         "type": "CIMLayerDocument",
@@ -873,29 +590,7 @@
         ],
         "layerDefinitions": [],
         "binaryReferences": [],
-        "tableDefinitions" : [
-            {
-            "type" : "CIMStandaloneTable",
-            "name" : "PLTS_COLLECTIONS",
-            "uRI" : "CIMPATH=map/plts_collections.json",
-            "sourceModifiedTime" : {
-                "type" : "TimeInstant"
-            },
-            "useSourceMetadata" : true,
-            "displayField" : "NAME",
-            "editable" : true,
-            "dataConnection" : {
-                "type" : "CIMStandardDataConnection",
-                "workspaceConnectionString" : "DATABASE=",
-                "workspaceFactory" : "FileGDB",
-                "dataset" : "PLTS_COLLECTIONS",
-                "datasetType" : "esriDTTable"
-            },
-            "autoGenerateRowTemplates" : true,
-            "serviceTableID" : -1,
-            "showPopups" : true
-            }
-        ],
+        "tableDefinitions" : [],
         "rGBColorProfile" : "sRGB IEC61966-2.1",
         "cMYKColorProfile" : "U.S. Web Coated (SWOP) v2",
         "elevationSurfaceLayerDefinitions" : [

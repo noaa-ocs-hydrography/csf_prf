@@ -4,6 +4,7 @@ import pathlib
 import json
 import yaml
 import time
+import copy
 
 from osgeo import osr, ogr
 from csf_prf.engines.Engine import Engine
@@ -29,21 +30,36 @@ class S57ConversionEngine(Engine):
         self.gdb_name = pathlib.Path(param_lookup['enc_file'].valueAsText).stem
         self.feature_classes = ['Point_features', 'LineString_features', 'Polygon_features']
         self.output_data = {}
+        self.letter_lookup = {'Point': 'P', 'LineString': 'L', 'Polygon': 'A'}
         self.layerfile_name = 'MCD_maritime_layerfile'
         self.geometries = {
             "Point": {
                 "features": [],
-                "output": None
+                "output": None,
+                'objl_names': None
             },
             "LineString": {
                 "features": [],
-                "output": None
+                "output": None,
+                'objl_names': None
             },
             "Polygon": {
                 "features": [],
-                "output": None
+                "output": None,
+                'objl_names': None
             }
         }
+    
+    def get_geom_letter(self, value: str) -> str:
+        """Get geometry letter designation"""
+
+        return self.letter_lookup[value]
+    
+    def get_geom_type(self, value: str) -> str:
+        """Get geometry type from letter designation"""
+
+        lookup = dict((value, key) for key, value in self.letter_lookup.items())
+        return lookup[value]
 
     def add_projected_columns(self) -> None:
         """Add field for CSR verification"""
@@ -195,17 +211,18 @@ class S57ConversionEngine(Engine):
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         output_gpkg_path = os.path.join( output_folder, self.gdb_name)
         arcpy.management.CreateSQLiteDatabase(output_gpkg_path, spatial_type='GEOPACKAGE')
-        letter_lookup = {'Point': 'P', 'LineString': 'L', 'Polygon': 'A'}
         for feature_type, feature_class in self.output_data.items():
             if feature_class:
                 # Create basic layers for layerefile reference
                 self.export_to_geopackage(output_gpkg_path, feature_type, feature_class)
-                if feature_type.split('_')[0] in ['Point', 'LineString', 'Polygon']:
-                    feature_type_letter = letter_lookup[feature_type.split('_')[0]]
+                geom_type = feature_type.split('_')[0]
+                if geom_type in ['Point', 'LineString', 'Polygon']:
+                    feature_type_letter = self.get_geom_letter(geom_type)
                     objl_name_check = [field.name for field in arcpy.ListFields(feature_class) if 'OBJL_NAME' in field.name]
                     if objl_name_check:
                         objl_name_field = objl_name_check[0]
                         objl_names = self.get_unique_values(feature_class, objl_name_field)
+                        self.geometries[geom_type]['objl_names'] = objl_names  # store the objl names for use in layerfile
                         for objl_name in objl_names:
                             query = f'{objl_name_field} = ' + f"'{objl_name}'"
                             rows = arcpy.management.SelectLayerByAttribute(feature_class,'NEW_SELECTION', query)
@@ -348,9 +365,9 @@ class S57ConversionEngine(Engine):
         self.export_enc_layers()
         self.add_projected_columns()
         self.project_rows_to_wgs84()
+        self.write_to_geopackage()
         if self.param_lookup['layerfile_export'].value:
             self.write_output_layer_file()
-        self.write_to_geopackage()  
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
 
@@ -362,75 +379,6 @@ class S57ConversionEngine(Engine):
         arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}.gpkg')
         arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
         self.create_gpkg_export()
-
-    def get_layerfile_body(self) -> None:
-        return """{
-            "type": "CIMLayerDocument",
-            "version": "3.1.0",
-            "build": 41833,
-            "layers": [
-                "CIMPATH=map/editing_enc.xml"
-            ],
-            "layerDefinitions": [],
-            "binaryReferences": [],
-            "tableDefinitions": [],
-            "rGBColorProfile": "sRGB IEC61966-2.1",
-            "cMYKColorProfile": "U.S. Web Coated (SWOP) v2",
-            "elevationSurfaceLayerDefinitions": [
-                {
-                    "type": "CIMElevationSurfaceLayer",
-                    "name": "Ground",
-                    "uRI": "CIMPATH=Map/ea91a8d2bee14056897e4443c4eac17f.json",
-                    "sourceModifiedTime": {
-                        "type": "TimeInstant"
-                    },
-                    "useSourceMetadata": true,
-                    "description": "Ground",
-                    "expanded": true,
-                    "layerType": "Operational",
-                    "showLegends": false,
-                    "visibility": true,
-                    "displayCacheType": "Permanent",
-                    "maxDisplayCacheAge": 5,
-                    "showPopups": true,
-                    "serviceLayerID": -1,
-                    "refreshRate": -1,
-                    "refreshRateUnit": "esriTimeUnitsSeconds",
-                    "blendingMode": "Alpha",
-                    "allowDrapingOnIntegratedMesh": true,
-                    "elevationMode": "BaseGlobeSurface",
-                    "verticalExaggeration": 1,
-                    "color": {
-                        "type": "CIMRGBColor",
-                        "values": [
-                            255,
-                            255,
-                            255,
-                            100
-                        ]
-                    },
-                    "surfaceTINShadingMode": "Smooth"
-                }
-            ]
-        }"""
-    
-    def write_output_layer_file(self) -> None:
-        """Update layer file for output gdb"""
-
-        arcpy.AddMessage('Writing output layerfile')
-        layer_dict = json.loads(self.get_layerfile_body())
-        output_gpkg = f'{self.gdb_name}.gpkg'
-        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-        dbmsType_lookup = {
-            'Integer': 2,
-            'String': 5,
-            'Geometry': 8,
-            'OID': 11,
-            'Double': 3
-        }
-        geom_fields = ['Shape_Length', 'Shape_Area']
-        
-
 
     def write_output_layer_file(self) -> None:
         """Update layer file for output gdb"""
@@ -449,24 +397,51 @@ class S57ConversionEngine(Engine):
             'Double': 3
         }
         geom_fields = ['Shape_Length', 'Shape_Area']
-        for layer in layer_dict['layerDefinitions']:
-            if 'featureTable' in layer:
-                layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
-                fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.gdb', layer['name']))
-                field_names = [field.name for field in fields if field.name not in geom_fields]
-                field_jsons = [{
-                            "name": field.name,
-                            "type": f"{'esriFieldTypeBigInteger' if field.type == 'OID' else 'esriFieldType' + field.type}",
-                            "isNullable": field.isNullable,
-                            "length": field.length,
-                            "precision": field.precision,
-                            "scale": field.scale,
-                            "required": field.required,
-                            "editable": field.editable,
-                            "dbmsType": dbmsType_lookup[field.type]
-                        } for field in fields if field.name not in geom_fields]
-                layer['featureTable']['dataConnection']['sqlQuery'] = f'select {",".join(field_names)} from main.{layer["name"]}'
-                layer['featureTable']['dataConnection']['queryFields'] = field_jsons
+
+        # Remove unused OBJL layers
+        final_layers = copy.deepcopy(layer_dict['layerDefinitions'])
+        drop_list = []
+        for i, layer in enumerate(layer_dict['layerDefinitions']):
+            if layer['name'] != 'Maritime':
+                layer_name, geom_letter = layer['name'][:-2], layer['name'][-1]
+                if layer_name not in self.geometries[self.get_geom_type(geom_letter)]['objl_names']:
+                    drop_list.append(i)
+
+        for index in sorted(drop_list, reverse=True):
+            final_layers.pop(index)
+
+        # Remove unused Maritime layer pointers
+        for i, layer in enumerate(layer_dict['layerDefinitions']):
+            if layer['name'] == 'Maritime':
+                maritime_layers = copy.deepcopy(layer['layers'])
+                for index in sorted(drop_list, reverse=True):
+                    maritime_layers.pop(index)
+
+        # Reset layers in layerfile
+        layer_dict['layerDefinitions'] = final_layers
+        for i, layer in enumerate(layer_dict['layerDefinitions']):
+            if layer['name'] != 'Maritime':
+                layer_name, geom_letter = layer['name'].split('_')
+                if 'featureTable' in layer:
+                        # TODO csf reads fields from GDB, but writes layer as gpkg
+                        layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
+                        fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.gpkg', layer['name']))
+                        field_names = [field.name for field in fields if field.name not in geom_fields]
+                        field_jsons = [{
+                                    "name": field.name,
+                                    "type": f"{'esriFieldTypeBigInteger' if field.type == 'OID' else 'esriFieldType' + field.type}",
+                                    "isNullable": field.isNullable,
+                                    "length": field.length,
+                                    "precision": field.precision,
+                                    "scale": field.scale,
+                                    "required": field.required,
+                                    "editable": field.editable,
+                                    "dbmsType": dbmsType_lookup[field.type]
+                                } for field in fields if field.name not in geom_fields]
+                        layer['featureTable']['dataConnection']['sqlQuery'] = f'select {",".join(field_names)} from main.{layer["name"]}'
+                        layer['featureTable']['dataConnection']['queryFields'] = field_jsons
+            else:
+                layer['layers'] = maritime_layers
         
         with open(str(output_folder / f'{self.layerfile_name}.lyrx'), 'w') as writer:
             writer.writelines(json.dumps(layer_dict, indent=4))     
