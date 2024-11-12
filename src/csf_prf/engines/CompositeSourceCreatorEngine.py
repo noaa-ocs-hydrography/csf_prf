@@ -105,7 +105,7 @@ class CompositeSourceCreatorEngine(Engine):
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        output_gdb = os.path.join(output_folder, self.gdb_name + '.gdb')
+        output_gdb = os.path.join(output_folder, self.gdb_name + '.geodatabase')
         fc_path = os.path.join(output_gdb, feature_class_name)
         arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
         arcpy.conversion.ExportFeatures(layer, fc_path)
@@ -168,7 +168,7 @@ class CompositeSourceCreatorEngine(Engine):
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
-        output_name = os.path.join(os.path.join(output_folder, self.gdb_name + '.gdb'), feature_class_name)
+        output_name = os.path.join(os.path.join(output_folder, self.gdb_name + '.geodatabase'), feature_class_name)
         # TODO use Project() method to make a file instead of CopyFeatures.  Set to WGS84
         copied_layer = arcpy.management.CopyFeatures(template_layer, output_name)
         arcpy.management.DefineProjection(copied_layer, arcpy.SpatialReference(4326))
@@ -310,7 +310,7 @@ class CompositeSourceCreatorEngine(Engine):
         for layer in layer_dict['layerDefinitions']:
             if 'featureTable' in layer:
                 layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
-                fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.gdb', layer['name']))
+                fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.geodatabase', layer['name']))
                 field_names = [field.name for field in fields if field.name not in geom_fields]
                 field_jsons = [{
                             "name": field.name,
@@ -358,8 +358,8 @@ class CompositeSourceCreatorEngine(Engine):
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
-        output_name = os.path.join(output_folder, self.gdb_name + '.gdb', feature_class_name)
-        arcpy.management.CreateFeatureclass(os.path.join(output_folder, self.gdb_name + '.gdb'), feature_class_name, 
+        output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', feature_class_name)
+        arcpy.management.CreateFeatureclass(os.path.join(output_folder, self.gdb_name + '.geodatabase'), feature_class_name, 
                                                 geometry_type='POLYGON', 
                                                 template=template_layer,
                                                 spatial_reference=arcpy.SpatialReference(4326))

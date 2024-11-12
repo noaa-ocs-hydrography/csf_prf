@@ -78,7 +78,7 @@ class Engine:
 
     #     arcpy.AddMessage('Adding subtype values to output layers')
     #     output_folder = self.param_lookup['output_folder'].valueAsText
-    #     output_gdb = os.path.join(output_folder, f'{self.gdb_name}.gdb')
+    #     output_gdb = os.path.join(output_folder, f'{self.gdb_name}.geodatabase')
 
     #     with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
     #         subtype_lookup = yaml.safe_load(lookup)
@@ -105,7 +105,7 @@ class Engine:
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        if arcpy.Exists(os.path.join(output_folder, gdb_name + '.gdb')):
+        if arcpy.Exists(os.path.join(output_folder, gdb_name + '.geodatabase')):
             arcpy.AddMessage('Output GDB already exists')
         else:
             arcpy.AddMessage(f'Creating output geodatabase in {output_folder}')

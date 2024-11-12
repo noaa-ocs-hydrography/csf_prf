@@ -233,13 +233,13 @@ class ENCReaderEngine(Engine):
                 if self.geometries[geom_type][f'{feature_type}_layers']['assigned']:
                     assigned_name = f'{geom_type}_{feature_type}_assigned'
                     arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
-                    output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
+                    output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', assigned_name)
                     arcpy.management.CopyFeatures(self.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
                     self.output_data[f'{assigned_name}'] = output_name
                 if self.geometries[geom_type][f'{feature_type}_layers']['unassigned']:
                     unassigned_name = f'{geom_type}_{feature_type}_unassigned'
                     arcpy.AddMessage(f' - Writing output feature class: {unassigned_name}')
-                    output_name = os.path.join(output_folder, self.gdb_name + '.gdb', unassigned_name)
+                    output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', unassigned_name)
                     arcpy.management.CopyFeatures(self.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
                     self.output_data[f'{unassigned_name}'] = output_name
     
@@ -511,7 +511,7 @@ class ENCReaderEngine(Engine):
                         self.geometries[feature_type]["features_layers"][output_type] = feature_records
 
         # Delete left over QUAPOS layers
-        arcpy.env.workspace = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name + '.gdb')
+        arcpy.env.workspace = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name + '.geodatabase')
         quapos_layers = arcpy.ListFeatureClasses('*QUAPOS*')
         for layer in quapos_layers:
             arcpy.management.Delete(layer)

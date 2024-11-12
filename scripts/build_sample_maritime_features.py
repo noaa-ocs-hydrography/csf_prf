@@ -98,7 +98,7 @@ for layer in layer_dict["layerDefinitions"]:
     if layer['name'] in output:
         layer["featureTable"]["dataConnection"] = {
             "type" : "CIMStandardDataConnection",
-            "workspaceConnectionString" : "DATABASE=.\\maritime_layers.gdb",
+            "workspaceConnectionString" : "DATABASE=.\\maritime_layers.geodatabase",
             "workspaceFactory" : "FileGDB",
             "dataset" : f"{layer['name']}_maritime_subtype",
             "datasetType" : "esriDTFeatureClass"
@@ -118,7 +118,7 @@ with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'w') as writer:
 
 
 # Create sample output GDB for test layers
-gdb_path = os.path.join(str(OUTPUTS), 'maritime_layers.gdb')
+gdb_path = os.path.join(str(OUTPUTS), 'maritime_layers.geodatabase')
 if not arcpy.Exists(gdb_path):
     arcpy.CreateFileGDB_management(str(OUTPUTS), 'maritime_layers')
 

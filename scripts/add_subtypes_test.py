@@ -17,7 +17,7 @@ with open(str(INPUTS / "lookups" / "all_subtypes.yaml"), "r") as lookup:
     subtype_lookup = yaml.safe_load(lookup)
 
 unique_subtype_lookup = engine.get_unique_subtype_codes(subtype_lookup)
-output_gdb = r"C:\Users\Stephen.Patterson\Data\Repos\csf_prf\outputs\csf_features.gdb"
+output_gdb = r"C:\Users\Stephen.Patterson\Data\Repos\csf_prf\outputs\csf_features.geodatabase"
 arcpy.env.workspace = output_gdb
 
 featureclasses = arcpy.ListFeatureClasses()
