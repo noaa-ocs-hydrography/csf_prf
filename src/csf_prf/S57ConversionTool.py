@@ -1,4 +1,5 @@
 import arcpy
+import os
 from csf_prf.engines.S57ConversionEngine import S57ConversionEngine
 
 
@@ -56,8 +57,8 @@ class S57Conversion:
         """The source code of the tool."""
         
         param_lookup = self.setup_param_lookup(parameters)
-        downloader = S57ConversionEngine(param_lookup)
-        downloader.start()
+        conversion = S57ConversionEngine(param_lookup)
+        conversion.start()
         return
 
     def postExecute(self, parameters):

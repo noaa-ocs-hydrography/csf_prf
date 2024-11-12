@@ -78,7 +78,7 @@ class Engine:
 
     #     arcpy.AddMessage('Adding subtype values to output layers')
     #     output_folder = self.param_lookup['output_folder'].valueAsText
-    #     output_gdb = os.path.join(output_folder, f'{self.gdb_name}.gdb')
+    #     output_gdb = os.path.join(output_folder, f'{self.gdb_name}.geodatabase')
 
     #     with open(str(INPUTS / 'lookups' / 'all_subtypes.yaml'), 'r') as lookup:
     #         subtype_lookup = yaml.safe_load(lookup)
@@ -105,11 +105,13 @@ class Engine:
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        if arcpy.Exists(os.path.join(output_folder, gdb_name + '.gdb')):
+        if arcpy.Exists(os.path.join(output_folder, gdb_name + '.geodatabase')):
             arcpy.AddMessage('Output GDB already exists')
         else:
             arcpy.AddMessage(f'Creating output geodatabase in {output_folder}')
-            arcpy.management.CreateFileGDB(output_folder, gdb_name)
+            # Use of Mobile GDB allows Python to delete the sqlite based file without locks
+            # Mobile GDB has a 2TB size limit
+            arcpy.management.CreateMobileGDB(output_folder, gdb_name)
 
     def export_to_geopackage(self, output_path, param_name, feature_class) -> None:
         """
@@ -276,42 +278,3 @@ class Engine:
         """Copy the output feature classes to Geopackage.  Override with child class"""
 
         raise NotImplementedError               
-
-    def write_output_layer_file(self) -> None:
-        """Update layer file for output gdb"""
-
-        arcpy.AddMessage('Writing output layerfile')
-        with open(str(INPUTS / f'{self.layerfile_name}.lyrx'), 'r') as reader:
-            layer_file = reader.read()
-        layer_dict = json.loads(layer_file)
-        output_gpkg = f'{self.gdb_name}.gpkg'
-        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-        dbmsType_lookup = {
-            'Integer': 2,
-            'String': 5,
-            'Geometry': 8,
-            'OID': 11,
-            'Double': 3
-        }
-        geom_fields = ['Shape_Length', 'Shape_Area']
-        for layer in layer_dict['layerDefinitions']:
-            if 'featureTable' in layer:
-                layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
-                fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.gdb', layer['name']))
-                field_names = [field.name for field in fields if field.name not in geom_fields]
-                field_jsons = [{
-                            "name": field.name,
-                            "type": f"{'esriFieldTypeBigInteger' if field.type == 'OID' else 'esriFieldType' + field.type}",
-                            "isNullable": field.isNullable,
-                            "length": field.length,
-                            "precision": field.precision,
-                            "scale": field.scale,
-                            "required": field.required,
-                            "editable": field.editable,
-                            "dbmsType": dbmsType_lookup[field.type]
-                        } for field in fields if field.name not in geom_fields]
-                layer['featureTable']['dataConnection']['sqlQuery'] = f'select {",".join(field_names)} from main.{layer["name"]}'
-                layer['featureTable']['dataConnection']['queryFields'] = field_jsons
-        
-        with open(str(output_folder / f'{self.layerfile_name}.lyrx'), 'w') as writer:
-            writer.writelines(json.dumps(layer_dict, indent=4))                  

@@ -2,7 +2,7 @@ import os
 import arcpy
 import time
 import pathlib
-import yaml
+import json
 
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
@@ -36,11 +36,7 @@ class CompositeSourceCreatorEngine(Engine):
         self.output_data = None
         self.output_data = {
             'sheets': None,
-            'junctions': None,
-            'bottom_samples': None,
-            'maritime_boundary_pts': None,
-            'maritime_boundary_features': None,
-            'maritime_boundary_baselines': None
+            'junctions': None
         }
 
     def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT', field_length=255, nullable=False) -> None:
@@ -109,7 +105,7 @@ class CompositeSourceCreatorEngine(Engine):
         """
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
-        output_gdb = os.path.join(output_folder, self.gdb_name + '.gdb')
+        output_gdb = os.path.join(output_folder, self.gdb_name + '.geodatabase')
         fc_path = os.path.join(output_gdb, feature_class_name)
         arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
         arcpy.conversion.ExportFeatures(layer, fc_path)
@@ -172,7 +168,7 @@ class CompositeSourceCreatorEngine(Engine):
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
-        output_name = os.path.join(os.path.join(output_folder, self.gdb_name + '.gdb'), feature_class_name)
+        output_name = os.path.join(os.path.join(output_folder, self.gdb_name + '.geodatabase'), feature_class_name)
         # TODO use Project() method to make a file instead of CopyFeatures.  Set to WGS84
         copied_layer = arcpy.management.CopyFeatures(template_layer, output_name)
         arcpy.management.DefineProjection(copied_layer, arcpy.SpatialReference(4326))
@@ -186,27 +182,19 @@ class CompositeSourceCreatorEngine(Engine):
         :param str junctions: Path to the input Junctions shapefile
         :return arcpy.FeatureLayer: In memory layer used for processing
         """
-
+    
+        required_fields = ['survey']
         field_info = arcpy.FieldInfo()
         input_fields = arcpy.ListFields(junctions)
         for field in input_fields:
-            field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
+            if field.name in required_fields:
+                field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
+            else:
+                field_info.addField(field.name, field.name, 'HIDDEN', 'NONE')
+        if arcpy.Describe(junctions).spatialReference.projectionCode != 4326:
+            arcpy.AddMessage(f' - Junctions layer was projected to WGS84')
+            junctions = arcpy.management.Project(junctions, r'memory\projected_junctions', 4326)
         layer = arcpy.management.MakeFeatureLayer(junctions, field_info=field_info)
-        return layer
-
-    def make_maritime_boundary_pts_layer(self):
-        """
-        Create in memory layer for processing.
-        This copies the input maritime boundary points shapefile to not corrupt it.
-        :return arcpy.FeatureLayer: In memory layer used for processing
-        """
-
-        maritime_pts_path = self.param_lookup['maritime_boundary_pts'].valueAsText
-        field_info = arcpy.FieldInfo()
-        input_fields = arcpy.ListFields(maritime_pts_path)
-        for field in input_fields:
-            field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
-        layer = arcpy.management.MakeFeatureLayer(maritime_pts_path, field_info=field_info)
         return layer
 
     def make_sheets_layer(self, sheets):
@@ -217,18 +205,11 @@ class CompositeSourceCreatorEngine(Engine):
         :return arcpy.FeatureLayer: In memory layer used for processing
         """
 
-        fields = { # Use for information.  FME used these 6 fields. Might be different sometimes.
-             9: 'snm',
-            16: 'priority',
-            17: 'scale',
-            19: 'sub_locali',
-            20: 'registry_n',
-            23: 'invreq'
-        }
+        required_fields = ['priority', 'project_nu', 'sub_locali', 'registry_n']
         field_info = arcpy.FieldInfo()
         input_fields = arcpy.ListFields(sheets)
         for field in input_fields:
-            if field.name in fields.values():
+            if field.name in required_fields:
                 field_info.addField(field.name, field.name, 'VISIBLE', 'NONE')
             else:
                 field_info.addField(field.name, field.name, 'HIDDEN', 'NONE')
@@ -236,18 +217,6 @@ class CompositeSourceCreatorEngine(Engine):
             arcpy.AddMessage(f' - Sheets layer was projected to WGS84')
             sheets = arcpy.management.Project(sheets, r'memory\projected_sheets', 4326)
         layer = arcpy.management.MakeFeatureLayer(sheets, field_info=field_info)
-        return layer
-
-    def merge_maritime_pts_and_features(self):
-        """
-        Merge the point maritime boundary datasets and create a layer
-        :return arcpy.FeatureLayer: In memory layer used for processing
-        """
-
-        maritime_pts = self.param_lookup['maritime_boundary_pts'].valueAsText.replace("'", "").split(';')
-        maritime_features = self.param_lookup['maritime_boundary_features'].valueAsText.replace("'", "").split(';')
-
-        layer = arcpy.management.Merge(maritime_pts + maritime_features, r'memory\maritime_features_layer')
         return layer
 
     def set_enc_files_param(self, output_folder: pathlib.Path) -> None:
@@ -318,8 +287,47 @@ class CompositeSourceCreatorEngine(Engine):
         self.write_to_geopackage()
         if self.param_lookup['layerfile_export'].value:
             self.write_output_layer_file()
-        arcpy.AddMessage('Done')
+        arcpy.AddMessage('\nDone')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
+
+    def write_output_layer_file(self) -> None:
+        """Update layer file for output gdb"""
+
+        arcpy.AddMessage('Writing output layerfile')
+        with open(str(INPUTS / f'{self.layerfile_name}.lyrx'), 'r') as reader:
+            layer_file = reader.read()
+        layer_dict = json.loads(layer_file)
+        output_gpkg = f'{self.gdb_name}.gpkg'
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        dbmsType_lookup = {
+            'Integer': 2,
+            'String': 5,
+            'Geometry': 8,
+            'OID': 11,
+            'Double': 3
+        }
+        geom_fields = ['Shape_Length', 'Shape_Area']
+        for layer in layer_dict['layerDefinitions']:
+            if 'featureTable' in layer:
+                layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
+                fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.geodatabase', layer['name']))
+                field_names = [field.name for field in fields if field.name not in geom_fields]
+                field_jsons = [{
+                            "name": field.name,
+                            "type": f"{'esriFieldTypeBigInteger' if field.type == 'OID' else 'esriFieldType' + field.type}",
+                            "isNullable": field.isNullable,
+                            "length": field.length,
+                            "precision": field.precision,
+                            "scale": field.scale,
+                            "required": field.required,
+                            "editable": field.editable,
+                            "dbmsType": dbmsType_lookup[field.type]
+                        } for field in fields if field.name not in geom_fields]
+                layer['featureTable']['dataConnection']['sqlQuery'] = f'select {",".join(field_names)} from main.{layer["name"]}'
+                layer['featureTable']['dataConnection']['queryFields'] = field_jsons
+        
+        with open(str(output_folder / f'{self.layerfile_name}.lyrx'), 'w') as writer:
+            writer.writelines(json.dumps(layer_dict, indent=4))              
 
     def write_to_geopackage(self) -> None:
         """Copy the output feature classes to Geopackage"""
@@ -350,8 +358,8 @@ class CompositeSourceCreatorEngine(Engine):
 
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         arcpy.AddMessage(f'Writing output feature class: {feature_class_name}')
-        output_name = os.path.join(output_folder, self.gdb_name + '.gdb', feature_class_name)
-        arcpy.management.CreateFeatureclass(os.path.join(output_folder, self.gdb_name + '.gdb'), feature_class_name, 
+        output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', feature_class_name)
+        arcpy.management.CreateFeatureclass(os.path.join(output_folder, self.gdb_name + '.geodatabase'), feature_class_name, 
                                                 geometry_type='POLYGON', 
                                                 template=template_layer,
                                                 spatial_reference=arcpy.SpatialReference(4326))

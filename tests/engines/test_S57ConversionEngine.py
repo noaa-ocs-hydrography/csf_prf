@@ -45,7 +45,7 @@ def test___init__(victim):
 def test_project_rows_to_wgs84(victim):
     victim.gdb_name = 'unit_tests'
     victim.create_output_gdb(gdb_name=victim.gdb_name)
-    gdb_path = os.path.join(victim.param_lookup['output_folder'].valueAsText, f"{victim.gdb_name}.gdb")
+    gdb_path = os.path.join(victim.param_lookup['output_folder'].valueAsText, f"{victim.gdb_name}.geodatabase")
     fc_name = 'test_s57_transform'
     original_locations = os.path.join(gdb_path, fc_name)
     arcpy.management.CopyFeatures(TRANSFORM_SHP, original_locations)

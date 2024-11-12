@@ -1,0 +1,633 @@
+{
+    "PointLayer": {
+        "expanded": true,
+        "type": "CIMFeatureLayer",
+        "name": "Point",
+        "uRI": "CIMPATH=map/Point_features.xml",
+        "sourceModifiedTime": {
+            "type": "TimeInstant",
+            "start": 978307200000
+        },
+        "metadataURI": "CIMPATH=Metadata/445afc02c438c55edd07eafe4ecdd1b6.xml",
+        "useSourceMetadata": false,
+        "layerType": "Operational",
+        "showLegends": true,
+        "visibility": true,
+        "displayCacheType": "Permanent",
+        "maxDisplayCacheAge": 5,
+        "showPopups": true,
+        "serviceLayerID": -1,
+        "refreshRate": -1,
+        "refreshRateUnit": "esriTimeUnitsSeconds",
+        "blendingMode": "Alpha",
+        "allowDrapingOnIntegratedMesh": true,
+        "autoGenerateFeatureTemplates": true,
+        "featureElevationExpression": "0",
+        "featureTable": {
+            "type": "CIMFeatureTable",
+            "displayField": "DSNM",
+            "editable": true,
+            "timeFields": {
+                "type": "CIMTimeTableDefinition"
+            },
+            "timeDefinition": {
+                "type": "CIMTimeDataDefinition",
+                "hasLiveData": true
+            },
+            "timeDisplayDefinition": {
+                "type": "CIMTimeDisplayDefinition",
+                "timeInterval": 0,
+                "timeIntervalUnits": "esriTimeUnitsHours",
+                "timeOffsetUnits": "esriTimeUnitsYears"
+            },
+            "displayExpressionInfo": {
+                "type": "CIMExpressionInfo",
+                "title": "Custom",
+                "expression": "left(Subtypename($feature),6) + \" - \" + $feature.OBJECTID",
+                "returnType": "Default"
+            },
+            "dataConnection": {
+                "type": "CIMSqlQueryDataConnection",
+                "workspaceConnectionString": "",
+                "workspaceFactory": "Sql",
+                "dataset": "",
+                "datasetType": "esriDTFeatureClass",
+                "sqlQuery": "",
+                "srid": "4326",
+                "spatialReference": {
+                    "wkid": 4326,
+                    "latestWkid": 4326,
+                    "xyTolerance": 8.983152841195215e-9,
+                    "zTolerance": 0.001,
+                    "mTolerance": 0.001,
+                    "falseX": -400,
+                    "falseY": -400,
+                    "xyUnits": 999999999.9999999,
+                    "falseZ": -100000,
+                    "zUnits": 10000,
+                    "falseM": -100000,
+                    "mUnits": 10000
+                },
+                "oIDFields": "OBJECTID",
+                "geometryType": "esriGeometryPoint",
+                "queryFields": [],
+                "spatialStorageType": 11,
+                "isTableBased": true,
+                "mappedOIDFieldLength": "OID64Bit"
+            },
+            "studyAreaSpatialRel": "esriSpatialRelUndefined",
+            "searchOrder": "esriSearchOrderSpatial"
+        },
+        "featureTemplates": [],
+        "htmlPopupEnabled": true,
+        "htmlPopupFormat": {
+            "type": "CIMHtmlPopupFormat",
+            "htmlUseCodedDomainValues": true,
+            "htmlPresentationStyle": "TwoColumnTable"
+        },
+        "isFlattened": true,
+        "selectable": true,
+        "selectionSymbol": {
+            "type": "CIMSymbolReference",
+            "symbol": {
+                "type": "CIMPointSymbol",
+                "symbolLayers": [
+                    {
+                        "type": "CIMVectorMarker",
+                        "enable": true,
+                        "anchorPointUnits": "Relative",
+                        "dominantSizeAxis3D": "Z",
+                        "size": 8,
+                        "billboardMode3D": "FaceNearPlane",
+                        "frame": {
+                            "xmin": -2,
+                            "ymin": -2,
+                            "xmax": 2,
+                            "ymax": 2
+                        },
+                        "markerGraphics": [
+                            {
+                                "type": "CIMMarkerGraphic",
+                                "geometry": {
+                                    "curveRings": [
+                                        [
+                                            [
+                                                1.2246467991473532e-16,
+                                                2
+                                            ],
+                                            {
+                                                "a": [
+                                                    [
+                                                        1.2246467991473532e-16,
+                                                        2
+                                                    ],
+                                                    [
+                                                        1.9639843619522576e-15,
+                                                        0
+                                                    ],
+                                                    0,
+                                                    1
+                                                ]
+                                            }
+                                        ]
+                                    ]
+                                },
+                                "symbol": {
+                                    "type": "CIMPolygonSymbol",
+                                    "symbolLayers": [
+                                        {
+                                            "type": "CIMSolidFill",
+                                            "enable": true,
+                                            "color": {
+                                                "type": "CIMRGBColor",
+                                                "values": [
+                                                    0,
+                                                    255,
+                                                    255,
+                                                    100
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "angleAlignment": "Map"
+                                }
+                            }
+                        ],
+                        "respectFrame": true
+                    }
+                ],
+                "haloSize": 1,
+                "scaleX": 1,
+                "angleAlignment": "Map"
+            }
+        },
+        "featureCacheType": "None",
+        "displayFiltersType": "ByScale",
+        "featureBlendingMode": "Alpha",
+        "labelClasses": [],
+        "labelVisibility": true,
+        "renderer": {
+            "type": "CIMUniqueValueRenderer",
+            "sampleSize": 10000,
+            "fields": [
+                "features_points_layer_FCSubtype",
+                "FCSubtype"
+            ],
+            "groups": [],
+            "useDefaultSymbol": true,
+            "polygonSymbolColorTarget": "Fill"
+        },
+        "scaleSymbols": true,
+        "snappable": true
+    },
+    "LineStringLayer": {
+        "expanded": true,
+        "type": "CIMFeatureLayer",
+        "name": "LineString",
+        "uRI": "CIMPATH=map/LineString_features.xml",
+        "sourceModifiedTime": {
+            "type": "TimeInstant",
+            "start": 978307200000
+        },
+        "metadataURI": "CIMPATH=Metadata/b2bbe289e3d6219ee5a95fa46e19881f.xml",
+        "useSourceMetadata": false,
+        "layerType": "Operational",
+        "showLegends": true,
+        "visibility": true,
+        "displayCacheType": "Permanent",
+        "maxDisplayCacheAge": 5,
+        "showPopups": true,
+        "serviceLayerID": -1,
+        "refreshRate": -1,
+        "refreshRateUnit": "esriTimeUnitsSeconds",
+        "blendingMode": "Alpha",
+        "allowDrapingOnIntegratedMesh": true,
+        "featureElevationExpression": "0",
+        "featureTable": {
+            "type": "CIMFeatureTable",
+            "displayField": "DSNM",
+            "editable": true,
+            "timeFields": {
+                "type": "CIMTimeTableDefinition"
+            },
+            "timeDefinition": {
+                "type": "CIMTimeDataDefinition",
+                "hasLiveData": true
+            },
+            "timeDisplayDefinition": {
+                "type": "CIMTimeDisplayDefinition",
+                "timeInterval": 0,
+                "timeIntervalUnits": "esriTimeUnitsHours",
+                "timeOffsetUnits": "esriTimeUnitsYears"
+            },
+            "displayExpressionInfo": {
+                "type": "CIMExpressionInfo",
+                "title": "Custom",
+                "expression": "left(Subtypename($feature),6) + \" - \" + $feature.OBJECTID",
+                "returnType": "Default"
+            },
+            "dataConnection": {
+                "type": "CIMSqlQueryDataConnection",
+                "workspaceConnectionString": "",
+                "workspaceFactory": "Sql",
+                "dataset": "",
+                "datasetType": "esriDTFeatureClass",
+                "sqlQuery": "",
+                "srid": "4326",
+                "spatialReference": {
+                    "wkid": 4326,
+                    "latestWkid": 4326,
+                    "xyTolerance": 8.983152841195215e-9,
+                    "zTolerance": 0.001,
+                    "mTolerance": 0.001,
+                    "falseX": -400,
+                    "falseY": -400,
+                    "xyUnits": 999999999.9999999,
+                    "falseZ": -100000,
+                    "zUnits": 10000,
+                    "falseM": -100000,
+                    "mUnits": 10000
+                },
+                "oIDFields": "OBJECTID",
+                "geometryType": "esriGeometryPolyline",
+                "queryFields": [],
+                "spatialStorageType": 11,
+                "isTableBased": true,
+                "mappedOIDFieldLength": "OID64Bit"
+            },
+            "studyAreaSpatialRel": "esriSpatialRelUndefined",
+            "searchOrder": "esriSearchOrderSpatial"
+        },
+        "featureTemplates": [],
+        "htmlPopupEnabled": true,
+        "htmlPopupFormat": {
+            "type": "CIMHtmlPopupFormat",
+            "htmlUseCodedDomainValues": true,
+            "htmlPresentationStyle": "TwoColumnTable"
+        },
+        "isFlattened": true,
+        "selectable": true,
+        "selectionSymbol": {
+            "type": "CIMSymbolReference",
+            "symbol": {
+                "type": "CIMPointSymbol",
+                "symbolLayers": [
+                    {
+                        "type": "CIMVectorMarker",
+                        "enable": true,
+                        "anchorPointUnits": "Relative",
+                        "dominantSizeAxis3D": "Z",
+                        "size": 8,
+                        "billboardMode3D": "FaceNearPlane",
+                        "frame": {
+                            "xmin": -2,
+                            "ymin": -2,
+                            "xmax": 2,
+                            "ymax": 2
+                        },
+                        "markerGraphics": [
+                            {
+                                "type": "CIMMarkerGraphic",
+                                "geometry": {
+                                    "curveRings": [
+                                        [
+                                            [
+                                                1.2246467991473532e-16,
+                                                2
+                                            ],
+                                            {
+                                                "a": [
+                                                    [
+                                                        1.2246467991473532e-16,
+                                                        2
+                                                    ],
+                                                    [
+                                                        5.741692459696822e-16,
+                                                        0
+                                                    ],
+                                                    0,
+                                                    1
+                                                ]
+                                            }
+                                        ]
+                                    ]
+                                },
+                                "symbol": {
+                                    "type": "CIMPolygonSymbol",
+                                    "symbolLayers": [
+                                        {
+                                            "type": "CIMSolidFill",
+                                            "enable": true,
+                                            "color": {
+                                                "type": "CIMRGBColor",
+                                                "values": [
+                                                    0,
+                                                    255,
+                                                    255,
+                                                    100
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "angleAlignment": "Map"
+                                }
+                            }
+                        ],
+                        "respectFrame": true
+                    }
+                ],
+                "haloSize": 1,
+                "scaleX": 1,
+                "angleAlignment": "Map"
+            }
+        },
+        "featureCacheType": "None",
+        "displayFiltersType": "ByScale",
+        "featureBlendingMode": "Alpha",
+        "labelClasses": [],
+        "renderer": {
+            "type": "CIMUniqueValueRenderer",
+            "sampleSize": 10000,
+            "fields": [
+                "features_lines_layer_FCSubtype",
+                "FCSubtype"
+            ],
+            "groups": [],
+            "useDefaultSymbol": true,
+            "polygonSymbolColorTarget": "Fill"
+        },
+        "scaleSymbols": true,
+        "snappable": true
+    },
+    "PolygonLayer": {
+        "expanded": true,
+        "type": "CIMFeatureLayer",
+        "name": "Polygon",
+        "uRI": "CIMPATH=map/Polygon_features.xml",
+        "sourceModifiedTime": {
+            "type": "TimeInstant",
+            "start": 978307200000
+        },
+        "metadataURI": "CIMPATH=Metadata/1478d78b979fd592eda80921707eccbe.xml",
+        "useSourceMetadata": false,
+        "layerType": "Operational",
+        "showLegends": true,
+        "visibility": true,
+        "displayCacheType": "Permanent",
+        "maxDisplayCacheAge": 5,
+        "showPopups": true,
+        "serviceLayerID": -1,
+        "refreshRate": -1,
+        "refreshRateUnit": "esriTimeUnitsSeconds",
+        "blendingMode": "Alpha",
+        "allowDrapingOnIntegratedMesh": true,
+        "featureElevationExpression": "0",
+        "featureTable": {
+            "type": "CIMFeatureTable",
+            "displayField": "DSNM",
+            "editable": true,
+            "timeFields": {
+                "type": "CIMTimeTableDefinition"
+            },
+            "timeDefinition": {
+                "type": "CIMTimeDataDefinition",
+                "hasLiveData": true
+            },
+            "timeDisplayDefinition": {
+                "type": "CIMTimeDisplayDefinition",
+                "timeInterval": 0,
+                "timeIntervalUnits": "esriTimeUnitsHours",
+                "timeOffsetUnits": "esriTimeUnitsYears"
+            },
+            "displayExpressionInfo": {
+                "type": "CIMExpressionInfo",
+                "title": "Custom",
+                "expression": "left(Subtypename($feature),6) + \" - \" + $feature.OBJECTID",
+                "returnType": "Default"
+            },
+            "dataConnection": {
+                "type": "CIMSqlQueryDataConnection",
+                "workspaceConnectionString": "",
+                "workspaceFactory": "Sql",
+                "dataset": "",
+                "datasetType": "esriDTFeatureClass",
+                "sqlQuery": "",
+                "srid": "4326",
+                "spatialReference": {
+                    "wkid": 4326,
+                    "latestWkid": 4326,
+                    "xyTolerance": 8.983152841195215e-9,
+                    "zTolerance": 0.001,
+                    "mTolerance": 0.001,
+                    "falseX": -400,
+                    "falseY": -400,
+                    "xyUnits": 999999999.9999999,
+                    "falseZ": -100000,
+                    "zUnits": 10000,
+                    "falseM": -100000,
+                    "mUnits": 10000
+                },
+                "oIDFields": "OBJECTID",
+                "geometryType": "esriGeometryPolygon",
+                "queryFields": [],
+                "spatialStorageType": 11,
+                "isTableBased": true,
+                "mappedOIDFieldLength": "OID64Bit"
+            },
+            "studyAreaSpatialRel": "esriSpatialRelUndefined",
+            "searchOrder": "esriSearchOrderSpatial"
+        },
+        "featureTemplates": [],
+        "htmlPopupEnabled": true,
+        "htmlPopupFormat": {
+            "type": "CIMHtmlPopupFormat",
+            "htmlUseCodedDomainValues": true,
+            "htmlPresentationStyle": "TwoColumnTable"
+        },
+        "isFlattened": true,
+        "selectable": true,
+        "selectionSymbol": {
+            "type": "CIMSymbolReference",
+            "symbol": {
+                "type": "CIMPointSymbol",
+                "symbolLayers": [
+                    {
+                        "type": "CIMVectorMarker",
+                        "enable": true,
+                        "anchorPointUnits": "Relative",
+                        "dominantSizeAxis3D": "Z",
+                        "size": 8,
+                        "billboardMode3D": "FaceNearPlane",
+                        "frame": {
+                            "xmin": -2,
+                            "ymin": -2,
+                            "xmax": 2,
+                            "ymax": 2
+                        },
+                        "markerGraphics": [
+                            {
+                                "type": "CIMMarkerGraphic",
+                                "geometry": {
+                                    "curveRings": [
+                                        [
+                                            [
+                                                1.2246467991473532e-16,
+                                                2
+                                            ],
+                                            {
+                                                "a": [
+                                                    [
+                                                        1.2246467991473532e-16,
+                                                        2
+                                                    ],
+                                                    [
+                                                        5.741692459696822e-16,
+                                                        0
+                                                    ],
+                                                    0,
+                                                    1
+                                                ]
+                                            }
+                                        ]
+                                    ]
+                                },
+                                "symbol": {
+                                    "type": "CIMPolygonSymbol",
+                                    "symbolLayers": [
+                                        {
+                                            "type": "CIMSolidFill",
+                                            "enable": true,
+                                            "color": {
+                                                "type": "CIMRGBColor",
+                                                "values": [
+                                                    0,
+                                                    255,
+                                                    255,
+                                                    100
+                                                ]
+                                            }
+                                        }
+                                    ],
+                                    "angleAlignment": "Map"
+                                }
+                            }
+                        ],
+                        "respectFrame": true
+                    }
+                ],
+                "haloSize": 1,
+                "scaleX": 1,
+                "angleAlignment": "Map"
+            }
+        },
+        "featureCacheType": "None",
+        "displayFiltersType": "ByScale",
+        "featureBlendingMode": "Alpha",
+        "labelClasses": [],
+        "renderer": {
+            "type": "CIMUniqueValueRenderer",
+            "sampleSize": 10000,
+            "colorRamp": {
+                "type": "CIMRandomHSVColorRamp",
+                "colorSpace": {
+                    "type": "CIMICCColorSpace",
+                    "url": "Default RGB"
+                },
+                "maxH": 360,
+                "minS": 15,
+                "maxS": 30,
+                "minV": 99,
+                "maxV": 100,
+                "minAlpha": 100,
+                "maxAlpha": 100
+            },
+            "fields": [
+                "features_polygons_layer_FCSubtype",
+                "FCSubtype"
+            ],
+            "groups": [],
+            "useDefaultSymbol": true,
+            "polygonSymbolColorTarget": "Fill"
+        },
+        "scaleSymbols": true,
+        "snappable": true
+    },
+    "GroupLayer": {
+        "type": "CIMGroupLayer",
+        "name": "Maritime",
+        "uRI": "CIMPATH=map/editing_enc.xml",
+        "sourceModifiedTime": {
+            "type": "TimeInstant",
+            "start": 978307200000
+        },
+        "metadataURI": "CIMPATH=Metadata/a000c87431c632b6b74825f59f9eb676.xml",
+        "useSourceMetadata": true,
+        "layerElevation": {
+            "type": "CIMLayerElevationSurface",
+            "elevationSurfaceLayerURI": "CIMPATH=Map/ea91a8d2bee14056897e4443c4eac17f.json"
+        },
+        "expanded": true,
+        "layerType": "Operational",
+        "showLegends": true,
+        "visibility": true,
+        "displayCacheType": "Permanent",
+        "maxDisplayCacheAge": 5,
+        "showPopups": true,
+        "serviceLayerID": -1,
+        "refreshRate": -1,
+        "refreshRateUnit": "esriTimeUnitsSeconds",
+        "blendingMode": "Alpha",
+        "allowDrapingOnIntegratedMesh": true,
+        "standaloneTables": [],
+        "layers": []
+    },
+    "Document": {
+        "type": "CIMLayerDocument",
+        "version": "3.1.0",
+        "build": 41833,
+        "layers": [
+            "CIMPATH=map/editing_enc.xml"
+        ],
+        "layerDefinitions": [],
+        "binaryReferences": [],
+        "tableDefinitions" : [],
+        "rGBColorProfile" : "sRGB IEC61966-2.1",
+        "cMYKColorProfile" : "U.S. Web Coated (SWOP) v2",
+        "elevationSurfaceLayerDefinitions" : [
+            {
+            "type" : "CIMElevationSurfaceLayer",
+            "name" : "Ground",
+            "uRI" : "CIMPATH=Map/ea91a8d2bee14056897e4443c4eac17f.json",
+            "sourceModifiedTime" : {
+                "type" : "TimeInstant"
+            },
+            "useSourceMetadata" : true,
+            "description" : "Ground",
+            "expanded" : true,
+            "layerType" : "Operational",
+            "showLegends" : false,
+            "visibility" : true,
+            "displayCacheType" : "Permanent",
+            "maxDisplayCacheAge" : 5,
+            "showPopups" : true,
+            "serviceLayerID" : -1,
+            "refreshRate" : -1,
+            "refreshRateUnit" : "esriTimeUnitsSeconds",
+            "blendingMode" : "Alpha",
+            "allowDrapingOnIntegratedMesh" : true,
+            "elevationMode" : "BaseGlobeSurface",
+            "verticalExaggeration" : 1,
+            "color" : {
+                "type" : "CIMRGBColor",
+                "values" : [
+                255,
+                255,
+                255,
+                100
+                ]
+            },
+            "surfaceTINShadingMode" : "Smooth"
+            }
+        ]
+    }
+}

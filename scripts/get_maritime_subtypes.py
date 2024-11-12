@@ -61,7 +61,7 @@ class SubtypeReader:
 
 if __name__ == "__main__": 
     # gdb is a Maritime extension geodatabase created from a maritime XML file and has a .000 file imported into it from the Maritime toolbox
-    gdb = r"C:\Users\Stephen.Patterson\Data\Repos\csf_prf\outputs\maritime_extension.gdb"
+    gdb = r"C:\Users\Stephen.Patterson\Data\Repos\csf_prf\outputs\maritime_extension.geodatabase"
     feature_dataset = "Nautical"
     reader = SubtypeReader(gdb, feature_dataset)
     reader.start()

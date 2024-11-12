@@ -4,6 +4,7 @@ import pathlib
 import json
 import yaml
 import time
+import copy
 
 from osgeo import osr, ogr
 from csf_prf.engines.Engine import Engine
@@ -29,26 +30,41 @@ class S57ConversionEngine(Engine):
         self.gdb_name = pathlib.Path(param_lookup['enc_file'].valueAsText).stem
         self.feature_classes = ['Point_features', 'LineString_features', 'Polygon_features']
         self.output_data = {}
+        self.letter_lookup = {'Point': 'P', 'LineString': 'L', 'Polygon': 'A'}
         self.layerfile_name = 'MCD_maritime_layerfile'
         self.geometries = {
             "Point": {
                 "features": [],
-                "output": None
+                "output": None,
+                'objl_names': None
             },
             "LineString": {
                 "features": [],
-                "output": None
+                "output": None,
+                'objl_names': None
             },
             "Polygon": {
                 "features": [],
-                "output": None
+                "output": None,
+                'objl_names': None
             }
         }
+
+    def get_geom_letter(self, value: str) -> str:
+        """Get geometry letter designation"""
+
+        return self.letter_lookup[value]
+
+    def get_geom_type(self, value: str) -> str:
+        """Get geometry type from letter designation"""
+
+        lookup = dict((value, key) for key, value in self.letter_lookup.items())
+        return lookup[value]
 
     def add_projected_columns(self) -> None:
         """Add field for CSR verification"""
 
-        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
+        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.geodatabase")
         for fc_name in self.feature_classes:
             fc = os.path.join(gdb_path, fc_name)
             arcpy.management.AddField(fc, 'transformed', field_type='TEXT', field_length=50, field_is_nullable='NULLABLE')
@@ -189,23 +205,19 @@ class S57ConversionEngine(Engine):
                     updateCursor.updateRow(new_row)
             arcpy.AddMessage(f' - fields with invalid values: {invalid_field_names}')
 
-    def create_gpkg_export(self) -> None:
+    def create_gpkg_export(self, output_gpkg_path: str) -> None:
         """Output datasets to a single Geopackage by unique OBJL_NAME"""
 
-        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-        output_gpkg_path = os.path.join( output_folder, self.gdb_name)
-        arcpy.management.CreateSQLiteDatabase(output_gpkg_path, spatial_type='GEOPACKAGE')
-        letter_lookup = {'Point': 'P', 'LineString': 'L', 'Polygon': 'A'}
         for feature_type, feature_class in self.output_data.items():
             if feature_class:
-                # Create basic layers for layerefile reference
-                self.export_to_geopackage(output_gpkg_path, feature_type, feature_class)
-                if feature_type.split('_')[0] in ['Point', 'LineString', 'Polygon']:
-                    feature_type_letter = letter_lookup[feature_type.split('_')[0]]
+                geom_type = feature_type.split('_')[0]
+                if geom_type in ['Point', 'LineString', 'Polygon']:
+                    feature_type_letter = self.get_geom_letter(geom_type)
                     objl_name_check = [field.name for field in arcpy.ListFields(feature_class) if 'OBJL_NAME' in field.name]
                     if objl_name_check:
                         objl_name_field = objl_name_check[0]
                         objl_names = self.get_unique_values(feature_class, objl_name_field)
+                        self.geometries[geom_type]['objl_names'] = objl_names  # store the objl names for use in layerfile
                         for objl_name in objl_names:
                             query = f'{objl_name_field} = ' + f"'{objl_name}'"
                             rows = arcpy.management.SelectLayerByAttribute(feature_class,'NEW_SELECTION', query)
@@ -216,6 +228,13 @@ class S57ConversionEngine(Engine):
                             except S57ConversionEngineException as e:
                                 arcpy.AddMessage(f'Error writing {objl_name} to {output_gpkg_path} : \n{e}')
 
+    def delete_geodatabase(self) -> None:
+        """Remove the GDB after GPKG and layefile are built"""
+        
+        arcpy.AddMessage('Deleting Geodatabase')
+        output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name + '.geodatabase')
+        arcpy.management.Delete(output_db_path)
+
     def export_enc_layers(self) -> None:
         """ Write output layers to output folder """
 
@@ -225,7 +244,7 @@ class S57ConversionEngine(Engine):
             if self.geometries[geom_type]['output']:
                 assigned_name = f'{geom_type}_features'
                 arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
-                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
+                output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', assigned_name)
                 arcpy.management.CopyFeatures(self.geometries[geom_type]['output'], output_name)
                 self.output_data[f'{assigned_name}'] = output_name
 
@@ -296,7 +315,7 @@ class S57ConversionEngine(Engine):
         coordinate_options.SetOperation("NAD_1983_To_WGS_1984_5")
         gdal_transformation = osr.CoordinateTransformation(nad83_gdal, wgs84_gdal, coordinate_options)
 
-        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
+        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.geodatabase")
 
         arcpy.AddMessage("Reprojecting New or Updated objects from NAD 83 (2011) to WGS 84 (ITRF08)")
         for fc_name in self.feature_classes:
@@ -348,10 +367,11 @@ class S57ConversionEngine(Engine):
         self.export_enc_layers()
         self.add_projected_columns()
         self.project_rows_to_wgs84()
+        self.write_to_geopackage()
         if self.param_lookup['layerfile_export'].value:
             self.write_output_layer_file()
-        self.write_to_geopackage()  
-        arcpy.AddMessage('Done')
+        self.delete_geodatabase()
+        arcpy.AddMessage('\nDone')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
 
     def write_to_geopackage(self) -> None:
@@ -361,4 +381,69 @@ class S57ConversionEngine(Engine):
         output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
         arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}.gpkg')
         arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
-        self.create_gpkg_export()
+        self.create_gpkg_export(output_db_path)
+
+    def write_output_layer_file(self) -> None:
+        """Update layer file for output gdb"""
+
+        arcpy.AddMessage('Writing output layerfile')
+        with open(str(INPUTS / f'{self.layerfile_name}.lyrx'), 'r') as reader:
+            layer_file = reader.read()
+        layer_dict = json.loads(layer_file)
+        output_gpkg = f'{self.gdb_name}.gpkg'
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        dbmsType_lookup = {
+            'Integer': 2,
+            'String': 5,
+            'Geometry': 8,
+            'OID': 11,
+            'Double': 3
+        }
+        geom_fields = ['Shape_Length', 'Shape_Area']
+
+        # Remove unused OBJL layers
+        final_layers = copy.deepcopy(layer_dict['layerDefinitions'])
+        drop_list = []
+        for i, layer in enumerate(layer_dict['layerDefinitions']):
+            if layer['name'] != 'Maritime':
+                layer_name, geom_letter = layer['name'][:-2], layer['name'][-1]
+                if layer_name not in self.geometries[self.get_geom_type(geom_letter)]['objl_names']:
+                    drop_list.append(i)
+
+        for index in sorted(drop_list, reverse=True):
+            final_layers.pop(index)
+
+        # Remove unused Maritime layer pointers
+        for i, layer in enumerate(layer_dict['layerDefinitions']):
+            if layer['name'] == 'Maritime':
+                maritime_layers = copy.deepcopy(layer['layers'])
+                for index in sorted(drop_list, reverse=True):
+                    maritime_layers.pop(index)
+
+        # Reset layers in layerfile
+        layer_dict['layerDefinitions'] = final_layers
+        for i, layer in enumerate(layer_dict['layerDefinitions']):
+            if layer['name'] != 'Maritime':
+                layer_name, geom_letter = layer['name'].split('_')
+                if 'featureTable' in layer:
+                    layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
+                    fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.gpkg', layer['name']))
+                    field_names = [field.name for field in fields if field.name not in geom_fields]
+                    field_jsons = [{
+                                    "name": field.name,
+                                    "type": f"{'esriFieldTypeBigInteger' if field.type == 'OID' else 'esriFieldType' + field.type}",
+                                    "isNullable": field.isNullable,
+                                    "length": field.length,
+                                    "precision": field.precision,
+                                    "scale": field.scale,
+                                    "required": field.required,
+                                    "editable": field.editable,
+                                    "dbmsType": dbmsType_lookup[field.type]
+                                } for field in fields if field.name not in geom_fields]
+                    layer['featureTable']['dataConnection']['sqlQuery'] = f'select {",".join(field_names)} from main.{layer["name"]}'
+                    layer['featureTable']['dataConnection']['queryFields'] = field_jsons
+            else:
+                layer['layers'] = maritime_layers
+
+        with open(str(output_folder / f'{self.layerfile_name}.lyrx'), 'w') as writer:
+            writer.writelines(json.dumps(layer_dict, indent=4))     

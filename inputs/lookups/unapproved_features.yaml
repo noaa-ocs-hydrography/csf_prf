@@ -41,6 +41,7 @@ Point:
   - RETRFL
   - SBDARE
   - SNDWAV
+  - TESARE
   - TOPMAR
   - TUNNEL
   - WATTUR
@@ -177,6 +178,7 @@ LineString:
   - RIVERS
   - SBDARE
   - SNDWAV
+  - TESARE
   - TUNNEL
   - WATTUR
 
@@ -324,6 +326,7 @@ Polygon:
   - RIVERS
   - SBDARE
   - SNDWAV
+  - TESARE
   - TUNNEL
   - WEDKLP
   - WATTUR

@@ -54,11 +54,11 @@ def test_convert_sheets(victim):
 
 
 def test_copy_layer_to_feature_class(victim):
-    sheets_feature_class = str(OUTPUTS / 'csf_features.gdb' / 'output_sheets')
+    sheets_feature_class = str(OUTPUTS / 'csf_features.geodatabase' / 'output_sheets')
     arcpy.management.Delete(sheets_feature_class)
     layer = arcpy.management.CopyFeatures(SHEETS, r'memory\test_layer')
     victim.copy_layer_to_feature_class('sheets', layer, 'output_sheets')
-    files = [file for _, __, files in arcpy.da.Walk(str(OUTPUTS / 'csf_features.gdb'), datatype="FeatureClass") for file in files]
+    files = [file for _, __, files in arcpy.da.Walk(str(OUTPUTS / 'csf_features.geodatabase'), datatype="FeatureClass") for file in files]
     assert 'output_sheets' in files
 
 
@@ -70,12 +70,12 @@ def test_get_unique_values(victim):
 
 def test_convert_junctions(victim):
     victim.convert_junctions()
-    output_junctions = str(OUTPUTS / 'csf_features.gdb' / 'output_junctions')
+    output_junctions = str(OUTPUTS / 'csf_features.geodatabase' / 'output_junctions')
     assert int(arcpy.management.GetCount(output_junctions)[0]) == 6
 
 
 def test_create_output_gdb(victim):
-    output_gdb = str(OUTPUTS / 'csf_features.gdb')
+    output_gdb = str(OUTPUTS / 'csf_features.geodatabase')
     arcpy.management.Delete(output_gdb)
     assert not arcpy.Exists(output_gdb)
     victim.create_output_gdb()
