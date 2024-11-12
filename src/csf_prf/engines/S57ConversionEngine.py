@@ -49,12 +49,12 @@ class S57ConversionEngine(Engine):
                 'objl_names': None
             }
         }
-    
+
     def get_geom_letter(self, value: str) -> str:
         """Get geometry letter designation"""
 
         return self.letter_lookup[value]
-    
+
     def get_geom_type(self, value: str) -> str:
         """Get geometry type from letter designation"""
 
@@ -64,7 +64,7 @@ class S57ConversionEngine(Engine):
     def add_projected_columns(self) -> None:
         """Add field for CSR verification"""
 
-        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
+        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.geodatabase")
         for fc_name in self.feature_classes:
             fc = os.path.join(gdb_path, fc_name)
             arcpy.management.AddField(fc, 'transformed', field_type='TEXT', field_length=50, field_is_nullable='NULLABLE')
@@ -205,16 +205,11 @@ class S57ConversionEngine(Engine):
                     updateCursor.updateRow(new_row)
             arcpy.AddMessage(f' - fields with invalid values: {invalid_field_names}')
 
-    def create_gpkg_export(self) -> None:
+    def create_gpkg_export(self, output_gpkg_path: str) -> None:
         """Output datasets to a single Geopackage by unique OBJL_NAME"""
 
-        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-        output_gpkg_path = os.path.join( output_folder, self.gdb_name)
-        arcpy.management.CreateSQLiteDatabase(output_gpkg_path, spatial_type='GEOPACKAGE')
         for feature_type, feature_class in self.output_data.items():
             if feature_class:
-                # Create basic layers for layerefile reference
-                self.export_to_geopackage(output_gpkg_path, feature_type, feature_class)
                 geom_type = feature_type.split('_')[0]
                 if geom_type in ['Point', 'LineString', 'Polygon']:
                     feature_type_letter = self.get_geom_letter(geom_type)
@@ -233,6 +228,14 @@ class S57ConversionEngine(Engine):
                             except S57ConversionEngineException as e:
                                 arcpy.AddMessage(f'Error writing {objl_name} to {output_gpkg_path} : \n{e}')
 
+    def delete_geodatabase(self) -> None:
+        """Remove the GDB after GPKG and layefile are built"""
+        
+        arcpy.AddMessage('Deleting Geodatabase')
+        gdb_name = self.param_lookup['enc_file'].valueAsText.split('\\')[-1].replace('.000', '')
+        output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, gdb_name + '.geodatabase')
+        arcpy.management.Delete(output_db_path)
+
     def export_enc_layers(self) -> None:
         """ Write output layers to output folder """
 
@@ -242,7 +245,7 @@ class S57ConversionEngine(Engine):
             if self.geometries[geom_type]['output']:
                 assigned_name = f'{geom_type}_features'
                 arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
-                output_name = os.path.join(output_folder, self.gdb_name + '.gdb', assigned_name)
+                output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', assigned_name)
                 arcpy.management.CopyFeatures(self.geometries[geom_type]['output'], output_name)
                 self.output_data[f'{assigned_name}'] = output_name
 
@@ -313,7 +316,7 @@ class S57ConversionEngine(Engine):
         coordinate_options.SetOperation("NAD_1983_To_WGS_1984_5")
         gdal_transformation = osr.CoordinateTransformation(nad83_gdal, wgs84_gdal, coordinate_options)
 
-        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.gdb")
+        gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.geodatabase")
 
         arcpy.AddMessage("Reprojecting New or Updated objects from NAD 83 (2011) to WGS 84 (ITRF08)")
         for fc_name in self.feature_classes:
@@ -368,6 +371,7 @@ class S57ConversionEngine(Engine):
         self.write_to_geopackage()
         if self.param_lookup['layerfile_export'].value:
             self.write_output_layer_file()
+        self.delete_geodatabase()
         arcpy.AddMessage('Done')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
 
@@ -378,7 +382,7 @@ class S57ConversionEngine(Engine):
         output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name)
         arcpy.AddMessage(f'Creating output GeoPackage in {output_db_path}.gpkg')
         arcpy.management.CreateSQLiteDatabase(output_db_path, spatial_type='GEOPACKAGE')
-        self.create_gpkg_export()
+        self.create_gpkg_export(output_db_path)
 
     def write_output_layer_file(self) -> None:
         """Update layer file for output gdb"""
@@ -423,11 +427,10 @@ class S57ConversionEngine(Engine):
             if layer['name'] != 'Maritime':
                 layer_name, geom_letter = layer['name'].split('_')
                 if 'featureTable' in layer:
-                        # TODO csf reads fields from GDB, but writes layer as gpkg
-                        layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
-                        fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.gpkg', layer['name']))
-                        field_names = [field.name for field in fields if field.name not in geom_fields]
-                        field_jsons = [{
+                    layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
+                    fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.gpkg', layer['name']))
+                    field_names = [field.name for field in fields if field.name not in geom_fields]
+                    field_jsons = [{
                                     "name": field.name,
                                     "type": f"{'esriFieldTypeBigInteger' if field.type == 'OID' else 'esriFieldType' + field.type}",
                                     "isNullable": field.isNullable,
@@ -438,10 +441,10 @@ class S57ConversionEngine(Engine):
                                     "editable": field.editable,
                                     "dbmsType": dbmsType_lookup[field.type]
                                 } for field in fields if field.name not in geom_fields]
-                        layer['featureTable']['dataConnection']['sqlQuery'] = f'select {",".join(field_names)} from main.{layer["name"]}'
-                        layer['featureTable']['dataConnection']['queryFields'] = field_jsons
+                    layer['featureTable']['dataConnection']['sqlQuery'] = f'select {",".join(field_names)} from main.{layer["name"]}'
+                    layer['featureTable']['dataConnection']['queryFields'] = field_jsons
             else:
                 layer['layers'] = maritime_layers
-        
+
         with open(str(output_folder / f'{self.layerfile_name}.lyrx'), 'w') as writer:
             writer.writelines(json.dumps(layer_dict, indent=4))     

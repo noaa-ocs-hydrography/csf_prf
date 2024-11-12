@@ -1,4 +1,5 @@
 import arcpy
+import os
 from csf_prf.engines.S57ConversionEngine import S57ConversionEngine
 
 
@@ -56,8 +57,9 @@ class S57Conversion:
         """The source code of the tool."""
         
         param_lookup = self.setup_param_lookup(parameters)
-        downloader = S57ConversionEngine(param_lookup)
-        downloader.start()
+        conversion = S57ConversionEngine(param_lookup)
+        conversion.start()
+        self.delete_geodatabase()
         return
 
     def postExecute(self, parameters):
@@ -79,3 +81,14 @@ class S57Conversion:
             lookup[name] = param
         self.param_lookup = lookup
         return lookup
+    
+    def delete_geodatabase(self) -> None:
+        """Delete the intermediate geodatabase dataset"""
+
+        arcpy.AddMessage('Deleting Geodatabase')
+        gdb_name = self.param_lookup['enc_file'].valueAsText.split('\\')[-1].replace('.000', '')
+        arcpy.AddMessage(gdb_name)
+        output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, gdb_name + '.gdb')
+        print('output gdb:', output_db_path)
+        arcpy.management.Compact(output_db_path)
+        arcpy.management.Delete(output_db_path)

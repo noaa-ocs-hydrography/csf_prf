@@ -109,7 +109,9 @@ class Engine:
             arcpy.AddMessage('Output GDB already exists')
         else:
             arcpy.AddMessage(f'Creating output geodatabase in {output_folder}')
-            arcpy.management.CreateFileGDB(output_folder, gdb_name)
+            # Use of Mobile GDB allows Python to delete the sqlite based file without locks
+            # Mobile GDB has a 2TB size limit
+            arcpy.management.CreateMobileGDB(output_folder, gdb_name)
 
     def export_to_geopackage(self, output_path, param_name, feature_class) -> None:
         """
