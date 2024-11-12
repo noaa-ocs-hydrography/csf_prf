@@ -287,7 +287,7 @@ class CompositeSourceCreatorEngine(Engine):
         self.write_to_geopackage()
         if self.param_lookup['layerfile_export'].value:
             self.write_output_layer_file()
-        arcpy.AddMessage('Done')
+        arcpy.AddMessage('\nDone')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
 
     def write_output_layer_file(self) -> None:

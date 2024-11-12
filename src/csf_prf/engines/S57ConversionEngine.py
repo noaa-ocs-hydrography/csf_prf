@@ -232,8 +232,7 @@ class S57ConversionEngine(Engine):
         """Remove the GDB after GPKG and layefile are built"""
         
         arcpy.AddMessage('Deleting Geodatabase')
-        gdb_name = self.param_lookup['enc_file'].valueAsText.split('\\')[-1].replace('.000', '')
-        output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, gdb_name + '.geodatabase')
+        output_db_path = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name + '.geodatabase')
         arcpy.management.Delete(output_db_path)
 
     def export_enc_layers(self) -> None:
@@ -372,7 +371,7 @@ class S57ConversionEngine(Engine):
         if self.param_lookup['layerfile_export'].value:
             self.write_output_layer_file()
         self.delete_geodatabase()
-        arcpy.AddMessage('Done')
+        arcpy.AddMessage('\nDone')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
 
     def write_to_geopackage(self) -> None:
