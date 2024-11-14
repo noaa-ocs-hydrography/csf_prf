@@ -28,7 +28,6 @@ class S57ConversionEngine(Engine):
     def __init__(self, param_lookup: dict):
         self.param_lookup = param_lookup
         self.gdb_name = pathlib.Path(param_lookup['enc_file'].valueAsText).stem
-        self.feature_classes = ['Point_features', 'LineString_features', 'Polygon_features']
         self.output_data = {}
         self.letter_lookup = {'Point': 'P', 'LineString': 'L', 'Polygon': 'A'}
         self.layerfile_name = 'MCD_maritime_layerfile'
@@ -65,7 +64,8 @@ class S57ConversionEngine(Engine):
         """Add field for CSR verification"""
 
         gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.geodatabase")
-        for fc_name in self.feature_classes:
+        for geom_type in self.geometries.keys():
+            fc_name = f'{geom_type}_features'
             fc = os.path.join(gdb_path, fc_name)
             arcpy.management.AddField(fc, 'transformed', field_type='TEXT', field_length=50, field_is_nullable='NULLABLE')
 
@@ -76,6 +76,7 @@ class S57ConversionEngine(Engine):
         aton_count = 0
         aton_found = set()
         for feature_type in self.geometries.keys():
+            arcpy.AddMessage(f" - Adding 'OBJL_NAME' column: {feature_type}")
             self.add_column_and_constant(self.geometries[feature_type]['output'], 'OBJL_NAME', nullable=True)
             with arcpy.da.UpdateCursor(self.geometries[feature_type]['output'], ['OBJL', 'OBJL_NAME']) as updateCursor:
                 for row in updateCursor:
@@ -93,81 +94,84 @@ class S57ConversionEngine(Engine):
         for feature_type in ['features']:
 
             # POINTS
-            point_fields = self.get_all_fields(self.geometries['Point'][feature_type])
-            points_layer = arcpy.management.CreateFeatureclass(
-                'memory', 
-                f'{feature_type}_points_layer', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
-            sorted_point_fields = sorted(point_fields)
-            for field in sorted_point_fields:
-                arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
+            if 'Point' in self.geometries:
+                point_fields = self.get_all_fields(self.geometries['Point'][feature_type])
+                points_layer = arcpy.management.CreateFeatureclass(
+                    'memory', 
+                    f'{feature_type}_points_layer', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
+                sorted_point_fields = sorted(point_fields)
+                for field in sorted_point_fields:
+                    arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
-            arcpy.AddMessage(' - Building Point features')     
-            # 1. add geometry to fields
-            cursor_fields = ['SHAPE@XY'] + sorted_point_fields
-            with arcpy.da.InsertCursor(points_layer, cursor_fields, explicit=True) as point_cursor: 
-                for feature in self.geometries['Point'][feature_type]:
-                    # Make new list all set to None
-                    attribute_values = [None for i in range(len(cursor_fields))]
-                    # Set geometry on first index
-                    coords = feature['geojson']['geometry']['coordinates']
-                    attribute_values[0] = (coords[0], coords[1])
-                    # Set attributes based on index
-                    for fieldname, attr in list(feature['geojson']['properties'].items()):
-                        field_index = point_cursor.fields.index(fieldname)
-                        attribute_values[field_index] = str(attr)
-                    # add to cursor
-                    point_cursor.insertRow(attribute_values)
+                arcpy.AddMessage(' - Building Point features')     
+                # 1. add geometry to fields
+                cursor_fields = ['SHAPE@XY'] + sorted_point_fields
+                with arcpy.da.InsertCursor(points_layer, cursor_fields, explicit=True) as point_cursor: 
+                    for feature in self.geometries['Point'][feature_type]:
+                        # Make new list all set to None
+                        attribute_values = [None for i in range(len(cursor_fields))]
+                        # Set geometry on first index
+                        coords = feature['geojson']['geometry']['coordinates']
+                        attribute_values[0] = (coords[0], coords[1])
+                        # Set attributes based on index
+                        for fieldname, attr in list(feature['geojson']['properties'].items()):
+                            field_index = point_cursor.fields.index(fieldname)
+                            attribute_values[field_index] = str(attr)
+                        # add to cursor
+                        point_cursor.insertRow(attribute_values)
 
-            self.geometries['Point']['output'] = points_layer
+                self.geometries['Point']['output'] = points_layer
 
             # LINES
-            line_fields = self.get_all_fields(self.geometries['LineString'][feature_type])
-            lines_layer = arcpy.management.CreateFeatureclass(
-                'memory', 
-                f'{feature_type}_lines_layer', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
-            sorted_line_fields = sorted(line_fields)
-            for field in sorted_line_fields:
-                arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
+            if 'LineString' in self.geometries:
+                line_fields = self.get_all_fields(self.geometries['LineString'][feature_type])
+                lines_layer = arcpy.management.CreateFeatureclass(
+                    'memory', 
+                    f'{feature_type}_lines_layer', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
+                sorted_line_fields = sorted(line_fields)
+                for field in sorted_line_fields:
+                    arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
-            arcpy.AddMessage(' - Building Line features')
-            cursor_fields = ['SHAPE@JSON'] + sorted_line_fields
-            with arcpy.da.InsertCursor(lines_layer, cursor_fields, explicit=True) as line_cursor: 
-                for feature in self.geometries['LineString'][feature_type]:
-                    attribute_values = [None for i in range(len(cursor_fields))]
-                    geometry = feature['geojson']['geometry']
-                    attribute_values[0] = arcpy.AsShape(geometry).JSON
-                    for fieldname, attr in list(feature['geojson']['properties'].items()):
-                        field_index = line_cursor.fields.index(fieldname)
-                        attribute_values[field_index] = str(attr)
-                    line_cursor.insertRow(attribute_values)
+                arcpy.AddMessage(' - Building Line features')
+                cursor_fields = ['SHAPE@JSON'] + sorted_line_fields
+                with arcpy.da.InsertCursor(lines_layer, cursor_fields, explicit=True) as line_cursor: 
+                    for feature in self.geometries['LineString'][feature_type]:
+                        attribute_values = [None for i in range(len(cursor_fields))]
+                        geometry = feature['geojson']['geometry']
+                        attribute_values[0] = arcpy.AsShape(geometry).JSON
+                        for fieldname, attr in list(feature['geojson']['properties'].items()):
+                            field_index = line_cursor.fields.index(fieldname)
+                            attribute_values[field_index] = str(attr)
+                        line_cursor.insertRow(attribute_values)
 
-            self.geometries['LineString']['output'] = lines_layer        
+                self.geometries['LineString']['output'] = lines_layer        
 
             # POLYGONS
-            polygons_fields = self.get_all_fields(self.geometries['Polygon'][feature_type])
-            polygons_layer = arcpy.management.CreateFeatureclass(
-                'memory', 
-                f'{feature_type}_polygons_layer', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
-            sorted_polygon_fields = sorted(polygons_fields)
-            for field in sorted_polygon_fields:
-                arcpy.management.AddField(polygons_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
+            if 'Polygon' in self.geometries:
+                polygons_fields = self.get_all_fields(self.geometries['Polygon'][feature_type])
+                polygons_layer = arcpy.management.CreateFeatureclass(
+                    'memory', 
+                    f'{feature_type}_polygons_layer', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
+                sorted_polygon_fields = sorted(polygons_fields)
+                for field in sorted_polygon_fields:
+                    arcpy.management.AddField(polygons_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
-            arcpy.AddMessage(' - Building Polygon features')
-            cursor_fields = ['SHAPE@'] + sorted_polygon_fields
-            with arcpy.da.InsertCursor(polygons_layer, cursor_fields, explicit=True) as polygons_cursor: 
-                for feature in self.geometries['Polygon'][feature_type]:
-                    attribute_values = [None for i in range(len(cursor_fields))]
-                    polygons = feature['geojson']['geometry']['coordinates']
-                    if polygons:
-                        points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
-                        coord_array = arcpy.Array(points)
-                        attribute_values[0] = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
-                        for fieldname, attr in list(feature['geojson']['properties'].items()):
-                            field_index = polygons_cursor.fields.index(fieldname)
-                            attribute_values[field_index] = str(attr)
-                        polygons_cursor.insertRow(attribute_values)   
+                arcpy.AddMessage(' - Building Polygon features')
+                cursor_fields = ['SHAPE@'] + sorted_polygon_fields
+                with arcpy.da.InsertCursor(polygons_layer, cursor_fields, explicit=True) as polygons_cursor: 
+                    for feature in self.geometries['Polygon'][feature_type]:
+                        attribute_values = [None for i in range(len(cursor_fields))]
+                        polygons = feature['geojson']['geometry']['coordinates']
+                        if polygons:
+                            points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
+                            coord_array = arcpy.Array(points)
+                            attribute_values[0] = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
+                            for fieldname, attr in list(feature['geojson']['properties'].items()):
+                                field_index = polygons_cursor.fields.index(fieldname)
+                                attribute_values[field_index] = str(attr)
+                            polygons_cursor.insertRow(attribute_values)   
 
-            self.geometries['Polygon']['output'] = polygons_layer    
+                self.geometries['Polygon']['output'] = polygons_layer    
 
     def convert_noaa_attributes(self) -> None:
         """Obtain string values for all numerical S57 fields"""
@@ -217,7 +221,7 @@ class S57ConversionEngine(Engine):
                     if objl_name_check:
                         objl_name_field = objl_name_check[0]
                         objl_names = self.get_unique_values(feature_class, objl_name_field)
-                        self.geometries[geom_type]['objl_names'] = objl_names  # store the objl names for use in layerfile
+                        self.store_objl_names(geom_type, objl_names)
                         for objl_name in objl_names:
                             query = f'{objl_name_field} = ' + f"'{objl_name}'"
                             rows = arcpy.management.SelectLayerByAttribute(feature_class,'NEW_SELECTION', query)
@@ -262,7 +266,12 @@ class S57ConversionEngine(Engine):
                     geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                     if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                         feature_json = self.set_none_to_null(feature_json) 
-                        self.geometries[geom_type]['features'].append({'geojson': feature_json})  
+                        self.geometries[geom_type]['features'].append({'geojson': feature_json})
+
+        for geom_type in ['Point', 'LineString', 'Polygon']:
+            if len(self.geometries[geom_type]['features']) == 0:
+                arcpy.AddMessage(f"   - No features found for {geom_type}")
+                del self.geometries[geom_type]
 
     def get_vector_records(self) -> None:
         # TODO does MCD need the QUAPOS feature?
@@ -318,7 +327,8 @@ class S57ConversionEngine(Engine):
         gdb_path = os.path.join(self.param_lookup['output_folder'].valueAsText, f"{self.gdb_name}.geodatabase")
 
         arcpy.AddMessage("Reprojecting New or Updated objects from NAD 83 (2011) to WGS 84 (ITRF08)")
-        for fc_name in self.feature_classes:
+        for geom_type in self.geometries.keys():
+            fc_name = f'{geom_type}_features'
             updated_rows = 0
             # Change CRS to NAD83.  It is mislabled as WGS84.
             fc = os.path.join(gdb_path, fc_name)
@@ -374,6 +384,11 @@ class S57ConversionEngine(Engine):
         arcpy.AddMessage('\nDone')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
 
+    def store_objl_names(self, geom_type, objl_names) -> None:
+        """Storeore the objl names for use in layerfile"""
+
+        self.geometries[geom_type]['objl_names'] = objl_names
+
     def write_to_geopackage(self) -> None:
         """Copy the output feature classes to Geopackage"""
 
@@ -407,7 +422,7 @@ class S57ConversionEngine(Engine):
         for i, layer in enumerate(layer_dict['layerDefinitions']):
             if layer['name'] != 'Maritime':
                 layer_name, geom_letter = layer['name'][:-2], layer['name'][-1]
-                if layer_name not in self.geometries[self.get_geom_type(geom_letter)]['objl_names']:
+                if (self.get_geom_type(geom_letter) in self.geometries) and (layer_name not in self.geometries[self.get_geom_type(geom_letter)]['objl_names']):
                     drop_list.append(i)
 
         for index in sorted(drop_list, reverse=True):
@@ -422,28 +437,37 @@ class S57ConversionEngine(Engine):
 
         # Reset layers in layerfile
         layer_dict['layerDefinitions'] = final_layers
+        drop_list = []
         for i, layer in enumerate(layer_dict['layerDefinitions']):
             if layer['name'] != 'Maritime':
-                layer_name, geom_letter = layer['name'].split('_')
-                if 'featureTable' in layer:
-                    layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
-                    fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.gpkg', layer['name']))
-                    field_names = [field.name for field in fields if field.name not in geom_fields]
-                    field_jsons = [{
-                                    "name": field.name,
-                                    "type": f"{'esriFieldTypeBigInteger' if field.type == 'OID' else 'esriFieldType' + field.type}",
-                                    "isNullable": field.isNullable,
-                                    "length": field.length,
-                                    "precision": field.precision,
-                                    "scale": field.scale,
-                                    "required": field.required,
-                                    "editable": field.editable,
-                                    "dbmsType": dbmsType_lookup[field.type]
-                                } for field in fields if field.name not in geom_fields]
-                    layer['featureTable']['dataConnection']['sqlQuery'] = f'select {",".join(field_names)} from main.{layer["name"]}'
-                    layer['featureTable']['dataConnection']['queryFields'] = field_jsons
+                layer_name = layer['name'][:-2]
+                geom_letter = layer['name'][-1]
+                if self.get_geom_type(geom_letter) in self.geometries:
+                    if 'featureTable' in layer:
+                        layer['featureTable']['dataConnection']['workspaceConnectionString'] = f'AUTHENTICATION_MODE=OSA;DATABASE={output_gpkg}'
+                        fields = arcpy.ListFields(os.path.join(output_folder, self.gdb_name + '.gpkg', layer['name']))
+                        field_names = [field.name for field in fields if field.name not in geom_fields]
+                        field_jsons = [{
+                                        "name": field.name,
+                                        "type": f"{'esriFieldTypeBigInteger' if field.type == 'OID' else 'esriFieldType' + field.type}",
+                                        "isNullable": field.isNullable,
+                                        "length": field.length,
+                                        "precision": field.precision,
+                                        "scale": field.scale,
+                                        "required": field.required,
+                                        "editable": field.editable,
+                                        "dbmsType": dbmsType_lookup[field.type]
+                                    } for field in fields if field.name not in geom_fields]
+                        layer['featureTable']['dataConnection']['sqlQuery'] = f'select {",".join(field_names)} from main.{layer["name"]}'
+                        layer['featureTable']['dataConnection']['queryFields'] = field_jsons
+                else:
+                    drop_list.append(i)
             else:
                 layer['layers'] = maritime_layers
 
-        with open(str(output_folder / f'{self.layerfile_name}.lyrx'), 'w') as writer:
+        # Remove empty layers for missing geom_types
+        for index in sorted(drop_list, reverse=True):
+            layer_dict['layerDefinitions'].pop(index)
+
+        with open(str(output_folder / f'{self.gdb_name}.lyrx'), 'w') as writer:
             writer.writelines(json.dumps(layer_dict, indent=4))     
