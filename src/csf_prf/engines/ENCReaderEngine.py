@@ -396,7 +396,7 @@ class ENCReaderEngine(Engine):
     def get_unapproved_names(self) -> list[str]:
         """Obtain list of OBJL names to exclude that require subcategories"""
 
-        return ['LNDARE', 'MORFAC', 'SLCONS', 'UWTROC', 'WRECKS']
+        return ['MORFAC', 'SLCONS', 'UWTROC', 'WRECKS']
     
     def merge_gc_features(self) -> None:
         """Read and store all features from GC shapefiles"""
@@ -817,8 +817,6 @@ class ENCReaderEngine(Engine):
     def unapproved_subcategory(self, geom_type: str, objl_name: str, properties: dict[str]) -> bool:
         """Check to ignore unapproved feature types that require a subcategory"""
 
-        # if objl_name == 'LNDARE':
-        #     if properties['islet'] < 100:
         if objl_name == 'MORFAC':
             if properties['CATMOR'] != 1:
                 return True
