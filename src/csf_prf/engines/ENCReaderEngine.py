@@ -75,7 +75,7 @@ class ENCReaderEngine(Engine):
         self.driver = None
         self.scale_bounds = {}
         self.feature_lookup = None
-        self.gc_files = []
+        self.gc_files = set()
         self.gc_points = None
         self.gc_lines = None
         self.geometries = {
@@ -166,18 +166,21 @@ class ENCReaderEngine(Engine):
 
         output_folder, enc, path, basefilename = download_inputs
 
-        enc_folder = output_folder / 'geographic_cells' / enc
+        geographic_cells = output_folder / 'geographic_cells'
+        enc_folder = geographic_cells / enc
         enc_folder.mkdir(parents=True, exist_ok=True)
         dreg_api = self.get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
         output_file = enc_folder / basefilename
-        if not os.path.exists(output_file):
+
+        already_downloaded = [file for file in geographic_cells.rglob(basefilename)]
+        if not already_downloaded:
             arcpy.AddMessage(f' - Downloading GC {number+1}: {basefilename}')
             enc_zip = requests.get(dreg_api)
             with open(output_file, 'wb') as file:
                 for chunk in enc_zip.iter_content(chunk_size=128):
                     file.write(chunk)
         else:
-            arcpy.AddMessage(f'Already downloaded GC: {basefilename}')
+            arcpy.AddMessage(f' - Already downloaded GC: {basefilename}')
 
     def download_gcs(self, gc_rows) -> None:
         """
@@ -765,7 +768,7 @@ class ENCReaderEngine(Engine):
             gc_name = gc[0].replace('.zip', '')
             enc_name = gc[1]
             if enc_name in enc_names:
-                self.gc_files.append(gc_name)
+                self.gc_files.add(gc_name)
     
     def start(self) -> None:
         if self.param_lookup['download_geographic_cells'].value:
