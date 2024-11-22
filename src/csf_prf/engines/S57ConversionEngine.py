@@ -464,6 +464,8 @@ class S57ConversionEngine(Engine):
                     drop_list.append(i)
             else:
                 layer['layers'] = maritime_layers
+                # set name of group layer
+                layer['name'] = self.gdb_name
 
         # Remove empty layers for missing geom_types
         for index in sorted(drop_list, reverse=True):

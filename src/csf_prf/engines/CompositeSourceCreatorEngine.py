@@ -150,7 +150,6 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.ImportToolbox(csf_prf_toolbox)
         sheet_parameter = self.param_lookup['sheets'].valueAsText
         sheets = sheet_parameter.replace("'", "").split(';')
-        # output_folder = pathlib.Path(sheets[0]).parents[0]  # This always outputs ENC files to first Sheets input
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         for sheet in sheets:
             arcpy.AddMessage(f'Downloading ENC files for SHP: {sheet}')
