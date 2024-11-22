@@ -177,41 +177,41 @@ with open(str(INPUTS / 'maritime_layerfile.lyrx'), 'w') as writer:
 
 
 
-# Setting featureTemplates and groups in the MCD_maritime_layerfile
-with open(str(INPUTS / 'MCD_maritime_layerfile_template.lyrx'), 'r') as reader:
-    layer_file = reader.read()
-MCD_layer_dict = json.loads(layer_file)
+# # Setting featureTemplates and groups in the MCD_maritime_layerfile
+# with open(str(INPUTS / 'MCD_maritime_layerfile_template.lyrx'), 'r') as reader:
+#     layer_file = reader.read()
+# MCD_layer_dict = json.loads(layer_file)
 
-for layer in MCD_layer_dict["layerDefinitions"]:
-    if layer['name'] in output:
-        # Sort the featureTemplates
-        featureTemplates = sorted(output[layer['name']]['featureTemplates'], key=lambda data: data['name'])
-        groups = output[layer['name']]['groups']
-        labelClasses = output[layer['name']]['labelClasses']
+# for layer in MCD_layer_dict["layerDefinitions"]:
+#     if layer['name'] in output:
+#         # Sort the featureTemplates
+#         featureTemplates = sorted(output[layer['name']]['featureTemplates'], key=lambda data: data['name'])
+#         groups = output[layer['name']]['groups']
+#         labelClasses = output[layer['name']]['labelClasses']
 
-        layer['featureTemplates'] = featureTemplates
-        layer['labelClasses'] = []
-        for i, group in enumerate(groups):
-            group['heading'] = "FCSubtype"
-        layer["renderer"]["groups"] = groups
+#         layer['featureTemplates'] = featureTemplates
+#         layer['labelClasses'] = []
+#         for i, group in enumerate(groups):
+#             group['heading'] = "FCSubtype"
+#         layer["renderer"]["groups"] = groups
 
 
-# Create layer definitions for MCD layers
-csf_prf_layers = []
-for layer in MCD_layer_dict["layerDefinitions"]:
-    current_layer = copy.deepcopy(layer)
-    if 'featureTable' in current_layer:
-        fc_name = f"{current_layer['name']}_features"
-        current_layer["featureTable"]["dataConnection"]["dataset"] = f'main.{fc_name}'
-        current_layer["name"] = fc_name
-        current_layer["uRI"] = f"CIMPATH=map/{fc_name}.xml"
-        csf_prf_layers.append(current_layer)
+# # Create layer definitions for MCD layers
+# csf_prf_layers = []
+# for layer in MCD_layer_dict["layerDefinitions"]:
+#     current_layer = copy.deepcopy(layer)
+#     if 'featureTable' in current_layer:
+#         fc_name = f"{current_layer['name']}_features"
+#         current_layer["featureTable"]["dataConnection"]["dataset"] = f'main.{fc_name}'
+#         current_layer["name"] = fc_name
+#         current_layer["uRI"] = f"CIMPATH=map/{fc_name}.xml"
+#         csf_prf_layers.append(current_layer)
 
-# Reset layers to be only S57 to MCD and group layer
-csf_prf_layers.append(MCD_layer_dict["layerDefinitions"][-1])
-MCD_layer_dict["layerDefinitions"] = csf_prf_layers
+# # Reset layers to be only S57 to MCD and group layer
+# csf_prf_layers.append(MCD_layer_dict["layerDefinitions"][-1])
+# MCD_layer_dict["layerDefinitions"] = csf_prf_layers
 
-with open(str(INPUTS / 'MCD_maritime_layerfile.lyrx'), 'w') as writer:
-    writer.writelines(json.dumps(MCD_layer_dict, indent=4))
+# with open(str(INPUTS / 'MCD_maritime_layerfile.lyrx'), 'w') as writer:
+#     writer.writelines(json.dumps(MCD_layer_dict, indent=4))
 
 print('Done')

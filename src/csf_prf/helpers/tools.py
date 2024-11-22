@@ -3,15 +3,11 @@ import pathlib
 
 class Param:
         def __init__(self, path):
-            self.path = path
+            self.value = path
 
         @property
         def valueAsText(self):
-            return self.path
-        
-        @property
-        def value(self):
-            return self.path
+            return self.value
 
 
 def get_ags_tools():
