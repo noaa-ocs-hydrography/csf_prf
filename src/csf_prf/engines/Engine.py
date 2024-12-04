@@ -182,6 +182,32 @@ class Engine:
                 return parent_item[child]
             else:
                 return parent_item
+        
+    def get_multiple_values_from_field(self, field_name, current_value, s57_lookup):
+        """
+        Isolating logic for handling multiple values being found in one S57 field
+
+        :param str field_name: Field name from attribute value
+        :param str current_value: Current value from field in row
+        :param dict[dict[str]] s57_lookup: YAML lookup dictionary for S57 fields
+        :returns str: Concatenated string of multiple values
+        """
+
+        multiple_values = current_value.split(',')
+        # TODO Seems like an issue with assigned/unassigned dictionary value by reference issue.  
+        # unassigned was already having intger values converted to strings and causing the bypass here
+        # Need to heavily debug if conversion to strings is required. 
+        new_values = []
+        for val in multiple_values:
+            if val and type(val) == int:
+                # TODO sometimes NOAA attrs are strings: pier ( jetty)
+                new_values.append(s57_lookup[field_name][int(val)]) # TODO missing s57_lookup values
+            else:
+                print('--Bypass:', current_value, multiple_values, val)
+                arcpy.AddMessage(f' - Bypassing: Multiple Value Error: {val}')
+
+        multiple_value_result = ','.join(new_values)
+        return multiple_value_result  
 
     def get_unique_subtype_codes(self, subtype_lookup):
         """
@@ -262,6 +288,7 @@ class Engine:
     def split_multipoint_env(self) -> None:
         """Reset S57 ENV for split multipoint only"""
 
+        os.environ["S57_CSV"] = str(INPUTS / 'lookups')
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON,ADD_SOUNDG_DEPTH=ON"    
 
     def unzip_enc_files(self, output_folder, file_ending) -> None:

@@ -109,7 +109,7 @@ class S57ConversionEngine(Engine):
                 with arcpy.da.InsertCursor(points_layer, cursor_fields, explicit=True) as point_cursor: 
                     for feature in self.geometries['Point'][feature_type]:
                         # Make new list all set to None
-                        attribute_values = [None for i in range(len(cursor_fields))]
+                        attribute_values = ['' for i in range(len(cursor_fields))]
                         # Set geometry on first index
                         coords = feature['geojson']['geometry']['coordinates']
                         attribute_values[0] = (coords[0], coords[1])
@@ -136,7 +136,7 @@ class S57ConversionEngine(Engine):
                 cursor_fields = ['SHAPE@JSON'] + sorted_line_fields
                 with arcpy.da.InsertCursor(lines_layer, cursor_fields, explicit=True) as line_cursor: 
                     for feature in self.geometries['LineString'][feature_type]:
-                        attribute_values = [None for i in range(len(cursor_fields))]
+                        attribute_values = ['' for i in range(len(cursor_fields))]
                         geometry = feature['geojson']['geometry']
                         attribute_values[0] = arcpy.AsShape(geometry).JSON
                         for fieldname, attr in list(feature['geojson']['properties'].items()):
@@ -160,7 +160,7 @@ class S57ConversionEngine(Engine):
                 cursor_fields = ['SHAPE@'] + sorted_polygon_fields
                 with arcpy.da.InsertCursor(polygons_layer, cursor_fields, explicit=True) as polygons_cursor: 
                     for feature in self.geometries['Polygon'][feature_type]:
-                        attribute_values = [None for i in range(len(cursor_fields))]
+                        attribute_values = ['' for i in range(len(cursor_fields))]
                         polygons = feature['geojson']['geometry']['coordinates']
                         if polygons:
                             points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
@@ -290,25 +290,6 @@ class S57ConversionEngine(Engine):
                         if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                             self.geometries[geom_type]['QUAPOS'].append({'geojson': feature_json})     
 
-    def get_multiple_values_from_field(self, field_name, current_value, s57_lookup):
-        """
-        Isolating logic for handling multiple values being found in one S57 field
-
-        :param str field_name: Field name from attribute value
-        :param str current_value: Current value from field in row
-        :param dict[dict[str]] s57_lookup: YAML lookup dictionary for S57 fields
-        :returns str: Concatenated string of multiple values
-        """
-
-        multiple_values = current_value.split(',')
-        new_values = []
-        for val in multiple_values:
-            if val:
-                new_values.append(s57_lookup[field_name][int(val)]) # TODO missing s57_lookup values
-
-        multiple_value_result = ','.join(new_values)
-        return multiple_value_result  
-
     def project_rows_to_wgs84(self) -> None: 
         """Redefine the GCS to NAD83 then reproject from NAD83 to WGS84"""   
 
@@ -353,13 +334,7 @@ class S57ConversionEngine(Engine):
                 arcpy.management.DefineProjection(fc, wgs84_spatial_ref)   
                 arcpy.AddMessage(f'  - {fc_name}: {updated_rows} features projected to WGS84 locations')
             else:
-                arcpy.AddMessage(f'  -{fc_name} did not need a transformation.')
-
-    def split_multipoint_env(self) -> None:
-        """Reset S57 ENV for split multipoint only"""
-
-        os.environ["S57_CSV"] = str(INPUTS / 'lookups')
-        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON,ADD_SOUNDG_DEPTH=ON"                                                                     
+                arcpy.AddMessage(f'  -{fc_name} did not need a transformation.')                                                                     
 
     def start(self) -> None:
         start = time.time()
@@ -373,7 +348,7 @@ class S57ConversionEngine(Engine):
         self.add_objl_string_to_S57() 
         if self.param_lookup['layerfile_export'].value:
             self.add_subtype_column()
-        self.convert_noaa_attributes()
+        # self.convert_noaa_attributes()  # Nathan Leveling requested to keep integer attribute values
         self.export_enc_layers()
         self.add_projected_columns()
         self.project_rows_to_wgs84()
