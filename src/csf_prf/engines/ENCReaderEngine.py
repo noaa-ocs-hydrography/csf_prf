@@ -157,6 +157,43 @@ class ENCReaderEngine(Engine):
                             updateCursor.updateRow(row)
         arcpy.AddMessage(f'  - Removed {aton_count} ATON features containing {str(aton_found)}')
 
+    def convert_noaa_attributes(self) -> None:
+        """Obtain string values for all numerical S57 fields"""
+
+        with open(str(INPUTS / 'lookups' / 's57_lookup.yaml'), 'r') as lookup:
+            s57_lookup = yaml.safe_load(lookup)
+
+        for feature_type in self.geometries.keys():
+            for value in ['assigned', 'unassigned']:
+                arcpy.AddMessage(f'Update field values for: {feature_type} - {value}')
+                invalid_field_names = set()
+                # if feature_type == 'LineString':  # TODO CSFPRF-105 try to debug with only lines
+                with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][value], ['*']) as updateCursor:
+                    fields = updateCursor.fields
+                    for row in updateCursor:
+                        new_row = []
+                        for field_name in fields:
+                            field_index = fields.index(field_name)
+                            current_value = row[field_index]
+                            if field_name in s57_lookup:
+                                if current_value:
+                                    try:
+                                        new_value = s57_lookup[field_name][int(current_value)]
+                                        new_row.append(new_value)
+                                    except ValueError as e: # current_value has multiple values
+                                        multiple_value_result = self.get_multiple_values_from_field(field_name, current_value, s57_lookup)
+                                        new_row.append(multiple_value_result)
+                                        pass
+                                    except KeyError as e: # current_value is invalid ie. 2147483641
+                                        new_row.append(current_value)
+                                        invalid_field_names.add((field_name, current_value))
+                                        pass
+                                else:
+                                    new_row.append(current_value)
+                            else:
+                                new_row.append(current_value)
+                arcpy.AddMessage(f' - fields with invalid values: {invalid_field_names}')
+
     def download_gc(self, number, download_inputs) -> None:
         """
         Download a specific geograhic cell associated with an ENC
@@ -791,6 +828,7 @@ class ENCReaderEngine(Engine):
         self.perform_spatial_filter()
         self.print_feature_total()
         self.add_columns()
+        self.convert_noaa_attributes()
         self.export_enc_layers()
         self.join_quapos_to_features()
 
