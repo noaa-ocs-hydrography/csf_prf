@@ -92,8 +92,10 @@ class CompositeSourceCreatorEngine(Engine):
             layers = [self.make_sheets_layer(sheets_file) for sheets_file in sheets]
             layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
             self.add_column_and_constant(layer, 'invreq', nullable=True)
-            outer_features, inner_features = self.split_inner_polygons(layer)
-            self.write_sheets_to_featureclass('sheets', layer, outer_features + inner_features, 'output_sheets')
+            # FME used inner polygons, but it is not needed
+            # outer_features, inner_features = self.split_inner_polygons(layer)
+            # self.write_sheets_to_featureclass('sheets', layer, outer_features + inner_features, 'output_sheets')
+            self.export_to_feature_class('sheets', layer, 'output_sheets')
             self.sheets_layer = layer  # Set sheets layer for later use
 
     def copy_layer_to_feature_class(self, output_data_type, layer, feature_class_name) -> None:
@@ -229,6 +231,7 @@ class CompositeSourceCreatorEngine(Engine):
 
     def split_inner_polygons(self, layer):
         """
+        NOT USED ANYMORE
         Get all inner and outer polygon feature geometries
         :param arcpy.FeatureLayer layer: In memory layer used for processing
         :return (list[dict[]], list[dict[]]): Feature lists with attributes and geometry keys
@@ -348,6 +351,7 @@ class CompositeSourceCreatorEngine(Engine):
 
     def write_sheets_to_featureclass(self, output_data_type, template_layer, features, feature_class_name) -> None:
         """
+        NOT USED ANYMORE
         Store processed layer as an output feature class
         :param str output_data_type: Name of input parameter type being stored; see param_lookup
         :param arcpy.FeatureLayer template_layer: Layer used as a schema template
