@@ -323,7 +323,7 @@ class S57ConversionEngine(Engine):
                         descrp_value = row[1]
 
                         # Only specific rows need to be projected to WGS84
-                        if descrp_value in ['New']:
+                        if descrp_value in ['1']:  # '1' == 'New'
                             output_geometry = ogr.CreateGeometryFromWkb(geometry.WKB)
                             output_geometry.Transform(gdal_transformation)
                             projected_geometry = arcpy.FromWKB(output_geometry.ExportToWkb())

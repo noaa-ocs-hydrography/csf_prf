@@ -155,7 +155,8 @@ class ENCReaderEngine(Engine):
                             updateCursor.deleteRow()
                         else:
                             updateCursor.updateRow(row)
-        arcpy.AddMessage(f'  - Removed {aton_count} ATON features containing {str(aton_found)}')
+        if len(aton_found) > 0:
+            arcpy.AddMessage(f'  - Removed {aton_count} ATON features containing {str(aton_found)}')
 
     def convert_noaa_attributes(self) -> None:
         """Obtain string values for all numerical S57 fields"""
@@ -167,7 +168,6 @@ class ENCReaderEngine(Engine):
             for value in ['assigned', 'unassigned']:
                 arcpy.AddMessage(f'Update field values for: {feature_type} - {value}')
                 invalid_field_names = set()
-                # if feature_type == 'LineString':  # TODO CSFPRF-105 try to debug with only lines
                 with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][value], ['*']) as updateCursor:
                     fields = updateCursor.fields
                     for row in updateCursor:
@@ -192,7 +192,9 @@ class ENCReaderEngine(Engine):
                                     new_row.append(current_value)
                             else:
                                 new_row.append(current_value)
-                arcpy.AddMessage(f' - fields with invalid values: {invalid_field_names}')
+                        updateCursor.updateRow(new_row)
+                if len(invalid_field_names) > 0:
+                    arcpy.AddMessage(f' - fields with invalid values: {invalid_field_names}')
 
     def download_gc(self, number, download_inputs) -> None:
         """
@@ -568,7 +570,7 @@ class ENCReaderEngine(Engine):
             point_fields = self.get_all_fields(self.geometries['Point'][feature_type])
             points_layer = arcpy.management.CreateFeatureclass(
                 'memory', 
-                f'{feature_type}_points_layer', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
+                f'{feature_type}_points_assigned', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
             sorted_point_fields = sorted(point_fields)
             for field in sorted_point_fields:
                 arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
@@ -589,18 +591,20 @@ class ENCReaderEngine(Engine):
                         attribute_values[field_index] = str(attr)
                     # add to cursor
                     point_cursor.insertRow(attribute_values)
+            
+            # Must create separate layer name for unassigned.  Using same layer name will cause cursor to open the same layer.
+            points_unassigned_rename = arcpy.management.CopyFeatures(points_layer, fr'memory\{feature_type}_points_unassigned')
 
             points_assigned = arcpy.management.SelectLayerByLocation(points_layer, 'INTERSECT', self.sheets_layer)
-            points_assigned_layer = arcpy.management.MakeFeatureLayer(points_assigned)
-            points_unassigned = arcpy.management.SelectLayerByLocation(points_assigned_layer, selection_type='SWITCH_SELECTION')
+            points_unassigned = arcpy.management.SelectLayerByLocation(points_unassigned_rename, 'INTERSECT', self.sheets_layer, invert_spatial_relationship='INVERT')
             self.geometries['Point'][f'{feature_type}_layers']['assigned'] = points_assigned
             self.geometries['Point'][f'{feature_type}_layers']['unassigned'] = points_unassigned
-
+            
             # LINES
             line_fields = self.get_all_fields(self.geometries['LineString'][feature_type])
             lines_layer = arcpy.management.CreateFeatureclass(
                 'memory', 
-                f'{feature_type}_lines_layer', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
+                f'{feature_type}_lines_assigned', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
             sorted_line_fields = sorted(line_fields)
             for field in sorted_line_fields:
                 arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
@@ -616,9 +620,10 @@ class ENCReaderEngine(Engine):
                         field_index = line_cursor.fields.index(fieldname)
                         attribute_values[field_index] = str(attr)
                     line_cursor.insertRow(attribute_values)
+            lines_unassigned_rename = arcpy.management.CopyFeatures(lines_layer, fr'memory\{feature_type}_lines_unassigned')
+
             lines_assigned = arcpy.management.SelectLayerByLocation(lines_layer, 'INTERSECT', self.sheets_layer)
-            lines_assigned_layer = arcpy.management.MakeFeatureLayer(lines_assigned)
-            lines_unassigned = arcpy.management.SelectLayerByLocation(lines_assigned_layer, selection_type='SWITCH_SELECTION')
+            lines_unassigned = arcpy.management.SelectLayerByLocation(lines_unassigned_rename, 'INTERSECT', self.sheets_layer, invert_spatial_relationship='INVERT')
             self.geometries['LineString'][f'{feature_type}_layers']['assigned'] = lines_assigned
             self.geometries['LineString'][f'{feature_type}_layers']['unassigned'] = lines_unassigned
 
@@ -626,7 +631,7 @@ class ENCReaderEngine(Engine):
             polygons_fields = self.get_all_fields(self.geometries['Polygon'][feature_type])
             polygons_layer = arcpy.management.CreateFeatureclass(
                 'memory', 
-                f'{feature_type}_polygons_layer', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
+                f'{feature_type}_polygons_assigned', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
             sorted_polygon_fields = sorted(polygons_fields)
             for field in sorted_polygon_fields:
                 arcpy.management.AddField(polygons_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
@@ -664,9 +669,10 @@ class ENCReaderEngine(Engine):
                         #     geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
                         #     attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
                         #     polygons_cursor.insertRow([geometry] + attribute_values)
+            polygons_unassigned_rename = arcpy.management.CopyFeatures(polygons_layer, fr'memory\{feature_type}_polygons_unassigned')
+
             polygons_assigned = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', self.sheets_layer)
-            polygons_assigned_layer = arcpy.management.MakeFeatureLayer(polygons_assigned)
-            polygons_unassigned = arcpy.management.SelectLayerByLocation(polygons_assigned_layer, selection_type='SWITCH_SELECTION')
+            polygons_unassigned = arcpy.management.SelectLayerByLocation(polygons_unassigned_rename, 'INTERSECT', self.sheets_layer, invert_spatial_relationship='INVERT')
             self.geometries['Polygon'][f'{feature_type}_layers']['assigned'] = polygons_assigned
             self.geometries['Polygon'][f'{feature_type}_layers']['unassigned'] = polygons_unassigned
 

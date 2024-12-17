@@ -3,7 +3,7 @@ import pathlib
 import os
 import arcpy
 import yaml
-import json
+import shutil
 
 from osgeo import ogr
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
@@ -18,8 +18,8 @@ OUTPUTS = REPO / 'outputs'
 
 ENC_FILE = str(INPUTS / 'US4GA17M.000')
 SHEETS_LAYER = str(INPUTS / 'test_shapefiles' / 'G322_Sheets_01302024.shp') 
-SHP_POINT_FILE_1 = str(INPUTS / 'test_shapefiles' / 'test_point_shapefile_1.shp')
-SHP_POINT_FILE_2 = str(INPUTS / 'test_shapefiles' / 'test_point_shapefile_2.shp')
+POINT_FEATURES = str(INPUTS / 'unit_tests.geodatabase' / 'main.test_point_shapefile_1')
+QUAPOS_FEATURES = str(INPUTS / 'unit_tests.geodatabase' / 'main.test_point_shapefile_2')
 SHP_LINE_FILE = str(INPUTS / 'test_shapefiles' / 'test_line_shapefile.shp')
 SHP_POLYGON_FILE = str(INPUTS / 'test_shapefiles' / 'test_polygon_shapefile.shp')
 S57_FILE = str(INPUTS / 'test_S57_files' / 'US5GA20M_S57_testfile.000') # 1 line, 2 points, 2 polygons
@@ -56,7 +56,7 @@ def add_columns():
 
 
 def test_add_column_and_constant(victim):    
-    layer = arcpy.management.CopyFeatures(SHP_POINT_FILE_1, r'memory\test_layer')
+    layer = arcpy.management.CopyFeatures(POINT_FEATURES, r'memory\test_layer')
     fields = [field.name for field in arcpy.ListFields(layer)]
     assert 'test_column_name' not in fields
     victim.add_column_and_constant(layer, 'test_column_name', nullable=True)
@@ -90,7 +90,7 @@ def test_feature_covered_by_upper_scale(victim):
         def valueAsText(self):
             return MULTIPLE_ENC
     victim.param_lookup['enc_files'] = MultiParam()
-    victim.get_enc_bounds()
+    victim.get_enc_catcov()
     feature_json = {
         "geometry": {
             "type": "Point",
@@ -102,7 +102,7 @@ def test_feature_covered_by_upper_scale(victim):
 
 
 def test_filter_gc_features(victim):
-    victim.gc_points = SHP_POINT_FILE_1
+    victim.gc_points = POINT_FEATURES
     victim.gc_lines = SHP_LINE_FILE
     victim.filter_gc_features()
     assert victim.geometries['Point']['GC_layers']['assigned'] != None
@@ -146,20 +146,22 @@ def test_get_cursor():
     ...    
 
 
-def test_get_enc_bounds(victim):
+def test_get_enc_catcov(victim):
     class MultiParam:
         @property
         def valueAsText(self):
             return MULTIPLE_ENC
     victim.param_lookup['enc_files'] = MultiParam()
-    victim.get_enc_bounds()
+    victim.get_enc_catcov()
     assert hasattr(victim, 'scale_bounds')
     assert 4 in victim.scale_bounds
-    assert -81.3995801 in victim.scale_bounds[4][0]
+    assert -80.61090087890625 == victim.scale_bounds[4][0][0].X
 
 
+@pytest.mark.skip(reason="This function requires a test dataset with M_COVR layer")
 def test_get_feature_records(victim):
     victim.split_multipoint_env()
+    victim.get_enc_catcov()  # TODO test needs M_COVR layer to set victim.scale_bounds
     victim.get_feature_records()
     assert len(victim.geometries['Point']['features']) == 2
     assert len(victim.geometries['LineString']['features']) == 1
@@ -177,6 +179,7 @@ def test_get_sql(victim):
     assert results[55:109] == first_line
 
 
+@pytest.mark.skip(reason="This function requires a test dataset with M_COVR layer")
 def test_get_vector_records(victim):
     victim.return_primitives_env()
     victim.get_vector_records()
@@ -185,10 +188,11 @@ def test_get_vector_records(victim):
 
 
 def test_merge_gc_features(victim):
-    victim.gc_files = ['US3GA10M']
+    shutil.copytree(INPUTS / 'test_shapefiles' / 'geographic_cells', OUTPUTS / 'geographic_cells', dirs_exist_ok=True)
+    victim.gc_files = ['GC11926']
     victim.merge_gc_features() 
-    assert int(arcpy.management.GetCount(victim.gc_points)[0]) == 40
-    assert int(arcpy.management.GetCount(victim.gc_lines)[0]) == 20
+    assert int(arcpy.management.GetCount(victim.gc_points)[0]) == 12
+    assert int(arcpy.management.GetCount(victim.gc_lines)[0]) == 114
 
 
 def test_open_file(victim):
@@ -198,7 +202,7 @@ def test_open_file(victim):
 
 
 def test_perform_spatial_filter(victim):
-    geometry_types = {'Point': SHP_POINT_FILE_1, 'LineString': SHP_LINE_FILE, 'Polygon': SHP_POLYGON_FILE}
+    geometry_types = {'Point': POINT_FEATURES, 'LineString': SHP_LINE_FILE, 'Polygon': SHP_POLYGON_FILE}
     for geometry in geometry_types:
         geojson_outputs = []
         for row in arcpy.da.SearchCursor(geometry_types[geometry], ['FID','OBJL_NAME', 'SHAPE@', 'SHAPE@XY']):
@@ -250,17 +254,21 @@ def test_print_geometries():
 
 
 def test_join_quapos_to_features(victim): 
-    # spatialjoin won't add column to an in memory layer
-    SHP_POINT_FILE_3 = str(INPUTS / 'test_shapefiles' / 'test_point_shapefile_3.shp')
-    arcpy.management.CopyFeatures(SHP_POINT_FILE_1, SHP_POINT_FILE_3)
-    victim.geometries['Point']['features_layers']['assigned'] =  SHP_POINT_FILE_3
-    victim.geometries['Point']['QUAPOS_layers']['assigned'] = SHP_POINT_FILE_2
-    fields = [field.name for field in arcpy.ListFields(SHP_POINT_FILE_3)]
+    COPIED_POINT_FEATURES = str(INPUTS / 'unit_tests.geodatabase' / 'main.test_point_shapefile_3')
+    arcpy.management.CopyFeatures(POINT_FEATURES, COPIED_POINT_FEATURES)
+
+    victim.output_data['Point_features_assigned'] = COPIED_POINT_FEATURES
+    victim.output_data['Point_QUAPOS_assigned'] = QUAPOS_FEATURES
+    victim.output_data['Point_features_unassigned'] = None
+    victim.output_data['Point_QUAPOS_unassigned'] = None
+    victim.geometries.pop('LineString')
+    victim.geometries.pop('Polygon')
+    fields = [field.name for field in arcpy.ListFields(COPIED_POINT_FEATURES)]
     assert 'QUAPOS' not in fields
     victim.join_quapos_to_features()
-    fields = [field.aliasName for field in arcpy.ListFields(SHP_POINT_FILE_3)]
+    fields = [field.aliasName for field in arcpy.ListFields(COPIED_POINT_FEATURES)]
     assert 'QUAPOS' in fields
-    arcpy.management.Delete(SHP_POINT_FILE_3)
+    arcpy.management.Delete(COPIED_POINT_FEATURES)
     
 
 def test_return_primitives_env(victim):
@@ -333,7 +341,7 @@ def test_set_none_to_null(victim):
 
 
 def test_set_unassigned_invreq(victim): 
-    layer = arcpy.management.CopyFeatures(SHP_POINT_FILE_1, r'memory\test_layer')
+    layer = arcpy.management.CopyFeatures(POINT_FEATURES, r'memory\test_layer')
     victim.geometries['Point']['features_layers']['unassigned'] = layer
     with open(str(INPUTS / 'lookups' / 'invreq_lookup.yaml'), 'r') as lookup:
         objl_lookup = yaml.safe_load(lookup)
