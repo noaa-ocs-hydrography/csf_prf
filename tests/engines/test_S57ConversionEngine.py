@@ -46,13 +46,13 @@ def test_project_rows_to_wgs84(victim):
     victim.gdb_name = 'unit_tests'
     victim.create_output_gdb(gdb_name=victim.gdb_name)
     gdb_path = os.path.join(victim.param_lookup['output_folder'].valueAsText, f"{victim.gdb_name}.geodatabase")
-    fc_name = 'test_s57_transform'
+    # fc_name = 'main.test_s57_transform'
+    fc_name = 'main.Point_features'
     original_locations = os.path.join(gdb_path, fc_name)
     arcpy.management.CopyFeatures(TRANSFORM_SHP, original_locations)
-    # shapefile shortened column name
-    victim.add_column_and_constant(original_locations, 'transformed', expression='!transforme!', nullable=False)
-
-    victim.feature_classes = [fc_name]
+    victim.add_column_and_constant(original_locations, 'transformed', expression='!transformed!', nullable=False)
+    victim.geometries.pop('LineString')
+    victim.geometries.pop('Polygon')
     victim.project_rows_to_wgs84()
 
     with arcpy.da.SearchCursor(TRANSFORM_SHP, ['SHAPE@']) as original_cursor:

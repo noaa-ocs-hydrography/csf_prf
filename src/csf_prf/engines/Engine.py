@@ -199,7 +199,7 @@ class Engine:
         # Need to heavily debug if conversion to strings is required. 
         new_values = []
         for val in multiple_values:
-            if val and type(val) == int:
+            if val and val.isnumeric():
                 # TODO sometimes NOAA attrs are strings: pier ( jetty)
                 new_values.append(s57_lookup[field_name][int(val)]) # TODO missing s57_lookup values
             else:
