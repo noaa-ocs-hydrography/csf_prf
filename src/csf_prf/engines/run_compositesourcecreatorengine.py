@@ -18,11 +18,11 @@ if __name__ == '__main__':
         'maritime_boundary_pts': Param(''),
         'maritime_boundary_features': Param(''),
         'maritime_boundary_baselines': Param(''),
-        # 'enc_files': Param(str(str(INPUTS / 'US2EC02M.000') + ';' + str(INPUTS / 'US3GA10M.000'))),
-        'enc_files': Param(''),
+        'enc_files': Param(str(str(INPUTS / 'US4GA17M.000') + ';' + str(INPUTS / 'US5SC21M.000'))),
+        # 'enc_files': Param(''),
         'output_folder': Param(str(OUTPUTS)),
         'download_geographic_cells': Param(False),
-        'caris_export': Param(False),
+        'caris_export': Param(True),
         'layerfile_export': Param(True)
     }
     engine = CompositeSourceCreatorEngine(param_lookup)

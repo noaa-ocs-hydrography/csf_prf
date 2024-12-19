@@ -868,10 +868,7 @@ class ENCReaderEngine(Engine):
             if properties['CATMOR'] != 1:
                 return True
         elif objl_name == 'SLCONS':
-            # TODO Does one property take priority? CONDTN check might skip WATLEV
-            if properties['CONDTN'] == 2:
-                return True
-            elif properties['WATLEV'] != 3:
+            if properties['CONDTN'] != 2 or properties['WATLEV'] != 3:
                 return True
         elif objl_name == 'UWTROC':
             if geom_type == 'Point':
