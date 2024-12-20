@@ -639,6 +639,7 @@ class ENCReaderEngine(Engine):
             arcpy.AddMessage(' - Building Polygon features')
             cursor_fields = ['SHAPE@'] + sorted_polygon_fields
             with arcpy.da.InsertCursor(polygons_layer, cursor_fields, explicit=True) as polygons_cursor: 
+                large_lndare = 0
                 for feature in self.geometries['Polygon'][feature_type]:
                     attribute_values = ['' for i in range(len(cursor_fields))]
                     polygons = feature['geojson']['geometry']['coordinates']
@@ -646,6 +647,16 @@ class ENCReaderEngine(Engine):
                         points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
                         coord_array = arcpy.Array(points)
                         attribute_values[0] = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
+                        
+                        # skip LNDARE > 3775
+                        objl_string = CLASS_CODES.get(int(feature['geojson']['properties']['OBJL']))[0]
+                        if objl_string == 'LNDARE':
+                            polygon_area = attribute_values[0].projectAs(arcpy.SpatialReference(102008)).area
+                            if polygon_area > 3775:
+                                # arcpy.AddMessage(f'- Skipping LNDARE: {polygon_area}')
+                                large_lndare += 1
+                                continue
+
                         for fieldname, attr in list(feature['geojson']['properties'].items()):
                             field_index = polygons_cursor.fields.index(fieldname)
                             attribute_values[field_index] = str(attr)
@@ -669,6 +680,7 @@ class ENCReaderEngine(Engine):
                         #     geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
                         #     attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
                         #     polygons_cursor.insertRow([geometry] + attribute_values)
+            arcpy.AddMessage( f' - Removed {large_lndare} LNDARE features with area > 3775m')
             polygons_unassigned_rename = arcpy.management.CopyFeatures(polygons_layer, fr'memory\{feature_type}_polygons_unassigned')
 
             polygons_assigned = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', self.sheets_layer)
