@@ -295,6 +295,8 @@ class CompositeSourceCreatorEngine(Engine):
     def write_output_layer_file(self) -> None:
         """Update layer file for output gdb"""
 
+        # TODO layer file missing unassigned layers
+
         arcpy.AddMessage('Writing output layerfile')
         with open(str(INPUTS / f'{self.layerfile_name}.lyrx'), 'r') as reader:
             layer_file = reader.read()

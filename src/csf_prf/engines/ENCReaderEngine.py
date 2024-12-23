@@ -272,18 +272,23 @@ class ENCReaderEngine(Engine):
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         for geom_type in self.geometries.keys():
             for feature_type in ['features', 'GC', 'QUAPOS']:
+                assigned_name = f'{geom_type}_{feature_type}_assigned'
                 if self.geometries[geom_type][f'{feature_type}_layers']['assigned']:
-                    assigned_name = f'{geom_type}_{feature_type}_assigned'
                     arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
                     output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', assigned_name)
                     arcpy.management.CopyFeatures(self.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
                     self.output_data[f'{assigned_name}'] = output_name
+                else:
+                    self.output_data[f'{assigned_name}'] = None
+
+                unassigned_name = f'{geom_type}_{feature_type}_unassigned'
                 if self.geometries[geom_type][f'{feature_type}_layers']['unassigned']:
-                    unassigned_name = f'{geom_type}_{feature_type}_unassigned'
                     arcpy.AddMessage(f' - Writing output feature class: {unassigned_name}')
                     output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', unassigned_name)
                     arcpy.management.CopyFeatures(self.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
                     self.output_data[f'{unassigned_name}'] = output_name
+                else:
+                    self.output_data[f'{unassigned_name}'] = None
     
     def filter_gc_features(self) -> None:
         """Spatial query GC features within Sheets layer"""
@@ -538,7 +543,7 @@ class ENCReaderEngine(Engine):
             for output_type in output_types:
                 feature_records = self.output_data[f'{feature_type}_features_{output_type}']
                 vector_records = self.output_data[f'{feature_type}_QUAPOS_{output_type}']
-                if feature_records is not None or vector_records is not None:
+                if feature_records is not None and vector_records is not None:
                     quapos_count = int(arcpy.management.GetCount(vector_records)[0])
                     if quapos_count > 0: # Joining an empty vector_records layer caused duplicate fields
                         output_name = vector_records + '_joined'
@@ -710,6 +715,21 @@ class ENCReaderEngine(Engine):
             for feature in self.geometries[feature_type]:
                 arcpy.AddMessage(f"\n - {feature['type']}:{feature['geojson']}")
 
+    def remove_unassigned_buffer(self) -> None:
+        # buffer sheets
+        output_folder = self.param_lookup['output_folder'].valueAsText
+        unassigned_buffer = arcpy.analysis.Buffer(self.sheets_layer, os.path.join(output_folder, self.gdb_name + '.geodatabase', 'sheets_buffer'), '1 kilometers')
+        
+        for geom_type in self.geometries:
+            # TODO try to move this function above export_enc_layers and use self.geometries layers instead
+            # or try to make a layer from feature_records.  That is probably it actually. 
+            feature_records = self.geometries[geom_type]['features_layers']['unassigned']
+            external_unassigned = arcpy.management.SelectLayerByLocation(feature_records, 'INTERSECT', unassigned_buffer, invert_spatial_relationship='INVERT')
+            # arcpy.management.CopyFeatures(external_unassigned, os.path.join(output_folder, self.gdb_name + '.geodatabase', f'{geom_type}_external'))
+            arcpy.management.Delete(external_unassigned)
+            if not arcpy.Exists(feature_records):
+                self.geometries[geom_type]['features_layers']['unassigned'] = None
+
     def run_query(self, cursor, sql):
         """
         Execute a SQL query
@@ -847,8 +867,10 @@ class ENCReaderEngine(Engine):
         self.print_feature_total()
         self.add_columns()
         self.convert_noaa_attributes()
+        self.remove_unassigned_buffer()
         self.export_enc_layers()
         self.join_quapos_to_features()
+        
 
         # Run times in seconds
         # download_gcs - 75.
