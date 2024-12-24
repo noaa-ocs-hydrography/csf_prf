@@ -278,8 +278,8 @@ class ENCReaderEngine(Engine):
                     output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', assigned_name)
                     arcpy.management.CopyFeatures(self.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
                     self.output_data[f'{assigned_name}'] = output_name
-                else:
-                    self.output_data[f'{assigned_name}'] = None
+                # else:
+                #     self.output_data[f'{assigned_name}'] = None
 
                 unassigned_name = f'{geom_type}_{feature_type}_unassigned'
                 if self.geometries[geom_type][f'{feature_type}_layers']['unassigned']:
@@ -287,8 +287,8 @@ class ENCReaderEngine(Engine):
                     output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', unassigned_name)
                     arcpy.management.CopyFeatures(self.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
                     self.output_data[f'{unassigned_name}'] = output_name
-                else:
-                    self.output_data[f'{unassigned_name}'] = None
+                # else:
+                #     self.output_data[f'{unassigned_name}'] = None
     
     def filter_gc_features(self) -> None:
         """Spatial query GC features within Sheets layer"""
@@ -721,14 +721,20 @@ class ENCReaderEngine(Engine):
         unassigned_buffer = arcpy.analysis.Buffer(self.sheets_layer, os.path.join(output_folder, self.gdb_name + '.geodatabase', 'sheets_buffer'), '1 kilometers')
         
         for geom_type in self.geometries:
-            # TODO try to move this function above export_enc_layers and use self.geometries layers instead
-            # or try to make a layer from feature_records.  That is probably it actually. 
+            # TODO verify if this works correctly
             feature_records = self.geometries[geom_type]['features_layers']['unassigned']
-            external_unassigned = arcpy.management.SelectLayerByLocation(feature_records, 'INTERSECT', unassigned_buffer, invert_spatial_relationship='INVERT')
+            # external_unassigned = arcpy.management.SelectLayerByLocation(feature_records, 'INTERSECT', unassigned_buffer, invert_spatial_relationship='INVERT')
             # arcpy.management.CopyFeatures(external_unassigned, os.path.join(output_folder, self.gdb_name + '.geodatabase', f'{geom_type}_external'))
-            arcpy.management.Delete(external_unassigned)
-            if not arcpy.Exists(feature_records):
-                self.geometries[geom_type]['features_layers']['unassigned'] = None
+            with arcpy.da.UpdateCursor(feature_records, ["SHAPE@"]) as cursor:
+                with arcpy.da.UpdateCursor(unassigned_buffer, ["SHAPE@"]) as buffer_cursor:
+                    for row in cursor:
+                        inside = False
+                        for buffer_row in buffer_cursor:
+                            if row[0].crosses(buffer_row[0]):
+                                inside = True
+                                break
+                        if not inside:
+                            cursor.deleteRow()
 
     def run_query(self, cursor, sql):
         """
