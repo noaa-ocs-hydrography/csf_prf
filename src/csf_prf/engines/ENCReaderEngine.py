@@ -138,6 +138,7 @@ class ENCReaderEngine(Engine):
         """Convert OBJL number to string name"""
         
         # TODO review if unapproved_features.yaml handles this same logic
+        arcpy.AddMessage(" - Adding 'OBJL_NAME' column")
         aton_values = self.get_aton_lookup()
         aton_count = 0
         aton_found = set()
@@ -146,15 +147,23 @@ class ENCReaderEngine(Engine):
             self.add_column_and_constant(self.geometries[feature_type]['features_layers']['unassigned'], 'OBJL_NAME', nullable=True)
 
             for value in ['assigned', 'unassigned']:
-                with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][value], ['OBJL', 'OBJL_NAME']) as updateCursor:
-                    for row in updateCursor:
-                        row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
-                        if feature_type == 'Point' and row[1] in aton_values:
-                            aton_found.add(row[1])
-                            aton_count += 1
-                            updateCursor.deleteRow()
-                        else:
-                            updateCursor.updateRow(row)
+                with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'][value], ['*']) as updateCursor:
+                    fields = updateCursor.fields
+                    if 'OBJL' in fields:
+                        for row in updateCursor:
+                            objl = fields.index('OBJL')
+                            objl_name = fields.index('OBJL_NAME')
+                            row[objl_name] = CLASS_CODES.get(int(row[objl]), CLASS_CODES['OTHER'])[0]
+                            if feature_type == 'Point' and row[objl_name] in aton_values:
+                                aton_found.add(row[1])
+                                aton_count += 1
+                                updateCursor.deleteRow()
+                            else:
+                                updateCursor.updateRow(row)
+                    else:
+                        # TODO determine why OBJL is missing sometimes
+                        print(f'  - {feature_type} missing OBJL in row: {fields}')
+
         if len(aton_found) > 0:
             arcpy.AddMessage(f'  - Removed {aton_count} ATON features containing {str(aton_found)}')
 
@@ -268,27 +277,24 @@ class ENCReaderEngine(Engine):
         - # Could also just create static layers initially instead of "memory" in perform_spatial_filter()
         """
 
+        arcpy.AddMessage(f'Writing output feature classes')
         arcpy.env.qualifiedFieldNames = False
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         for geom_type in self.geometries.keys():
             for feature_type in ['features', 'GC', 'QUAPOS']:
                 assigned_name = f'{geom_type}_{feature_type}_assigned'
                 if self.geometries[geom_type][f'{feature_type}_layers']['assigned']:
-                    arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
+                    arcpy.AddMessage(f' - {assigned_name}')
                     output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', assigned_name)
                     arcpy.management.CopyFeatures(self.geometries[geom_type][f'{feature_type}_layers']['assigned'], output_name)
                     self.output_data[f'{assigned_name}'] = output_name
-                # else:
-                #     self.output_data[f'{assigned_name}'] = None
 
                 unassigned_name = f'{geom_type}_{feature_type}_unassigned'
                 if self.geometries[geom_type][f'{feature_type}_layers']['unassigned']:
-                    arcpy.AddMessage(f' - Writing output feature class: {unassigned_name}')
+                    arcpy.AddMessage(f' - {unassigned_name}')
                     output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', unassigned_name)
                     arcpy.management.CopyFeatures(self.geometries[geom_type][f'{feature_type}_layers']['unassigned'], output_name)
                     self.output_data[f'{unassigned_name}'] = output_name
-                # else:
-                #     self.output_data[f'{unassigned_name}'] = None
     
     def filter_gc_features(self) -> None:
         """Spatial query GC features within Sheets layer"""
@@ -716,25 +722,34 @@ class ENCReaderEngine(Engine):
                 arcpy.AddMessage(f"\n - {feature['type']}:{feature['geojson']}")
 
     def remove_unassigned_buffer(self) -> None:
-        # buffer sheets
+        """Remove unassigned features that are outside of 1km from Sheets boundary"""
+        
         output_folder = self.param_lookup['output_folder'].valueAsText
         unassigned_buffer = arcpy.analysis.Buffer(self.sheets_layer, os.path.join(output_folder, self.gdb_name + '.geodatabase', 'sheets_buffer'), '1 kilometers')
-        
+
+        # Create list from buffer cursor iterator to use it over and over
+        # Iterator by default would only work once
+        buffer_cursor = [row for row in arcpy.da.UpdateCursor(unassigned_buffer, ["SHAPE@"])]
+
         for geom_type in self.geometries:
-            # TODO verify if this works correctly
+            unassigned_deleted = 0
+            arcpy.AddMessage(f'Removing {geom_type} unassigned outside of 1km')
             feature_records = self.geometries[geom_type]['features_layers']['unassigned']
-            # external_unassigned = arcpy.management.SelectLayerByLocation(feature_records, 'INTERSECT', unassigned_buffer, invert_spatial_relationship='INVERT')
-            # arcpy.management.CopyFeatures(external_unassigned, os.path.join(output_folder, self.gdb_name + '.geodatabase', f'{geom_type}_external'))
-            with arcpy.da.UpdateCursor(feature_records, ["SHAPE@"]) as cursor:
-                with arcpy.da.UpdateCursor(unassigned_buffer, ["SHAPE@"]) as buffer_cursor:
-                    for row in cursor:
-                        inside = False
-                        for buffer_row in buffer_cursor:
-                            if row[0].crosses(buffer_row[0]):
-                                inside = True
-                                break
-                        if not inside:
-                            cursor.deleteRow()
+            feature_count = arcpy.management.GetCount(feature_records)
+            arcpy.management.CopyFeatures(feature_records, os.path.join(output_folder, f'{geom_type}_unassigned_copy.shp')) # testing
+            with arcpy.da.UpdateCursor(feature_records, ["SHAPE@"]) as feature_cursor:
+                for row in feature_cursor:
+                    inside = False
+                    for buffer_row in buffer_cursor:
+                        disjointed = row[0].disjoint(buffer_row[0])
+                        if not disjointed:
+                            inside = True
+                            break
+                    if not inside:
+                        unassigned_deleted += 1
+                        feature_cursor.deleteRow()
+            arcpy.AddMessage(f' - Deleted {unassigned_deleted} of {feature_count} unassigned {geom_type} features')
+        del buffer_cursor
 
     def run_query(self, cursor, sql):
         """
