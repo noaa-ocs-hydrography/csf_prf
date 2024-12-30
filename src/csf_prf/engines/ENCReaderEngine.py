@@ -736,7 +736,7 @@ class ENCReaderEngine(Engine):
             arcpy.AddMessage(f'Removing {geom_type} unassigned outside of 1km')
             feature_records = self.geometries[geom_type]['features_layers']['unassigned']
             feature_count = arcpy.management.GetCount(feature_records)
-            arcpy.management.CopyFeatures(feature_records, os.path.join(output_folder, f'{geom_type}_unassigned_copy.shp')) # testing
+            # arcpy.management.CopyFeatures(feature_records, os.path.join(output_folder, f'{geom_type}_unassigned_copy.shp')) # Output full unassigned dataset
             with arcpy.da.UpdateCursor(feature_records, ["SHAPE@"]) as feature_cursor:
                 for row in feature_cursor:
                     inside = False
