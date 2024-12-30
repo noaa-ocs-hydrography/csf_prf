@@ -49,7 +49,7 @@ class CompositeSourceCreator:
         sheets_shapefile = arcpy.Parameter(
             displayName="Sheets in shp format:",
             name="sheets",
-            datatype="GPFeatureLayer",
+            datatype="DEFeatureClass",
             parameterType="Optional",
             direction="Input",
             multiValue=True
@@ -57,7 +57,7 @@ class CompositeSourceCreator:
         junctions_shapefile = arcpy.Parameter(
             displayName="Junctions in shp format:",
             name="junctions",
-            datatype="GPFeatureLayer",
+            datatype="DEFeatureClass",
             parameterType="Optional",
             direction="Input",
             multiValue=True
