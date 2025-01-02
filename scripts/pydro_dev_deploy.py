@@ -47,7 +47,7 @@ def deploy_csf_to_pydro():
 
 
     # pydro specific files
-    shutil.copy2(SRC_FOLDER / 'README.md', CSF_PRF_TOOLBOX.parents[0] / 'README.md')
+    shutil.copytree(SRC_FOLDER / 'README', CSF_PRF_TOOLBOX.parents[0] / 'README', dirs_exist_ok=True)
 
 
 if __name__ == "__main__":
