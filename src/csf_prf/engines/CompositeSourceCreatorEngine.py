@@ -82,6 +82,7 @@ class CompositeSourceCreatorEngine(Engine):
             layer = arcpy.management.Merge(layers, r'memory\junctions_layer')
             expression = "'Survey: ' + str(!survey!)"  # TODO is junctions missing registry_n?
             self.add_column_and_constant(layer, 'invreq', expression)
+            self.add_column_and_constant(layer, 'asgnmt', "'Assigned'")
             self.junctions_layer = layer
 
     def convert_sheets(self) -> None:
@@ -95,6 +96,7 @@ class CompositeSourceCreatorEngine(Engine):
             layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
             expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
             self.add_column_and_constant(layer, 'invreq', expression)
+            self.add_column_and_constant(layer, 'asgnmt', "'Assigned'")
 
             # FME used inner polygons, but it is not needed
             # outer_features, inner_features = self.split_inner_polygons(layer)
@@ -228,9 +230,9 @@ class CompositeSourceCreatorEngine(Engine):
         """Append Sheets and Junctions to output assigned polygons"""
 
         arcpy.AddMessage(f'Merging Sheets and Junctions to assigned polygons')
-        sheets_fields = ["SHAPE@", "project_nu", "sub_locali", "registry_n", "invreq"]
+        sheets_fields = ["SHAPE@", "asgnmt", "project_nu", "sub_locali", "registry_n", "invreq"]
         sheets_cursor = [row for row in arcpy.da.SearchCursor(self.sheets_layer, sheets_fields)] if self.sheets_layer else False
-        junctions_fields = ["SHAPE@", "survey", "invreq"]  # "survey", "year", "scale", "field_unit"  TODO do we need these fields?
+        junctions_fields = ["SHAPE@", "asgnmt", "survey", "invreq"]  # "survey", "year", "scale", "field_unit"  TODO do we need these fields?
         junctions_cursor = [row for row in arcpy.da.SearchCursor(self.junctions_layer, junctions_fields)] if self.junctions_layer else False
         polygon_assigned = self.output_data[f'Polygon_features_assigned']
         new_fields = [*sheets_fields[1:], *junctions_fields[1:]]
