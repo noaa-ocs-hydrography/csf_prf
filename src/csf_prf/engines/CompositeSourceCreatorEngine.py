@@ -80,10 +80,8 @@ class CompositeSourceCreatorEngine(Engine):
             arcpy.AddMessage('Converting junctions')
             layers = [self.make_junctions_layer(junctions_file) for junctions_file in junctions]
             layer = arcpy.management.Merge(layers, r'memory\junctions_layer')
-            expression = "'Survey: ' + str(!registry_n!)"
-            self.add_column_and_constant(layer, 'invreq', 'Survey: (registry #), Priority: , Name: (sublocality)')
-            # TODO merge with assigned and output as TWRTPT OBJL_NAME
-            # self.export_to_feature_class('junctions', layer, 'output_junctions')
+            expression = "'Survey: ' + str(!survey!)"  # TODO is junctions missing registry_n?
+            self.add_column_and_constant(layer, 'invreq', expression)
             self.junctions_layer = layer
 
     def convert_sheets(self) -> None:
@@ -97,12 +95,12 @@ class CompositeSourceCreatorEngine(Engine):
             layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
             expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
             self.add_column_and_constant(layer, 'invreq', expression)
+
             # FME used inner polygons, but it is not needed
             # outer_features, inner_features = self.split_inner_polygons(layer)
             # self.write_sheets_to_featureclass('sheets', layer, outer_features + inner_features, 'output_sheets')
-            # TODO merge with assigned and output as TESARE OBJL_NAME
-            # self.export_to_feature_class('sheets', layer, 'output_sheets')
-            self.sheets_layer = layer  # Set sheets layer for later use
+
+            self.sheets_layer = layer
 
     def copy_layer_to_feature_class(self, output_data_type, layer, feature_class_name) -> None:
         """
@@ -233,7 +231,7 @@ class CompositeSourceCreatorEngine(Engine):
         sheets_fields = ["SHAPE@", "project_nu", "sub_locali", "registry_n", "invreq"]
         sheets_cursor = [row for row in arcpy.da.SearchCursor(self.sheets_layer, sheets_fields)] if self.sheets_layer else False
         print(len(sheets_cursor))
-        junctions_fields = ["SHAPE@", "invreq"]  # "survey", "year", "scale", "field_unit"  TODO do we need these fields?
+        junctions_fields = ["SHAPE@", "survey", "invreq"]  # "survey", "year", "scale", "field_unit"  TODO do we need these fields?
         junctions_cursor = [row for row in arcpy.da.SearchCursor(self.junctions_layer, junctions_fields)] if self.junctions_layer else False
         polygon_assigned = self.output_data[f'Polygon_features_assigned']
         new_fields = [*sheets_fields[1:], *junctions_fields[1:]]
@@ -250,7 +248,7 @@ class CompositeSourceCreatorEngine(Engine):
             existing_values = ['TWRTPT', '70'] if self.param_lookup['layerfile_export'].value else ['TWRTPT']
             with arcpy.da.InsertCursor(polygon_assigned, junctions_fields + existing_fields) as cursor:
                 for junctions_row in junctions_cursor:
-                    cursor.insertRow([junctions_row, *existing_values])
+                    cursor.insertRow([*junctions_row, *existing_values])
 
     def set_enc_files_param(self, output_folder: pathlib.Path) -> None:
         enc_files = []
