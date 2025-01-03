@@ -230,7 +230,6 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.AddMessage(f'Merging Sheets and Junctions to assigned polygons')
         sheets_fields = ["SHAPE@", "project_nu", "sub_locali", "registry_n", "invreq"]
         sheets_cursor = [row for row in arcpy.da.SearchCursor(self.sheets_layer, sheets_fields)] if self.sheets_layer else False
-        print(len(sheets_cursor))
         junctions_fields = ["SHAPE@", "survey", "invreq"]  # "survey", "year", "scale", "field_unit"  TODO do we need these fields?
         junctions_cursor = [row for row in arcpy.da.SearchCursor(self.junctions_layer, junctions_fields)] if self.junctions_layer else False
         polygon_assigned = self.output_data[f'Polygon_features_assigned']
