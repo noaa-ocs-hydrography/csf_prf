@@ -4,6 +4,8 @@ import time
 import pathlib
 import json
 
+import arcpy.management
+
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
 arcpy.env.overwriteOutput = True
@@ -82,6 +84,7 @@ class CompositeSourceCreatorEngine(Engine):
             layer = arcpy.management.Merge(layers, r'memory\junctions_layer')
             expression = "'Survey: ' + str(!survey!)"  # TODO is junctions missing registry_n?
             self.add_column_and_constant(layer, 'invreq', expression)
+            self.add_column_and_constant(layer, 'asgnmt', "'Assigned'")
             self.junctions_layer = layer
 
     def convert_sheets(self) -> None:
@@ -95,11 +98,11 @@ class CompositeSourceCreatorEngine(Engine):
             layer = arcpy.management.Merge(layers, r'memory\sheets_layer')
             expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
             self.add_column_and_constant(layer, 'invreq', expression)
+            self.add_column_and_constant(layer, 'asgnmt', "'Assigned'")
 
             # FME used inner polygons, but it is not needed
             # outer_features, inner_features = self.split_inner_polygons(layer)
             # self.write_sheets_to_featureclass('sheets', layer, outer_features + inner_features, 'output_sheets')
-
             self.sheets_layer = layer
 
     def copy_layer_to_feature_class(self, output_data_type, layer, feature_class_name) -> None:
@@ -223,7 +226,7 @@ class CompositeSourceCreatorEngine(Engine):
             sheets = arcpy.management.Project(sheets, r'memory\projected_sheets', 4326)
         layer = arcpy.management.MakeFeatureLayer(sheets, field_info=field_info)
         return layer
-    
+
     def merge_shps_to_enc(self) -> None:
         """Append Sheets and Junctions to output assigned polygons"""
 
@@ -236,7 +239,6 @@ class CompositeSourceCreatorEngine(Engine):
         new_fields = [*sheets_fields[1:], *junctions_fields[1:]]
         for field in new_fields:
             self.add_column_and_constant(polygon_assigned, field, nullable=True) 
-        
         existing_fields = ['OBJL_NAME', 'FCSubtype'] if self.param_lookup['layerfile_export'].value else ['OBJL_NAME']
         if sheets_cursor:
             existing_values = ['TESARE', '115'] if self.param_lookup['layerfile_export'].value else ['TESARE']
@@ -248,6 +250,15 @@ class CompositeSourceCreatorEngine(Engine):
             with arcpy.da.InsertCursor(polygon_assigned, junctions_fields + existing_fields) as cursor:
                 for junctions_row in junctions_cursor:
                     cursor.insertRow([*junctions_row, *existing_values])
+
+        # Set empty values to empty strings to match other data
+        with arcpy.da.UpdateCursor(polygon_assigned, ['*']) as cursor:
+            for row in cursor:
+                new_row = list(row)
+                for i, val in enumerate(new_row):
+                    if val is None:
+                        new_row[i] = ''
+                cursor.updateRow(new_row)        
 
     def set_enc_files_param(self, output_folder: pathlib.Path) -> None:
         enc_files = []
