@@ -1,11 +1,11 @@
 import arcpy
-from csf_prf.engines.ENCDownloaderEngine import ENCDownloaderEngine
+from csf_prf.engines.MHWBufferEngine import MHWBufferEngine
 
 
-class ENCDownloader:
+class MHWBuffer:
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = "ENC Downloader"
+        self.label = "MHW Buffer Creator"
         self.description = ""
 
     def getParameterInfo(self):
@@ -32,7 +32,7 @@ class ENCDownloader:
         """The source code of the tool."""
                 
         param_lookup = self.setup_param_lookup(parameters)
-        downloader = ENCDownloaderEngine(param_lookup)
+        downloader = MHWBufferEngine(param_lookup)
         downloader.start()
         return
 
@@ -53,6 +53,16 @@ class ENCDownloader:
             direction="Input"
         )
 
+        enc_file = arcpy.Parameter(
+            displayName="ENC File(s) (Leave empty to automatically download ENC files):",
+            name="enc_files",
+            datatype="DEFile",
+            parameterType="Optional",
+            direction="Input",
+            multiValue=True
+        )
+        enc_file.filter.list = ['000']
+
         output_folder = arcpy.Parameter(
             displayName="Output Folder:",
             name="output_folder",
@@ -63,6 +73,7 @@ class ENCDownloader:
 
         return [
             sheets_shapefile,
+            enc_file,
             output_folder
         ]
 
@@ -71,6 +82,7 @@ class ENCDownloader:
 
         param_names = [
             'sheets',
+            'enc_file',
             'output_folder'
         ]
 

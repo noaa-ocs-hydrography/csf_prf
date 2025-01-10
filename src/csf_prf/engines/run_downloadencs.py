@@ -3,7 +3,7 @@ CSFPRF_MODULE = pathlib.Path(__file__).parents[2]
 
 import sys
 sys.path.append(str(CSFPRF_MODULE))
-from csf_prf.engines.DownloadEncEngine import DownloadEncEngine
+from csf_prf.engines.ENCDownloaderEngine import ENCDownloaderEngine
 
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
@@ -23,5 +23,5 @@ if __name__ == '__main__':
         'sheets': Param(str(INPUTS / 'test_shapefiles' / 'enc_downloader_boundary.shp')),
         'output_folder': Param(str(OUTPUTS)),
     }
-    engine = DownloadEncEngine(param_lookup)
+    engine = ENCDownloaderEngine(param_lookup)
     engine.start()
