@@ -155,8 +155,7 @@ class CompositeSourceCreatorEngine(Engine):
     def download_enc_files(self) -> None:
         """Factory function to download project ENC files"""
 
-        csf_prf_toolbox = str(CSF_PRF / 'CSF_PRF_Toolbox.pyt')
-        arcpy.ImportToolbox(csf_prf_toolbox)
+        self.load_toolbox()
         sheet_parameter = self.param_lookup['sheets'].valueAsText
         sheets = sheet_parameter.replace("'", "").split(';')
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
@@ -182,6 +181,25 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.management.DefineProjection(copied_layer, arcpy.SpatialReference(4326))
 
         self.output_data[output_data_type] = output_name
+
+    def get_mhw_buffer(self) -> None:
+        """Create MHW Buffer of Sheets and COALNE intersection"""
+
+        arcpy.AddMessage('Clipping Sheets to MHW Buffer')
+        self.load_toolbox()
+        if not self.param_lookup['enc_files'].valueAsText:
+            self.download_enc_files()
+        
+        arcpy.AddMessage(f'Clipping Sheets to MHW Buffer:')
+        # Function name is a built-in combo of class and toolbox alias
+        # Inputs are strings
+        arcpy.MHWBuffer_csf_prf_tools(self.param_lookup['sheets'].valueAsText, 
+                                      self.param_lookup['enc_files'].valueAsText, 
+                                      self.param_lookup['output_folder'].valueAsText)
+
+    def load_toolbox(self) -> None:
+        csf_prf_toolbox = str(CSF_PRF / 'CSF_PRF_Toolbox.pyt')
+        arcpy.ImportToolbox(csf_prf_toolbox)
 
     def make_junctions_layer(self, junctions):
         """
@@ -322,6 +340,7 @@ class CompositeSourceCreatorEngine(Engine):
         """Main method to begin process"""
 
         start = time.time()
+        self.get_mhw_buffer()
         self.create_output_gdb() # TODO move to the base class
         self.convert_sheets()
         self.convert_junctions()

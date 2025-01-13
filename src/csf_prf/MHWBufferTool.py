@@ -5,7 +5,7 @@ from csf_prf.engines.MHWBufferEngine import MHWBufferEngine
 class MHWBuffer:
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
-        self.label = "MHW Buffer Creator"
+        self.label = "MHW Buffer"
         self.description = ""
 
     def getParameterInfo(self):
