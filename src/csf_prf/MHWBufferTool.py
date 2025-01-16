@@ -53,7 +53,7 @@ class MHWBuffer:
             direction="Input"
         )
 
-        enc_file = arcpy.Parameter(
+        enc_files = arcpy.Parameter(
             displayName="ENC File(s) (Leave empty to automatically download ENC files):",
             name="enc_files",
             datatype="DEFile",
@@ -61,7 +61,7 @@ class MHWBuffer:
             direction="Input",
             multiValue=True
         )
-        enc_file.filter.list = ['000']
+        enc_files.filter.list = ['000']
 
         output_folder = arcpy.Parameter(
             displayName="Output Folder:",
@@ -73,7 +73,7 @@ class MHWBuffer:
 
         return [
             sheets_shapefile,
-            enc_file,
+            enc_files,
             output_folder
         ]
 
@@ -82,7 +82,7 @@ class MHWBuffer:
 
         param_names = [
             'sheets',
-            'enc_file',
+            'enc_files',
             'output_folder'
         ]
 

@@ -25,4 +25,4 @@ if __name__ == '__main__':
         'output_folder': Param(str(OUTPUTS)),
     }
     engine = MHWBufferEngine(param_lookup)
-    engine.start()  
+    engine.start()

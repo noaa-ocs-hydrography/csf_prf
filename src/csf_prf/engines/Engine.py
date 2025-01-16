@@ -8,6 +8,7 @@ import arcpy
 from osgeo import ogr
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
+CSF_PRF = pathlib.Path(__file__).parents[1]
 
 
 class EngineException(Exception):
@@ -113,6 +114,19 @@ class Engine:
             # Mobile GDB has a 2TB size limit
             arcpy.management.CreateMobileGDB(output_folder, gdb_name)
 
+    def download_enc_files(self) -> None:
+        """Factory function to download project ENC files"""
+
+        self.load_toolbox()
+        sheet_parameter = self.param_lookup['sheets'].valueAsText
+        sheets = sheet_parameter.replace("'", "").split(';')
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        for sheet in sheets:
+            arcpy.AddMessage(f'Downloading ENC files for SHP: {sheet}')
+            # Function name is a built-in combo of class and toolbox alias
+            arcpy.ENCDownloader_csf_prf_tools(sheet, str(output_folder))
+        self.set_enc_files_param(output_folder)
+
     def export_to_geopackage(self, output_path, param_name, feature_class) -> None:
         """
         Export a feature class in GDB to a Geopackage
@@ -159,7 +173,8 @@ class Engine:
 
         fields = set()
         for feature in features:
-            for field in feature['geojson']['properties'].keys():
+            json_fields = feature['geojson']['properties'].keys() if 'geojson' in feature else feature['properties'].keys()
+            for field in json_fields:
                 fields.add(field)
         return fields 
 
@@ -240,7 +255,13 @@ class Engine:
         """
 
         with arcpy.da.SearchCursor(feature_class, [[attribute]]) as cursor:
-            return sorted({row[0] for row in cursor})    
+            return sorted({row[0] for row in cursor})
+
+    def load_toolbox(self) -> None:
+        """Shared method to load the main toolbox"""
+
+        csf_prf_toolbox = str(CSF_PRF / 'CSF_PRF_Toolbox.pyt')
+        arcpy.ImportToolbox(csf_prf_toolbox)
 
     def open_file(self, enc_path):
         """
@@ -272,6 +293,17 @@ class Engine:
         """Set the S57 driver for GDAL"""
 
         self.driver = ogr.GetDriverByName('S57')
+
+    def set_enc_files_param(self, output_folder: pathlib.Path) -> None:
+        """Set the ENC files parameter after downloading files"""
+        
+        enc_files = []
+        arcpy.AddMessage('ENC files found:')
+        for enc in output_folder.glob('*.000'):
+            enc_file = str(enc)
+            arcpy.AddMessage(f' - {enc_file}')
+            enc_files.append(enc_file)
+        self.param_lookup['enc_files'].value = ';'.join(enc_files)
 
     def set_none_to_null(self, feature_json):
         """
