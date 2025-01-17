@@ -264,7 +264,6 @@ class S57ConversionEngine(Engine):
                 if feature:
                     feature_json = json.loads(feature.ExportToJson())
                     geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
-                    print(geom_type, feature_json['properties']['onotes'] if 'onotes' in feature_json['properties'] else '')
                     if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                         feature_json = self.set_none_to_null(feature_json) 
                         self.geometries[geom_type]['features'].append({'geojson': feature_json})
