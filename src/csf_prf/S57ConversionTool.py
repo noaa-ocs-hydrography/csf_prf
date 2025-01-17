@@ -35,8 +35,16 @@ class S57Conversion:
             parameterType="Optional",
             direction="Input",
         )
+        toggle_crs = arcpy.Parameter(
+            displayName="Convert mislabeled NAD83 CRS to WGS84?",
+            name="toggle_crs",
+            datatype="GPBoolean",
+            parameterType="Optional",
+            direction="Input",
+        )
+        toggle_crs.value = True
 
-        return [enc_file, output_folder, layerfile_export]
+        return [enc_file, output_folder, layerfile_export, toggle_crs]
 
     def isLicensed(self):
         """Set whether the tool is licensed to execute."""
@@ -72,7 +80,8 @@ class S57Conversion:
         param_names = [
             'enc_file',
             'output_folder',
-            'layerfile_export'
+            'layerfile_export',
+            'toggle_crs'
         ]
 
         lookup = {}
