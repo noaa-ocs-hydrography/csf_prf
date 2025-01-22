@@ -6935,7 +6935,7 @@
       "featureTemplates" : [
         {
           "type" : "CIMRowTemplate",
-          "name" : "LNDELV, spotheight",
+          "name" : "LNDELV_LandElevation",
           "tags" : "Point",
           "defaultToolGUID" : "2a8b3331-5238-4025-972e-452a69535b06",
           "defaultValues" : {
@@ -6958,7 +6958,7 @@
         },
         {
           "type" : "CIMRowTemplate",
-          "name" : "LNDARE, punktøer",
+          "name" : "LNDARE_LandArea",
           "tags" : "Point",
           "defaultToolGUID" : "2a8b3331-5238-4025-972e-452a69535b06",
           "defaultValues" : {

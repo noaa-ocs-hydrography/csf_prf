@@ -351,7 +351,8 @@ class S57ConversionEngine(Engine):
         # self.convert_noaa_attributes()  # Nathan Leveling requested to keep integer attribute values
         self.export_enc_layers()
         self.add_projected_columns()
-        self.project_rows_to_wgs84()
+        if self.param_lookup['toggle_crs'].value:
+            self.project_rows_to_wgs84()
         self.write_to_geopackage()
         if self.param_lookup['layerfile_export'].value:
             self.write_output_layer_file()
