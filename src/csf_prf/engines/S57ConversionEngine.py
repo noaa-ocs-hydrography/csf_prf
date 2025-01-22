@@ -350,8 +350,8 @@ class S57ConversionEngine(Engine):
             self.add_subtype_column()
         # self.convert_noaa_attributes()  # Nathan Leveling requested to keep integer attribute values
         self.export_enc_layers()
+        self.add_projected_columns()
         if self.param_lookup['toggle_crs'].value:
-            self.add_projected_columns() # TODO should we keep this column if not transforming?
             self.project_rows_to_wgs84()
         self.write_to_geopackage()
         if self.param_lookup['layerfile_export'].value:
