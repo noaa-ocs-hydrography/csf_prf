@@ -32,6 +32,7 @@ def deploy_csf_to_pydro():
     shutil.copytree(INPUTS / 'sql', CSF_PRF_TOOLBOX / 'inputs' / 'sql', dirs_exist_ok=True)
     shutil.copy2(INPUTS / 'maritime_layerfile.lyrx', CSF_PRF_TOOLBOX / 'inputs' / 'maritime_layerfile.lyrx')
     shutil.copy2(INPUTS / 'MCD_maritime_layerfile.lyrx', CSF_PRF_TOOLBOX / 'inputs' / 'MCD_maritime_layerfile.lyrx')
+    shutil.copy2(INPUTS / '__main__.py', CSF_PRF_TOOLBOX.parents[0] / '__main__.py')
 
 
     # src/csf_prf 
@@ -39,7 +40,7 @@ def deploy_csf_to_pydro():
                     CSF_PRF_TOOLBOX / 'src' / 'csf_prf' / 'engines', 
                     dirs_exist_ok=True, 
                     ignore=shutil.ignore_patterns('run*.py'))
-    for tool in CSF_PRF.glob('*Tool*.py'):
+    for tool in CSF_PRF.glob('*Tool.py'):
         shutil.copy2(tool, CSF_PRF_TOOLBOX / 'src' / 'csf_prf' / tool.name)
     for tool in CSF_PRF.glob('*Tool*.pyt'):
         shutil.copy2(tool, CSF_PRF_TOOLBOX / 'src' / 'csf_prf' / tool.name)
