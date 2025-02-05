@@ -64,6 +64,20 @@ def deploy_csf_to_pydro():
     shutil.copytree(SRC_FOLDER / 'README', REPO_FOLDER.parents[0] / 'README', dirs_exist_ok=True)
 
 
+def increment_version():
+    """Pull code version and write it to the README in Dev"""
+
+    from csf_prf import __version__ as version
+
+    with open(REPO_FOLDER.parents[0] / 'README' / 'README.md', 'r') as reader:
+        readme_text = reader.read()
+        updated_text = readme_text.replace('{VERSION}', f'v{version}')
+    with open(REPO_FOLDER.parents[0] / 'README' / 'README.md', 'w') as writer:
+        writer.write(updated_text)
+        print(f'Dev updated to {version}')
+
+
 if __name__ == "__main__":    
     deploy_csf_to_pydro()
+    increment_version()
     print('Done')

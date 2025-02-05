@@ -3,6 +3,9 @@
 This application contains Python code for the workflows related to 
 the Composite Source File/Project Reference File(CSF/PRF).
 
+## Code Version
+- {VERSION}
+
 ## Location of Tools
 The CSF/PRF Toolbox application currently contains an ArcGIS Python Toolbox and associated Python code.
 
@@ -41,3 +44,12 @@ Once Pydro pulls the latest changes, you will need to open ArcGIS Pro and add a 
 The S-57 to Geopackage conversion tools performs a geotransformation for objects where the field 
 'descrp' = 'New'. The transformation used is NAD 83 (2011) to WGS 84 (ITRF08). These objects will have the transformation noted in the 'transformed' field.
 Additional documentation on NAD83 to WGS84 can be found here: [Choosing An Appropriate Transformation](https://desktop.arcgis.com/en/arcmap/latest/map/projections/choosing-an-appropriate-transformation.htm)
+
+
+## Support 
+The CSF/PRF Tools are used by field units and general support is provided by your branch's streamlining team lead:
+- [Tyanne Faulkes-PHB](mailto:tyanne.faulkes@noaa.gov?subject=Pydro-csf_prf_toolbox%20issue&body=Tyanne,)
+- [Matt Wilson-AHB](mailto:matthew.wilson@noaa.gov?subject=Pydro-csf_prf_toolbox%20issue&body=Matt,)
+
+If there are technical issues with the tools or documentation, feel free to contact the maintainer of the library:
+- [Stephen Patterson-HSTB](mailto:stephen.patterson@noaa.gov?subject=Pydro-csf_prf_toolbox%20issue&body=Stephen,)
