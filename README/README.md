@@ -49,4 +49,4 @@ The CSF/PRF Tools are used by field units and general support is provided by you
 - [Matt Wilson-AHB](mailto:https://mail.google.com/mail/u/0/@noaa.gov?compose=new&to=matthew.wilson@noaa.gov&subject=Pydro24-csf_prf_toolbox,%20issue:&body=Matt,)
 
 If there are technical issues with the tools or documentation, feel free to contact the maintainer of the library:
-- [Stephen Patterson-HSTB](mailto:https://mail.google.com/mail/u/0/@noaa.gov?compose=new&to=stephen.patterson@noaa.gov&subject=Pydro24-csf_prf_toolbox, issue:&body=Stephen,)
+- [Stephen Patterson-HSTB](mailto:https://mail.google.com/mail/u/0/@noaa.gov?compose=new&to=stephen.patterson@noaa.gov&subject=Pydro24-csf_prf_toolbox,%20issue:&body=Stephen,)
