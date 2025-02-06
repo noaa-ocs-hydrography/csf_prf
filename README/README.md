@@ -1,10 +1,7 @@
-# CSF/PRF Toolbox
+# CSF/PRF Toolbox  <p style="text-align: right;font-size: 16px;margin-top:-30px;">{VERSION}</p>
 
 This application contains Python code for the workflows related to 
 the Composite Source File/Project Reference File(CSF/PRF).
-
-## Code Version
-- {VERSION}
 
 ## Location of Tools
 The CSF/PRF Toolbox application currently contains an ArcGIS Python Toolbox and associated Python code.

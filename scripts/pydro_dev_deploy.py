@@ -71,7 +71,7 @@ def increment_version():
 
     with open(REPO_FOLDER.parents[0] / 'README' / 'README.md', 'r') as reader:
         readme_text = reader.read()
-        updated_text = readme_text.replace('{VERSION}', f'v{version}')
+        updated_text = readme_text.replace('{VERSION}', f'v: {version}')
     with open(REPO_FOLDER.parents[0] / 'README' / 'README.md', 'w') as writer:
         writer.write(updated_text)
         print(f'Dev updated to {version}')
