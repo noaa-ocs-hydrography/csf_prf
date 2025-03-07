@@ -1,11 +1,14 @@
 import json
 import arcpy
 import pathlib
+import yaml
 
 from csf_prf.engines.Engine import Engine
 
 arcpy.env.overwriteOutput = True
 
+
+INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 
 
@@ -16,6 +19,27 @@ class MHWBufferEngine(Engine):
         self.param_lookup = param_lookup
         self.features = {'COALNE': [], 'SLCONS': []}
         self.chartscale_layer = None
+
+    def buffer_lines(self) -> None:
+        self.features['buffered'] = arcpy.management.CreateFeatureclass(
+            'memory', 
+            f'buffered_layer', 
+            'POLYGON', 
+            spatial_reference=arcpy.SpatialReference(4326)  # web mercator
+        )
+        arcpy.management.AddField(self.features['buffered'], 'display_scale', 'LONG')
+        
+        with open(str(INPUTS / 'lookups' / 'chartscale.yaml'), 'r') as lookup:
+            chartscale_lookup = yaml.safe_load(lookup)
+
+        with arcpy.da.InsertCursor(self.features['buffered'], ['SHAPE@', 'display_scale']) as cursor: 
+            with arcpy.da.SearchCursor(self.features['merged'], ['SHAPE@', 'display_scale']) as merged_cursor:
+                for row in merged_cursor:
+                    projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')
+                    buffered = projected_geom.buffer(chartscale_lookup[row[1]]).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')
+                    cursor.insertRow([buffered, row[1]])
+
+        arcpy.management.CopyFeatures(self.features['buffered'], str(OUTPUTS / 'cursor_buffered.shp'))
 
     def build_feature_layers(self) -> None:
         """Create layers for all coastal features"""
@@ -46,14 +70,14 @@ class MHWBufferEngine(Engine):
         
             self.features[feature_type] = lines_layer  # overwrite memory with layer
 
-    def get_chartscale_layer(self) -> None:
-        """Create layer for ChartScale features"""
+    def get_enc_display_scale(self, enc_file) -> str:
+        """Obtain ENC resolution scale for setting buffer value"""
 
-        self.chartscale_layer = arcpy.management.CreateFeatureclass(
-            'memory', 
-            f'chartscale_layer', 
-            'POLYGON', 
-            spatial_reference=arcpy.SpatialReference(4326))
+        metadata_layer = enc_file.GetLayerByName('DSID')
+        metadata = metadata_layer.GetFeature(0)
+        metadata_json = json.loads(metadata.ExportToJson())
+        display_scale = metadata_json['properties']['DSPM_CSCL']
+        return display_scale
 
     def get_high_water_features(self):
         """Read ENC features and build HW dataset"""
@@ -62,33 +86,45 @@ class MHWBufferEngine(Engine):
         if not self.param_lookup['enc_files'].valueAsText:
             self.download_enc_files()
             
-        enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        enc_files = self.param_lookup['enc_files'].value.replace("'", "").split(';')
         for enc_path in enc_files:
-            # TODO should features be merged or unique across ENC files?
             enc_file = self.open_file(enc_path)
+            enc_scale = pathlib.Path(enc_path).stem[2]
+            display_scale = self.get_enc_display_scale(enc_file)
             for layer in enc_file:
                 layer.ResetReading()
                 name = layer.GetDescription()
+                # TODO can we just use geometry and disregard attributes?
                 if name == 'COALNE':
-                    self.store_coalne_features(layer)
+                    self.store_coalne_features(layer, display_scale)
                 elif name == 'SLCONS':
-                    self.store_slcons_features(layer)
+                    self.store_slcons_features(layer, display_scale)
                 elif name == 'LNDARE':
                     # TODO what is LNDARE for?
                     continue
-                # elif name == 'DSID':
-                #     metadata = layer.GetFeature(0)
-                #     metadata_json = json.loads(metadata.ExportToJson())
-                #     resolution = metadata_json['properties']['DSPM_CSCL']
-                #     scale_level = metadata_json['properties']['DSID_INTU']
-                #     print(resolution, scale_level)
+                elif name == 'PONTON':
+                    # TODO is PONTON needed?
+                    continue
 
     def merge_feature_layers(self) -> None:
         """Merge together the COALNE and SLCONS features"""
 
-        self.features['merged'] = arcpy.management.Merge(
-            [self.features[feature_type] for feature_type in self.features if self.features[feature_type]],
-            f'{OUTPUTS / "merged_layers.shp"}')
+        self.features['merged'] = arcpy.management.CreateFeatureclass(
+            'memory', 
+            f'merged_layer', 
+            'POLYLINE', 
+            spatial_reference=arcpy.SpatialReference(4326)
+        )
+        arcpy.management.AddField(self.features['merged'], 'display_scale', 'LONG')
+
+        with arcpy.da.InsertCursor(self.features['merged'], ['SHAPE@', 'display_scale']) as cursor: 
+            for feature_type in self.features:
+                if self.features[feature_type]:
+                    with arcpy.da.SearchCursor(self.features[feature_type], ['SHAPE@', 'DISPLAY_SCALE']) as feature_cursor:
+                        for row in feature_cursor:
+                            cursor.insertRow(row)
+
+        # arcpy.management.CopyFeatures(self.features['merged'], str(OUTPUTS / 'cursor_merged.shp'))
         
     def perform_spatial_filter(self) -> None:
         """Select features that intersect the chart scalelayer"""
@@ -111,8 +147,9 @@ class MHWBufferEngine(Engine):
 
         self.get_high_water_features()
         self.build_feature_layers()
-        self.get_chartscale_layer()
         self.merge_feature_layers()
+        self.buffer_lines()  # make polygons out of lines
+        # self.dissolve_overlapping_polygons()  # make a single polyygon out of buffered lines features
 
         # TODO Intersect chart scale with all features
         self.perform_spatial_filter()
@@ -128,7 +165,7 @@ class MHWBufferEngine(Engine):
         # TODO write out shapefile
         arcpy.AddMessage('Done')
 
-    def store_coalne_features(self, layer: list[dict]) -> None:
+    def store_coalne_features(self, layer: list[dict], display_scale: str) -> None:
         """Collect all COALNE features"""
 
         for feature in layer:
@@ -137,9 +174,10 @@ class MHWBufferEngine(Engine):
                 geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                 # TODO do we only use lines?
                 if geom_type == 'LineString':
+                    feature_json['properties']['DISPLAY_SCALE'] = display_scale
                     self.features['COALNE'].append(feature_json)
 
-    def store_slcons_features(self, layer: list[dict]) -> None:
+    def store_slcons_features(self, layer: list[dict], display_scale: str) -> None:
         """Collect all SLCONS features"""
 
         for feature in layer:
@@ -147,6 +185,7 @@ class MHWBufferEngine(Engine):
                 feature_json = json.loads(feature.ExportToJson())
                 geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                 if geom_type == 'LineString':
+                    feature_json['properties']['DISPLAY_SCALE'] = display_scale
                     props = feature_json['properties']
                     if 'CATSLC' in props and props['CATSLC'] == 4:
                         if props['WATLEV'] == 2:

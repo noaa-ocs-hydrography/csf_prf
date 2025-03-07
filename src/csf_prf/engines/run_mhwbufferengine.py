@@ -21,7 +21,8 @@ if __name__ == '__main__':
         
     param_lookup = {
         'sheets': Param(str(INPUTS / 'test_shapefiles' / 'enc_downloader_boundary.shp')),
-        'enc_files': Param(str(str(INPUTS / 'US4GA17M.000') + ';' + str(INPUTS / 'US5SC21M.000'))),
+        # 'enc_files': Param(str(str(INPUTS / 'US4GA17M.000') + ';' + str(INPUTS / 'US5SC21M.000'))),
+        'enc_files': Param(''),
         'output_folder': Param(str(OUTPUTS)),
     }
     engine = MHWBufferEngine(param_lookup)
