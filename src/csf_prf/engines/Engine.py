@@ -197,7 +197,7 @@ class Engine:
                 return parent_item[child]
             else:
                 return parent_item
-        
+            
     def get_multiple_values_from_field(self, field_name, current_value, s57_lookup):
         """
         Isolating logic for handling multiple values being found in one S57 field
