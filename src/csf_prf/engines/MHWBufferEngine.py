@@ -70,6 +70,23 @@ class MHWBufferEngine(Engine):
                     layer_type_index = line_cursor.fields.index('layer_type')
                     attribute_values[layer_type_index] = feature_type
                     line_cursor.insertRow(attribute_values)
+
+    def clip_sheets(self) -> None:
+        """Clip input sheets boundary with dissolved MHW layer"""
+
+        sheet_parameter = self.param_lookup['sheets'].valueAsText
+        # Create output sheets to manipulate
+        sheet_layer = arcpy.management.CopyFeatures(sheet_parameter, str(OUTPUTS / 'sheet_clipped.shp'))
+        dissolved_selection = arcpy.management.SelectLayerByLocation(self.layers['dissolved'], 'INTERSECT', sheet_layer)
+        with arcpy.da.SearchCursor(dissolved_selection, ['SHAPE@']) as dissolved_cursor:
+            dissolved_polygons = [row[0] for row in dissolved_cursor]
+        with arcpy.da.UpdateCursor(sheet_layer, ['SHAPE@']) as sheet_cursor:
+            for row in sheet_cursor:
+                sheet_geom = row[0]
+                for polygon in dissolved_polygons:
+                    if not sheet_geom.disjoint(polygon):
+                        sheet_geom = sheet_geom.difference(polygon)
+                sheet_cursor.updateRow([sheet_geom])
         
     def dissolve_polygons(self) -> None:
         """Dissolve overlappingi polygons to create a single polygon"""
@@ -206,6 +223,7 @@ class MHWBufferEngine(Engine):
         self.buffer_lines()
         self.dissolve_polygons()
         self.remove_inner_polygons()
+        self.clip_sheets()
 
         arcpy.management.CopyFeatures(self.layers['dissolved'], str(OUTPUTS / 'cursor_dissolved.shp'))
 
