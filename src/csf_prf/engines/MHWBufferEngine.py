@@ -76,7 +76,7 @@ class MHWBufferEngine(Engine):
 
         sheet_parameter = self.param_lookup['sheets'].valueAsText
         # Create output sheets to manipulate
-        sheet_layer = arcpy.management.CopyFeatures(sheet_parameter, str(OUTPUTS / 'sheet_clipped.shp'))
+        sheet_layer = arcpy.management.CopyFeatures(sheet_parameter, str(OUTPUTS / f'{pathlib.Path(sheet_parameter).stem}_clip.shp'))
         dissolved_selection = arcpy.management.SelectLayerByLocation(self.layers['dissolved'], 'INTERSECT', sheet_layer)
         with arcpy.da.SearchCursor(dissolved_selection, ['SHAPE@']) as dissolved_cursor:
             dissolved_polygons = [row[0] for row in dissolved_cursor]

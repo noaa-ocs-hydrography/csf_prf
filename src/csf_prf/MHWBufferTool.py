@@ -6,7 +6,7 @@ class MHWBuffer:
     def __init__(self):
         """Define the tool (tool name is the name of the class)."""
         self.label = "MHW Buffer"
-        self.description = ""
+        self.description = "Clip Sheets boundary by buffered Mean High Water features from ENC files"
 
     def getParameterInfo(self):
         """Define the tool parameters."""

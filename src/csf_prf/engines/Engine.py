@@ -317,6 +317,14 @@ class Engine:
                 feature_json['properties'][key] = ''
         return feature_json
 
+    def set_sheets_input_param(self, output_folder: pathlib.Path) -> None:
+        """Set the Sheets parameter after clipping Sheets to MHW buffer"""
+
+        input_sheets = pathlib.Path(self.param_lookup['sheets'].valueAsText).stem
+        clipped_sheets = list(output_folder.glob(f'{input_sheets}_clip.shp'))[0]
+        if clipped_sheets:
+            self.param_lookup['sheets'].value = str(clipped_sheets)
+
     def split_multipoint_env(self) -> None:
         """Reset S57 ENV for split multipoint only"""
 

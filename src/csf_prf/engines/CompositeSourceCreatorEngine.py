@@ -182,6 +182,7 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.MHWBuffer_csf_prf_tools(self.param_lookup['sheets'].valueAsText, 
                                       self.param_lookup['enc_files'].valueAsText, 
                                       self.param_lookup['output_folder'].valueAsText)
+        self.set_sheets_input_param(pathlib.Path(self.param_lookup['output_folder'].valueAsText))
 
     def make_junctions_layer(self, junctions):
         """
@@ -313,7 +314,7 @@ class CompositeSourceCreatorEngine(Engine):
         """Main method to begin process"""
 
         start = time.time()
-        self.get_mhw_buffer()
+        # self.get_mhw_buffer()  # TODO maybe not call this from CSF tool? Would require two tools be ran if needed
         self.create_output_gdb() # TODO move to the base class
         self.convert_sheets()
         self.convert_junctions()
