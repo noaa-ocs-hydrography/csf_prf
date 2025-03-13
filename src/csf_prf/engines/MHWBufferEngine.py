@@ -9,7 +9,6 @@ arcpy.env.overwriteOutput = True
 
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
-OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 
 
 class MHWBufferEngine(Engine):
@@ -21,7 +20,9 @@ class MHWBufferEngine(Engine):
         self.layers = {'buffered': None, 'dissolved': None, 'merged': None, 
                        'COALNE': None, 'SLCONS': None}
         self.chartscale_layer = None
-        
+        self.scale_bounds = {}
+        self.intersected = 0
+
     def buffer_lines(self) -> None:
         """Buffer the MHW lines by meters for each Chart scale"""
 
@@ -40,9 +41,7 @@ class MHWBufferEngine(Engine):
                     chart_scale = self.get_chart_scale(row[1])
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1]])
-
         del self.layers['merged']
-        arcpy.management.CopyFeatures(self.layers['buffered'], str(OUTPUTS / 'cursor_buffered.shp'))
 
     def build_feature_layers(self) -> None:
         """Create layers for all coastal features"""
@@ -76,22 +75,26 @@ class MHWBufferEngine(Engine):
 
         sheet_parameter = self.param_lookup['sheets'].valueAsText
         # Create output sheets to manipulate
-        sheet_layer = arcpy.management.CopyFeatures(sheet_parameter, str(OUTPUTS / f'{pathlib.Path(sheet_parameter).stem}_clip.shp'))
-        dissolved_selection = arcpy.management.SelectLayerByLocation(self.layers['dissolved'], 'INTERSECT', sheet_layer)
+        self.layers['clipped_sheets'] = arcpy.management.CopyFeatures(sheet_parameter, str(pathlib.Path('memory') / 'clipped_sheets'))
+        dissolved_selection = arcpy.management.SelectLayerByLocation(self.layers['dissolved'], 'INTERSECT', self.layers['clipped_sheets'])
         with arcpy.da.SearchCursor(dissolved_selection, ['SHAPE@']) as dissolved_cursor:
             dissolved_polygons = [row[0] for row in dissolved_cursor]
-        with arcpy.da.UpdateCursor(sheet_layer, ['SHAPE@']) as sheet_cursor:
+        with arcpy.da.UpdateCursor(self.layers['clipped_sheets'], ['SHAPE@']) as sheet_cursor:
             for row in sheet_cursor:
                 sheet_geom = row[0]
                 for polygon in dissolved_polygons:
                     if not sheet_geom.disjoint(polygon):
                         sheet_geom = sheet_geom.difference(polygon)
                 sheet_cursor.updateRow([sheet_geom])
-        
+
     def dissolve_polygons(self) -> None:
         """Dissolve overlappingi polygons to create a single polygon"""
-        self.layers['dissolved'] = arcpy.management.Dissolve(self.layers['buffered'], str(pathlib.Path('memory') / 'dissolved_layer'), multi_part='SINGLE_PART')
-        # arcpy.management.CopyFeatures(self.layers['dissolved'], str(OUTPUTS / 'cursor_dissolved.shp'))
+
+        self.layers["dissolved"] = arcpy.management.Dissolve(
+            self.layers["buffered"],
+            str(pathlib.Path("memory") / "dissolved_layer"),
+            multi_part="SINGLE_PART",
+        )
 
     def get_chart_scale(self, current_scale) -> int:
         """Get the upper chart scale or max chart scale for the current input chart scale"""
@@ -127,17 +130,11 @@ class MHWBufferEngine(Engine):
             for layer in enc_file:
                 layer.ResetReading()
                 name = layer.GetDescription()
-                # TODO can we just use geometry and disregard attributes?
                 if name == 'COALNE':
                     self.store_coalne_features(layer, enc_scale, display_scale)
                 elif name == 'SLCONS':
                     self.store_slcons_features(layer, enc_scale, display_scale)
-                elif name == 'LNDARE':
-                    # TODO what is LNDARE for?
-                    continue
-                elif name == 'PONTON':
-                    # TODO is PONTON needed?
-                    continue
+        arcpy.AddMessage(f'  - Removed {self.intersected} supersession features')
 
     def merge_feature_layers(self) -> None:
         """Merge together the COALNE and SLCONS features"""
@@ -157,8 +154,6 @@ class MHWBufferEngine(Engine):
                         for row in feature_cursor:
                             cursor.insertRow(row)
 
-        # arcpy.management.CopyFeatures(self.features['merged'], str(OUTPUTS / 'cursor_merged.shp'))
-
     def print_properties(self, feature: dict) -> None:
         """Helper function to view feature details"""
 
@@ -177,35 +172,15 @@ class MHWBufferEngine(Engine):
                 point_array = arcpy.Array(points)
                 cursor.updateRow([arcpy.Polygon(point_array, arcpy.SpatialReference(4326))])
 
-    # def remove_unassigned_buffer(self) -> None:
-    #     """Remove features that are outside of 1km from Sheets boundary"""
-        
-    #     output_folder = self.param_lookup['output_folder'].valueAsText
-    #     buffer_1km = arcpy.analysis.Buffer(self.sheets_layer, str(pathlib.Path('memory') / 'sheets_buffer'), '1 kilometers')
+    def save_layers(self) -> None:
+        """Write out memory layers to output folder"""
 
-    #     # Create list from buffer cursor iterator to use it over and over
-    #     # Iterator by default would only work once
-    #     buffer_cursor = [row for row in arcpy.da.UpdateCursor(unassigned_buffer, ["SHAPE@"])]
-
-    #     for geom_type in self.geometries:
-    #         unassigned_deleted = 0
-    #         arcpy.AddMessage(f'Removing {geom_type} unassigned outside of 1km')
-    #         feature_records = self.geometries[geom_type]['features_layers']['unassigned']
-    #         feature_count = arcpy.management.GetCount(feature_records)
-    #         # arcpy.management.CopyFeatures(feature_records, os.path.join(output_folder, f'{geom_type}_unassigned_copy.shp')) # Output full unassigned dataset
-    #         with arcpy.da.UpdateCursor(feature_records, ["SHAPE@"]) as feature_cursor:
-    #             for row in feature_cursor:
-    #                 inside = False
-    #                 for buffer_row in buffer_cursor:
-    #                     disjointed = row[0].disjoint(buffer_row[0])
-    #                     if not disjointed:
-    #                         inside = True
-    #                         break
-    #                 if not inside:
-    #                     unassigned_deleted += 1
-    #                     feature_cursor.deleteRow()
-    #         arcpy.AddMessage(f' - Deleted {unassigned_deleted} of {feature_count} unassigned {geom_type} features')
-    #     del buffer_cursor
+        output_folder = self.param_lookup['output_folder'].valueAsText
+        # arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / 'cursor_dissolved.shp'))
+        # arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'cursor_buffered.shp'))
+        # arcpy.management.CopyFeatures(self.layers['merged'], str(pathlib.Path(output_folder) / 'cursor_merged.shp'))
+        arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / 'cursor_dissolved.shp'))
+        arcpy.management.CopyFeatures(self.layers['clipped_sheets'], str(pathlib.Path(output_folder) / f'{pathlib.Path(self.param_lookup["sheets"].valueAsText).stem}_clip.shp'))
 
     def start(self) -> None:
         """Main method to begin process"""
@@ -214,19 +189,16 @@ class MHWBufferEngine(Engine):
             self.download_enc_files()
         self.set_driver()
         self.return_primitives_env()
-        # TODO do we need to allow GC features input or download?
+        self.get_scale_bounds()
         self.get_high_water_features()
         self.build_feature_layers()
-        # TODO implement 1km feature removal?
-        # self.remove_unassigned_buffer()
         self.merge_feature_layers()
         self.buffer_lines()
         self.dissolve_polygons()
         self.remove_inner_polygons()
         self.clip_sheets()
-
-        arcpy.management.CopyFeatures(self.layers['dissolved'], str(OUTPUTS / 'cursor_dissolved.shp'))
-
+        self.save_layers()
+        
         arcpy.AddMessage('Done')
 
     def store_coalne_features(self, layer: list[dict], enc_scale: str, display_scale: str) -> None:
@@ -235,6 +207,9 @@ class MHWBufferEngine(Engine):
         for feature in layer:
             if feature:
                 feature_json = json.loads(feature.ExportToJson())
+                if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
+                    self.intersected += 1
+                    continue
                 geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                 # TODO do we only use lines?
                 if geom_type == 'LineString':
@@ -247,6 +222,9 @@ class MHWBufferEngine(Engine):
         for feature in layer:
             if feature:
                 feature_json = json.loads(feature.ExportToJson())
+                if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
+                    self.intersected += 1
+                    continue
                 geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                 if geom_type == 'LineString':
                     feature_json['properties']['DISPLAY_SCALE'] = display_scale
@@ -260,4 +238,3 @@ class MHWBufferEngine(Engine):
                     else: # != 4
                         if props['WATLEV'] is None or props['WATLEV'] in ['', 2]:
                             self.features['SLCONS'].append(feature_json)
-                    
