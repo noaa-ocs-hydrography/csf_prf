@@ -13,18 +13,15 @@ OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 
 if __name__ == '__main__':
     param_lookup = {
-        'sheets': Param(str(INPUTS / 'test_shapefiles' / 'G322_Sheets_01302024.shp')),
+        'sheets': Param(r"C:\Users\Stephen.Patterson\Data\Repos\csf_prf\outputs\G322_Sheets_01302024.shp"),
         'junctions': Param(''),
-        'maritime_boundary_pts': Param(''),
-        'maritime_boundary_features': Param(''),
-        'maritime_boundary_baselines': Param(''),
-        'enc_files': Param(str(str(INPUTS / 'US4GA17M.000') + ';' + str(INPUTS / 'US5SC21M.000'))),
-        # 'enc_files': Param(str(str(INPUTS / 'US5SC21M.000'))),
+        # 'enc_files': Param(str(str(INPUTS / 'US4GA17M.000') + ';' + str(INPUTS / 'US5SC21M.000'))),
+        'enc_files': Param(str(str(OUTPUTS / 'US4AK6EB.000'))),
         # 'enc_files': Param(''),
         'output_folder': Param(str(OUTPUTS)),
         'download_geographic_cells': Param(False),
-        'caris_export': Param(False),
-        'layerfile_export': Param(False)
+        'caris_export': Param(True),
+        'layerfile_export': Param(True)
     }
     engine = CompositeSourceCreatorEngine(param_lookup)
     engine.start()

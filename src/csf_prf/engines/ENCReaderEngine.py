@@ -422,7 +422,6 @@ class ENCReaderEngine(Engine):
                         if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                             if self.unapproved(geom_type, feature_json['properties']):
                                 continue
-
                             feature_json = self.set_none_to_null(feature_json)
                             self.geometries[geom_type]['features'].append({'geojson': feature_json, 'scale': enc_scale})
                         # elif geom_type == 'MultiPoint':
@@ -927,8 +926,9 @@ class ENCReaderEngine(Engine):
                 return True
         elif objl_name == 'UWTROC':
             if geom_type == 'Point':
+                # TODO allow all UWTROC points no matter what
                 if properties['WATLEV'] != 3:
-                    return True    
+                    return True
             elif geom_type != 'Point':
                 # only allow point UWTROC
                 return True
