@@ -10,7 +10,7 @@ from bs4 import BeautifulSoup
 arcpy.env.overwriteOutput = True
 
 
-class DownloadEncEngine(Engine):
+class ENCDownloaderEngine(Engine):
     """Class to download all ENC files that intersect a project boundary shapefile"""
 
     def __init__(self, param_lookup: dict) -> None:

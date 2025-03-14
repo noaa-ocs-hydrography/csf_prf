@@ -8,6 +8,7 @@ import arcpy
 from osgeo import ogr
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
+CSF_PRF = pathlib.Path(__file__).parents[1]
 
 
 class EngineException(Exception):
@@ -113,6 +114,19 @@ class Engine:
             # Mobile GDB has a 2TB size limit
             arcpy.management.CreateMobileGDB(output_folder, gdb_name)
 
+    def download_enc_files(self) -> None:
+        """Factory function to download project ENC files"""
+
+        self.load_toolbox()
+        sheet_parameter = self.param_lookup['sheets'].valueAsText
+        sheets = sheet_parameter.replace("'", "").split(';')
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        for sheet in sheets:
+            arcpy.AddMessage(f'Downloading ENC files for SHP: {sheet}')
+            # Function name is a built-in combo of class and toolbox alias
+            arcpy.ENCDownloader_csf_prf_tools(sheet, str(output_folder))
+        self.set_enc_files_param(output_folder)
+
     def export_to_geopackage(self, output_path, param_name, feature_class) -> None:
         """
         Export a feature class in GDB to a Geopackage
@@ -159,7 +173,8 @@ class Engine:
 
         fields = set()
         for feature in features:
-            for field in feature['geojson']['properties'].keys():
+            json_fields = feature['geojson']['properties'].keys() if 'geojson' in feature else feature['properties'].keys()
+            for field in json_fields:
                 fields.add(field)
         return fields 
 
@@ -182,7 +197,7 @@ class Engine:
                 return parent_item[child]
             else:
                 return parent_item
-        
+            
     def get_multiple_values_from_field(self, field_name, current_value, s57_lookup):
         """
         Isolating logic for handling multiple values being found in one S57 field
@@ -208,6 +223,73 @@ class Engine:
 
         multiple_value_result = ','.join(new_values)
         return multiple_value_result  
+
+    def get_scale_bounds(self) -> None:
+        """Create lookup for ENC extents by scale"""
+
+        scale_polygons = {}
+        enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        for enc_path in enc_files:
+            enc_file = self.open_file(enc_path)
+            enc_scale = int(pathlib.Path(enc_path).stem[2])  # TODO do we need to look up scale and accept any file name?
+            metadata_layer = enc_file.GetLayerByName('DSID')
+            metadata = metadata_layer.GetFeature(0)
+            metadata_json = json.loads(metadata.ExportToJson())
+            # resolution = metadata_json['properties']['DSPM_CSCL']
+            scale_level = metadata_json['properties']['DSID_INTU']
+
+            # get CATCOV 1 polygon
+            m_covr_layer = enc_file.GetLayerByName('M_COVR')
+            catcov = None
+            for feature in m_covr_layer:
+                feature_json = json.loads(feature.ExportToJson())
+                if feature_json['properties']['CATCOV'] == 1:
+                    catcov = feature_json
+                    break
+
+            if catcov is not None:
+                points = [arcpy.Point(*coords) for polygon in catcov['geometry']['coordinates'] for coords in polygon]
+                esri_extent_polygon = arcpy.Polygon(arcpy.Array(points))
+            else: 
+                # TODO Use rectangular extent if no CATCOV? 
+                xMin, xMax, yMin, yMax = enc_file.GetLayerByName('M_COVR').GetExtent()
+                extent_array = arcpy.Array()
+                extent_array.add(arcpy.Point(xMin, yMin))
+                extent_array.add(arcpy.Point(xMin, yMax))
+                extent_array.add(arcpy.Point(xMax, yMax))
+                extent_array.add(arcpy.Point(xMax, yMin))
+                extent_array.add(arcpy.Point(xMin, yMin))
+                esri_extent_polygon = arcpy.Polygon(extent_array)
+
+            if scale_level not in scale_polygons:
+                scale_polygons[enc_scale] = []
+            scale_polygons[enc_scale].append(esri_extent_polygon)
+
+        # Make a single multi-part extent polygon for each scale
+        union_polygons = {}
+        for scale, polygons in scale_polygons.items():
+            polygon = polygons[0]
+            if len(polygons) > 1:
+                for add_polygon in polygons[1:]:
+                    # creates a multipart arpy.Polygon
+                    polygon = polygon.union(add_polygon)
+            union_polygons[scale] = polygon
+        
+        # Merge upper level extent polygons
+        scales = sorted(union_polygons) 
+        # [2, 3, 4, 5]
+        for i, scale in enumerate(scales):
+            # 0, 2
+            if scale + 1 in scales:
+                # if 2 covered by 3
+                supersession_polygon = union_polygons[scale + 1]
+                if scale + 2 in scales: # if there are 2 upper level scales, merge them
+                    upper_scales = scales[i + 2:]
+                    for upper_scale in upper_scales:
+                        supersession_polygon = supersession_polygon.union(union_polygons[upper_scale])
+                self.scale_bounds[scale] = supersession_polygon
+            else:
+                self.scale_bounds[scale] = False
 
     def get_unique_subtype_codes(self, subtype_lookup):
         """
@@ -240,7 +322,13 @@ class Engine:
         """
 
         with arcpy.da.SearchCursor(feature_class, [[attribute]]) as cursor:
-            return sorted({row[0] for row in cursor})    
+            return sorted({row[0] for row in cursor})
+
+    def load_toolbox(self) -> None:
+        """Shared method to load the main toolbox"""
+
+        csf_prf_toolbox = str(CSF_PRF / 'CSF_PRF_Toolbox.pyt')
+        arcpy.ImportToolbox(csf_prf_toolbox)
 
     def open_file(self, enc_path):
         """
@@ -273,6 +361,17 @@ class Engine:
 
         self.driver = ogr.GetDriverByName('S57')
 
+    def set_enc_files_param(self, output_folder: pathlib.Path) -> None:
+        """Set the ENC files parameter after downloading files"""
+        
+        enc_files = []
+        arcpy.AddMessage('ENC files found:')
+        for enc in output_folder.glob('*.000'):
+            enc_file = str(enc)
+            arcpy.AddMessage(f' - {enc_file}')
+            enc_files.append(enc_file)
+        self.param_lookup['enc_files'].value = ';'.join(enc_files)
+
     def set_none_to_null(self, feature_json):
         """
         Convert undesirable text to empty string
@@ -284,6 +383,14 @@ class Engine:
             if value in ['None', 2147483641.0] or value is None:
                 feature_json['properties'][key] = ''
         return feature_json
+
+    def set_sheets_input_param(self, output_folder: pathlib.Path) -> None:
+        """Set the Sheets parameter after clipping Sheets to MHW buffer"""
+
+        input_sheets = pathlib.Path(self.param_lookup['sheets'].valueAsText).stem
+        clipped_sheets = list(output_folder.glob(f'{input_sheets}_clip.shp'))[0]
+        if clipped_sheets:
+            self.param_lookup['sheets'].value = str(clipped_sheets)
 
     def split_multipoint_env(self) -> None:
         """Reset S57 ENV for split multipoint only"""

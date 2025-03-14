@@ -11,6 +11,7 @@ sys.path.append(str(CSFPRF_MODULE))
 from csf_prf.CompositeSourceCreatorTool import CompositeSourceCreator
 from csf_prf.ENCDownloaderTool import ENCDownloader
 from csf_prf.S57ConversionTool import S57Conversion
+from csf_prf.MHWBufferTool import MHWBuffer
 
 
 class Toolbox:
@@ -20,4 +21,4 @@ class Toolbox:
         self.label = "CSF/PRF Toolbox"
         self.alias = "csf_prf_tools"
 
-        self.tools = [ENCDownloader, CompositeSourceCreator, S57Conversion]
+        self.tools = [CompositeSourceCreator, ENCDownloader, MHWBuffer, S57Conversion]

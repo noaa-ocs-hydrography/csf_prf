@@ -14,7 +14,6 @@ arcpy.env.qualifiedFieldNames = False # Force use of field name alias
 
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
-CSF_PRF = pathlib.Path(__file__).parents[1]
 
 
 class CompositeSourceCreatorException(Exception):
@@ -152,20 +151,6 @@ class CompositeSourceCreatorEngine(Engine):
                 else:
                     self.export_to_geopackage(csfprf_output_path, feature_type, feature_class)
 
-    def download_enc_files(self) -> None:
-        """Factory function to download project ENC files"""
-
-        csf_prf_toolbox = str(CSF_PRF / 'CSF_PRF_Toolbox.pyt')
-        arcpy.ImportToolbox(csf_prf_toolbox)
-        sheet_parameter = self.param_lookup['sheets'].valueAsText
-        sheets = sheet_parameter.replace("'", "").split(';')
-        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-        for sheet in sheets:
-            arcpy.AddMessage(f'Downloading ENC files for SHP: {sheet}')
-            # Function name is a built-in combo of class and toolbox alias
-            arcpy.ENCDownloader_csf_prf_tools(sheet, str(output_folder))
-        self.set_enc_files_param(output_folder)
-
     def export_to_feature_class(self, output_data_type, template_layer, feature_class_name) -> None:
         """
         Store processed layer as an output feature class
@@ -182,6 +167,22 @@ class CompositeSourceCreatorEngine(Engine):
         arcpy.management.DefineProjection(copied_layer, arcpy.SpatialReference(4326))
 
         self.output_data[output_data_type] = output_name
+
+    def get_mhw_buffer(self) -> None:
+        """Create MHW Buffer of Sheets and COALNE intersection"""
+
+        arcpy.AddMessage('Clipping Sheets to MHW Buffer')
+        self.load_toolbox()
+        if not self.param_lookup['enc_files'].valueAsText:
+            self.download_enc_files()
+        
+        arcpy.AddMessage(f'Clipping Sheets to MHW Buffer:')
+        # Function name is a built-in combo of class and toolbox alias
+        # Inputs are strings
+        arcpy.MHWBuffer_csf_prf_tools(self.param_lookup['sheets'].valueAsText, 
+                                      self.param_lookup['enc_files'].valueAsText, 
+                                      self.param_lookup['output_folder'].valueAsText)
+        self.set_sheets_input_param(pathlib.Path(self.param_lookup['output_folder'].valueAsText))
 
     def make_junctions_layer(self, junctions):
         """
@@ -258,16 +259,7 @@ class CompositeSourceCreatorEngine(Engine):
                 for i, val in enumerate(new_row):
                     if val is None:
                         new_row[i] = ''
-                cursor.updateRow(new_row)        
-
-    def set_enc_files_param(self, output_folder: pathlib.Path) -> None:
-        enc_files = []
-        arcpy.AddMessage('ENC files found:')
-        for enc in output_folder.glob('*.000'):
-            enc_file = str(enc)
-            arcpy.AddMessage(f' - {enc_file}')
-            enc_files.append(enc_file)
-        self.param_lookup['enc_files'].value = ';'.join(enc_files)
+                cursor.updateRow(new_row)
 
     def split_inner_polygons(self, layer):
         """
@@ -322,6 +314,7 @@ class CompositeSourceCreatorEngine(Engine):
         """Main method to begin process"""
 
         start = time.time()
+        # self.get_mhw_buffer()  # TODO maybe not call this from CSF tool? Would require two tools be ran if needed
         self.create_output_gdb() # TODO move to the base class
         self.convert_sheets()
         self.convert_junctions()
