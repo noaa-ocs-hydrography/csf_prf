@@ -11,7 +11,8 @@ The CSF/PRF Toolbox application currently contains an ArcGIS Python Toolbox and 
 ## Tools
 1. csf_prf/src/csf_prf/CompositeSourceCreatorTool.py
 2. csf_prf/src/csf_prf/ENCDownloaderTool.py
-3. csf_prf/src/csf_prf/S57ConversionTool.py
+3. csf_prf/src/csf_prf/MHWBufferTool.py
+4. csf_prf/src/csf_prf/S57ConversionTool.py
 
 ## Accessing the tools
 Once Pydro pulls the latest changes, you will need to open ArcGIS Pro and add a Folder Connection.<br>
