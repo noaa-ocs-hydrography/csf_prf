@@ -26,6 +26,7 @@ class MHWBufferEngine(Engine):
     def buffer_lines(self) -> None:
         """Buffer the MHW lines by meters for each Chart scale"""
 
+        arcpy.AddMessage('Buffering Lines by Chart Scale')
         self.layers['buffered'] = arcpy.management.CreateFeatureclass(
             'memory', 
             f'buffered_layer', 
@@ -56,7 +57,7 @@ class MHWBufferEngine(Engine):
                 arcpy.management.AddField(self.layers[feature_type], field, 'TEXT', field_length=100, field_is_nullable='NULLABLE')
             arcpy.management.AddField(self.layers[feature_type], 'layer_type', 'TEXT', field_length=10, field_is_nullable='NULLABLE')
 
-            arcpy.AddMessage(f' - Building {feature_type} features')
+            arcpy.AddMessage(f'Building {feature_type} layer')
             cursor_fields = ['SHAPE@JSON'] + sorted_line_fields + ['layer_type']
             with arcpy.da.InsertCursor(self.layers[feature_type], cursor_fields, explicit=True) as line_cursor: 
                 for feature in self.features[feature_type]:
@@ -73,6 +74,7 @@ class MHWBufferEngine(Engine):
     def clip_sheets(self) -> None:
         """Clip input sheets boundary with dissolved MHW layer"""
 
+        arcpy.AddMessage('Clipping Sheets with MHW polygons')
         sheet_parameter = self.param_lookup['sheets'].valueAsText
         # Create output sheets to manipulate
         self.layers['clipped_sheets'] = arcpy.management.CopyFeatures(sheet_parameter, str(pathlib.Path('memory') / 'clipped_sheets'))
@@ -90,6 +92,7 @@ class MHWBufferEngine(Engine):
     def dissolve_polygons(self) -> None:
         """Dissolve overlappingi polygons to create a single polygon"""
 
+        arcpy.AddMessage('Dissolving overlapping polygons')
         self.layers["dissolved"] = arcpy.management.Dissolve(
             self.layers["buffered"],
             str(pathlib.Path("memory") / "dissolved_layer"),
@@ -121,7 +124,7 @@ class MHWBufferEngine(Engine):
     def get_high_water_features(self):
         """Read ENC features and build HW dataset"""
 
-        arcpy.AddMessage('Reading Feature records')   
+        arcpy.AddMessage('Reading COALNE & SLCONS Feature records')   
         enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
@@ -134,11 +137,12 @@ class MHWBufferEngine(Engine):
                     self.store_coalne_features(layer, enc_scale, display_scale)
                 elif name == 'SLCONS':
                     self.store_slcons_features(layer, enc_scale, display_scale)
-        arcpy.AddMessage(f'  - Removed {self.intersected} supersession features')
+        arcpy.AddMessage(f' - Removed {self.intersected} supersession features')
 
     def merge_feature_layers(self) -> None:
         """Merge together the COALNE and SLCONS features"""
 
+        arcpy.AddMessage('Merging Water Feature Layers')
         self.layers['merged'] = arcpy.management.CreateFeatureclass(
             'memory', 
             f'merged_layer', 
@@ -164,6 +168,7 @@ class MHWBufferEngine(Engine):
     def remove_inner_polygons(self) -> None:
         """"Only keep the first geometry for each polygon feature"""
 
+        arcpy.AddMessage('Removing inner polygons')
         with arcpy.da.UpdateCursor(self.layers['dissolved'], ['SHAPE@']) as cursor:
             for row in cursor:
                 row_json = json.loads(row[0].JSON)
@@ -179,7 +184,9 @@ class MHWBufferEngine(Engine):
         # arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / 'cursor_dissolved.shp'))
         # arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'cursor_buffered.shp'))
         # arcpy.management.CopyFeatures(self.layers['merged'], str(pathlib.Path(output_folder) / 'cursor_merged.shp'))
-        arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / 'cursor_dissolved.shp'))
+        arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "mhw_polygons.shp")}')
+        arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / "mhw_polygons.shp"))
+        arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / pathlib.Path(self.param_lookup["sheets"].valueAsText).stem)}_clip.shp')
         arcpy.management.CopyFeatures(self.layers['clipped_sheets'], str(pathlib.Path(output_folder) / f'{pathlib.Path(self.param_lookup["sheets"].valueAsText).stem}_clip.shp'))
 
     def start(self) -> None:
