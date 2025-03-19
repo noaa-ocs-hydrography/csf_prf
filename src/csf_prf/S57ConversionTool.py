@@ -42,7 +42,7 @@ class S57Conversion:
             parameterType="Optional",
             direction="Input",
         )
-        toggle_crs.value = True
+        toggle_crs.value = False
 
         return [enc_file, output_folder, layerfile_export, toggle_crs]
 
