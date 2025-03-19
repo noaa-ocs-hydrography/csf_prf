@@ -380,7 +380,10 @@ class Engine:
         """
 
         for key, value in feature_json['properties'].items():
-            if value in ['None', 2147483641.0] or value is None:
+            # retain all onotes strings
+            if key == 'onotes' and value in [2147483641.0] or value is None:
+                feature_json['properties'][key] = ''
+            elif value in ['None', 2147483641.0] or value is None:
                 feature_json['properties'][key] = ''
         return feature_json
 

@@ -342,8 +342,6 @@ class S57ConversionEngine(Engine):
         self.set_driver()
         self.split_multipoint_env() 
         self.get_feature_records()
-        # self.return_primitives_env()
-        # self.get_vector_records()
         self.build_output_layers()
         self.add_objl_string_to_S57() 
         if self.param_lookup['layerfile_export'].value:
