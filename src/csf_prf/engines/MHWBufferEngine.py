@@ -16,14 +16,14 @@ class MHWBufferEngine(Engine):
 
     def __init__(self, param_lookup: dict) -> None:
         self.param_lookup = param_lookup
-        self.features = {'COALNE': [], 'SLCONS': []}
+        self.features = {'COALNE': [], 'SLCONS': [], 'LNDARE': []}
         self.layers = {'buffered': None, 'dissolved': None, 'merged': None, 
-                       'COALNE': None, 'SLCONS': None}
+                       'COALNE': None, 'SLCONS': None, 'LNDARE': None}
         self.chartscale_layer = None
         self.scale_bounds = {}
         self.intersected = 0
 
-    def buffer_lines(self) -> None:
+    def buffer_features(self) -> None:
         """Buffer the MHW lines by meters for each Chart scale"""
 
         arcpy.AddMessage('Buffering Lines by Chart Scale')
@@ -42,16 +42,28 @@ class MHWBufferEngine(Engine):
                     chart_scale = self.get_chart_scale(row[1])
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1]])
-        del self.layers['merged']
+
+            with arcpy.da.SearchCursor(self.layers['LNDARE'], ['SHAPE@', 'display_scale']) as land_cursor:
+                for row in land_cursor:
+                    projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
+                    chart_scale = self.get_chart_scale(row[1])
+                    buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
+                    cursor.insertRow([buffered, row[1]])
 
     def build_feature_layers(self) -> None:
         """Create layers for all coastal features"""
 
         for feature_type in self.features:
+            if feature_type == 'LNDARE':
+                self.layers[feature_type] = arcpy.management.CreateFeatureclass(
+                    'memory', 
+                    f'{feature_type}_polygons', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
+            else:
+                self.layers[feature_type] = arcpy.management.CreateFeatureclass(
+                    'memory', 
+                    f'{feature_type}_lines', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
+
             line_fields = self.get_all_fields(self.features[feature_type])
-            self.layers[feature_type] = arcpy.management.CreateFeatureclass(
-                'memory', 
-                f'{feature_type}_lines', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
             sorted_line_fields = sorted(line_fields)
             for field in sorted_line_fields:
                 arcpy.management.AddField(self.layers[feature_type], field, 'TEXT', field_length=100, field_is_nullable='NULLABLE')
@@ -59,17 +71,17 @@ class MHWBufferEngine(Engine):
 
             arcpy.AddMessage(f'Building {feature_type} layer')
             cursor_fields = ['SHAPE@JSON'] + sorted_line_fields + ['layer_type']
-            with arcpy.da.InsertCursor(self.layers[feature_type], cursor_fields, explicit=True) as line_cursor: 
+            with arcpy.da.InsertCursor(self.layers[feature_type], cursor_fields, explicit=True) as feature_cursor: 
                 for feature in self.features[feature_type]:
                     attribute_values = ['' for i in range(len(cursor_fields))]
                     geometry = feature['geometry']
                     attribute_values[0] = arcpy.AsShape(geometry).JSON
                     for fieldname, attr in list(feature['properties'].items()):
-                        field_index = line_cursor.fields.index(fieldname)
+                        field_index = feature_cursor.fields.index(fieldname)
                         attribute_values[field_index] = str(attr)
-                    layer_type_index = line_cursor.fields.index('layer_type')
+                    layer_type_index = feature_cursor.fields.index('layer_type')
                     attribute_values[layer_type_index] = feature_type
-                    line_cursor.insertRow(attribute_values)
+                    feature_cursor.insertRow(attribute_values)
 
     def clip_sheets(self) -> None:
         """Clip input sheets boundary with dissolved MHW layer"""
@@ -137,6 +149,8 @@ class MHWBufferEngine(Engine):
                     self.store_coalne_features(layer, enc_scale, display_scale)
                 elif name == 'SLCONS':
                     self.store_slcons_features(layer, enc_scale, display_scale)
+                elif name == 'LNDARE':
+                    self.store_lndare_features(layer, enc_scale, display_scale)
         arcpy.AddMessage(f' - Removed {self.intersected} supersession features')
 
     def merge_feature_layers(self) -> None:
@@ -172,20 +186,22 @@ class MHWBufferEngine(Engine):
         with arcpy.da.UpdateCursor(self.layers['dissolved'], ['SHAPE@']) as cursor:
             for row in cursor:
                 row_json = json.loads(row[0].JSON)
-                outer_polygon = row_json['rings'][0]
-                points = [arcpy.Point(x, y) for x, y in outer_polygon]
-                point_array = arcpy.Array(points)
-                cursor.updateRow([arcpy.Polygon(point_array, arcpy.SpatialReference(4326))])
+                if 'rings' in row_json:
+                    outer_polygon = row_json['rings'][0]
+                    points = [arcpy.Point(x, y) for x, y in outer_polygon]
+                    point_array = arcpy.Array(points)
+                    cursor.updateRow([arcpy.Polygon(point_array, arcpy.SpatialReference(4326))])
 
     def save_layers(self) -> None:
         """Write out memory layers to output folder"""
 
         output_folder = self.param_lookup['output_folder'].valueAsText
+        # arcpy.management.CopyFeatures(self.layers['LNDARE'], str(pathlib.Path(output_folder) / 'lndare_features.shp'))
         # arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / 'cursor_dissolved.shp'))
         # arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'cursor_buffered.shp'))
         # arcpy.management.CopyFeatures(self.layers['merged'], str(pathlib.Path(output_folder) / 'cursor_merged.shp'))
-        arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "mhw_polygons.shp")}')
-        arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / "mhw_polygons.shp"))
+        # arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "mhw_polygons.shp")}')
+        # arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / "mhw_polygons.shp"))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / pathlib.Path(self.param_lookup["sheets"].valueAsText).stem)}_clip.shp')
         arcpy.management.CopyFeatures(self.layers['clipped_sheets'], str(pathlib.Path(output_folder) / f'{pathlib.Path(self.param_lookup["sheets"].valueAsText).stem}_clip.shp'))
 
@@ -200,7 +216,7 @@ class MHWBufferEngine(Engine):
         self.get_high_water_features()
         self.build_feature_layers()
         self.merge_feature_layers()
-        self.buffer_lines()
+        self.buffer_features()
         self.dissolve_polygons()
         self.remove_inner_polygons()
         self.clip_sheets()
@@ -222,6 +238,20 @@ class MHWBufferEngine(Engine):
                 if geom_type == 'LineString':
                     feature_json['properties']['DISPLAY_SCALE'] = display_scale
                     self.features['COALNE'].append(feature_json)
+
+    def store_lndare_features(self, layer: list[dict], enc_scale: str, display_scale: str) -> None:
+        """Collect all LNDARE features"""
+
+        for feature in layer:
+            if feature:
+                feature_json = json.loads(feature.ExportToJson())
+                if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
+                    self.intersected += 1
+                    continue
+                geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
+                if geom_type == 'Polygon':
+                    feature_json['properties']['DISPLAY_SCALE'] = display_scale
+                    self.features['LNDARE'].append(feature_json)
 
     def store_slcons_features(self, layer: list[dict], enc_scale: str, display_scale: str) -> None:
         """Collect all SLCONS features"""
