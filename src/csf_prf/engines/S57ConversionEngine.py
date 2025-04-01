@@ -163,9 +163,16 @@ class S57ConversionEngine(Engine):
                         attribute_values = ['' for i in range(len(cursor_fields))]
                         polygons = feature['geojson']['geometry']['coordinates']
                         if polygons:
-                            points = [arcpy.Point(coord[0], coord[1]) for coord in polygons[0]]
-                            coord_array = arcpy.Array(points)
-                            attribute_values[0] = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
+                            # 1 polygon is single, > 1 is outer and inners
+                            point_arrays = arcpy.Array()
+                            for polygon in polygons:
+                                points = []
+                                for point in polygon:
+                                    points.append(arcpy.Point(*point))
+                                points.append(arcpy.Point(*polygon[0]))  # close the polygon
+                                point_arrays.add(arcpy.Array(points))
+                            attribute_values[0] = arcpy.Polygon(point_arrays, arcpy.SpatialReference(4326))
+
                             for fieldname, attr in list(feature['geojson']['properties'].items()):
                                 field_index = polygons_cursor.fields.index(fieldname)
                                 attribute_values[field_index] = str(attr)
