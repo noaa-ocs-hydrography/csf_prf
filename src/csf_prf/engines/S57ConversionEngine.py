@@ -67,7 +67,7 @@ class S57ConversionEngine(Engine):
         for geom_type in self.geometries.keys():
             fc_name = f'{geom_type}_features'
             fc = os.path.join(gdb_path, fc_name)
-            arcpy.management.AddField(fc, 'transformed', field_type='TEXT', field_length=50, field_is_nullable='NULLABLE')
+            self.add_column_and_constant(fc, 'transformed', field_length=50, nullable=False) # Make field blank like the rest
 
     def add_objl_string_to_S57(self) -> None:
         """Convert OBJL number to string name"""

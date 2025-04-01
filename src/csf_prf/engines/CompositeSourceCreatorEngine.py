@@ -41,25 +41,6 @@ class CompositeSourceCreatorEngine(Engine):
             'junctions': None
         }
 
-    def add_column_and_constant(self, layer, column, expression=None, field_type='TEXT', field_length=255, nullable=False) -> None:
-        """
-        Add the asgnment column and 
-        :param arcpy.FeatureLayerlayer layer: In memory layer used for processing
-        """
-
-        # TODO this seems to be a duplicate of the method in the base class.  Review and delete
-
-        fields = [field.name for field in arcpy.ListFields(layer)]
-        if nullable:
-            if column not in fields:
-                arcpy.management.AddField(layer, column, field_type, field_length=field_length, field_is_nullable='NULLABLE')
-        else:
-            if column not in fields:
-                arcpy.management.AddField(layer, column, field_type, field_length=field_length)
-            arcpy.management.CalculateField(
-                layer, column, expression, expression_type="PYTHON3", field_type=field_type
-            )
-
     def convert_enc_files(self) -> None:
         """Process the ENC files input parameter"""
 
