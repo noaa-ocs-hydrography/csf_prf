@@ -251,8 +251,7 @@ class Engine:
                 points = [arcpy.Point(*coords) for polygon in catcov['geometry']['coordinates'] for coords in polygon]
                 esri_extent_polygon = arcpy.Polygon(arcpy.Array(points))
             else: 
-                # TODO Use rectangular extent if no CATCOV? 
-                xMin, xMax, yMin, yMax = enc_file.GetLayerByName('M_COVR').GetExtent()
+                xMin, xMax, yMin, yMax = m_covr_layer.GetExtent()
                 extent_array = arcpy.Array()
                 extent_array.add(arcpy.Point(xMin, yMin))
                 extent_array.add(arcpy.Point(xMin, yMax))
@@ -396,6 +395,55 @@ class Engine:
         clipped_sheets = list(output_folder.glob(f'{input_sheets}_clip.shp'))[0]
         if clipped_sheets:
             self.param_lookup['sheets'].value = str(clipped_sheets)
+
+    def split_inner_polygons(self, layer):
+        """
+        NOT USED ANYMORE
+        Get all inner and outer polygon feature geometries
+        :param arcpy.FeatureLayer layer: In memory layer used for processing
+        :return (list[dict[]], list[dict[]]): Feature lists with attributes and geometry keys
+        """
+
+        inner_features = []
+        outer_features = []
+        total_nones = 0
+        with arcpy.da.SearchCursor(layer, ['SHAPE@'] + ["*"]) as searchCursor:
+            for row in searchCursor:
+                geom_num = 0
+                row_geom = row[0]
+                attributes = row[1:]
+                for geometry in row_geom:
+                    if None in geometry:
+                        # find indexes of all Nones
+                        none_indexes = [i for i, point in enumerate(geometry) if point is None]
+                        total_nones += len(none_indexes)
+                        if len(none_indexes) == 1: # only 1 inner polygon
+                            outer_features.append({'attributes': attributes, 
+                                                'geometry': geometry[0:none_indexes[0]]}) # First polygon is outer
+                            inner_features.append({'attributes': attributes, 
+                                                'geometry': self.reverse(geometry[none_indexes[0]+1:len(geometry)])}) # capture last inner
+                        else: # > 1 inner polygon
+                            # split array on none indexes
+                            for i, (current, next) in enumerate(zip(none_indexes[:-1], none_indexes[1:])):
+                                if i == 0: # first one
+                                    outer_features.append({'attributes': attributes, 
+                                                        'geometry': geometry[0:current]}) # First polygon is outer
+                                    inner_features.append({'attributes': attributes, 
+                                                        'geometry': self.reverse(geometry[current+1:next])}) # capture first inner
+                                elif i == len(none_indexes) - 2: # last one
+                                    inner_features.append({'attributes': attributes, 
+                                                        'geometry': self.reverse(geometry[current+1:next])}) # capture current inner
+                                    inner_features.append({'attributes': attributes, 
+                                                        'geometry': self.reverse(geometry[next+1:len(geometry)])}) # capture last inner
+                                else: # in between
+                                    inner_features.append({'attributes': attributes, 
+                                                        'geometry': self.reverse(geometry[current+1:next])}) # capture current inner
+                    else:
+                        outer_features.append({'attributes': attributes, 'geometry': geometry})
+
+                    geom_num += 1
+
+        return outer_features, inner_features
 
     def split_multipoint_env(self) -> None:
         """Reset S57 ENV for split multipoint only"""
