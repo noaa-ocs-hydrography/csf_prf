@@ -18,7 +18,7 @@ class EngineException(Exception):
 
 
 class Engine:
-    def add_column_and_constant(self, layer, column, expression='', field_alias='', field_type='TEXT', field_length=300, code_block='', nullable=False) -> None:
+    def add_column_and_constant(self, layer, column, expression='""', field_alias='', field_type='TEXT', field_length=300, code_block='', nullable=False) -> None:
         """
         Add the asgnment column and optionally set a value
 
