@@ -154,14 +154,13 @@ class Engine:
         :returns boolean: True or False
         """
 
-        if feature_json['geometry'] is None or enc_scale == 5:
-            # No geometry or max scale
+        if feature_json['geometry'] is None:
             return False
-        
-        inside = False
-        upper_scale = enc_scale + 1
-        supersession_polygon = self.scale_bounds[upper_scale]
         feature_geometry = arcpy.AsShape(json.dumps(feature_json['geometry']))
+        inside = False
+
+        # Review Engine.get_scale_bounds() for more information
+        supersession_polygon = self.scale_bounds[enc_scale]
         if supersession_polygon and not supersession_polygon.disjoint(feature_geometry):  # not disjoint means intersected
             inside = True
         return inside
@@ -277,6 +276,9 @@ class Engine:
             union_polygons[scale] = polygon
         
         # Merge upper level extent polygons
+        # Each scale_bounds value is a union of all upper level extent polygons
+        # Ex: Key-2 scale, Values-union of 3,4,5 catcov polygons
+        # Ex: Key-3 scale, Values-union of 4,5 catcov polygons
         scales = sorted(union_polygons) 
         # [2, 3, 4, 5]
         for i, scale in enumerate(scales):

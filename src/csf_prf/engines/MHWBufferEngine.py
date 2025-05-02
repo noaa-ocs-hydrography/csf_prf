@@ -248,9 +248,10 @@ class MHWBufferEngine(Engine):
         for feature in layer:
             if feature:
                 feature_json = json.loads(feature.ExportToJson())
-                if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
-                    self.intersected += 1
-                    continue
+                # TODO Review LNDARE supersession
+                # if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
+                #     self.intersected += 1
+                #     continue
                 geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                 if geom_type == 'Polygon':
                     feature_json['properties']['DISPLAY_SCALE'] = display_scale
