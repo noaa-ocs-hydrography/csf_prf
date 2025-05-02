@@ -154,12 +154,14 @@ class Engine:
         :returns boolean: True or False
         """
 
-        if feature_json['geometry'] is None:
+        if feature_json['geometry'] is None or enc_scale == 5:
+            # No geometry or max scale
             return False
-        feature_geometry = arcpy.AsShape(json.dumps(feature_json['geometry']))
+        
         inside = False
-
-        supersession_polygon = self.scale_bounds[enc_scale]
+        upper_scale = enc_scale + 1
+        supersession_polygon = self.scale_bounds[upper_scale]
+        feature_geometry = arcpy.AsShape(json.dumps(feature_json['geometry']))
         if supersession_polygon and not supersession_polygon.disjoint(feature_geometry):  # not disjoint means intersected
             inside = True
         return inside

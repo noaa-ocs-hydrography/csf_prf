@@ -1,4 +1,5 @@
 import pathlib
+import time
 CSFPRF_MODULE = pathlib.Path(__file__).parents[2]
 
 import sys
@@ -12,9 +13,11 @@ OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 
 if __name__ == '__main__': 
     param_lookup = {
-        'sheets': Param(str(INPUTS / 'test_shapefiles' / 'G322_Sheets_01302024.shp')),
+        'sheets': Param(r"C:\Users\Stephen.Patterson\Downloads\drive-download-20250501T182809Z-001\ChesBaySurveyExtents_040121_4.shp"),
         'enc_files': Param(''),
         'output_folder': Param(str(OUTPUTS)),
     }
+    start = time.time()
     engine = MHWBufferEngine(param_lookup)
     engine.start()
+    print(f'Run time: {(time.time() - start) / 60}')

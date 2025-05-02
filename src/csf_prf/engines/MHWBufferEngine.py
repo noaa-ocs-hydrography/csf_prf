@@ -34,21 +34,22 @@ class MHWBufferEngine(Engine):
             spatial_reference=arcpy.SpatialReference(4326)  # web mercator
         )
         arcpy.management.AddField(self.layers['buffered'], 'display_scale', 'LONG')
+        arcpy.management.AddField(self.layers['buffered'], 'enc_scale', 'SHORT')
 
-        with arcpy.da.InsertCursor(self.layers['buffered'], ['SHAPE@', 'display_scale']) as cursor: 
-            with arcpy.da.SearchCursor(self.layers['merged'], ['SHAPE@', 'display_scale']) as merged_cursor:
+        with arcpy.da.InsertCursor(self.layers['buffered'], ['SHAPE@', 'display_scale', 'enc_scale']) as cursor: 
+            with arcpy.da.SearchCursor(self.layers['merged'], ['SHAPE@', 'display_scale', 'enc_scale']) as merged_cursor:
                 for row in merged_cursor:
                     projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
                     chart_scale = self.get_chart_scale(row[1])
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
-                    cursor.insertRow([buffered, row[1]])
+                    cursor.insertRow([buffered, row[1], row[2]])
 
-            with arcpy.da.SearchCursor(self.layers['LNDARE'], ['SHAPE@', 'display_scale']) as land_cursor:
+            with arcpy.da.SearchCursor(self.layers['LNDARE'], ['SHAPE@', 'display_scale', 'enc_scale']) as land_cursor:
                 for row in land_cursor:
                     projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
                     chart_scale = self.get_chart_scale(row[1])
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
-                    cursor.insertRow([buffered, row[1]])
+                    cursor.insertRow([buffered, row[1], row[2]])
 
     def build_feature_layers(self) -> None:
         """Create layers for all coastal features"""
@@ -164,11 +165,12 @@ class MHWBufferEngine(Engine):
             spatial_reference=arcpy.SpatialReference(4326)
         )
         arcpy.management.AddField(self.layers['merged'], 'display_scale', 'LONG')
+        arcpy.management.AddField(self.layers['merged'], 'enc_scale', 'SHORT')
 
-        with arcpy.da.InsertCursor(self.layers['merged'], ['SHAPE@', 'display_scale']) as cursor: 
+        with arcpy.da.InsertCursor(self.layers['merged'], ['SHAPE@', 'display_scale', 'enc_scale']) as cursor: 
             for feature_type in ['COALNE', 'SLCONS']:
                 if self.layers[feature_type]:
-                    with arcpy.da.SearchCursor(self.layers[feature_type], ['SHAPE@', 'DISPLAY_SCALE']) as feature_cursor:
+                    with arcpy.da.SearchCursor(self.layers[feature_type], ['SHAPE@', 'DISPLAY_SCALE', 'ENC_SCALE']) as feature_cursor:
                         for row in feature_cursor:
                             cursor.insertRow(row)
 
@@ -196,12 +198,12 @@ class MHWBufferEngine(Engine):
         """Write out memory layers to output folder"""
 
         output_folder = self.param_lookup['output_folder'].valueAsText
-        # arcpy.management.CopyFeatures(self.layers['LNDARE'], str(pathlib.Path(output_folder) / 'lndare_features.shp'))
-        # arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / 'cursor_dissolved.shp'))
-        # arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'cursor_buffered.shp'))
-        # arcpy.management.CopyFeatures(self.layers['merged'], str(pathlib.Path(output_folder) / 'cursor_merged.shp'))
-        # arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "mhw_polygons.shp")}')
-        # arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / "mhw_polygons.shp"))
+        arcpy.management.CopyFeatures(self.layers['LNDARE'], str(pathlib.Path(output_folder) / 'lndare_features.shp'))
+        arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / 'cursor_dissolved.shp'))
+        arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'cursor_buffered.shp'))
+        arcpy.management.CopyFeatures(self.layers['merged'], str(pathlib.Path(output_folder) / 'cursor_merged.shp'))
+        arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "mhw_polygons.shp")}')
+        arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / "mhw_polygons.shp"))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / pathlib.Path(self.param_lookup["sheets"].valueAsText).stem)}_clip.shp')
         arcpy.management.CopyFeatures(self.layers['clipped_sheets'], str(pathlib.Path(output_folder) / f'{pathlib.Path(self.param_lookup["sheets"].valueAsText).stem}_clip.shp'))
 
@@ -237,18 +239,22 @@ class MHWBufferEngine(Engine):
                 # TODO do we only use lines?
                 if geom_type == 'LineString':
                     feature_json['properties']['DISPLAY_SCALE'] = display_scale
+                    feature_json['properties']['ENC_SCALE'] = enc_scale
                     self.features['COALNE'].append(feature_json)
-
+    
     def store_lndare_features(self, layer: list[dict], enc_scale: str, display_scale: str) -> None:
         """Collect all LNDARE features"""
 
         for feature in layer:
             if feature:
                 feature_json = json.loads(feature.ExportToJson())
-                # Don't use supersession with LNDARE.  It deletes features.
+                if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
+                    self.intersected += 1
+                    continue
                 geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                 if geom_type == 'Polygon':
                     feature_json['properties']['DISPLAY_SCALE'] = display_scale
+                    feature_json['properties']['ENC_SCALE'] = enc_scale
                     self.features['LNDARE'].append(feature_json)
 
     def store_slcons_features(self, layer: list[dict], enc_scale: str, display_scale: str) -> None:
@@ -263,6 +269,7 @@ class MHWBufferEngine(Engine):
                 geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                 if geom_type == 'LineString':
                     feature_json['properties']['DISPLAY_SCALE'] = display_scale
+                    feature_json['properties']['ENC_SCALE'] = enc_scale
                     props = feature_json['properties']
                     if 'CATSLC' in props and props['CATSLC'] == 4:
                         if props['WATLEV'] == 2:

@@ -146,22 +146,22 @@ def test_get_cursor():
     ...    
 
 
-def test_get_enc_catcov(victim):
+def test_get_scale_bounds(victim):
     class MultiParam:
         @property
         def valueAsText(self):
             return MULTIPLE_ENC
     victim.param_lookup['enc_files'] = MultiParam()
-    victim.get_enc_catcov()
+    victim.get_scale_bounds()
     assert hasattr(victim, 'scale_bounds')
     assert 4 in victim.scale_bounds
-    assert -80.61090087890625 == victim.scale_bounds[4][0][0].X
+    assert -80.6109696 == victim.scale_bounds[4][0][0].X
 
 
 @pytest.mark.skip(reason="This function requires a test dataset with M_COVR layer")
 def test_get_feature_records(victim):
     victim.split_multipoint_env()
-    victim.get_enc_catcov()  # TODO test needs M_COVR layer to set victim.scale_bounds
+    victim.get_scale_bounds()  # TODO test needs M_COVR layer to set victim.scale_bounds
     victim.get_feature_records()
     assert len(victim.geometries['Point']['features']) == 2
     assert len(victim.geometries['LineString']['features']) == 1
