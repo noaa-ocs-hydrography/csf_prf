@@ -864,11 +864,8 @@ class ENCReaderEngine(Engine):
         elif objl_name == 'SLCONS':
             if properties['CONDTN'] != 2 or properties['WATLEV'] != 3:
                 return True
-        elif objl_name == 'UWTROC':
-            if geom_type == 'Point':
-                if properties['WATLEV'] != 3:
-                    return True    
-            elif geom_type != 'Point':
+        elif objl_name == 'UWTROC':  
+            if geom_type != 'Point':
                 # only allow point UWTROC
                 return True
         elif objl_name == 'WRECKS': 
