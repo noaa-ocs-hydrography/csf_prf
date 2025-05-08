@@ -272,6 +272,9 @@ class Engine:
             if len(polygons) > 1:
                 for add_polygon in polygons[1:]:
                     # creates a multipart arpy.Polygon
+                    # TODO overlap M_COVR polygons
+                    # take the highest scale inside overlap
+                    # keep all other areas with no overlap
                     polygon = polygon.union(add_polygon)
             union_polygons[scale] = polygon
         
