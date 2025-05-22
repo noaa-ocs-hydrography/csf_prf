@@ -251,6 +251,11 @@ class Engine:
             if catcov is not None:
                 points = [arcpy.Point(*coords) for polygon in catcov['geometry']['coordinates'] for coords in polygon]
                 esri_extent_polygon = arcpy.Polygon(arcpy.Array(points))
+                # Save extent polygons for LNDARE clipping
+                extents_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'enc_extents'
+                extents_folder.mkdir(parents=True, exist_ok=True) 
+                output_extent_polygon = extents_folder / f'extent_{pathlib.Path(enc_path).stem}.shp'
+                arcpy.management.CopyFeatures([esri_extent_polygon], str(output_extent_polygon))
             else: 
                 xMin, xMax, yMin, yMax = m_covr_layer.GetExtent()
                 extent_array = arcpy.Array()
@@ -271,10 +276,6 @@ class Engine:
             polygon = polygons[0]
             if len(polygons) > 1:
                 for add_polygon in polygons[1:]:
-                    # creates a multipart arpy.Polygon
-                    # TODO overlap M_COVR polygons
-                    # take the highest scale inside overlap
-                    # keep all other areas with no overlap
                     polygon = polygon.union(add_polygon)
             union_polygons[scale] = polygon
         

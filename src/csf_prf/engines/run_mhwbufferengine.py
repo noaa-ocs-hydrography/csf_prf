@@ -13,7 +13,8 @@ OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 
 if __name__ == '__main__': 
     param_lookup = {
-        'sheets': Param(str(INPUTS / 'test_shapefiles' / 'enc_downloader_boundary.shp')),
+        # 'sheets': Param(str(INPUTS / 'test_shapefiles' / 'enc_downloader_boundary.shp')),
+        'sheets': Param(r"C:\Users\Stephen.Patterson\Data\junk\ChesBaySurvey_Selection.shp"),
         'enc_files': Param(''),
         'output_folder': Param(str(OUTPUTS)),
     }
