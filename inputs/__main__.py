@@ -1,7 +1,7 @@
 import pathlib
 import wx
 
-CSF_PRF_TOOLBOX = pathlib.Path(__file__).parents[0] / 'csf_prf' / 'src'
+CSF_PRF_TOOLBOX = pathlib.Path(__file__).parents[0] / 'csf_prf' / 'src' / 'csf_prf'
 
 
 class CSFPRFFrame(wx.Frame):

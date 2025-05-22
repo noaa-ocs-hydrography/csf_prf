@@ -15,8 +15,18 @@ The CSF/PRF Toolbox application currently contains an ArcGIS Python Toolbox and 
 4. csf_prf/src/csf_prf/S57ConversionTool.py
 
 ## Accessing the tools
-Once Pydro pulls the latest changes, you will need to open ArcGIS Pro and add a Folder Connection.<br>
+Once Pydro pulls the latest changes, you will need to open ArcGIS Pro and add a Toolbox or add a Folder Connection.<br>
 ~**You can click the *Run* button to open a dialog box to copy the folder path to add to ArcGIS Pro**
+
+### Add Toolbox example
+1. Open ArcGIS Pro
+2. Open an existing project or create a new project
+3. Access the Catalog Pane: **Click View, then click Catalog Pane**
+4. Right click on **Toolboxes**, then click on **Add Toolbox**
+5. In the Catalog Pane, paste in the folder path you copied from the Pydro CSF/PRF Toolbox application
+6. Left click on the **CSF_PRF_Toolbox.pyt** file to highlight it
+7. Click **OK** and the custom toolbox will be added to your project
+8. Save ArcGIS Pro to maintain the path to the CSF/PRF Toolbox
 
 ### Add Folder Connection example
 1. Open ArcGIS Pro
@@ -26,6 +36,7 @@ Once Pydro pulls the latest changes, you will need to open ArcGIS Pro and add a 
 5. Choose a folder that lets you access the tools; **ex: c:\path\to\pydro...**
 6. In the Catalog Pane, expand Folders and expand the new folder you just added
 7. Navigate to the CSF/PRF toolbox; **ex: c:\path\to\pydro...\csf_prf\src\csf_prf\CSF_PRF_Toolbox.pyt**
+8. Save ArcGIS Pro to maintain the path to the CSF/PRF Toolbox
 
 ## Use of Tools
 1. Double click on the CSF_PRF_Toolbox.pyt file to open it
