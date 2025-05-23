@@ -6,4 +6,4 @@
 1.1.2 - (3/20/2025) Fix onotes logic bug
 1.2.0 - (4/1/2025) MHWBuffer LNDARE usage, inner polygon output, transformed default value
 1.2.1 - (5/5/2025) Retain all UWTROC features
-proposed 1.2.2 - (to be determined) Enhanced LNDARE supersession for MHWBuffer
+1.2.2 - (5/23/2025) Added lower scale LNDARE feature removal for MHWBuffer
