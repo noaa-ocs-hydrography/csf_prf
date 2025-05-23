@@ -159,6 +159,7 @@ class Engine:
         feature_geometry = arcpy.AsShape(json.dumps(feature_json['geometry']))
         inside = False
 
+        # Review Engine.get_scale_bounds() for more information
         supersession_polygon = self.scale_bounds[enc_scale]
         if supersession_polygon and not supersession_polygon.disjoint(feature_geometry):  # not disjoint means intersected
             inside = True
@@ -250,6 +251,11 @@ class Engine:
             if catcov is not None:
                 points = [arcpy.Point(*coords) for polygon in catcov['geometry']['coordinates'] for coords in polygon]
                 esri_extent_polygon = arcpy.Polygon(arcpy.Array(points))
+                # Save extent polygons for LNDARE clipping
+                extents_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'enc_extents'
+                extents_folder.mkdir(parents=True, exist_ok=True) 
+                output_extent_polygon = extents_folder / f'extent_{pathlib.Path(enc_path).stem}.shp'
+                arcpy.management.CopyFeatures([esri_extent_polygon], str(output_extent_polygon))
             else: 
                 xMin, xMax, yMin, yMax = m_covr_layer.GetExtent()
                 extent_array = arcpy.Array()
@@ -270,11 +276,13 @@ class Engine:
             polygon = polygons[0]
             if len(polygons) > 1:
                 for add_polygon in polygons[1:]:
-                    # creates a multipart arpy.Polygon
                     polygon = polygon.union(add_polygon)
             union_polygons[scale] = polygon
         
         # Merge upper level extent polygons
+        # Each scale_bounds value is a union of all upper level extent polygons
+        # Ex: Key-2 scale, Values-union of 3,4,5 catcov polygons
+        # Ex: Key-3 scale, Values-union of 4,5 catcov polygons
         scales = sorted(union_polygons) 
         # [2, 3, 4, 5]
         for i, scale in enumerate(scales):
