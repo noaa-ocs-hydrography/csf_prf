@@ -11,6 +11,11 @@ arcpy.env.overwriteOutput = True
 INPUTS = pathlib.Path(__file__).parents[3] / 'inputs'
 
 
+class EncExtentsFolderNotFound(Exception):
+    """Exception for missing ENC Extents folder"""
+    pass
+
+
 class MHWBufferEngine(Engine):
     """Class to download all ENC files that intersect a project boundary shapefile"""
 
@@ -51,38 +56,48 @@ class MHWBufferEngine(Engine):
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
 
-    def build_feature_layers(self) -> None:
-        """Create layers for all coastal features"""
+    def build_area_features(self) -> None:
+        """Create layers for all linear coastal features"""
 
         for feature_type in self.features:
             if feature_type == 'LNDARE':
                 self.layers[feature_type] = arcpy.management.CreateFeatureclass(
                     'memory', 
                     f'{feature_type}_polygons', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
-            else:
+                self.build_layer(feature_type)
+
+    def build_layer(self, feature_type: str) -> None:
+        """Logic for loading data into in-memory layers"""
+        
+        all_fields = self.get_all_fields(self.features[feature_type])
+        sorted_fields = sorted(all_fields)
+        for field in sorted_fields:
+            arcpy.management.AddField(self.layers[feature_type], field, 'TEXT', field_length=100, field_is_nullable='NULLABLE')
+        arcpy.management.AddField(self.layers[feature_type], 'layer_type', 'TEXT', field_length=10, field_is_nullable='NULLABLE')
+
+        arcpy.AddMessage(f'Building {feature_type} layer')
+        cursor_fields = ['SHAPE@JSON'] + sorted_fields + ['layer_type']
+        with arcpy.da.InsertCursor(self.layers[feature_type], cursor_fields, explicit=True) as feature_cursor: 
+            for feature in self.features[feature_type]:
+                attribute_values = ['' for i in range(len(cursor_fields))]
+                geometry = feature['geometry']
+                attribute_values[0] = arcpy.AsShape(geometry).JSON
+                for fieldname, attr in list(feature['properties'].items()):
+                    field_index = feature_cursor.fields.index(fieldname)
+                    attribute_values[field_index] = str(attr)
+                layer_type_index = feature_cursor.fields.index('layer_type')
+                attribute_values[layer_type_index] = feature_type
+                feature_cursor.insertRow(attribute_values)
+
+    def build_line_features(self) -> None:
+        """Create layers for all linear coastal features"""
+
+        for feature_type in self.features:
+            if feature_type in ['COALNE', 'SLCONS']:
                 self.layers[feature_type] = arcpy.management.CreateFeatureclass(
                     'memory', 
                     f'{feature_type}_lines', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
-
-            line_fields = self.get_all_fields(self.features[feature_type])
-            sorted_line_fields = sorted(line_fields)
-            for field in sorted_line_fields:
-                arcpy.management.AddField(self.layers[feature_type], field, 'TEXT', field_length=100, field_is_nullable='NULLABLE')
-            arcpy.management.AddField(self.layers[feature_type], 'layer_type', 'TEXT', field_length=10, field_is_nullable='NULLABLE')
-
-            arcpy.AddMessage(f'Building {feature_type} layer')
-            cursor_fields = ['SHAPE@JSON'] + sorted_line_fields + ['layer_type']
-            with arcpy.da.InsertCursor(self.layers[feature_type], cursor_fields, explicit=True) as feature_cursor: 
-                for feature in self.features[feature_type]:
-                    attribute_values = ['' for i in range(len(cursor_fields))]
-                    geometry = feature['geometry']
-                    attribute_values[0] = arcpy.AsShape(geometry).JSON
-                    for fieldname, attr in list(feature['properties'].items()):
-                        field_index = feature_cursor.fields.index(fieldname)
-                        attribute_values[field_index] = str(attr)
-                    layer_type_index = feature_cursor.fields.index('layer_type')
-                    attribute_values[layer_type_index] = feature_type
-                    feature_cursor.insertRow(attribute_values)
+                self.build_layer(feature_type)
 
     def clip_sheets(self) -> None:
         """Clip input sheets boundary with dissolved MHW layer"""
@@ -111,6 +126,44 @@ class MHWBufferEngine(Engine):
             str(pathlib.Path("memory") / "dissolved_layer"),
             multi_part="SINGLE_PART",
         )
+
+    def erase_lndare_features(self) -> None:
+        """Use upper level extent polygons to erase lower level LNDARE features"""
+
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        enc_extents_folder = output_folder / 'enc_extents'
+        if not enc_extents_folder.exists():
+            raise EncExtentsFolderNotFound(f'Error - Missing {enc_extents_folder} folder')
+        extent_shapefiles = enc_extents_folder.rglob('extent_*.shp')
+        scale_extent_lookup = {}
+        for scale in range(2, 6):
+            scale_extent_lookup[str(scale)] = []
+        for shp in extent_shapefiles:
+            scale = str(shp.stem)[9]
+            scale_extent_lookup[scale].append(str(shp))
+
+        lndare_start = arcpy.management.GetCount(self.layers['LNDARE'])
+        scale_level_2_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'2'")
+        merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(3)] + scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
+                                                        'memory/scale_2_extents')
+        erased = arcpy.analysis.Erase(scale_level_2_features, merged_upper_extents, 'memory/scale_2_erase')
+        arcpy.management.DeleteFeatures(scale_level_2_features)
+        arcpy.management.Append(erased, self.layers['LNDARE'])
+
+        scale_level_3_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'3'")
+        merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
+                                                        'memory/scale_3_extents')
+        erased = arcpy.analysis.Erase(scale_level_3_features, merged_upper_extents, 'memory/scale_3_erase')
+        arcpy.management.DeleteFeatures(scale_level_3_features)
+        arcpy.management.Append(erased, self.layers['LNDARE'])
+
+        scale_level_4_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'4'")
+        merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(5)], 'memory/scale_4_extents')
+        erased = arcpy.analysis.Erase(scale_level_4_features, merged_upper_extents, 'memory/scale_4_erase')
+        arcpy.management.DeleteFeatures(scale_level_4_features)
+        arcpy.management.Append(erased, self.layers['LNDARE'])
+        lndare_end = arcpy.management.GetCount(self.layers['LNDARE'])
+        arcpy.AddMessage(f' - Removed {int(lndare_start[0]) - int(lndare_end[0])} LNDARE features')
 
     def get_chart_scale(self, current_scale) -> int:
         """Get the upper chart scale or max chart scale for the current input chart scale"""
@@ -216,7 +269,9 @@ class MHWBufferEngine(Engine):
         self.return_primitives_env()
         self.get_scale_bounds()
         self.get_high_water_features()
-        self.build_feature_layers()
+        self.build_area_features()
+        self.erase_lndare_features()
+        self.build_line_features()
         self.merge_feature_layers()
         self.buffer_features()
         self.dissolve_polygons()
