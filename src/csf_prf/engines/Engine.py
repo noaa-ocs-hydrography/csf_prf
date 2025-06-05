@@ -48,6 +48,7 @@ class Engine:
         unique_subtype_lookup = self.get_unique_subtype_codes(subtype_lookup)
         for feature_type in self.geometries.keys():   
             subtypes = unique_subtype_lookup[feature_type]
+            self.convert_illegal_chars(subtypes)
             code_block = f"""def get_stcode(objl_name):
                 '''Code block to use OBJL_NAME field with lookup'''
                 return {subtypes}[objl_name]['code']"""
@@ -98,6 +99,17 @@ class Engine:
     #                 arcpy.management.SetSubtypeField(featureclass, field)
     #                 for data in unique_subtype_lookup[geometry_type].values():
     #                     arcpy.management.AddSubtype(featureclass, data['code'], data['objl_string'])  
+
+    def convert_illegal_chars(self, feature_dict):
+        """
+        Convert $ dollar signs to allowed field values
+        :param dict[dict[]] feature_json: JSON object of ENC Vector features
+        :returns dict[dict[]]: Updated JSON object
+        """
+        illegal_keys = [key for key in feature_dict.keys() if '$' in key]
+        for key in illegal_keys:
+            feature_dict[key.replace('$', 'D_')] = feature_dict.pop(key)
+        return feature_dict
 
     def create_output_gdb(self, gdb_name='csf_features') -> None:
         """
@@ -176,6 +188,8 @@ class Engine:
         for feature in features:
             json_fields = feature['geojson']['properties'].keys() if 'geojson' in feature else feature['properties'].keys()
             for field in json_fields:
+                if "$" in field:
+                    field = field.replace('$', 'D_')
                 fields.add(field)
         return fields 
 
