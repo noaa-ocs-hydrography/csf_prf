@@ -70,7 +70,6 @@ class ENCDownloaderEngine(Engine):
             for row in cursor:
                 downloaded = str(pathlib.Path(self.output_folder) / str(row[0] + '.000'))
                 if self.param_lookup['overwrite_files'].value:
-                    arcpy.AddMessage('Tool will ovewrite any previously downloaded ENC files')
                     arcpy.AddMessage(f'Downloading: {row[0]}')
                     enc_zip = requests.get(f'https://charts.noaa.gov/ENCs/{row[0]}.zip')
                     output_file = str(pathlib.Path(self.output_folder) / f'{row[0]}.zip')
