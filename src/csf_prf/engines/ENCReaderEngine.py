@@ -153,7 +153,8 @@ class ENCReaderEngine(Engine):
                         for row in updateCursor:
                             objl = fields.index('OBJL')
                             objl_name = fields.index('OBJL_NAME')
-                            row[objl_name] = CLASS_CODES.get(int(row[objl]), CLASS_CODES['OTHER'])[0]
+                            objl_lookup = CLASS_CODES.get(int(row[objl]), CLASS_CODES['OTHER'])[0]
+                            row[objl_name] = objl_lookup.replace('$', 'D_')  # Remove illegal characters from layer names
                             if feature_type == 'Point' and row[objl_name] in aton_values:
                                 aton_found.add(row[1])
                                 aton_count += 1
@@ -357,6 +358,7 @@ class ENCReaderEngine(Engine):
                                 continue
 
                             feature_json = self.set_none_to_null(feature_json)
+                            feature_json['properties'] = self.convert_illegal_chars(feature_json['properties'])
                             self.geometries[geom_type]['features'].append({'geojson': feature_json, 'scale': enc_scale})
                         # elif geom_type == 'MultiPoint':
                         #     # MultiPoints are broken up now to single features with an ENV variable
