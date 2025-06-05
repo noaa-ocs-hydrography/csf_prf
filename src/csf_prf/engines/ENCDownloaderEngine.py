@@ -14,6 +14,7 @@ class ENCDownloaderEngine(Engine):
     """Class to download all ENC files that intersect a project boundary shapefile"""
 
     def __init__(self, param_lookup: dict) -> None:
+        self.param_lookup = param_lookup
         self.xml_path = "https://charts.noaa.gov/ENCs/ENCProdCat.xml"
         self.sheets_layer = param_lookup['sheets'].valueAsText
         self.output_folder = param_lookup['output_folder'].valueAsText
@@ -68,7 +69,8 @@ class ENCDownloaderEngine(Engine):
         with arcpy.da.SearchCursor(enc_intersected, ['enc_id']) as cursor:
             for row in cursor:
                 downloaded = str(pathlib.Path(self.output_folder) / str(row[0] + '.000'))
-                if not os.path.exists(downloaded):
+                if self.param_lookup['overwrite_files'].value:
+                    arcpy.AddMessage('Tool will ovewrite any previously downloaded ENC files')
                     arcpy.AddMessage(f'Downloading: {row[0]}')
                     enc_zip = requests.get(f'https://charts.noaa.gov/ENCs/{row[0]}.zip')
                     output_file = str(pathlib.Path(self.output_folder) / f'{row[0]}.zip')
@@ -76,7 +78,15 @@ class ENCDownloaderEngine(Engine):
                         for chunk in enc_zip.iter_content(chunk_size=128):
                             file.write(chunk)
                 else:
-                    arcpy.AddMessage(f'File already downloaded: {row[0]}')
+                    if not os.path.exists(downloaded):
+                        arcpy.AddMessage(f'Downloading: {row[0]}')
+                        enc_zip = requests.get(f'https://charts.noaa.gov/ENCs/{row[0]}.zip')
+                        output_file = str(pathlib.Path(self.output_folder) / f'{row[0]}.zip')
+                        with open(output_file, 'wb') as file:
+                            for chunk in enc_zip.iter_content(chunk_size=128):
+                                file.write(chunk)
+                    else:
+                        arcpy.AddMessage(f'File already downloaded: {row[0]}')
 
     def find_intersecting_polygons(self, xml):
         """

@@ -61,6 +61,15 @@ class ENCDownloader:
             direction="Input"
         )
 
+        overwrite_files = arcpy.Parameter(
+            displayName="Ovewrite any previously downloaded ENC files?",
+            name="overwrite_files",
+            datatype="GPBoolean",
+            parameterType="Optional",
+            direction="Input",
+        )
+        overwrite_files.value = False
+
         return [
             sheets_shapefile,
             output_folder
