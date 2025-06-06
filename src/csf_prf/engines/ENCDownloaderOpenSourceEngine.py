@@ -84,7 +84,7 @@ class ENCDownloaderOpenSourceEngine(Engine):
     def download_enc_zipfiles(self, enc_intersected) -> None:
         """
         Download all intersected ENC zip files
-        :param arcpy.Layer enc_intersected: Layer of intersected polygons
+        :param list[ogr.Feature] enc_intersected: List of GDAL polygon features
         """
 
         for polygon in enc_intersected:
