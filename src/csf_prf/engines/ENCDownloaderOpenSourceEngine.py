@@ -1,18 +1,17 @@
 import os
-import requests
 import shutil
 import pathlib
 import zipfile
+import xml.etree.ElementTree as ET
 
-from csf_prf.engines.Engine import Engine
-from bs4 import BeautifulSoup
+from urllib import request
 from osgeo import gdal, ogr, osr
 osr.DontUseExceptions()
 
 gdal.SetConfigOption('CHECK_DISK_FREE_SPACE', 'FALSE')
 
 
-class ENCDownloaderOpenSourceEngine(Engine):
+class ENCDownloaderOpenSourceEngine:
     """Class to download all ENC files that intersect a project boundary geojson"""
 
     def __init__(self, param_lookup: dict) -> None:
@@ -84,17 +83,14 @@ class ENCDownloaderOpenSourceEngine(Engine):
     def download_enc_zipfiles(self, enc_intersected) -> None:
         """
         Download all intersected ENC zip files
-        :param list[ogr.Feature] enc_intersected: List of GDAL polygon features
+        :param arcpy.Layer enc_intersected: Layer of intersected polygons
         """
 
         for polygon in enc_intersected:
             enc_id = polygon.GetField('enc_id')
             print(f'Downloading: {enc_id}')
-            enc_zip = requests.get(f'https://charts.noaa.gov/ENCs/{enc_id}.zip')
             output_file = str(pathlib.Path(self.output_folder) / f'{enc_id}.zip')
-            with open(output_file, 'wb') as file:
-                for chunk in enc_zip.iter_content(chunk_size=128):
-                    file.write(chunk)
+            request.urlretrieve(f'https://charts.noaa.gov/ENCs/{enc_id}.zip', output_file)
 
     def find_intersecting_polygons(self, xml):
         """
@@ -103,14 +99,14 @@ class ENCDownloaderOpenSourceEngine(Engine):
         :return list[ogr.Feature]: Returns list of GDAL polygon features
         """
 
-        soup = BeautifulSoup(xml, 'xml')
-        xml_cells = soup.find_all('cell')
-        polygons = []
+        tree = ET.fromstring(xml)
+        xml_cells = tree.findall('cell')    
+        polygons = []   
         for cell in xml_cells:
             if cell.find('status').text == 'Active':  # Ignore Cancelled status files
                 enc_id = cell.find('name').text
                 coverage = cell.find('cov')
-                panels = coverage.find_all('panel')
+                panels = coverage.findall('panel')
                 panel_polygons = self.get_panel_polygons(panels)
                 polygons.append([enc_id, panel_polygons])
 
@@ -133,8 +129,8 @@ class ENCDownloaderOpenSourceEngine(Engine):
         :return str: Text content from XML parsing
         """
 
-        result = requests.get(path if path else self.xml_path)
-        return result.content
+        result = request.urlopen(path if path else self.xml_path).read()
+        return result
     
     def get_panel_polygons(self, panels):
         """
@@ -145,7 +141,7 @@ class ENCDownloaderOpenSourceEngine(Engine):
 
         polygons = []
         for panel in panels:
-            vertices = panel.find_all('vertex')
+            vertices = panel.findall('vertex')
             polygon = []
             for vertex in vertices:
                 lat = vertex.find('lat').text
