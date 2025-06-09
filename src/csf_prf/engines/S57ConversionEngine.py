@@ -31,6 +31,7 @@ class S57ConversionEngine(Engine):
         self.output_data = {}
         self.letter_lookup = {'Point': 'P', 'LineString': 'L', 'Polygon': 'A'}
         self.layerfile_name = 'MCD_maritime_layerfile'
+        self.field_length_map = {}
         self.geometries = {
             "Point": {
                 "features": [],
@@ -101,7 +102,7 @@ class S57ConversionEngine(Engine):
                     f'{feature_type}_points_layer', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
                 sorted_point_fields = sorted(point_fields)
                 for field in sorted_point_fields:
-                    arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
+                    arcpy.management.AddField(points_layer, field, 'TEXT', field_length=self.field_length_map.get(field, 50), field_is_nullable='NULLABLE')
 
                 arcpy.AddMessage(' - Building Point features')     
                 # 1. add geometry to fields
@@ -130,7 +131,7 @@ class S57ConversionEngine(Engine):
                     f'{feature_type}_lines_layer', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
                 sorted_line_fields = sorted(line_fields)
                 for field in sorted_line_fields:
-                    arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
+                    arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=self.field_length_map.get(field, 50), field_is_nullable='NULLABLE')
 
                 arcpy.AddMessage(' - Building Line features')
                 cursor_fields = ['SHAPE@JSON'] + sorted_line_fields
@@ -154,7 +155,7 @@ class S57ConversionEngine(Engine):
                     f'{feature_type}_polygons_layer', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
                 sorted_polygon_fields = sorted(polygons_fields)
                 for field in sorted_polygon_fields:
-                    arcpy.management.AddField(polygons_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
+                    arcpy.management.AddField(polygons_layer, field, 'TEXT', field_length=self.field_length_map.get(field, 50), field_is_nullable='NULLABLE')
 
                 arcpy.AddMessage(' - Building Polygon features')
                 cursor_fields = ['SHAPE@'] + sorted_polygon_fields
@@ -272,7 +273,8 @@ class S57ConversionEngine(Engine):
                     feature_json = json.loads(feature.ExportToJson())
                     geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                     if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
-                        feature_json = self.set_none_to_null(feature_json) 
+                        feature_json = self.set_none_to_null(feature_json)
+                        self.store_field_lengths(feature_json)
                         self.geometries[geom_type]['features'].append({'geojson': feature_json})
 
         for geom_type in ['Point', 'LineString', 'Polygon']:

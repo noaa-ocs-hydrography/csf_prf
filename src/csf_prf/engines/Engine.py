@@ -457,7 +457,17 @@ class Engine:
         """Reset S57 ENV for split multipoint only"""
 
         os.environ["S57_CSV"] = str(INPUTS / 'lookups')
-        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON,ADD_SOUNDG_DEPTH=ON"    
+        os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON,ADD_SOUNDG_DEPTH=ON"
+
+    def store_field_lengths(self, feature_json) -> None:
+        """Continually update the max field lengths for all input features"""
+
+        default_field_length = 20
+        for key, value in feature_json['properties'].items():
+            if isinstance(value, str):
+                self.field_length_map[key] = max(self.field_length_map.get(key, default_field_length), len(value))
+            else:
+                self.field_length_map[key] = default_field_length
 
     def unzip_enc_files(self, output_folder, file_ending) -> None:
         """Unzip all zip fileis in a folder"""

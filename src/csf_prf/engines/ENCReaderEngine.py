@@ -78,6 +78,7 @@ class ENCReaderEngine(Engine):
         self.gc_files = set()
         self.gc_points = None
         self.gc_lines = None
+        self.field_length_map = {}
         self.geometries = {
             "Point": {
                 "features": [],
@@ -357,6 +358,7 @@ class ENCReaderEngine(Engine):
                                 continue
 
                             feature_json = self.set_none_to_null(feature_json)
+                            self.store_field_lengths(feature_json)
                             self.geometries[geom_type]['features'].append({'geojson': feature_json, 'scale': enc_scale})
                         # elif geom_type == 'MultiPoint':
                         #     # MultiPoints are broken up now to single features with an ENV variable
@@ -517,7 +519,7 @@ class ENCReaderEngine(Engine):
                 f'{feature_type}_points_assigned', 'POINT', spatial_reference=arcpy.SpatialReference(4326))
             sorted_point_fields = sorted(point_fields)
             for field in sorted_point_fields:
-                arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
+                arcpy.management.AddField(points_layer, field, 'TEXT', field_length=self.field_length_map.get(field, 50), field_is_nullable='NULLABLE')
 
             arcpy.AddMessage(' - Building Point features')     
             # 1. add geometry to fields
@@ -551,7 +553,7 @@ class ENCReaderEngine(Engine):
                 f'{feature_type}_lines_assigned', 'POLYLINE', spatial_reference=arcpy.SpatialReference(4326))
             sorted_line_fields = sorted(line_fields)
             for field in sorted_line_fields:
-                arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
+                arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=self.field_length_map.get(field, 50), field_is_nullable='NULLABLE')
 
             arcpy.AddMessage(' - Building Line features')
             cursor_fields = ['SHAPE@JSON'] + sorted_line_fields
@@ -578,7 +580,7 @@ class ENCReaderEngine(Engine):
                 f'{feature_type}_polygons_assigned', 'POLYGON', spatial_reference=arcpy.SpatialReference(4326))
             sorted_polygon_fields = sorted(polygons_fields)
             for field in sorted_polygon_fields:
-                arcpy.management.AddField(polygons_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
+                arcpy.management.AddField(polygons_layer, field, 'TEXT', field_length=self.field_length_map.get(field, 50), field_is_nullable='NULLABLE')
 
             arcpy.AddMessage(' - Building Polygon features')
             cursor_fields = ['SHAPE@'] + sorted_polygon_fields
