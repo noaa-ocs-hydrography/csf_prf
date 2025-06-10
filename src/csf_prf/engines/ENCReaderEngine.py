@@ -78,7 +78,6 @@ class ENCReaderEngine(Engine):
         self.gc_files = set()
         self.gc_points = None
         self.gc_lines = None
-        self.field_length_map = {}
         self.geometries = {
             "Point": {
                 "features": [],

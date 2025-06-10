@@ -66,6 +66,7 @@ class CompositeSourceCreatorEngine(Engine):
             self.add_column_and_constant(layer, 'invreq', expression)
             self.add_column_and_constant(layer, 'asgnmt', "'Assigned'")
             self.junctions_layer = layer
+            self.store_input_field_lengths(layer)
 
     def convert_sheets(self) -> None:
         """Process the Sheets input parameter"""
@@ -79,6 +80,7 @@ class CompositeSourceCreatorEngine(Engine):
             expression = "'Survey: ' + str(!registry_n!) + ', Priority: ' + str(!priority!) + ', Name: ' + str(!sub_locali!)"
             self.add_column_and_constant(layer, 'invreq', expression)
             self.add_column_and_constant(layer, 'asgnmt', "'Assigned'")
+            self.store_input_field_lengths(layer)
 
             # FME used inner polygons, but it is not needed
             # outer_features, inner_features = self.split_inner_polygons(layer)
@@ -257,6 +259,18 @@ class CompositeSourceCreatorEngine(Engine):
             self.write_output_layer_file()
         arcpy.AddMessage('\nDone')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
+
+    def store_input_field_lengths(self, layer) -> None:
+        """
+        Store field lengths for Sheets and Junctions
+        - Any AddField() calc will fail if a string value is longer than the field length
+        :param layer: Sheets or Junctions in memory layer
+        """
+
+        with arcpy.da.SearchCursor(layer, '*') as cursor:
+            for row in cursor:
+                row_json = {'properties': dict(zip(cursor.fields, row))}
+                self.store_field_lengths(row_json)
 
     def write_output_layer_file(self) -> None:
         """Update layer file for output gdb"""
