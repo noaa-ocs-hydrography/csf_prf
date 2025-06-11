@@ -18,6 +18,8 @@ class EngineException(Exception):
 
 
 class Engine:
+    max_field_length = 300
+
     def add_column_and_constant(self, layer, column, expression='""', field_alias='', field_type='TEXT', field_length=300, code_block='', nullable=False) -> None:
         """
         Add the asgnment column and optionally set a value
@@ -388,6 +390,8 @@ class Engine:
         """
 
         for key, value in feature_json['properties'].items():
+            if isinstance(value, str) and len(value) > self.max_field_length:
+                arcpy.AddMessage(f'\nWarning: Max character length is {self.max_field_length}.\n(Length: {len(value)} - {key}: {value})\nFeature will not be written to output!\n')
             # retain all onotes strings
             if key == 'onotes': 
                 if value in [2147483641.0] or value is None:
