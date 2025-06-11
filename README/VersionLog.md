@@ -8,3 +8,4 @@
 1.2.1 - (5/5/2025) Retain all UWTROC features
 1.2.2 - (5/23/2025) Added lower scale LNDARE feature removal for MHWBuffer
 1.2.3 - (6/5/2025) Added checkbox to allow ovewriting ENC files on ENCDownloaderTool
+1.2.4 - (6/11/2025) Added Warning for feature characters greater than 300 field limit
