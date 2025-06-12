@@ -68,6 +68,9 @@ class ENCDownloaderEngine(Engine):
 
         with arcpy.da.SearchCursor(enc_intersected, ['enc_id']) as cursor:
             for row in cursor:
+                if row[0][2] == '1':
+                    arcpy.AddMessage(f'Skipping scale (1): {row[0]}')
+                    continue
                 downloaded = str(pathlib.Path(self.output_folder) / str(row[0] + '.000'))
                 if self.param_lookup['overwrite_files'].value:
                     arcpy.AddMessage(f'Downloading: {row[0]}')
