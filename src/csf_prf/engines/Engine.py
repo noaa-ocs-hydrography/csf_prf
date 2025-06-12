@@ -180,7 +180,13 @@ class Engine:
             json_fields = feature['geojson']['properties'].keys() if 'geojson' in feature else feature['properties'].keys()
             for field in json_fields:
                 fields.add(field)
-        return fields 
+        return fields
+    
+    def get_approved_enc_files(self) -> list[str]:
+        """Remove any scale level 1 files"""
+
+        input_enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        return [enc for enc in input_enc_files if pathlib.Path(enc).stem[2] != '1']
 
     def get_aton_lookup(self):
         """
@@ -232,7 +238,7 @@ class Engine:
         """Create lookup for ENC extents by scale"""
 
         scale_polygons = {}
-        enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        enc_files = self.get_approved_enc_files()
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
             enc_scale = int(pathlib.Path(enc_path).stem[2])  # TODO do we need to look up scale and accept any file name?
@@ -378,6 +384,9 @@ class Engine:
         arcpy.AddMessage('ENC files found:')
         for enc in output_folder.glob('*.000'):
             enc_file = str(enc)
+            if pathlib.Path(enc_file).stem[2] == '1':
+                # no sc. 1 files downloaded, but might be existing sc. 1 files
+                continue
             arcpy.AddMessage(f' - {enc_file}')
             enc_files.append(enc_file)
         self.param_lookup['enc_files'].value = ';'.join(enc_files)

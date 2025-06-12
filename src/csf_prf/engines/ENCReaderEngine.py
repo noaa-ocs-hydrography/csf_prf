@@ -335,7 +335,7 @@ class ENCReaderEngine(Engine):
         """Read and store all features from ENC file"""
 
         arcpy.AddMessage(' - Reading Feature records')
-        enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        enc_files = self.get_approved_enc_files()
         intersected = 0
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
@@ -435,7 +435,7 @@ class ENCReaderEngine(Engine):
         """Read and store all vector records with QUAPOS from ENC file"""
 
         arcpy.AddMessage(' - Reading QUAPOS records')
-        enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        enc_files = self.get_approved_enc_files()
         intersected = 0
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)

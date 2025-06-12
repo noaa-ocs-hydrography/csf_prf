@@ -140,6 +140,8 @@ class MHWBufferEngine(Engine):
             scale_extent_lookup[str(scale)] = []
         for shp in extent_shapefiles:
             scale = str(shp.stem)[9]
+            if scale == '1':
+                continue
             scale_extent_lookup[scale].append(str(shp))
 
         lndare_start = arcpy.management.GetCount(self.layers['LNDARE'])
@@ -191,7 +193,7 @@ class MHWBufferEngine(Engine):
         """Read ENC features and build HW dataset"""
 
         arcpy.AddMessage('Reading COALNE & SLCONS Feature records')   
-        enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        enc_files = self.get_approved_enc_files()
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
             enc_scale = pathlib.Path(enc_path).stem[2]
