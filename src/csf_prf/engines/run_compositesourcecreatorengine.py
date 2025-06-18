@@ -15,9 +15,6 @@ if __name__ == '__main__':
     param_lookup = {
         'sheets': Param(str(INPUTS / 'test_shapefiles' / 'G322_Sheets_01302024.shp')),
         'junctions': Param(''),
-        'maritime_boundary_pts': Param(''),
-        'maritime_boundary_features': Param(''),
-        'maritime_boundary_baselines': Param(''),
         # 'enc_files': Param(str(str(INPUTS / 'US4GA17M.000') + ';' + str(INPUTS / 'US5SC21M.000'))),
         # 'enc_files': Param(str(str(INPUTS / 'US5SC21M.000'))),
         'enc_files': Param(''),

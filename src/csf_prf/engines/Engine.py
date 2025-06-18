@@ -126,7 +126,6 @@ class Engine:
         for sheet in sheets:
             arcpy.AddMessage(f'Downloading ENC files for SHP: {sheet}')
             # Function name is a built-in combo of class and toolbox alias
-            # TODO user of CSF tool will need a checkbox to choose to overwrite ENC files
             arcpy.ENCDownloader_csf_prf_tools(sheet, str(output_folder), False)
         self.set_enc_files_param(output_folder)
 
