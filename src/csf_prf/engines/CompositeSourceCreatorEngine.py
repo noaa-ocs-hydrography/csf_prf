@@ -53,7 +53,7 @@ class CompositeSourceCreatorEngine(Engine):
             if not gpkg_layers:
                 empty.append(str(geopackage))
         for gpkg in empty:
-            arcpy.AddMessage(f' - No features found: {gpkg.stem}')
+            arcpy.AddMessage(f' - No features found: {gpkg}')
             arcpy.management.Delete(gpkg)
 
     def convert_enc_files(self) -> None:
