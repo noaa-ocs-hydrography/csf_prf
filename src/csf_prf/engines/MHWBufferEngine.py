@@ -27,6 +27,7 @@ class MHWBufferEngine(Engine):
         self.chartscale_layer = None
         self.scale_bounds = {}
         self.intersected = 0
+        self.scale_conversion = 0.0008
 
     def buffer_features(self) -> None:
         """Buffer the MHW lines by meters for each Chart scale"""
@@ -45,14 +46,14 @@ class MHWBufferEngine(Engine):
             with arcpy.da.SearchCursor(self.layers['merged'], ['SHAPE@', 'display_scale', 'enc_scale']) as merged_cursor:
                 for row in merged_cursor:
                     projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
-                    chart_scale = self.get_chart_scale(row[1])
+                    chart_scale = int(row[1]) * self.scale_conversion
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
 
             with arcpy.da.SearchCursor(self.layers['LNDARE'], ['SHAPE@', 'display_scale', 'enc_scale']) as land_cursor:
                 for row in land_cursor:
                     projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
-                    chart_scale = self.get_chart_scale(row[1])
+                    chart_scale = int(row[1]) * self.scale_conversion
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
 
@@ -168,7 +169,11 @@ class MHWBufferEngine(Engine):
         arcpy.AddMessage(f' - Removed {int(lndare_start[0]) - int(lndare_end[0])} LNDARE features')
 
     def get_chart_scale(self, current_scale) -> int:
-        """Get the upper chart scale or max chart scale for the current input chart scale"""
+        """NOT USED ANYMORE
+        Code uses self.scale_conversion as a constant now
+        Get the upper chart scale or max chart scale for the current input chart scale
+        :param str current_scale: Current scale value from an ENC chart
+        """
 
         with open(str(INPUTS / 'lookups' / 'chartscale.yaml'), 'r') as lookup:
             chartscale_lookup = yaml.safe_load(lookup)

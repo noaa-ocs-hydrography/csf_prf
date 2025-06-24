@@ -36,7 +36,8 @@ class ENCDownloaderEngine(Engine):
                     coord_array = arcpy.Array(points)
                     geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
                     polygons_cursor.insertRow([id, geometry])
-        return polygons_layer
+        enc_polygons = arcpy.management.CopyFeatures(polygons_layer, str(pathlib.Path(self.output_folder) / 'enc_polygons.shp'))
+        return enc_polygons
     
     def clean_geometry(self, polygon):
         """
@@ -59,6 +60,7 @@ class ENCDownloaderEngine(Engine):
         if os.path.exists(str(output_path / 'ENC_ROOT')):
             arcpy.AddMessage(f'Removing ENC_ROOT folder')
             shutil.rmtree(output_path / 'ENC_ROOT')
+        arcpy.management.Delete(str(pathlib.Path(self.output_folder) / 'enc_polygons.shp'))
 
     def download_enc_zipfiles(self, enc_intersected) -> None:
         """
@@ -108,8 +110,9 @@ class ENCDownloaderEngine(Engine):
                 panel_polygons = self.get_panel_polygons(panels)
                 polygons.append([enc_id, panel_polygons])
         enc_polygons_layer = self.build_polygons_layer(polygons)
+        # Certain areas like Guam will only select by location on a saved dataset, not in memory.  Weird right?
         enc_intersected = arcpy.management.SelectLayerByLocation(enc_polygons_layer, 'INTERSECT', self.sheets_layer)
-        arcpy.management.CopyFeatures(enc_intersected, str(pathlib.Path(self.output_folder) / 'enc_intersected.shp'))
+        # arcpy.management.CopyFeatures(enc_intersected, str(pathlib.Path(self.output_folder) / 'enc_intersected.shp'))
         arcpy.AddMessage(f'ENC files found: {arcpy.management.GetCount(enc_intersected)}')
         return enc_intersected
     

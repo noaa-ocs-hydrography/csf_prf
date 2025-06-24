@@ -10,3 +10,5 @@
 1.2.3 - (6/5/2025) Added checkbox to allow ovewriting ENC files on ENCDownloaderTool
 1.2.4 - (6/11/2025) Added Warning for feature characters greater than 300 field limit
 1.3.0 - (6/12/2025) Release MHWBuffer tool, skipping sc. 1 ENC files, and field length warning
+1.3.1 - (6/18/2025) Delete empty CARIS geopackage and switch memory usage of Sheets layer
+1.3.2 - (6/24/2025) Fixed numeric bug with setting LNDARE scale conversion
