@@ -149,8 +149,11 @@ class MHWBufferEngine(Engine):
         scale_level_2_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'2'")
         merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(3)] + scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
                                                         'memory/scale_2_extents')
+        # Erase lowest level features from all upper level features extents merged together
         erased = arcpy.analysis.Erase(scale_level_2_features, merged_upper_extents, 'memory/scale_2_erase')
+        # Delete the original Band 2 features
         arcpy.management.DeleteFeatures(scale_level_2_features)
+        # Append erased features to output LNDARE layer
         arcpy.management.Append(erased, self.layers['LNDARE'])
 
         scale_level_3_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'3'")
