@@ -32,7 +32,7 @@ class MHWBufferEngine(Engine):
     def buffer_features(self) -> None:
         """Buffer the MHW features by meters for each Chart scale"""
 
-        arcpy.AddMessage('Buffering Lines by Chart Scale')
+        arcpy.AddMessage('Buffering features by Chart Scale')
         self.layers['buffered'] = arcpy.management.CreateFeatureclass(
             'memory', 
             f'buffered_layer', 
@@ -49,6 +49,7 @@ class MHWBufferEngine(Engine):
                     chart_scale = int(row[1]) * self.scale_conversion
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
+                arcpy.AddMessage(f' - buffered lines')
 
             with arcpy.da.SearchCursor(self.layers['LNDARE'], ['SHAPE@', 'display_scale', 'enc_scale']) as land_cursor:
                 for row in land_cursor:
@@ -56,6 +57,7 @@ class MHWBufferEngine(Engine):
                     chart_scale = int(row[1]) * self.scale_conversion
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
+                arcpy.AddMessage(f' - buffered polygons')
 
     def build_area_features(self) -> None:
         """Create layers for all linear coastal features"""
@@ -131,6 +133,7 @@ class MHWBufferEngine(Engine):
     def erase_lower_scale_features(self) -> None:
         """Use upper level extent polygons to erase lower level buffered features"""
 
+        arcpy.AddMessage(f'Removing lower scale features covered by upper scale charts')
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         enc_extents_folder = output_folder / 'enc_extents'
         if not enc_extents_folder.exists():
@@ -178,7 +181,7 @@ class MHWBufferEngine(Engine):
             arcpy.management.Append(erased, self.layers['buffered'])
 
         lndare_end = arcpy.management.GetCount(self.layers['buffered'])
-        arcpy.AddMessage(f' - Removed {int(lndare_start[0]) - int(lndare_end[0])} LNDARE features')
+        arcpy.AddMessage(f' - Removed {int(lndare_start[0]) - int(lndare_end[0])} features')
 
     def get_chart_scale(self, current_scale) -> int:
         """NOT USED ANYMORE
