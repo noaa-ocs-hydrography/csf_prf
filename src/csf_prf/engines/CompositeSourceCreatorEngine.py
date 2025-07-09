@@ -46,15 +46,10 @@ class CompositeSourceCreatorEngine(Engine):
         output_path = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         caris_export = output_path / 'caris_export'
         caris_gpkgs = caris_export.glob('*.gpkg')
-        empty = []
         for geopackage in caris_gpkgs:
-            arcpy.env.workspace = str(geopackage)
-            gpkg_layers = arcpy.ListDatasets()
-            if not gpkg_layers:
-                empty.append(str(geopackage))
-        for gpkg in empty:
-            arcpy.AddMessage(f' - No features found: {gpkg}')
-            arcpy.management.Delete(gpkg)
+            if os.path.getsize(str(geopackage)) <= 102400:
+                arcpy.AddMessage(f' - No features found: {str(geopackage)}')
+                arcpy.management.Delete(str(geopackage))
 
     def convert_enc_files(self) -> None:
         """Process the ENC files input parameter"""

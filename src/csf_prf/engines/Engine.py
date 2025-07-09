@@ -162,6 +162,8 @@ class Engine:
         inside = False
 
         # Review Engine.get_scale_bounds() for more information
+        # TODO LNDARE needs square extent
+        # TODO does supersession need CATCOV or full extent?
         supersession_polygon = self.scale_bounds[enc_scale]
         if supersession_polygon and not supersession_polygon.disjoint(feature_geometry):  # not disjoint means intersected
             inside = True
@@ -233,7 +235,7 @@ class Engine:
         multiple_value_result = ','.join(new_values)
         return multiple_value_result  
 
-    def get_scale_bounds(self) -> None:
+    def get_scale_bounds(self, engine) -> None:
         """Create lookup for ENC extents by scale"""
 
         scale_polygons = {}
@@ -249,22 +251,14 @@ class Engine:
 
             # get CATCOV 1 polygon
             m_covr_layer = enc_file.GetLayerByName('M_COVR')
-            catcov = None
-            for feature in m_covr_layer:
-                feature_json = json.loads(feature.ExportToJson())
-                if feature_json['properties']['CATCOV'] == 1:
-                    catcov = feature_json
-                    break
-
-            if catcov is not None:
-                points = [arcpy.Point(*coords) for polygon in catcov['geometry']['coordinates'] for coords in polygon]
-                esri_extent_polygon = arcpy.Polygon(arcpy.Array(points))
-                # Save extent polygons for LNDARE clipping
-                extents_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'enc_extents'
-                extents_folder.mkdir(parents=True, exist_ok=True) 
-                output_extent_polygon = extents_folder / f'extent_{pathlib.Path(enc_path).stem}.shp'
-                arcpy.management.CopyFeatures([esri_extent_polygon], str(output_extent_polygon))
-            else: 
+            if engine == 'ENCReaderEngine':
+                for feature in m_covr_layer:
+                    feature_json = json.loads(feature.ExportToJson())
+                    if feature_json['properties']['CATCOV'] == 1:
+                        points = [arcpy.Point(*coords) for polygon in feature_json['geometry']['coordinates'] for coords in polygon]
+                        esri_extent_polygon = arcpy.Polygon(arcpy.Array(points))
+                        break
+            elif engine == 'MHWBufferEngine':
                 xMin, xMax, yMin, yMax = m_covr_layer.GetExtent()
                 extent_array = arcpy.Array()
                 extent_array.add(arcpy.Point(xMin, yMin))
@@ -273,6 +267,13 @@ class Engine:
                 extent_array.add(arcpy.Point(xMax, yMin))
                 extent_array.add(arcpy.Point(xMin, yMin))
                 esri_extent_polygon = arcpy.Polygon(extent_array)
+
+            # Save extent polygons for LNDARE clipping
+            extents_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'enc_extents'
+            extents_folder.mkdir(parents=True, exist_ok=True) 
+            output_extent_polygon = extents_folder / f'extent_{pathlib.Path(enc_path).stem}.shp'
+            arcpy.management.CopyFeatures([esri_extent_polygon], str(output_extent_polygon))
+            arcpy.management.DefineProjection(str(output_extent_polygon), 4326)
 
             if scale_level not in scale_polygons:
                 scale_polygons[enc_scale] = []
