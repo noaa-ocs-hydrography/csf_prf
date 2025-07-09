@@ -57,39 +57,6 @@ class MHWBufferEngine(Engine):
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
 
-    def buffer_lines(self) -> None:
-        """Buffer the MHW features by meters for each Chart scale"""
-
-        arcpy.AddMessage('Buffering Lines by Chart Scale')
-        with arcpy.da.InsertCursor(self.layers['buffered'], ['SHAPE@', 'display_scale', 'enc_scale']) as cursor: 
-            with arcpy.da.SearchCursor(self.layers['merged'], ['SHAPE@', 'display_scale', 'enc_scale']) as merged_cursor:
-                for row in merged_cursor:
-                    projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
-                    chart_scale = int(row[1]) * self.scale_conversion
-                    buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
-                    cursor.insertRow([buffered, row[1], row[2]])
-
-    def buffer_polygons(self) -> None:
-        """Buffer the MHW features by meters for each Chart scale"""
-
-        arcpy.AddMessage('Buffering Polygons by Chart Scale')
-        self.layers['buffered'] = arcpy.management.CreateFeatureclass(
-            'memory', 
-            f'buffered_layer', 
-            'POLYGON', 
-            spatial_reference=arcpy.SpatialReference(4326)  # web mercator
-        )
-        arcpy.management.AddField(self.layers['buffered'], 'display_scale', 'LONG')
-        arcpy.management.AddField(self.layers['buffered'], 'enc_scale', 'SHORT')
-
-        with arcpy.da.InsertCursor(self.layers['buffered'], ['SHAPE@', 'display_scale', 'enc_scale']) as cursor: 
-            with arcpy.da.SearchCursor(self.layers['LNDARE'], ['SHAPE@', 'display_scale', 'enc_scale']) as land_cursor:
-                for row in land_cursor:
-                    projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
-                    chart_scale = int(row[1]) * self.scale_conversion
-                    buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
-                    cursor.insertRow([buffered, row[1], row[2]])
-
     def build_area_features(self) -> None:
         """Create layers for all linear coastal features"""
 
