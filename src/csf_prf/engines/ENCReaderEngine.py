@@ -818,7 +818,7 @@ class ENCReaderEngine(Engine):
                 pass
         self.set_driver()
         self.split_multipoint_env()
-        self.get_scale_bounds()
+        self.get_scale_bounds('ENCReaderEngine')
         self.set_feature_lookup()
         self.get_feature_records()
         self.return_primitives_env()
