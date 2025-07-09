@@ -57,6 +57,39 @@ class MHWBufferEngine(Engine):
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
 
+    def buffer_polygons(self) -> None:
+        """Buffer the MHW features by meters for each Chart scale"""
+
+        arcpy.AddMessage('Buffering Lines by Chart Scale')
+        self.layers['buffered'] = arcpy.management.CreateFeatureclass(
+            'memory', 
+            f'buffered_layer', 
+            'POLYGON', 
+            spatial_reference=arcpy.SpatialReference(4326)  # web mercator
+        )
+        arcpy.management.AddField(self.layers['buffered'], 'display_scale', 'LONG')
+        arcpy.management.AddField(self.layers['buffered'], 'enc_scale', 'SHORT')
+
+        with arcpy.da.InsertCursor(self.layers['buffered'], ['SHAPE@', 'display_scale', 'enc_scale']) as cursor: 
+            with arcpy.da.SearchCursor(self.layers['LNDARE'], ['SHAPE@', 'display_scale', 'enc_scale']) as land_cursor:
+                for row in land_cursor:
+                    projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
+                    chart_scale = int(row[1]) * self.scale_conversion
+                    buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
+                    cursor.insertRow([buffered, row[1], row[2]])
+
+    def buffer_lines(self) -> None:
+        """Buffer the MHW features by meters for each Chart scale"""
+
+        arcpy.AddMessage('Buffering Lines by Chart Scale')
+        with arcpy.da.InsertCursor(self.layers['buffered'], ['SHAPE@', 'display_scale', 'enc_scale']) as cursor: 
+            with arcpy.da.SearchCursor(self.layers['merged'], ['SHAPE@', 'display_scale', 'enc_scale']) as merged_cursor:
+                for row in merged_cursor:
+                    projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
+                    chart_scale = int(row[1]) * self.scale_conversion
+                    buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
+                    cursor.insertRow([buffered, row[1], row[2]])
+
     def build_area_features(self) -> None:
         """Create layers for all linear coastal features"""
 
@@ -191,6 +224,53 @@ class MHWBufferEngine(Engine):
             multi_part="SINGLE_PART",
         )
 
+    # def erase_lndare_features(self) -> None:
+    #     """Use upper level extent polygons to erase lower level LNDARE features"""
+
+    #     output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+    #     enc_extents_folder = output_folder / 'enc_extents'
+    #     if not enc_extents_folder.exists():
+    #         raise EncExtentsFolderNotFound(f'Error - Missing {enc_extents_folder} folder')
+    #     extent_shapefiles = enc_extents_folder.rglob('extent_*.shp')
+    #     scale_extent_lookup = {}
+    #     for scale in range(2, 6):
+    #         scale_extent_lookup[str(scale)] = []
+    #     for shp in extent_shapefiles:
+    #         scale = str(shp.stem)[9]
+    #         if scale == '1':  # TODO should be also skip 2?
+    #             continue
+    #         scale_extent_lookup[scale].append(str(shp))
+
+    #     lndare_start = arcpy.management.GetCount(self.layers['LNDARE'])
+    #     if scale_extent_lookup[str(3)] or scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)]:
+    #         scale_level_2_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'2'")
+    #         merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(3)] + scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
+    #                                                         'memory/scale_2_extents')
+    #         # Erase lowest level features from all upper level features extents merged together
+    #         erased = arcpy.analysis.Erase(scale_level_2_features, merged_upper_extents, 'memory/scale_2_erase')
+    #         # Delete the original Band 2 features
+    #         arcpy.management.DeleteFeatures(scale_level_2_features)
+    #         # Append erased features to output LNDARE layer
+    #         arcpy.management.Append(erased, self.layers['LNDARE'])
+
+    #     if scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)]:
+    #         scale_level_3_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'3'")
+    #         merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
+    #                                                         'memory/scale_3_extents')
+    #         erased = arcpy.analysis.Erase(scale_level_3_features, merged_upper_extents, 'memory/scale_3_erase')
+    #         arcpy.management.DeleteFeatures(scale_level_3_features)
+    #         arcpy.management.Append(erased, self.layers['LNDARE'])
+
+    #     if scale_extent_lookup[str(5)]:
+    #         scale_level_4_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'4'")
+    #         merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(5)], 'memory/scale_4_extents')
+    #         erased = arcpy.analysis.Erase(scale_level_4_features, merged_upper_extents, 'memory/scale_4_erase')
+    #         arcpy.management.DeleteFeatures(scale_level_4_features)
+    #         arcpy.management.Append(erased, self.layers['LNDARE'])
+
+    #     lndare_end = arcpy.management.GetCount(self.layers['LNDARE'])
+    #     arcpy.AddMessage(f' - Removed {int(lndare_start[0]) - int(lndare_end[0])} LNDARE features')
+
     def erase_lndare_features(self) -> None:
         """Use upper level extent polygons to erase lower level LNDARE features"""
 
@@ -208,9 +288,9 @@ class MHWBufferEngine(Engine):
                 continue
             scale_extent_lookup[scale].append(str(shp))
 
-        lndare_start = arcpy.management.GetCount(self.layers['LNDARE'])
+        lndare_start = arcpy.management.GetCount(self.layers['buffered'])
         if scale_extent_lookup[str(3)] or scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)]:
-            scale_level_2_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'2'")
+            scale_level_2_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "2")
             merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(3)] + scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
                                                             'memory/scale_2_extents')
             # Erase lowest level features from all upper level features extents merged together
@@ -218,24 +298,24 @@ class MHWBufferEngine(Engine):
             # Delete the original Band 2 features
             arcpy.management.DeleteFeatures(scale_level_2_features)
             # Append erased features to output LNDARE layer
-            arcpy.management.Append(erased, self.layers['LNDARE'])
+            arcpy.management.Append(erased, self.layers['buffered'])
 
         if scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)]:
-            scale_level_3_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'3'")
+            scale_level_3_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "3")
             merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
                                                             'memory/scale_3_extents')
             erased = arcpy.analysis.Erase(scale_level_3_features, merged_upper_extents, 'memory/scale_3_erase')
             arcpy.management.DeleteFeatures(scale_level_3_features)
-            arcpy.management.Append(erased, self.layers['LNDARE'])
+            arcpy.management.Append(erased, self.layers['buffered'])
 
         if scale_extent_lookup[str(5)]:
-            scale_level_4_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'4'")
+            scale_level_4_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "4")
             merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(5)], 'memory/scale_4_extents')
             erased = arcpy.analysis.Erase(scale_level_4_features, merged_upper_extents, 'memory/scale_4_erase')
             arcpy.management.DeleteFeatures(scale_level_4_features)
-            arcpy.management.Append(erased, self.layers['LNDARE'])
+            arcpy.management.Append(erased, self.layers['buffered'])
 
-        lndare_end = arcpy.management.GetCount(self.layers['LNDARE'])
+        lndare_end = arcpy.management.GetCount(self.layers['buffered'])
         arcpy.AddMessage(f' - Removed {int(lndare_start[0]) - int(lndare_end[0])} LNDARE features')
 
     def get_chart_scale(self, current_scale) -> int:
@@ -349,8 +429,10 @@ class MHWBufferEngine(Engine):
         self.build_area_features()
         self.build_line_features()
         self.merge_feature_layers()
-        self.erase_lndare_features()
         self.buffer_features()
+        # self.buffer_polygons()
+        self.erase_lndare_features()
+        # self.buffer_lines()
         # self.cut_scale_2_polygons()
         self.dissolve_polygons()
         self.remove_inner_polygons()
