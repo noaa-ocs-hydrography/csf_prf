@@ -2,6 +2,7 @@ import json
 import arcpy
 import pathlib
 import yaml
+import shutil
 
 from csf_prf.engines.Engine import Engine
 
@@ -120,6 +121,13 @@ class MHWBufferEngine(Engine):
                         sheet_geom = sheet_geom.difference(polygon)
                 sheet_cursor.updateRow([sheet_geom])
 
+    def delete_enc_extents(self) -> None:
+        """Remove the 'enc_extents' folder and shapefiles are tool runs"""
+
+        enc_extents_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'enc_extents'
+        if enc_extents_folder.exists():
+            shutil.rmtree(enc_extents_folder)
+
     def dissolve_polygons(self) -> None:
         """Dissolve overlapping polygons to create a single polygon"""
 
@@ -149,6 +157,7 @@ class MHWBufferEngine(Engine):
             scale_extent_lookup[scale].append(str(shp))
 
         lndare_start = arcpy.management.GetCount(self.layers['buffered'])
+        arcpy.management.CopyFeatures(self.layers['buffered'], r'C:\Users\Stephen.Patterson\Data\Repos\csf_prf\outputs\starting_buffered.shp')
         # Check if any upper level scale extent polygons are available
         if scale_extent_lookup[str(3)] or scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)]:
             # Select lowest scale features from buffered
@@ -264,14 +273,17 @@ class MHWBufferEngine(Engine):
         """Write out memory layers to output folder"""
 
         output_folder = self.param_lookup['output_folder'].valueAsText
-        arcpy.management.CopyFeatures(self.layers['LNDARE'], str(pathlib.Path(output_folder) / 'lndare_features.shp'))
-        arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / 'cursor_dissolved.shp'))
-        arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'cursor_buffered.shp'))
-        arcpy.management.CopyFeatures(self.layers['merged'], str(pathlib.Path(output_folder) / 'cursor_merged.shp'))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "mhw_polygons.shp")}')
-        arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / "mhw_polygons.shp"))
+        arcpy.management.CopyFeatures(self.layers['LNDARE'], str(pathlib.Path(output_folder) / 'mhw_polygons.shp'))
+        arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "mhw_lines.shp")}')
+        arcpy.management.CopyFeatures(self.layers['merged'], str(pathlib.Path(output_folder) / 'mhw_lines.shp'))
+        arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "buffered_mhw_polygons.shp")}')
+        arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'buffered_mhw_polygons.shp'))
+        arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "dissolved_mhw_polygons.shp")}')
+        arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / "dissolved_mhw_polygons.shp"))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / pathlib.Path(self.param_lookup["sheets"].valueAsText).stem)}_clip.shp')
-        arcpy.management.CopyFeatures(self.layers['clipped_sheets'], str(pathlib.Path(output_folder) / f'{pathlib.Path(self.param_lookup["sheets"].valueAsText).stem}_clip.shp'))
+        arcpy.management.CopyFeatures(self.layers['clipped_sheets'], 
+                                      str(pathlib.Path(output_folder) / f'{pathlib.Path(self.param_lookup["sheets"].valueAsText).stem}_clip.shp'))
 
     def start(self) -> None:
         """Main method to begin process"""
@@ -291,6 +303,7 @@ class MHWBufferEngine(Engine):
         self.remove_inner_polygons()
         self.clip_sheets()
         self.save_layers()
+        self.delete_enc_extents()
 
         arcpy.AddMessage('Done')
 
