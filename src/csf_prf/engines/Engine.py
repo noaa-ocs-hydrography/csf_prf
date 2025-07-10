@@ -287,7 +287,6 @@ class Engine:
                 # Save extent polygons for LNDARE clipping
                 arcpy.management.CopyFeatures([esri_extent_polygon], str(output_extent_polygon))
                 arcpy.management.DefineProjection(str(output_extent_polygon), 4326)
-                # Code for buffering extent polygons if needed for MHWBuffer
                 # Esri BUG: Should be able to project any Polygon, but projectAs transformation won't work outside of a cursor
                 display_scale = self.get_enc_display_scale(enc_file)
                 with arcpy.da.UpdateCursor(str(output_extent_polygon), ['SHAPE@']) as extent_cursor:
