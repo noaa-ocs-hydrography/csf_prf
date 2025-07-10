@@ -130,8 +130,8 @@ class MHWBufferEngine(Engine):
             multi_part="SINGLE_PART",
         )
 
-    def erase_lower_scale_features(self) -> None:
-        """Use upper level extent polygons to erase lower level buffered features"""
+    def erase_covered_features(self) -> None:
+        """Use buffered upper level extent polygons to erase covered lower level buffered features"""
 
         arcpy.AddMessage(f'Removing lower scale features covered by upper scale charts')
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
@@ -286,7 +286,7 @@ class MHWBufferEngine(Engine):
         self.build_line_features()
         self.merge_feature_layers()
         self.buffer_features()
-        self.erase_lower_scale_features()
+        self.erase_covered_features()
         self.dissolve_polygons()
         self.remove_inner_polygons()
         self.clip_sheets()
