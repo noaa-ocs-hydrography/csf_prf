@@ -2,6 +2,7 @@ import json
 import arcpy
 import pathlib
 import yaml
+import shutil
 
 from csf_prf.engines.Engine import Engine
 
@@ -32,7 +33,7 @@ class MHWBufferEngine(Engine):
     def buffer_features(self) -> None:
         """Buffer the MHW features by meters for each Chart scale"""
 
-        arcpy.AddMessage('Buffering Lines by Chart Scale')
+        arcpy.AddMessage('Buffering features by Chart Scale')
         self.layers['buffered'] = arcpy.management.CreateFeatureclass(
             'memory', 
             f'buffered_layer', 
@@ -49,6 +50,7 @@ class MHWBufferEngine(Engine):
                     chart_scale = int(row[1]) * self.scale_conversion
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
+                arcpy.AddMessage(f' - buffered lines')
 
             with arcpy.da.SearchCursor(self.layers['LNDARE'], ['SHAPE@', 'display_scale', 'enc_scale']) as land_cursor:
                 for row in land_cursor:
@@ -56,6 +58,7 @@ class MHWBufferEngine(Engine):
                     chart_scale = int(row[1]) * self.scale_conversion
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
+                arcpy.AddMessage(f' - buffered polygons')
 
     def build_area_features(self) -> None:
         """Create layers for all linear coastal features"""
@@ -118,68 +121,12 @@ class MHWBufferEngine(Engine):
                         sheet_geom = sheet_geom.difference(polygon)
                 sheet_cursor.updateRow([sheet_geom])
 
-    def cut_scale_2_polygons(self) -> None:
-        """
-        Cut Scale 2 buffered polygons with merged lines
-        - Still ongoing issues and uncertainty with trying to cut polygons with lines
-        - no way to know which part of a polygon was clipped to dynamically remove it
-        - recommended path forward is users not loading Scale 2 charts
-        - We could also ignore any Scale 2 charts to automate that part
-        """
+    def delete_enc_extents(self) -> None:
+        """Remove the 'enc_extents' folder and shapefiles are tool runs"""
 
-        from shapely import from_wkt as shapely_from_wkt
-        from shapely import to_wkt as shapely_to_wkt
-        from shapely.geometry import LineString
-        from shapely.ops import split as shapely_split
-
-        arcpy.AddMessage(f'Cutting buffered Scale 2 polygons with shoreline features')
-        scale_level_2_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], 'NEW_SELECTION',  'enc_scale = 2')
-        intersected_lines = arcpy.management.SelectLayerByLocation(self.layers['merged'], 'INTERSECT', scale_level_2_features)
-        # use buffered lines instead
-        new_rows = []
-        with arcpy.da.SearchCursor(scale_level_2_features, ['SHAPE@', '*']) as polygon_cursor:
-            with arcpy.da.SearchCursor(intersected_lines, ['SHAPE@', '*']) as line_cursor:
-                lines, polygons = list(line_cursor), list(polygon_cursor)
-                for line_row in lines:
-                    for poly_row in polygons:
-                        # if intersect, split and update
-                        if not line_row[0].disjoint(poly_row[0]):
-                            polygon = shapely_from_wkt(poly_row[0].WKT)
-                            linestring = [[pt.X, pt.Y] for pt in line_row[0][0]]
-                            line = LineString(linestring)
-                            # TODO need to maintain shape with split
-                            geometry_collection = shapely_split(polygon, line)
-                            if hasattr(geometry_collection, 'geoms'):
-                                for split_polygon in geometry_collection.geoms:
-                                    geometry = arcpy.FromWKT(shapely_to_wkt(split_polygon))
-                                    if geometry.area < 5:  # TODO what is a good number? Gigantic sc. 2 area is 17.8
-                                        new_row = [geometry, poly_row[1]] + list(poly_row[3:])
-                                        new_rows.append(new_row)
-                            else:
-                                geometry = arcpy.FromWKT(shapely_to_wkt(geometry_collection))
-                                if geometry.area < 5:  # TODO what is a good number? Gigantic sc. 2 area is 17.8
-                                    new_row = [geometry, poly_row[1]] + list(poly_row[3:])
-                                    new_rows.append(new_row)
-
-        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
-        output_path = output_folder / 'scale_2_review.shp'
-        self.layers['cut_polygons'] = arcpy.management.CreateFeatureclass(
-            str(output_folder),
-            'scale_2_review.shp',
-            'POLYGON', 
-            spatial_reference=arcpy.SpatialReference(4326)
-        )
-        arcpy.management.AddField(str(output_path), 'display_sc', 'LONG')
-        arcpy.management.AddField(str(output_path), 'enc_scale', 'SHORT')
-
-        arcpy.AddMessage(f' - Writing Scale 2 polygons of concern to: {str(output_path)}')
-        with arcpy.da.InsertCursor(str(output_path), ['SHAPE@', 'Id', 'display_sc', 'enc_scale']) as cursor: 
-            for row in new_rows:
-                cursor.insertRow(row)
-        intersected_polygons = arcpy.management.SelectLayerByLocation(str(output_path), 'INTERSECTS', self.param_lookup['sheets'].valueAsText)
-        disjointed_polygons = arcpy.management.SelectLayerByLocation(intersected_polygons, selection_type='SWITCH_SELECTION')
-        arcpy.management.DeleteFeatures(disjointed_polygons)
-        arcpy.AddMessage(f' - {int(arcpy.management.GetCount(disjointed_polygons)[0])} problem polygon(s) found')
+        enc_extents_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'enc_extents'
+        if enc_extents_folder.exists():
+            shutil.rmtree(enc_extents_folder)
 
     def dissolve_polygons(self) -> None:
         """Dissolve overlapping polygons to create a single polygon"""
@@ -191,9 +138,10 @@ class MHWBufferEngine(Engine):
             multi_part="SINGLE_PART",
         )
 
-    def erase_lndare_features(self) -> None:
-        """Use upper level extent polygons to erase lower level LNDARE features"""
+    def erase_covered_features(self) -> None:
+        """Use buffered upper level extent polygons to erase covered lower level buffered features"""
 
+        arcpy.AddMessage(f'Removing lower scale features covered by upper scale charts')
         output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
         enc_extents_folder = output_folder / 'enc_extents'
         if not enc_extents_folder.exists():
@@ -208,35 +156,41 @@ class MHWBufferEngine(Engine):
                 continue
             scale_extent_lookup[scale].append(str(shp))
 
-        lndare_start = arcpy.management.GetCount(self.layers['LNDARE'])
+        lndare_start = arcpy.management.GetCount(self.layers['buffered'])
+        arcpy.management.CopyFeatures(self.layers['buffered'], r'C:\Users\Stephen.Patterson\Data\Repos\csf_prf\outputs\starting_buffered.shp')
+        # Check if any upper level scale extent polygons are available
         if scale_extent_lookup[str(3)] or scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)]:
-            scale_level_2_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'2'")
+            # Select lowest scale features from buffered
+            scale_level_2_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "2")
+            # Create an in memory layer of all upper level extent polygons
+            # TODO does each extent polygon need to be buffered as well to properly overlap buffered LNDARE, COALNE, SLCONS features?
             merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(3)] + scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
                                                             'memory/scale_2_extents')
-            # Erase lowest level features from all upper level features extents merged together
+            # Erase lowest level buffered features covered by all upper level extent polygons merged together
             erased = arcpy.analysis.Erase(scale_level_2_features, merged_upper_extents, 'memory/scale_2_erase')
-            # Delete the original Band 2 features
+            # Delete the original Band 2 buffered features
             arcpy.management.DeleteFeatures(scale_level_2_features)
-            # Append erased features to output LNDARE layer
-            arcpy.management.Append(erased, self.layers['LNDARE'])
+            # Append Erase results of original Band 2 buffered features with covered parts removed
+            arcpy.management.Append(erased, self.layers['buffered'])
 
         if scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)]:
-            scale_level_3_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'3'")
+            # Repeat same process for each level 2-4
+            scale_level_3_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "3")
             merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
                                                             'memory/scale_3_extents')
             erased = arcpy.analysis.Erase(scale_level_3_features, merged_upper_extents, 'memory/scale_3_erase')
             arcpy.management.DeleteFeatures(scale_level_3_features)
-            arcpy.management.Append(erased, self.layers['LNDARE'])
+            arcpy.management.Append(erased, self.layers['buffered'])
 
         if scale_extent_lookup[str(5)]:
-            scale_level_4_features = arcpy.management.SelectLayerByAttribute(self.layers['LNDARE'], "NEW_SELECTION", 'ENC_SCALE = ' + "'4'")
+            scale_level_4_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "4")
             merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(5)], 'memory/scale_4_extents')
             erased = arcpy.analysis.Erase(scale_level_4_features, merged_upper_extents, 'memory/scale_4_erase')
             arcpy.management.DeleteFeatures(scale_level_4_features)
-            arcpy.management.Append(erased, self.layers['LNDARE'])
+            arcpy.management.Append(erased, self.layers['buffered'])
 
-        lndare_end = arcpy.management.GetCount(self.layers['LNDARE'])
-        arcpy.AddMessage(f' - Removed {int(lndare_start[0]) - int(lndare_end[0])} LNDARE features')
+        lndare_end = arcpy.management.GetCount(self.layers['buffered'])
+        arcpy.AddMessage(f' - Removed {int(lndare_start[0]) - int(lndare_end[0])} features')
 
     def get_chart_scale(self, current_scale) -> int:
         """NOT USED ANYMORE
@@ -254,15 +208,6 @@ class MHWBufferEngine(Engine):
             elif int(current_scale) > higher_resolution:
                 continue
         return chartscale_lookup[max(scale_numbers)]
-
-    def get_enc_display_scale(self, enc_file) -> str:
-        """Obtain ENC resolution scale for setting buffer value"""
-
-        metadata_layer = enc_file.GetLayerByName('DSID')
-        metadata = metadata_layer.GetFeature(0)
-        metadata_json = json.loads(metadata.ExportToJson())
-        display_scale = metadata_json['properties']['DSPM_CSCL']
-        return display_scale
 
     def get_high_water_features(self):
         """Read ENC features and build HW dataset"""
@@ -328,14 +273,17 @@ class MHWBufferEngine(Engine):
         """Write out memory layers to output folder"""
 
         output_folder = self.param_lookup['output_folder'].valueAsText
-        arcpy.management.CopyFeatures(self.layers['LNDARE'], str(pathlib.Path(output_folder) / 'lndare_features.shp'))
-        arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / 'cursor_dissolved.shp'))
-        arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'cursor_buffered.shp'))
-        arcpy.management.CopyFeatures(self.layers['merged'], str(pathlib.Path(output_folder) / 'cursor_merged.shp'))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "mhw_polygons.shp")}')
-        arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / "mhw_polygons.shp"))
+        arcpy.management.CopyFeatures(self.layers['LNDARE'], str(pathlib.Path(output_folder) / 'mhw_polygons.shp'))
+        arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "mhw_lines.shp")}')
+        arcpy.management.CopyFeatures(self.layers['merged'], str(pathlib.Path(output_folder) / 'mhw_lines.shp'))
+        arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "buffered_mhw_polygons.shp")}')
+        arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'buffered_mhw_polygons.shp'))
+        arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "dissolved_mhw_polygons.shp")}')
+        arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / "dissolved_mhw_polygons.shp"))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / pathlib.Path(self.param_lookup["sheets"].valueAsText).stem)}_clip.shp')
-        arcpy.management.CopyFeatures(self.layers['clipped_sheets'], str(pathlib.Path(output_folder) / f'{pathlib.Path(self.param_lookup["sheets"].valueAsText).stem}_clip.shp'))
+        arcpy.management.CopyFeatures(self.layers['clipped_sheets'], 
+                                      str(pathlib.Path(output_folder) / f'{pathlib.Path(self.param_lookup["sheets"].valueAsText).stem}_clip.shp'))
 
     def start(self) -> None:
         """Main method to begin process"""
@@ -349,13 +297,13 @@ class MHWBufferEngine(Engine):
         self.build_area_features()
         self.build_line_features()
         self.merge_feature_layers()
-        self.erase_lndare_features()
         self.buffer_features()
-        # self.cut_scale_2_polygons()
+        self.erase_covered_features()
         self.dissolve_polygons()
         self.remove_inner_polygons()
         self.clip_sheets()
         self.save_layers()
+        self.delete_enc_extents()
 
         arcpy.AddMessage('Done')
 

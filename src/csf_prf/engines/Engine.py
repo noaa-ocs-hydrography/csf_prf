@@ -208,6 +208,15 @@ class Engine:
                 return parent_item[child]
             else:
                 return parent_item
+
+    def get_enc_display_scale(self, enc_file) -> str:
+        """Obtain ENC resolution scale for setting buffer value"""
+
+        metadata_layer = enc_file.GetLayerByName('DSID')
+        metadata = metadata_layer.GetFeature(0)
+        metadata_json = json.loads(metadata.ExportToJson())
+        display_scale = metadata_json['properties']['DSPM_CSCL']
+        return display_scale
             
     def get_multiple_values_from_field(self, field_name, current_value, s57_lookup):
         """
@@ -249,6 +258,10 @@ class Engine:
             # resolution = metadata_json['properties']['DSPM_CSCL']
             scale_level = metadata_json['properties']['DSID_INTU']
 
+            extents_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'enc_extents'
+            extents_folder.mkdir(parents=True, exist_ok=True) 
+            output_extent_polygon = extents_folder / f'extent_{pathlib.Path(enc_path).stem}.shp'
+
             # get CATCOV 1 polygon
             m_covr_layer = enc_file.GetLayerByName('M_COVR')
             if engine == 'ENCReaderEngine':
@@ -258,6 +271,9 @@ class Engine:
                         points = [arcpy.Point(*coords) for polygon in feature_json['geometry']['coordinates'] for coords in polygon]
                         esri_extent_polygon = arcpy.Polygon(arcpy.Array(points))
                         break
+                # Save extent polygons for LNDARE clipping
+                arcpy.management.CopyFeatures([esri_extent_polygon], str(output_extent_polygon))
+                arcpy.management.DefineProjection(str(output_extent_polygon), 4326)
             elif engine == 'MHWBufferEngine':
                 xMin, xMax, yMin, yMax = m_covr_layer.GetExtent()
                 extent_array = arcpy.Array()
@@ -267,13 +283,19 @@ class Engine:
                 extent_array.add(arcpy.Point(xMax, yMin))
                 extent_array.add(arcpy.Point(xMin, yMin))
                 esri_extent_polygon = arcpy.Polygon(extent_array)
-
-            # Save extent polygons for LNDARE clipping
-            extents_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'enc_extents'
-            extents_folder.mkdir(parents=True, exist_ok=True) 
-            output_extent_polygon = extents_folder / f'extent_{pathlib.Path(enc_path).stem}.shp'
-            arcpy.management.CopyFeatures([esri_extent_polygon], str(output_extent_polygon))
-            arcpy.management.DefineProjection(str(output_extent_polygon), 4326)
+                
+                # Save extent polygons for LNDARE clipping
+                arcpy.management.CopyFeatures([esri_extent_polygon], str(output_extent_polygon))
+                arcpy.management.DefineProjection(str(output_extent_polygon), 4326)
+                # Esri BUG: Should be able to project any Polygon, but projectAs transformation won't work outside of a cursor
+                display_scale = self.get_enc_display_scale(enc_file)
+                with arcpy.da.UpdateCursor(str(output_extent_polygon), ['SHAPE@']) as extent_cursor:
+                    for row in extent_cursor:
+                        projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')
+                        chart_scale = int(display_scale) * self.scale_conversion
+                        # buffer ENC extents to match buffered LNDARE, COALNE, SLCONS features that will be erased
+                        esri_extent_polygon = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')
+                        break  # should only be 1 polygon
 
             if scale_level not in scale_polygons:
                 scale_polygons[enc_scale] = []
