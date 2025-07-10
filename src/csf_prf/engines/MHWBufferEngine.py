@@ -200,15 +200,6 @@ class MHWBufferEngine(Engine):
                 continue
         return chartscale_lookup[max(scale_numbers)]
 
-    def get_enc_display_scale(self, enc_file) -> str:
-        """Obtain ENC resolution scale for setting buffer value"""
-
-        metadata_layer = enc_file.GetLayerByName('DSID')
-        metadata = metadata_layer.GetFeature(0)
-        metadata_json = json.loads(metadata.ExportToJson())
-        display_scale = metadata_json['properties']['DSPM_CSCL']
-        return display_scale
-
     def get_high_water_features(self):
         """Read ENC features and build HW dataset"""
 
