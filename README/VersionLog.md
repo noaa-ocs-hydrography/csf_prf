@@ -13,3 +13,4 @@
 1.3.1 - (6/18/2025) Delete empty CARIS geopackage and switch memory usage of Sheets layer
 1.3.2 - (6/24/2025) Fixed numeric bug with setting LNDARE scale conversion
 1.3.3 - (7/9/2025) Bug fixes for empty geopackage, use of CATCOV, and checks for ENC extents
+1.3.4 - (7/10/2025) Bug fix for overlapping Band 2 polygons and minor changes

@@ -157,7 +157,6 @@ class MHWBufferEngine(Engine):
             scale_extent_lookup[scale].append(str(shp))
 
         lndare_start = arcpy.management.GetCount(self.layers['buffered'])
-        arcpy.management.CopyFeatures(self.layers['buffered'], r'C:\Users\Stephen.Patterson\Data\Repos\csf_prf\outputs\starting_buffered.shp')
         # Check if any upper level scale extent polygons are available
         if scale_extent_lookup[str(3)] or scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)]:
             # Select lowest scale features from buffered
