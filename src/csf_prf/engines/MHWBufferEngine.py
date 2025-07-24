@@ -316,7 +316,6 @@ class MHWBufferEngine(Engine):
                     self.intersected += 1
                     continue
                 geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
-                # TODO do we only use lines?
                 if geom_type == 'LineString':
                     feature_json['properties']['DISPLAY_SCALE'] = display_scale
                     feature_json['properties']['ENC_SCALE'] = enc_scale
@@ -328,10 +327,6 @@ class MHWBufferEngine(Engine):
         for feature in layer:
             if feature:
                 feature_json = json.loads(feature.ExportToJson())
-                # TODO Review LNDARE supersession
-                # if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
-                #     self.intersected += 1
-                #     continue
                 geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                 if geom_type == 'Polygon':
                     feature_json['properties']['DISPLAY_SCALE'] = display_scale
@@ -352,12 +347,13 @@ class MHWBufferEngine(Engine):
                     feature_json['properties']['DISPLAY_SCALE'] = display_scale
                     feature_json['properties']['ENC_SCALE'] = enc_scale
                     props = feature_json['properties']
-                    if 'CATSLC' in props and props['CATSLC'] == 4:
-                        if props['WATLEV'] == 2:
-                            self.features['SLCONS'].append(feature_json)
-                        else:
-                            if props['CONDTN'] != 2:
+                    if 'CATSLC' in props:
+                        if props['CATSLC'] == 4:
+                            if props['WATLEV'] == 2:
                                 self.features['SLCONS'].append(feature_json)
-                    else: # != 4
-                        if props['WATLEV'] is None or props['WATLEV'] in ['', 2]:
+                            elif props['WATLEV'] in ['', None, 'None']:  # Blank only
+                                if props['CONDTN'] in ['', None, 'None', 1, 3, 4, 5]:  # skip 2
+                                    self.features['SLCONS'].append(feature_json)
+                        else: # != 4
                             self.features['SLCONS'].append(feature_json)
+
