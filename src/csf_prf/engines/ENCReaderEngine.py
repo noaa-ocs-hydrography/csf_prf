@@ -154,7 +154,7 @@ class ENCReaderEngine(Engine):
                             objl = fields.index('OBJL')
                             objl_name = fields.index('OBJL_NAME')
                             objl_lookup = CLASS_CODES.get(int(row[objl]), CLASS_CODES['OTHER'])[0]
-                            row[objl_name] = objl_lookup.replace('$', 'D_')  # Remove illegal characters from layer names
+                            row[objl_name] = objl_lookup.replace('$', 'B_')  # Remove illegal characters from layer names
                             if feature_type == 'Point' and row[objl_name] in aton_values:
                                 aton_found.add(row[1])
                                 aton_count += 1

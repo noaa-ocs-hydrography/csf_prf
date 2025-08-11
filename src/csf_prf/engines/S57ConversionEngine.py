@@ -81,7 +81,7 @@ class S57ConversionEngine(Engine):
             with arcpy.da.UpdateCursor(self.geometries[feature_type]['output'], ['OBJL', 'OBJL_NAME']) as updateCursor:
                 for row in updateCursor:
                     objl_name = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
-                    row[1] = objl_name.replace('$', 'D_')  # Remove illegal characters from layer names
+                    row[1] = objl_name.replace('$', 'B_')  # Remove illegal characters from layer names
                     if feature_type == 'Point' and row[1] in aton_values:
                         aton_found.add(row[1])
                         aton_count += 1

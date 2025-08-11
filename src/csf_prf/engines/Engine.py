@@ -108,7 +108,7 @@ class Engine:
         """
         illegal_keys = [key for key in feature_dict.keys() if '$' in key]
         for key in illegal_keys:
-            feature_dict[key.replace('$', 'D_')] = feature_dict.pop(key)
+            feature_dict[key.replace('$', 'B_')] = feature_dict.pop(key)
         return feature_dict
 
     def create_output_gdb(self, gdb_name='csf_features') -> None:
@@ -189,7 +189,8 @@ class Engine:
             json_fields = feature['geojson']['properties'].keys() if 'geojson' in feature else feature['properties'].keys()
             for field in json_fields:
                 if "$" in field:
-                    field = field.replace('$', 'D_')
+                    print('field:', field)
+                    field = field.replace('$', 'B_')
                 fields.add(field)
         return fields 
 
