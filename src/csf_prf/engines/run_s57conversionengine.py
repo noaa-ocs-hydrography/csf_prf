@@ -13,8 +13,7 @@ OUTPUTS = pathlib.Path(__file__).parents[3] / "outputs"
 
 if __name__ == "__main__":
     param_lookup = {
-        # "enc_file": Param(str(INPUTS / "H13776_FFF.000")),
-        "enc_file": Param(r"C:\Users\Stephen.Patterson\Downloads\F00889_FFF_test-file.000"),
+        "enc_file": Param(str(INPUTS / "H13776_FFF.000")),
         "output_folder": Param(str(OUTPUTS)),        
         "layerfile_export": Param(True),
         "toggle_crs": Param(True)
