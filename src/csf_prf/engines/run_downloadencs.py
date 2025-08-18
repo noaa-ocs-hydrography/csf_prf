@@ -16,12 +16,17 @@ if __name__ == '__main__':
             self.path = path
 
         @property
+        def value(self):
+            return self.path
+
+        @property
         def valueAsText(self):
             return self.path
         
     param_lookup = {
         'sheets': Param(str(INPUTS / 'test_shapefiles' / 'enc_downloader_boundary.shp')),
         'output_folder': Param(str(OUTPUTS)),
+        'overwrite_files': Param(False)
     }
     engine = ENCDownloaderEngine(param_lookup)
     engine.start()

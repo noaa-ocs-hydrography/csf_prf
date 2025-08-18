@@ -18,6 +18,8 @@ class EngineException(Exception):
 
 
 class Engine:
+    max_field_length = 300
+
     def add_column_and_constant(self, layer, column, expression='""', field_alias='', field_type='TEXT', field_length=300, code_block='', nullable=False) -> None:
         """
         Add the asgnment column and optionally set a value
@@ -136,7 +138,7 @@ class Engine:
         for sheet in sheets:
             arcpy.AddMessage(f'Downloading ENC files for SHP: {sheet}')
             # Function name is a built-in combo of class and toolbox alias
-            arcpy.ENCDownloader_csf_prf_tools(sheet, str(output_folder))
+            arcpy.ENCDownloader_csf_prf_tools(sheet, str(output_folder), False)
         self.set_enc_files_param(output_folder)
 
     def export_to_geopackage(self, output_path, param_name, feature_class) -> None:
@@ -172,6 +174,8 @@ class Engine:
         inside = False
 
         # Review Engine.get_scale_bounds() for more information
+        # TODO LNDARE needs square extent
+        # TODO does supersession need CATCOV or full extent?
         supersession_polygon = self.scale_bounds[enc_scale]
         if supersession_polygon and not supersession_polygon.disjoint(feature_geometry):  # not disjoint means intersected
             inside = True
@@ -192,7 +196,13 @@ class Engine:
                     print('field:', field)
                     field = field.replace('$', 'B_')
                 fields.add(field)
-        return fields 
+        return fields
+    
+    def get_approved_enc_files(self) -> list[str]:
+        """Remove any scale level 1 files"""
+
+        input_enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        return [enc for enc in input_enc_files if pathlib.Path(enc).stem[2] != '1']
 
     def get_aton_lookup(self):
         """
@@ -213,6 +223,15 @@ class Engine:
                 return parent_item[child]
             else:
                 return parent_item
+
+    def get_enc_display_scale(self, enc_file) -> str:
+        """Obtain ENC resolution scale for setting buffer value"""
+
+        metadata_layer = enc_file.GetLayerByName('DSID')
+        metadata = metadata_layer.GetFeature(0)
+        metadata_json = json.loads(metadata.ExportToJson())
+        display_scale = metadata_json['properties']['DSPM_CSCL']
+        return display_scale
             
     def get_multiple_values_from_field(self, field_name, current_value, s57_lookup):
         """
@@ -240,11 +259,11 @@ class Engine:
         multiple_value_result = ','.join(new_values)
         return multiple_value_result  
 
-    def get_scale_bounds(self) -> None:
+    def get_scale_bounds(self, engine) -> None:
         """Create lookup for ENC extents by scale"""
 
         scale_polygons = {}
-        enc_files = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        enc_files = self.get_approved_enc_files()
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
             enc_scale = int(pathlib.Path(enc_path).stem[2])  # TODO do we need to look up scale and accept any file name?
@@ -254,24 +273,23 @@ class Engine:
             # resolution = metadata_json['properties']['DSPM_CSCL']
             scale_level = metadata_json['properties']['DSID_INTU']
 
+            extents_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'enc_extents'
+            extents_folder.mkdir(parents=True, exist_ok=True) 
+            output_extent_polygon = extents_folder / f'extent_{pathlib.Path(enc_path).stem}.shp'
+
             # get CATCOV 1 polygon
             m_covr_layer = enc_file.GetLayerByName('M_COVR')
-            catcov = None
-            for feature in m_covr_layer:
-                feature_json = json.loads(feature.ExportToJson())
-                if feature_json['properties']['CATCOV'] == 1:
-                    catcov = feature_json
-                    break
-
-            if catcov is not None:
-                points = [arcpy.Point(*coords) for polygon in catcov['geometry']['coordinates'] for coords in polygon]
-                esri_extent_polygon = arcpy.Polygon(arcpy.Array(points))
+            if engine == 'ENCReaderEngine':
+                for feature in m_covr_layer:
+                    feature_json = json.loads(feature.ExportToJson())
+                    if feature_json['properties']['CATCOV'] == 1:
+                        points = [arcpy.Point(*coords) for polygon in feature_json['geometry']['coordinates'] for coords in polygon]
+                        esri_extent_polygon = arcpy.Polygon(arcpy.Array(points))
+                        break
                 # Save extent polygons for LNDARE clipping
-                extents_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'enc_extents'
-                extents_folder.mkdir(parents=True, exist_ok=True) 
-                output_extent_polygon = extents_folder / f'extent_{pathlib.Path(enc_path).stem}.shp'
                 arcpy.management.CopyFeatures([esri_extent_polygon], str(output_extent_polygon))
-            else: 
+                arcpy.management.DefineProjection(str(output_extent_polygon), 4326)
+            elif engine == 'MHWBufferEngine':
                 xMin, xMax, yMin, yMax = m_covr_layer.GetExtent()
                 extent_array = arcpy.Array()
                 extent_array.add(arcpy.Point(xMin, yMin))
@@ -280,6 +298,19 @@ class Engine:
                 extent_array.add(arcpy.Point(xMax, yMin))
                 extent_array.add(arcpy.Point(xMin, yMin))
                 esri_extent_polygon = arcpy.Polygon(extent_array)
+                
+                # Save extent polygons for LNDARE clipping
+                arcpy.management.CopyFeatures([esri_extent_polygon], str(output_extent_polygon))
+                arcpy.management.DefineProjection(str(output_extent_polygon), 4326)
+                # Esri BUG: Should be able to project any Polygon, but projectAs transformation won't work outside of a cursor
+                display_scale = self.get_enc_display_scale(enc_file)
+                with arcpy.da.UpdateCursor(str(output_extent_polygon), ['SHAPE@']) as extent_cursor:
+                    for row in extent_cursor:
+                        projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')
+                        chart_scale = int(display_scale) * self.scale_conversion
+                        # buffer ENC extents to match buffered LNDARE, COALNE, SLCONS features that will be erased
+                        esri_extent_polygon = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')
+                        break  # should only be 1 polygon
 
             if scale_level not in scale_polygons:
                 scale_polygons[enc_scale] = []
@@ -390,6 +421,9 @@ class Engine:
         arcpy.AddMessage('ENC files found:')
         for enc in output_folder.glob('*.000'):
             enc_file = str(enc)
+            if pathlib.Path(enc_file).stem[2] == '1':
+                # no sc. 1 files downloaded, but might be existing sc. 1 files
+                continue
             arcpy.AddMessage(f' - {enc_file}')
             enc_files.append(enc_file)
         self.param_lookup['enc_files'].value = ';'.join(enc_files)
@@ -402,6 +436,8 @@ class Engine:
         """
 
         for key, value in feature_json['properties'].items():
+            if isinstance(value, str) and len(value) > self.max_field_length:
+                arcpy.AddMessage(f'\nWarning: Max character length is {self.max_field_length}.\n(Length: {len(value)} - {key}: {value})\nFeature will not be written to output!\n')
             # retain all onotes strings
             if key == 'onotes': 
                 if value in [2147483641.0] or value is None:

@@ -14,6 +14,7 @@ class ENCDownloaderEngine(Engine):
     """Class to download all ENC files that intersect a project boundary shapefile"""
 
     def __init__(self, param_lookup: dict) -> None:
+        self.param_lookup = param_lookup
         self.xml_path = "https://charts.noaa.gov/ENCs/ENCProdCat.xml"
         self.sheets_layer = param_lookup['sheets'].valueAsText
         self.output_folder = param_lookup['output_folder'].valueAsText
@@ -35,7 +36,8 @@ class ENCDownloaderEngine(Engine):
                     coord_array = arcpy.Array(points)
                     geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
                     polygons_cursor.insertRow([id, geometry])
-        return polygons_layer
+        enc_polygons = arcpy.management.CopyFeatures(polygons_layer, str(pathlib.Path(self.output_folder) / 'enc_polygons.shp'))
+        return enc_polygons
     
     def clean_geometry(self, polygon):
         """
@@ -58,6 +60,7 @@ class ENCDownloaderEngine(Engine):
         if os.path.exists(str(output_path / 'ENC_ROOT')):
             arcpy.AddMessage(f'Removing ENC_ROOT folder')
             shutil.rmtree(output_path / 'ENC_ROOT')
+        arcpy.management.Delete(str(pathlib.Path(self.output_folder) / 'enc_polygons.shp'))
 
     def download_enc_zipfiles(self, enc_intersected) -> None:
         """
@@ -67,8 +70,11 @@ class ENCDownloaderEngine(Engine):
 
         with arcpy.da.SearchCursor(enc_intersected, ['enc_id']) as cursor:
             for row in cursor:
+                if row[0][2] == '1':
+                    arcpy.AddMessage(f'Skipping scale (1): {row[0]}')
+                    continue
                 downloaded = str(pathlib.Path(self.output_folder) / str(row[0] + '.000'))
-                if not os.path.exists(downloaded):
+                if self.param_lookup['overwrite_files'].value:
                     arcpy.AddMessage(f'Downloading: {row[0]}')
                     enc_zip = requests.get(f'https://charts.noaa.gov/ENCs/{row[0]}.zip')
                     output_file = str(pathlib.Path(self.output_folder) / f'{row[0]}.zip')
@@ -76,7 +82,15 @@ class ENCDownloaderEngine(Engine):
                         for chunk in enc_zip.iter_content(chunk_size=128):
                             file.write(chunk)
                 else:
-                    arcpy.AddMessage(f'File already downloaded: {row[0]}')
+                    if not os.path.exists(downloaded):
+                        arcpy.AddMessage(f'Downloading: {row[0]}')
+                        enc_zip = requests.get(f'https://charts.noaa.gov/ENCs/{row[0]}.zip')
+                        output_file = str(pathlib.Path(self.output_folder) / f'{row[0]}.zip')
+                        with open(output_file, 'wb') as file:
+                            for chunk in enc_zip.iter_content(chunk_size=128):
+                                file.write(chunk)
+                    else:
+                        arcpy.AddMessage(f'File already downloaded: {row[0]}')
 
     def find_intersecting_polygons(self, xml):
         """
@@ -96,8 +110,9 @@ class ENCDownloaderEngine(Engine):
                 panel_polygons = self.get_panel_polygons(panels)
                 polygons.append([enc_id, panel_polygons])
         enc_polygons_layer = self.build_polygons_layer(polygons)
+        # Certain areas like Guam will only select by location on a saved dataset, not in memory.  Weird right?
         enc_intersected = arcpy.management.SelectLayerByLocation(enc_polygons_layer, 'INTERSECT', self.sheets_layer)
-        arcpy.management.CopyFeatures(enc_intersected, str(pathlib.Path(self.output_folder) / 'enc_intersected.shp'))
+        # arcpy.management.CopyFeatures(enc_intersected, str(pathlib.Path(self.output_folder) / 'enc_intersected.shp'))
         arcpy.AddMessage(f'ENC files found: {arcpy.management.GetCount(enc_intersected)}')
         return enc_intersected
     

@@ -4,8 +4,6 @@ import time
 import pathlib
 import json
 
-import arcpy.management
-
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.ENCReaderEngine import ENCReaderEngine
 arcpy.env.overwriteOutput = True
@@ -40,6 +38,18 @@ class CompositeSourceCreatorEngine(Engine):
             'sheets': None,
             'junctions': None
         }
+
+    def cleanup_output(self) -> None:
+        """Delete any zip files after use"""
+
+        arcpy.AddMessage('Deleting any empty CARIS output')
+        output_path = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        caris_export = output_path / 'caris_export'
+        caris_gpkgs = caris_export.glob('*.gpkg')
+        for geopackage in caris_gpkgs:
+            if os.path.getsize(str(geopackage)) <= 102400:
+                arcpy.AddMessage(f' - No features found: {str(geopackage)}')
+                arcpy.management.Delete(str(geopackage))
 
     def convert_enc_files(self) -> None:
         """Process the ENC files input parameter"""
@@ -255,6 +265,7 @@ class CompositeSourceCreatorEngine(Engine):
         self.write_to_geopackage()
         if self.param_lookup['layerfile_export'].value:
             self.write_output_layer_file()
+        self.cleanup_output()
         arcpy.AddMessage('\nDone')
         arcpy.AddMessage(f'Run time: {(time.time() - start) / 60}')
 
