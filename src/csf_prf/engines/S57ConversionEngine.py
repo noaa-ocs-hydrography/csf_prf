@@ -80,7 +80,8 @@ class S57ConversionEngine(Engine):
             self.add_column_and_constant(self.geometries[feature_type]['output'], 'OBJL_NAME', nullable=True)
             with arcpy.da.UpdateCursor(self.geometries[feature_type]['output'], ['OBJL', 'OBJL_NAME']) as updateCursor:
                 for row in updateCursor:
-                    row[1] = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
+                    objl_name = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
+                    row[1] = objl_name.replace('$', 'B_')  # Remove illegal characters from layer names
                     if feature_type == 'Point' and row[1] in aton_values:
                         aton_found.add(row[1])
                         aton_count += 1
@@ -273,6 +274,7 @@ class S57ConversionEngine(Engine):
                     geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
                     if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
                         feature_json = self.set_none_to_null(feature_json) 
+                        feature_json['properties'] = self.convert_illegal_chars(feature_json['properties'])
                         self.geometries[geom_type]['features'].append({'geojson': feature_json})
 
         for geom_type in ['Point', 'LineString', 'Polygon']:

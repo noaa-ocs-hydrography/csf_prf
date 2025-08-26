@@ -15,3 +15,4 @@
 1.3.3 - (7/9/2025) Bug fixes for empty geopackage, use of CATCOV, and checks for ENC extents
 1.3.4 - (7/10/2025) Bug fix for overlapping Band 2 polygons and minor changes
 1.3.5 - (7/24/2025) Bug fix for explicit handling of CATSLC and WATLEV features
+1.4.0 - (8/18/2025) Converted illegal characters to allow new notes
