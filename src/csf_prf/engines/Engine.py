@@ -437,7 +437,9 @@ class Engine:
 
         for key, value in feature_json['properties'].items():
             if isinstance(value, str) and len(value) > self.max_field_length:
-                arcpy.AddMessage(f'\nWarning: Max character length is {self.max_field_length}.\n(Length: {len(value)} - {key}: {value})\nFeature will not be written to output!\n')
+                arcpy.AddMessage(f'\nWarning: Max character length is {self.max_field_length}.\n(Length: {len(value)} - {key}: {value})\nField truncated to {self.max_field_length} characters\n')
+                value = value[:self.max_field_length]
+                feature_json['properties'][key] = value
             # retain all onotes strings
             if key == 'onotes': 
                 if value in [2147483641.0] or value is None:
