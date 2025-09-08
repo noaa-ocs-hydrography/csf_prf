@@ -58,7 +58,7 @@ class Engine:
             arcpy.AddMessage(f" - Adding 'FCSubtype' column: {feature_type}")
             if self.__class__.__name__ == "S57ConversionEngine":
                 self.add_column_and_constant(
-                    self.geometries[feature_type]["output"],
+                    self.geometries[feature_type]["features_layers"],
                     "FCSubtype",
                     expression,
                     field_alias="FCSubtype",

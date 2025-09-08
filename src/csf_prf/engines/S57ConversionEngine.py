@@ -34,17 +34,23 @@ class S57ConversionEngine(Engine):
         self.geometries = {
             "Point": {
                 "features": [],
-                "output": None,
+                "QUAPOS": [],
+                "features_layers": None,
+                "QUAPOS_layers": None,
                 'objl_names': None
             },
             "LineString": {
                 "features": [],
-                "output": None,
+                "QUAPOS": [],
+                "features_layers": None,
+                "QUAPOS_layers": None,
                 'objl_names': None
             },
             "Polygon": {
                 "features": [],
-                "output": None,
+                "QUAPOS": [],
+                "features_layers": None,
+                "QUAPOS_layers": None,
                 'objl_names': None
             }
         }
@@ -77,8 +83,8 @@ class S57ConversionEngine(Engine):
         aton_found = set()
         for feature_type in self.geometries.keys():
             arcpy.AddMessage(f" - Adding 'OBJL_NAME' column: {feature_type}")
-            self.add_column_and_constant(self.geometries[feature_type]['output'], 'OBJL_NAME', nullable=True)
-            with arcpy.da.UpdateCursor(self.geometries[feature_type]['output'], ['OBJL', 'OBJL_NAME']) as updateCursor:
+            self.add_column_and_constant(self.geometries[feature_type]['features_layers'], 'OBJL_NAME', nullable=True)
+            with arcpy.da.UpdateCursor(self.geometries[feature_type]['features_layers'], ['OBJL', 'OBJL_NAME']) as updateCursor:
                 for row in updateCursor:
                     objl_name = CLASS_CODES.get(int(row[0]), CLASS_CODES['OTHER'])[0]
                     row[1] = objl_name.replace('$', 'B_')  # Remove illegal characters from layer names
@@ -92,7 +98,7 @@ class S57ConversionEngine(Engine):
     def build_output_layers(self) -> None:
         """Spatial query all of the ENC features against Sheets boundary"""
 
-        for feature_type in ['features']:
+        for feature_type in ['features', 'QUAPOS']:
 
             # POINTS
             if 'Point' in self.geometries:
@@ -121,7 +127,7 @@ class S57ConversionEngine(Engine):
                         # add to cursor
                         point_cursor.insertRow(attribute_values)
 
-                self.geometries['Point']['output'] = points_layer
+                self.geometries['Point'][f'{feature_type}_layers'] = points_layer
 
             # LINES
             if 'LineString' in self.geometries:
@@ -145,7 +151,7 @@ class S57ConversionEngine(Engine):
                             attribute_values[field_index] = str(attr)
                         line_cursor.insertRow(attribute_values)
 
-                self.geometries['LineString']['output'] = lines_layer        
+                self.geometries['LineString'][f'{feature_type}_layers'] = lines_layer        
 
             # POLYGONS
             if 'Polygon' in self.geometries:
@@ -179,7 +185,7 @@ class S57ConversionEngine(Engine):
                                 attribute_values[field_index] = str(attr)
                             polygons_cursor.insertRow(attribute_values)   
 
-                self.geometries['Polygon']['output'] = polygons_layer    
+                self.geometries['Polygon'][f'{feature_type}_layers'] = polygons_layer    
 
     def convert_noaa_attributes(self) -> None:
         """Obtain string values for all numerical S57 fields"""
@@ -253,12 +259,13 @@ class S57ConversionEngine(Engine):
         arcpy.AddMessage('Exporting ENC layers to geodatabase')
         output_folder = str(self.param_lookup['output_folder'].valueAsText)
         for geom_type in self.geometries.keys():
-            if self.geometries[geom_type]['output']:
-                assigned_name = f'{geom_type}_features'
-                arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
-                output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', assigned_name)
-                arcpy.management.CopyFeatures(self.geometries[geom_type]['output'], output_name)
-                self.output_data[f'{assigned_name}'] = output_name
+            for feature_type in ['features', 'QUAPOS']:
+                if self.geometries[geom_type][f'{feature_type}_layers']:
+                    assigned_name = f'{geom_type}_{feature_type}'
+                    arcpy.AddMessage(f' - Writing output feature class: {assigned_name}')
+                    output_name = os.path.join(output_folder, self.gdb_name + '.geodatabase', assigned_name)
+                    arcpy.management.CopyFeatures(self.geometries[geom_type][f'{feature_type}_layers'], output_name)
+                    self.output_data[f'{assigned_name}'] = output_name
 
     def get_feature_records(self) -> None:
         """Read and store all features from ENC file"""
@@ -283,11 +290,10 @@ class S57ConversionEngine(Engine):
                 del self.geometries[geom_type]
 
     def get_vector_records(self) -> None:
-        # TODO does MCD need the QUAPOS feature?
         """Read and store all vector records with QUAPOS from ENC file"""
 
         arcpy.AddMessage(' - Reading QUAPOS records')
-        enc_path = self.param_lookup['enc_files'].valueAsText
+        enc_path = self.param_lookup['enc_file'].valueAsText
         enc_file = self.open_file(enc_path)
         for layer in enc_file:
             layer.ResetReading()
@@ -295,9 +301,45 @@ class S57ConversionEngine(Engine):
                 if feature:
                     feature_json = json.loads(feature.ExportToJson())
                     if 'QUAPOS' in feature_json['properties'] and feature_json['properties']['QUAPOS'] is not None:
+                        print("quapos:", feature_json['properties']['QUAPOS'])
                         geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
                         if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
-                            self.geometries[geom_type]['QUAPOS'].append({'geojson': feature_json})     
+                            self.geometries[geom_type]['QUAPOS'].append({'geojson': feature_json})
+
+    def join_quapos_to_features(self) -> None:
+        """Spatial join the QUAPOS tables to features tables"""
+
+        arcpy.AddMessage(' - Joining QUAPOS to feature records')
+        overlap_types = {
+            'Point': 'ARE_IDENTICAL_TO',
+            'LineString': 'SHARE_A_LINE_SEGMENT_WITH',
+            'Polygon': 'ARE_IDENTICAL_TO'
+        }
+        for geom_type in self.geometries:
+            feature_records = self.output_data[f'{geom_type}_features']
+            vector_records = self.output_data[f'{geom_type}_QUAPOS']
+            if feature_records is not None and vector_records is not None:
+                quapos_count = int(arcpy.management.GetCount(vector_records)[0])
+                if quapos_count > 0: # Joining an empty vector_records layer caused duplicate fields
+                    output_name = vector_records + '_joined'
+                    arcpy.analysis.SpatialJoin(
+                        feature_records,
+                        vector_records,
+                        output_name,
+                        match_option=overlap_types[geom_type]
+                    )
+                    arcpy.management.Delete(feature_records)
+                    arcpy.management.Rename(output_name, feature_records)
+                    self.geometries[geom_type]["features_layers"] = feature_records
+
+        # Delete left over QUAPOS layers
+        arcpy.env.workspace = os.path.join(self.param_lookup['output_folder'].valueAsText, self.gdb_name + '.geodatabase')
+        quapos_layers = arcpy.ListFeatureClasses('*QUAPOS*')
+        for layer in quapos_layers:
+            arcpy.management.Delete(layer)
+        # Remove QUAPOS from output_data
+        self.output_data = {output_name: data_path for output_name, data_path in self.output_data.items() if 'QUAPOS' not in output_name}
+
 
     def project_rows_to_wgs84(self) -> None: 
         """Redefine the GCS to NAD83 then reproject from NAD83 to WGS84"""   
@@ -351,12 +393,15 @@ class S57ConversionEngine(Engine):
         self.set_driver()
         self.split_multipoint_env() 
         self.get_feature_records()
+        self.return_primitives_env()
+        self.get_vector_records()
         self.build_output_layers()
         self.add_objl_string_to_S57() 
         if self.param_lookup['layerfile_export'].value:
             self.add_subtype_column()
         # self.convert_noaa_attributes()  # Nathan Leveling requested to keep integer attribute values
         self.export_enc_layers()
+        self.join_quapos_to_features()
         self.add_projected_columns()
         if self.param_lookup['toggle_crs'].value:
             self.project_rows_to_wgs84()

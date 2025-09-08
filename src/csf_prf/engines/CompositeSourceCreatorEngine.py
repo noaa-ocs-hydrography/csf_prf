@@ -61,7 +61,6 @@ class CompositeSourceCreatorEngine(Engine):
         enc_engine = ENCReaderEngine(self.param_lookup, self.sheets_layer)
         enc_engine.start()
         self.output_data = {**self.output_data, **enc_engine.output_data}  # merge output from ENCReaderEngine
-        # Could use composition to pass around the base engine instance
 
     def convert_junctions(self) -> None:
         """Process the Junctions input parameter"""
