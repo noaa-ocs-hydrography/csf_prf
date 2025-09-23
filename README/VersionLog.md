@@ -18,3 +18,4 @@
 1.4.0 - (8/18/2025) Converted illegal characters to allow new notes
 1.4.1 - (8/29/2025) Truncated field values to 300 characters
 1.5.0 - (9/8/20205) Added QUAPOS features to S57 geopackage output
+1.5.1 - (9/23/2025) Increased LNDARE point size in layerfile
