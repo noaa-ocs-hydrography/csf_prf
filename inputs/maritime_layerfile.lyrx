@@ -807,7 +807,7 @@
                 },
                 {
                     "type": "CIMRowTemplate",
-                    "name": "LNDARE, punkt\u00c3\u00b8er",
+                    "name": "LNDARE_LandArea",
                     "tags": "Point",
                     "defaultToolGUID": "2a8b3331-5238-4025-972e-452a69535b06",
                     "defaultValues": {
@@ -824,13 +824,15 @@
                             "nis_products",
                             1,
                             "fcsubtype",
-                            5
+                            1009,
+                            "features_points_layer_FCSubtype",
+                            1009
                         ]
                     }
                 },
                 {
                     "type": "CIMRowTemplate",
-                    "name": "LNDELV, spotheight",
+                    "name": "LNDELV_LandElevation",
                     "tags": "Point",
                     "defaultToolGUID": "2a8b3331-5238-4025-972e-452a69535b06",
                     "defaultValues": {
@@ -847,7 +849,9 @@
                             "nis_products",
                             1,
                             "fcsubtype",
-                            5
+                            1014,
+                            "features_points_layer_FCSubtype",
+                            1014
                         ]
                     }
                 },
@@ -4765,7 +4769,7 @@
                                                 "enable": true,
                                                 "anchorPointUnits": "Relative",
                                                 "dominantSizeAxis3D": "Z",
-                                                "size": 1.8425159999999998,
+                                                "size": 4,
                                                 "billboardMode3D": "FaceNearPlane",
                                                 "frame": {
                                                     "xmin": -2,
@@ -9868,7 +9872,7 @@
                 },
                 {
                     "type": "CIMRowTemplate",
-                    "name": "LNDARE, punkt\u00c3\u00b8er",
+                    "name": "LNDARE_LandArea",
                     "tags": "Point",
                     "defaultToolGUID": "2a8b3331-5238-4025-972e-452a69535b06",
                     "defaultValues": {
@@ -9885,13 +9889,15 @@
                             "nis_products",
                             1,
                             "fcsubtype",
-                            5
+                            1009,
+                            "features_points_layer_FCSubtype",
+                            1009
                         ]
                     }
                 },
                 {
                     "type": "CIMRowTemplate",
-                    "name": "LNDELV, spotheight",
+                    "name": "LNDELV_LandElevation",
                     "tags": "Point",
                     "defaultToolGUID": "2a8b3331-5238-4025-972e-452a69535b06",
                     "defaultValues": {
@@ -9908,7 +9914,9 @@
                             "nis_products",
                             1,
                             "fcsubtype",
-                            5
+                            1014,
+                            "features_points_layer_FCSubtype",
+                            1014
                         ]
                     }
                 },
@@ -13826,7 +13834,7 @@
                                                 "enable": true,
                                                 "anchorPointUnits": "Relative",
                                                 "dominantSizeAxis3D": "Z",
-                                                "size": 1.8425159999999998,
+                                                "size": 4,
                                                 "billboardMode3D": "FaceNearPlane",
                                                 "frame": {
                                                     "xmin": -2,

@@ -12987,7 +12987,7 @@
                                                 "enable": true,
                                                 "anchorPointUnits": "Relative",
                                                 "dominantSizeAxis3D": "Z",
-                                                "size": 1.8425159999999998,
+                                                "size": 4,
                                                 "billboardMode3D": "FaceNearPlane",
                                                 "frame": {
                                                     "xmin": -2,
