@@ -143,7 +143,7 @@ Point:
   - TS_PRH
   - TSELNE
   - TSEZNE
-  - TSBND
+  - TSSBND
   - TSSCRS
   - TSSLPT
   - TSSRON
@@ -278,7 +278,7 @@ LineString:
   - TS_PRH
   - TSELNE
   - TSEZNE
-  - TSBND
+  - TSSBND
   - TSSCRS
   - TSSLPT
   - TSSRON
@@ -427,7 +427,7 @@ Polygon:
   - TS_PRH
   - TSELNE
   - TSEZNE
-  - TSBND
+  - TSSBND
   - TSSCRS
   - TSSLPT
   - TSSRON
