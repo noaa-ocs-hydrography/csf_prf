@@ -285,6 +285,8 @@ class S57ConversionEngine(Engine):
                         self.geometries[geom_type]['features'].append({'geojson': feature_json})
 
         for geom_type in ['Point', 'LineString', 'Polygon']:
+            # TODO could enhance this to check after vector records
+            # need to make sure there is a feature record for each vector record
             if len(self.geometries[geom_type]['features']) == 0:
                 arcpy.AddMessage(f"   - No features found for {geom_type}")
                 del self.geometries[geom_type]
