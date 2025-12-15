@@ -3,6 +3,7 @@ import arcpy
 import pathlib
 import yaml
 import shutil
+import gc
 
 from csf_prf.engines.Engine import Engine
 
@@ -34,6 +35,8 @@ class MHWBufferEngine(Engine):
         """Buffer the MHW features by meters for each Chart scale"""
 
         arcpy.AddMessage('Buffering features by Chart Scale')
+
+        # TODO change this to on file output
         self.layers['buffered'] = arcpy.management.CreateFeatureclass(
             'memory', 
             f'buffered_layer', 
@@ -59,6 +62,7 @@ class MHWBufferEngine(Engine):
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
                 arcpy.AddMessage(f' - buffered polygons')
+        arcpy.management.CopyFeatures(self.layers['buffered'], r'C:\Users\Stephen.Patterson\Data\Repos\csf_prf\outputs\scales\enc_extents\buffered.shp')
 
     def build_area_features(self) -> None:
         """Create layers for all linear coastal features"""
@@ -148,45 +152,70 @@ class MHWBufferEngine(Engine):
             raise EncExtentsFolderNotFound(f'Error - Missing {enc_extents_folder} folder')
         extent_shapefiles = enc_extents_folder.rglob('extent_*.shp')
         scale_extent_lookup = {}
-        for scale in range(2, 6):
+        for scale in range(2, 7):
             scale_extent_lookup[str(scale)] = []
         for shp in extent_shapefiles:
             scale = str(shp.stem)[9]
             if scale == '1':  # TODO should be also skip 2?
                 continue
             scale_extent_lookup[scale].append(str(shp))
+        print('lookup:', scale_extent_lookup)
 
         lndare_start = arcpy.management.GetCount(self.layers['buffered'])
+
+
+        # TODO convert in memory to on file
+
         # Check if any upper level scale extent polygons are available
-        if scale_extent_lookup[str(3)] or scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)]:
+        if scale_extent_lookup[str(3)] or scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)] or scale_extent_lookup[str(6)]:
             # Select lowest scale features from buffered
             scale_level_2_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "2")
             # Create an in memory layer of all upper level extent polygons
             # TODO does each extent polygon need to be buffered as well to properly overlap buffered LNDARE, COALNE, SLCONS features?
-            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(3)] + scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
-                                                            'memory/scale_2_extents')
+            merged_upper_extents = 'memory/scale_2_extents'
+            arcpy.management.Merge(scale_extent_lookup[str(3)] + scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)] + scale_extent_lookup[str(6)], 
+                                                            merged_upper_extents)
             # Erase lowest level buffered features covered by all upper level extent polygons merged together
             erased = arcpy.analysis.Erase(scale_level_2_features, merged_upper_extents, 'memory/scale_2_erase')
             # Delete the original Band 2 buffered features
             arcpy.management.DeleteFeatures(scale_level_2_features)
-            # Append Erase results of original Band 2 buffered features with covered parts removed
+            # # Append Erase results of original Band 2 buffered features with covered parts removed
             arcpy.management.Append(erased, self.layers['buffered'])
+            arcpy.management.Delete(merged_upper_extents)
+            arcpy.management.Delete(erased)
+            gc.collect()
 
-        if scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)]:
+        if scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)] or scale_extent_lookup[str(6)]:
             # Repeat same process for each level 2-4
             scale_level_3_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "3")
-            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
+            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)] + scale_extent_lookup[str(6)], 
                                                             'memory/scale_3_extents')
             erased = arcpy.analysis.Erase(scale_level_3_features, merged_upper_extents, 'memory/scale_3_erase')
             arcpy.management.DeleteFeatures(scale_level_3_features)
             arcpy.management.Append(erased, self.layers['buffered'])
+            arcpy.management.Delete(merged_upper_extents)
+            arcpy.management.Delete(erased)
+            gc.collect()
 
-        if scale_extent_lookup[str(5)]:
+        if scale_extent_lookup[str(5)] or scale_extent_lookup[str(6)]:
             scale_level_4_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "4")
-            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(5)], 'memory/scale_4_extents')
+            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(5)] + scale_extent_lookup[str(6)], 'memory/scale_4_extents')
             erased = arcpy.analysis.Erase(scale_level_4_features, merged_upper_extents, 'memory/scale_4_erase')
             arcpy.management.DeleteFeatures(scale_level_4_features)
             arcpy.management.Append(erased, self.layers['buffered'])
+            arcpy.management.Delete(merged_upper_extents)
+            arcpy.management.Delete(erased)
+            gc.collect()
+
+        # if scale_extent_lookup[str(6)]:
+        #     scale_level_5_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "5")
+        #     merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(6)], 'memory/scale_5_extents')
+        #     erased = arcpy.analysis.Erase(scale_level_5_features, merged_upper_extents, 'memory/scale_5_erase')
+        #     arcpy.management.DeleteFeatures(scale_level_5_features)
+        #     arcpy.management.Append(erased, self.layers['buffered'])
+        #     arcpy.management.Delete(merged_upper_extents)
+        #     arcpy.management.Delete(erased)
+        #     gc.collect()
 
         lndare_end = arcpy.management.GetCount(self.layers['buffered'])
         arcpy.AddMessage(f' - Removed {int(lndare_start[0]) - int(lndare_end[0])} features')
