@@ -36,17 +36,19 @@ class MHWBufferEngine(Engine):
 
         arcpy.AddMessage('Buffering features by Chart Scale')
 
-        # TODO change this to on file output
+        # 'buffered' layer is written to file
+        # supersession is too much for in_memory layers
+        output_folder = self.param_lookup['output_folder'].valueAsText
         self.layers['buffered'] = arcpy.management.CreateFeatureclass(
-            'memory', 
-            f'buffered_layer', 
+            output_folder,
+            f'buffered_mhw_polygons.shp', 
             'POLYGON', 
             spatial_reference=arcpy.SpatialReference(4326)  # web mercator
         )
-        arcpy.management.AddField(self.layers['buffered'], 'display_scale', 'LONG')
+        arcpy.management.AddField(self.layers['buffered'], 'disp_scale', 'LONG')
         arcpy.management.AddField(self.layers['buffered'], 'enc_scale', 'SHORT')
 
-        with arcpy.da.InsertCursor(self.layers['buffered'], ['SHAPE@', 'display_scale', 'enc_scale']) as cursor: 
+        with arcpy.da.InsertCursor(self.layers['buffered'], ['SHAPE@', 'disp_scale', 'enc_scale']) as cursor: 
             with arcpy.da.SearchCursor(self.layers['merged'], ['SHAPE@', 'display_scale', 'enc_scale']) as merged_cursor:
                 for row in merged_cursor:
                     projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
@@ -156,15 +158,11 @@ class MHWBufferEngine(Engine):
             scale_extent_lookup[str(scale)] = []
         for shp in extent_shapefiles:
             scale = str(shp.stem)[9]
-            if scale == '1':  # TODO should be also skip 2?
+            if scale == '1':  # TODO should be also skip 2?ddd
                 continue
             scale_extent_lookup[scale].append(str(shp))
-        print('lookup:', scale_extent_lookup)
 
         lndare_start = arcpy.management.GetCount(self.layers['buffered'])
-
-
-        # TODO convert in memory to on file
 
         # Check if any upper level scale extent polygons are available
         if scale_extent_lookup[str(3)] or scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)] or scale_extent_lookup[str(6)]:
@@ -181,9 +179,6 @@ class MHWBufferEngine(Engine):
             arcpy.management.DeleteFeatures(scale_level_2_features)
             # # Append Erase results of original Band 2 buffered features with covered parts removed
             arcpy.management.Append(erased, self.layers['buffered'])
-            arcpy.management.Delete(merged_upper_extents)
-            arcpy.management.Delete(erased)
-            gc.collect()
 
         if scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)] or scale_extent_lookup[str(6)]:
             # Repeat same process for each level 2-4
@@ -193,9 +188,6 @@ class MHWBufferEngine(Engine):
             erased = arcpy.analysis.Erase(scale_level_3_features, merged_upper_extents, 'memory/scale_3_erase')
             arcpy.management.DeleteFeatures(scale_level_3_features)
             arcpy.management.Append(erased, self.layers['buffered'])
-            arcpy.management.Delete(merged_upper_extents)
-            arcpy.management.Delete(erased)
-            gc.collect()
 
         if scale_extent_lookup[str(5)] or scale_extent_lookup[str(6)]:
             scale_level_4_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "4")
@@ -203,19 +195,13 @@ class MHWBufferEngine(Engine):
             erased = arcpy.analysis.Erase(scale_level_4_features, merged_upper_extents, 'memory/scale_4_erase')
             arcpy.management.DeleteFeatures(scale_level_4_features)
             arcpy.management.Append(erased, self.layers['buffered'])
-            arcpy.management.Delete(merged_upper_extents)
-            arcpy.management.Delete(erased)
-            gc.collect()
 
-        # if scale_extent_lookup[str(6)]:
-        #     scale_level_5_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "5")
-        #     merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(6)], 'memory/scale_5_extents')
-        #     erased = arcpy.analysis.Erase(scale_level_5_features, merged_upper_extents, 'memory/scale_5_erase')
-        #     arcpy.management.DeleteFeatures(scale_level_5_features)
-        #     arcpy.management.Append(erased, self.layers['buffered'])
-        #     arcpy.management.Delete(merged_upper_extents)
-        #     arcpy.management.Delete(erased)
-        #     gc.collect()
+        if scale_extent_lookup[str(6)]:
+            scale_level_5_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "5")
+            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(6)], 'memory/scale_5_extents')
+            erased = arcpy.analysis.Erase(scale_level_5_features, merged_upper_extents, 'memory/scale_5_erase')
+            arcpy.management.DeleteFeatures(scale_level_5_features)
+            arcpy.management.Append(erased, self.layers['buffered'])
 
         lndare_end = arcpy.management.GetCount(self.layers['buffered'])
         arcpy.AddMessage(f' - Removed {int(lndare_start[0]) - int(lndare_end[0])} features')
@@ -305,8 +291,8 @@ class MHWBufferEngine(Engine):
         arcpy.management.CopyFeatures(self.layers['LNDARE'], str(pathlib.Path(output_folder) / 'mhw_polygons.shp'))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "mhw_lines.shp")}')
         arcpy.management.CopyFeatures(self.layers['merged'], str(pathlib.Path(output_folder) / 'mhw_lines.shp'))
-        arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "buffered_mhw_polygons.shp")}')
-        arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'buffered_mhw_polygons.shp'))
+        # arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "buffered_mhw_polygons.shp")}')
+        # arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'buffered_mhw_polygons.shp'))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "dissolved_mhw_polygons.shp")}')
         arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / "dissolved_mhw_polygons.shp"))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / pathlib.Path(self.param_lookup["sheets"].valueAsText).stem)}_clip.shp')
