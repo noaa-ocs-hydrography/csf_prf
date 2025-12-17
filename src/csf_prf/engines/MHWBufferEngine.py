@@ -291,7 +291,7 @@ class MHWBufferEngine(Engine):
         arcpy.management.CopyFeatures(self.layers['LNDARE'], str(pathlib.Path(output_folder) / 'mhw_polygons.shp'))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "mhw_lines.shp")}')
         arcpy.management.CopyFeatures(self.layers['merged'], str(pathlib.Path(output_folder) / 'mhw_lines.shp'))
-        # arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "buffered_mhw_polygons.shp")}')
+        arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "buffered_mhw_polygons.shp")}')
         # arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'buffered_mhw_polygons.shp'))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "dissolved_mhw_polygons.shp")}')
         arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / "dissolved_mhw_polygons.shp"))
