@@ -1,6 +1,7 @@
 import os
 import arcpy
 import pathlib
+import sys
 import json
 import yaml
 import time
@@ -187,6 +188,21 @@ class S57ConversionEngine(Engine):
 
                 self.geometries['Polygon'][f'{feature_type}_layers'] = polygons_layer    
 
+    def catch_invalid_records(self) -> None:
+        """Review feature and vector records before joining"""
+
+        for geom_type in ['Point', 'LineString', 'Polygon']:
+            feature_records = self.geometries[geom_type]['features']
+            vector_records = self.geometries[geom_type]['QUAPOS']
+            if len(feature_records) < len(vector_records):
+                arcpy.AddMessage('Error: Too many QUAPOS vector records found!\nReview ".000" file for feature validity.')
+                arcpy.AddMessage(f' - potential invalid features: {json.dumps([record["geojson"] for record in vector_records], indent=4)}')
+                sys.exit()
+            
+            if not feature_records and not vector_records:
+                arcpy.AddMessage(f"   - No features found for {geom_type}")
+                del self.geometries[geom_type]
+
     def convert_noaa_attributes(self) -> None:
         """Obtain string values for all numerical S57 fields"""
 
@@ -283,11 +299,6 @@ class S57ConversionEngine(Engine):
                         feature_json = self.set_none_to_null(feature_json) 
                         feature_json['properties'] = self.convert_illegal_chars(feature_json['properties'])
                         self.geometries[geom_type]['features'].append({'geojson': feature_json})
-
-        for geom_type in ['Point', 'LineString', 'Polygon']:
-            if len(self.geometries[geom_type]['features']) == 0:
-                arcpy.AddMessage(f"   - No features found for {geom_type}")
-                del self.geometries[geom_type]
 
     def get_vector_records(self) -> None:
         """Read and store all vector records with QUAPOS from ENC file"""
@@ -395,6 +406,7 @@ class S57ConversionEngine(Engine):
         self.get_feature_records()
         self.return_primitives_env()
         self.get_vector_records()
+        self.catch_invalid_records()
         self.build_output_layers()
         self.add_objl_string_to_S57() 
         if self.param_lookup['layerfile_export'].value:

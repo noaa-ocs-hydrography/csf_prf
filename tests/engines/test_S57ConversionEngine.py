@@ -42,6 +42,47 @@ def test___init__(victim):
     assert 'Point' in victim.geometries.keys()
 
 
+def test_catch_invalid_records_fail(victim):
+    victim.geometries = {
+        'Point': {
+            'features': [{'geojson': {"properties": {"value": "1"}}}], 
+            'QUAPOS': [{'geojson': {"properties": {"value": "1"}}}]
+        },
+        'LineString': {
+            'features': [{'geojson': {"properties": {"value": "1"}}}], 
+            'QUAPOS': [{'geojson': {"properties": {"value": "1"}}}, {'geojson': {"properties": {"value": "2"}}}]
+        },
+        'Polygon': {
+            'features': [], 
+            'QUAPOS': []
+        },
+    }
+
+    with pytest.raises(SystemExit) as result:
+        victim.catch_invalid_records()
+    assert result.type == SystemExit
+
+
+def test_catch_invalid_records_pass(victim):
+    victim.geometries = {
+        'Point': {
+            'features': [], 
+            'QUAPOS': []
+        },
+        'LineString': {
+            'features': [{'geojson': {"properties": {"value": "1"}}}], 
+            'QUAPOS': [{'geojson': {"properties": {"value": "1"}}}]
+        },
+        'Polygon': {
+            'features': [], 
+            'QUAPOS': []
+        },
+    }
+
+    victim.catch_invalid_records()
+    assert True
+
+
 def test_project_rows_to_wgs84(victim):
     victim.gdb_name = 'unit_tests'
     victim.create_output_gdb(gdb_name=victim.gdb_name)
