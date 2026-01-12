@@ -27,12 +27,23 @@ class CompositeSourceCreator:
     def updateMessages(self, parameters):
         """Modify the messages created by internal validation for each tool
         parameter. This method is called after internal validation."""
+
+        # TODO move this to tools and use it for junctions as well
+        if parameters[0].value:
+            sheets = parameters[0].valueAsText.replace("'", "").split(';')
+            crs_values = [arcpy.Describe(sheet).spatialReference.factoryCode for sheet in sheets]
+            bad_crs = [crs for crs in crs_values if crs != 4326]
+            if bad_crs:
+                parameters[0].setErrorMessage(f'Invalid CRS for input Sheets.\n{str(bad_crs)}\nProject dataset to WGS84, EPSG 4326.')
+            pass
+
         return
 
     def execute(self, parameters, messages):
         """The source code of the tool."""
 
         param_lookup = self.setup_param_lookup(parameters)
+        arcpy.AddMessage(f'testing: {parameters[0].valueAsText}')
         engine = CompositeSourceCreatorEngine(param_lookup)
         engine.start()
         return
