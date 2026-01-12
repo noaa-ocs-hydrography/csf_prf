@@ -28,14 +28,7 @@ class CompositeSourceCreator:
         """Modify the messages created by internal validation for each tool
         parameter. This method is called after internal validation."""
 
-        # TODO move this to tools and use it for junctions as well
-        if parameters[0].value:
-            sheets = parameters[0].valueAsText.replace("'", "").split(';')
-            crs_values = [arcpy.Describe(sheet).spatialReference.factoryCode for sheet in sheets]
-            bad_crs = [crs for crs in crs_values if crs != 4326]
-            if bad_crs:
-                parameters[0].setErrorMessage(f'Invalid CRS for input Sheets.\n{str(bad_crs)}\nProject dataset to WGS84, EPSG 4326.')
-            pass
+        self.check_input_crs(parameters)
 
         return
 
@@ -54,6 +47,18 @@ class CompositeSourceCreator:
         return
 
     # Custom Python code ##############################
+    def check_input_crs(self, parameters) -> None:
+        """Set error message if input dataset not in WGS84"""
+
+        sheets, junctions = 0, 1
+        for input in [sheets, junctions]:
+            if parameters[input].value:
+                sheets = parameters[input].valueAsText.replace("'", "").split(';')
+                crs_values = [arcpy.Describe(sheet).spatialReference.factoryCode for sheet in sheets]
+                bad_crs = [crs for crs in crs_values if crs != 4326]
+                if bad_crs:
+                    parameters[input].setErrorMessage(f'Invalid CRS for input dataset.\n{str(bad_crs)}\nProject dataset to WGS84, EPSG 4326.')
+
     def get_params(self):
         """Set up the tool parameters"""
         
