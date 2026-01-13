@@ -8,7 +8,7 @@ View the main repository README file for guidance on loading the tools into ArcG
 
 ## Input Parameters
 The MHW Buffer Tool only requires three input parameters
-    1. Sheets polygon shapefile
+    1. Sheets polygon shapefile or featureclass in WGS84-4326 CRS
     2. ENC files to convert(Leave blank to download files)
     3. Output Folder
 
