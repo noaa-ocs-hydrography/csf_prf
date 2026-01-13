@@ -36,7 +36,6 @@ class CompositeSourceCreator:
         """The source code of the tool."""
 
         param_lookup = self.setup_param_lookup(parameters)
-        arcpy.AddMessage(f'testing: {parameters[0].valueAsText}')
         engine = CompositeSourceCreatorEngine(param_lookup)
         engine.start()
         return
