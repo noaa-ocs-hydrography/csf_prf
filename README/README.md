@@ -41,7 +41,7 @@ Once Pydro pulls the latest changes, you will need to open ArcGIS Pro and add a 
 ## Use of Tools
 1. Double click on the CSF_PRF_Toolbox.pyt file to open it
 2. Double click one of the tools to open the user interface
-3. Add the required parameters for the tool or any optional parameters <br>**Sheets** and **Output Folder** are the only required parameters.
+3. Add the required parameters for the tool or any optional parameters <br>**Sheets** and **Output Folder** are the only required parameters. <br> ~ Input shapefile/featureclass datasets should be in WGS84, EPSG:4326 coordinate system.
 4. Add the output folder for the tool to export files <br>~You may want to add a new Folder Connection to ArcGIS Pro for your chosen output folder as well.
 5. Click run to start the tool <br>~approx. runtime takes 7-10 minutes
 6. Click **View Details** to see log messages that show the status of the tool

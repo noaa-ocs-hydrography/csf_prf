@@ -27,6 +27,9 @@ class CompositeSourceCreator:
     def updateMessages(self, parameters):
         """Modify the messages created by internal validation for each tool
         parameter. This method is called after internal validation."""
+
+        self.check_input_crs(parameters)
+
         return
 
     def execute(self, parameters, messages):
@@ -43,11 +46,23 @@ class CompositeSourceCreator:
         return
 
     # Custom Python code ##############################
+    def check_input_crs(self, parameters) -> None:
+        """Set error message if input dataset not in WGS84"""
+
+        sheets, junctions = 0, 1
+        for input in [sheets, junctions]:
+            if parameters[input].value:
+                sheets = parameters[input].valueAsText.replace("'", "").split(';')
+                crs_values = [arcpy.Describe(sheet).spatialReference.factoryCode for sheet in sheets]
+                bad_crs = [crs for crs in crs_values if crs != 4326]
+                if bad_crs:
+                    parameters[input].setErrorMessage(f'Invalid CRS for input dataset.\n{str(bad_crs)}\nProject dataset to WGS84, EPSG 4326.')
+
     def get_params(self):
         """Set up the tool parameters"""
         
         sheets_shapefile = arcpy.Parameter(
-            displayName="Sheets in shp format:",
+            displayName="Sheets in shapefile or featureclass format:",
             name="sheets",
             datatype="DEFeatureClass",
             parameterType="Optional",
@@ -55,7 +70,7 @@ class CompositeSourceCreator:
             multiValue=True
         )
         junctions_shapefile = arcpy.Parameter(
-            displayName="Junctions in shp format:",
+            displayName="Junctions in shapefile or featureclass format:",
             name="junctions",
             datatype="DEFeatureClass",
             parameterType="Optional",
