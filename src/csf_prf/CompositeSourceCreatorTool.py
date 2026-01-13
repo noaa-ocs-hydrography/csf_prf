@@ -70,7 +70,7 @@ class CompositeSourceCreator:
             multiValue=True
         )
         junctions_shapefile = arcpy.Parameter(
-            displayName="Junctions in shapefile format:",
+            displayName="Junctions in shapefile or featureclass format:",
             name="junctions",
             datatype="DEFeatureClass",
             parameterType="Optional",
