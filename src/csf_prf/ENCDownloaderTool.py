@@ -59,7 +59,7 @@ class ENCDownloader:
         """Set up the tool parameters"""
         
         sheets_shapefile = arcpy.Parameter(
-            displayName="Sheets boundary in shapefile format:",
+            displayName="Sheets boundary in shapefile  or featureclass format:",
             name="sheets",
             datatype="DEFeatureClass",
             parameterType="Optional",

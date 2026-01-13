@@ -26,6 +26,9 @@ class MHWBuffer:
     def updateMessages(self, parameters):
         """Modify the messages created by internal validation for each tool
         parameter. This method is called after internal validation."""
+
+        self.check_input_crs(parameters)
+
         return
 
     def execute(self, parameters, messages):
@@ -42,11 +45,21 @@ class MHWBuffer:
         return
 
     # Custom Python code ##############################
+    def check_input_crs(self, parameters) -> None:
+        """Set error message if input dataset not in WGS84"""
+
+        if parameters[0].value:
+            sheets = parameters[0].valueAsText.replace("'", "").split(';')
+            crs_values = [arcpy.Describe(sheet).spatialReference.factoryCode for sheet in sheets]
+            bad_crs = [crs for crs in crs_values if crs != 4326]
+            if bad_crs:
+                parameters[0].setErrorMessage(f'Invalid CRS for input dataset.\n{str(bad_crs)}\nProject dataset to WGS84, EPSG 4326.')
+
     def get_params(self):
         """Set up the tool parameters"""
         
         sheets_shapefile = arcpy.Parameter(
-            displayName="Sheets boundary in shapefile format:",
+            displayName="Sheets boundary in shapefile or featureclass format:",
             name="sheets",
             datatype="DEFeatureClass",
             parameterType="Optional",

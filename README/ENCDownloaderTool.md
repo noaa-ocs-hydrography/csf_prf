@@ -8,5 +8,5 @@ View the main repository README file for guidance on loading the tools into ArcG
 
 ## Input Parameters
 The ENC Downloader Tool only requires two input parameters
-    1. Sheets polygon shapefile
+    1. Sheets polygon shapefile or featureclass in WGS84-4326 CRS
     2. Output Folder

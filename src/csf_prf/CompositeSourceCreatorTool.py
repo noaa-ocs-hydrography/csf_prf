@@ -63,7 +63,7 @@ class CompositeSourceCreator:
         """Set up the tool parameters"""
         
         sheets_shapefile = arcpy.Parameter(
-            displayName="Sheets in shp format:",
+            displayName="Sheets in shapefile or featureclass format:",
             name="sheets",
             datatype="DEFeatureClass",
             parameterType="Optional",
@@ -71,7 +71,7 @@ class CompositeSourceCreator:
             multiValue=True
         )
         junctions_shapefile = arcpy.Parameter(
-            displayName="Junctions in shp format:",
+            displayName="Junctions in shapefile format:",
             name="junctions",
             datatype="DEFeatureClass",
             parameterType="Optional",
