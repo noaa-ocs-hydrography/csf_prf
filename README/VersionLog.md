@@ -21,4 +21,5 @@
 1.5.1 - (9/23/2025) Increased LNDARE point size in layerfile
 1.5.2 - (9/24/2025) Fixed TSSBND typo for unapproved features
 1.5.3 - (12/29/2025) Added error and exit for invalid QUAPOS vector features
-1.5.4 - (1/12/206) Added WGS84 CRS check for input sheets and junctions
+1.5.4 - (1/12/2026) Added WGS84 CRS check for input sheets and junctions
+1.6.0 - (1/14/2026) Enabled download and use of scale 6 ENC files
