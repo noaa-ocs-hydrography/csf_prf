@@ -34,16 +34,20 @@ class MHWBufferEngine(Engine):
         """Buffer the MHW features by meters for each Chart scale"""
 
         arcpy.AddMessage('Buffering features by Chart Scale')
+
+        # 'buffered' layer is written to file
+        # supersession is too much for in_memory layers
+        output_folder = self.param_lookup['output_folder'].valueAsText
         self.layers['buffered'] = arcpy.management.CreateFeatureclass(
-            'memory', 
-            f'buffered_layer', 
+            output_folder,
+            f'buffered_mhw_polygons.shp', 
             'POLYGON', 
             spatial_reference=arcpy.SpatialReference(4326)  # web mercator
         )
-        arcpy.management.AddField(self.layers['buffered'], 'display_scale', 'LONG')
+        arcpy.management.AddField(self.layers['buffered'], 'disp_scale', 'LONG')
         arcpy.management.AddField(self.layers['buffered'], 'enc_scale', 'SHORT')
 
-        with arcpy.da.InsertCursor(self.layers['buffered'], ['SHAPE@', 'display_scale', 'enc_scale']) as cursor: 
+        with arcpy.da.InsertCursor(self.layers['buffered'], ['SHAPE@', 'disp_scale', 'enc_scale']) as cursor: 
             with arcpy.da.SearchCursor(self.layers['merged'], ['SHAPE@', 'display_scale', 'enc_scale']) as merged_cursor:
                 for row in merged_cursor:
                     projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
@@ -72,7 +76,7 @@ class MHWBufferEngine(Engine):
 
     def build_layer(self, feature_type: str) -> None:
         """Logic for loading data into in-memory layers"""
-        
+
         all_fields = self.get_all_fields(self.features[feature_type])
         sorted_fields = sorted(all_fields)
         for field in sorted_fields:
@@ -148,7 +152,7 @@ class MHWBufferEngine(Engine):
             raise EncExtentsFolderNotFound(f'Error - Missing {enc_extents_folder} folder')
         extent_shapefiles = enc_extents_folder.rglob('extent_*.shp')
         scale_extent_lookup = {}
-        for scale in range(2, 6):
+        for scale in range(2, 7):
             scale_extent_lookup[str(scale)] = []
         for shp in extent_shapefiles:
             scale = str(shp.stem)[9]
@@ -157,35 +161,49 @@ class MHWBufferEngine(Engine):
             scale_extent_lookup[scale].append(str(shp))
 
         lndare_start = arcpy.management.GetCount(self.layers['buffered'])
+
         # Check if any upper level scale extent polygons are available
-        if scale_extent_lookup[str(3)] or scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)]:
+        if scale_extent_lookup[str(3)] or scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)] or scale_extent_lookup[str(6)]:
             # Select lowest scale features from buffered
             scale_level_2_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "2")
             # Create an in memory layer of all upper level extent polygons
             # TODO does each extent polygon need to be buffered as well to properly overlap buffered LNDARE, COALNE, SLCONS features?
-            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(3)] + scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
-                                                            'memory/scale_2_extents')
+            merged_upper_extents = 'memory/scale_2_extents'
+            arcpy.management.Merge(
+                scale_extent_lookup[str(3)]
+                + scale_extent_lookup[str(4)]
+                + scale_extent_lookup[str(5)]
+                + scale_extent_lookup[str(6)],
+                merged_upper_extents,
+            )
             # Erase lowest level buffered features covered by all upper level extent polygons merged together
             erased = arcpy.analysis.Erase(scale_level_2_features, merged_upper_extents, 'memory/scale_2_erase')
             # Delete the original Band 2 buffered features
             arcpy.management.DeleteFeatures(scale_level_2_features)
-            # Append Erase results of original Band 2 buffered features with covered parts removed
+            # # Append Erase results of original Band 2 buffered features with covered parts removed
             arcpy.management.Append(erased, self.layers['buffered'])
 
-        if scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)]:
+        if scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)] or scale_extent_lookup[str(6)]:
             # Repeat same process for each level 2-4
             scale_level_3_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "3")
-            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)], 
+            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)] + scale_extent_lookup[str(6)], 
                                                             'memory/scale_3_extents')
             erased = arcpy.analysis.Erase(scale_level_3_features, merged_upper_extents, 'memory/scale_3_erase')
             arcpy.management.DeleteFeatures(scale_level_3_features)
             arcpy.management.Append(erased, self.layers['buffered'])
 
-        if scale_extent_lookup[str(5)]:
+        if scale_extent_lookup[str(5)] or scale_extent_lookup[str(6)]:
             scale_level_4_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "4")
-            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(5)], 'memory/scale_4_extents')
+            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(5)] + scale_extent_lookup[str(6)], 'memory/scale_4_extents')
             erased = arcpy.analysis.Erase(scale_level_4_features, merged_upper_extents, 'memory/scale_4_erase')
             arcpy.management.DeleteFeatures(scale_level_4_features)
+            arcpy.management.Append(erased, self.layers['buffered'])
+
+        if scale_extent_lookup[str(6)]:
+            scale_level_5_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "5")
+            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(6)], 'memory/scale_5_extents')
+            erased = arcpy.analysis.Erase(scale_level_5_features, merged_upper_extents, 'memory/scale_5_erase')
+            arcpy.management.DeleteFeatures(scale_level_5_features)
             arcpy.management.Append(erased, self.layers['buffered'])
 
         lndare_end = arcpy.management.GetCount(self.layers['buffered'])
@@ -277,7 +295,7 @@ class MHWBufferEngine(Engine):
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "mhw_lines.shp")}')
         arcpy.management.CopyFeatures(self.layers['merged'], str(pathlib.Path(output_folder) / 'mhw_lines.shp'))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "buffered_mhw_polygons.shp")}')
-        arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'buffered_mhw_polygons.shp'))
+        # arcpy.management.CopyFeatures(self.layers['buffered'], str(pathlib.Path(output_folder) / 'buffered_mhw_polygons.shp'))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / "dissolved_mhw_polygons.shp")}')
         arcpy.management.CopyFeatures(self.layers['dissolved'], str(pathlib.Path(output_folder) / "dissolved_mhw_polygons.shp"))
         arcpy.AddMessage(f'Saving layer: {str(pathlib.Path(output_folder) / pathlib.Path(self.param_lookup["sheets"].valueAsText).stem)}_clip.shp')
@@ -320,7 +338,7 @@ class MHWBufferEngine(Engine):
                     feature_json['properties']['DISPLAY_SCALE'] = display_scale
                     feature_json['properties']['ENC_SCALE'] = enc_scale
                     self.features['COALNE'].append(feature_json)
-    
+
     def store_lndare_features(self, layer: list[dict], enc_scale: str, display_scale: str) -> None:
         """Collect all LNDARE features"""
 
@@ -356,4 +374,3 @@ class MHWBufferEngine(Engine):
                                     self.features['SLCONS'].append(feature_json)
                         else: # != 4
                             self.features['SLCONS'].append(feature_json)
-

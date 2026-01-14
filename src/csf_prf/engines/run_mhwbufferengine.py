@@ -15,7 +15,7 @@ if __name__ == '__main__':
     param_lookup = {
         'sheets': Param(str(INPUTS / 'test_shapefiles' / 'enc_downloader_boundary.shp')),
         'enc_files': Param(''),
-        'output_folder': Param(str(OUTPUTS)),
+        'output_folder': Param(str(OUTPUTS))
     }
     start = time.time()
     engine = MHWBufferEngine(param_lookup)
