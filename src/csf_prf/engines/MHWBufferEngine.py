@@ -77,7 +77,7 @@ class MHWBufferEngine(Engine):
 
     def build_layer(self, feature_type: str) -> None:
         """Logic for loading data into in-memory layers"""
-        
+
         all_fields = self.get_all_fields(self.features[feature_type])
         sorted_fields = sorted(all_fields)
         for field in sorted_fields:
@@ -157,7 +157,7 @@ class MHWBufferEngine(Engine):
             scale_extent_lookup[str(scale)] = []
         for shp in extent_shapefiles:
             scale = str(shp.stem)[9]
-            if scale == '1':  # TODO should be also skip 2?ddd
+            if scale == '1':  # TODO should be also skip 2?
                 continue
             scale_extent_lookup[scale].append(str(shp))
 
@@ -170,8 +170,13 @@ class MHWBufferEngine(Engine):
             # Create an in memory layer of all upper level extent polygons
             # TODO does each extent polygon need to be buffered as well to properly overlap buffered LNDARE, COALNE, SLCONS features?
             merged_upper_extents = 'memory/scale_2_extents'
-            arcpy.management.Merge(scale_extent_lookup[str(3)] + scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)] + scale_extent_lookup[str(6)], 
-                                                            merged_upper_extents)
+            arcpy.management.Merge(
+                scale_extent_lookup[str(3)]
+                + scale_extent_lookup[str(4)]
+                + scale_extent_lookup[str(5)]
+                + scale_extent_lookup[str(6)],
+                merged_upper_extents,
+            )
             # Erase lowest level buffered features covered by all upper level extent polygons merged together
             erased = arcpy.analysis.Erase(scale_level_2_features, merged_upper_extents, 'memory/scale_2_erase')
             # Delete the original Band 2 buffered features
@@ -334,7 +339,7 @@ class MHWBufferEngine(Engine):
                     feature_json['properties']['DISPLAY_SCALE'] = display_scale
                     feature_json['properties']['ENC_SCALE'] = enc_scale
                     self.features['COALNE'].append(feature_json)
-    
+
     def store_lndare_features(self, layer: list[dict], enc_scale: str, display_scale: str) -> None:
         """Collect all LNDARE features"""
 
@@ -370,4 +375,3 @@ class MHWBufferEngine(Engine):
                                     self.features['SLCONS'].append(feature_json)
                         else: # != 4
                             self.features['SLCONS'].append(feature_json)
-
