@@ -3,7 +3,6 @@ import arcpy
 import pathlib
 import yaml
 import shutil
-import gc
 
 from csf_prf.engines.Engine import Engine
 
