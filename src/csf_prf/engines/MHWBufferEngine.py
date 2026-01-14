@@ -64,7 +64,6 @@ class MHWBufferEngine(Engine):
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
                 arcpy.AddMessage(f' - buffered polygons')
-        arcpy.management.CopyFeatures(self.layers['buffered'], r'C:\Users\Stephen.Patterson\Data\Repos\csf_prf\outputs\scales\enc_extents\buffered.shp')
 
     def build_area_features(self) -> None:
         """Create layers for all linear coastal features"""
