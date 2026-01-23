@@ -23,3 +23,4 @@
 1.5.3 - (12/29/2025) Added error and exit for invalid QUAPOS vector features
 1.5.4 - (1/12/2026) Added WGS84 CRS check for input sheets and junctions
 1.6.0 - (1/14/2026) Enabled download and use of scale 6 ENC files
+1.6.1 - (1/23/2026) Switched supersession to PairwiseErase to not use an Advanced license
