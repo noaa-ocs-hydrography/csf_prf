@@ -168,13 +168,14 @@ class MHWBufferEngine(Engine):
             scale_level_2_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "2")
             # Create an in memory layer of all upper level extent polygons
             # TODO does each extent polygon need to be buffered as well to properly overlap buffered LNDARE, COALNE, SLCONS features?
-            merged_upper_extents = 'memory/scale_2_extents'
-            arcpy.management.Merge(
+            output_merged = fr'C:\Users\Stephen.Patterson\Downloads\OPR-P336-FA-26_Sheets - Copy\scale_2_extents.shp'
+            merged_upper_extents = arcpy.management.Merge(
                 scale_extent_lookup[str(3)]
                 + scale_extent_lookup[str(4)]
                 + scale_extent_lookup[str(5)]
                 + scale_extent_lookup[str(6)],
-                merged_upper_extents,
+                # 'memory/scale_2_extents'
+                output_merged
             )
             # Erase lowest level buffered features covered by all upper level extent polygons merged together
             erased = arcpy.analysis.Erase(scale_level_2_features, merged_upper_extents, 'memory/scale_2_erase')
@@ -186,22 +187,25 @@ class MHWBufferEngine(Engine):
         if scale_extent_lookup[str(4)] or scale_extent_lookup[str(5)] or scale_extent_lookup[str(6)]:
             # Repeat same process for each level 2-4
             scale_level_3_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "3")
+            output_merged = fr'C:\Users\Stephen.Patterson\Downloads\OPR-P336-FA-26_Sheets - Copy\scale_3_extents.shp'
             merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(4)] + scale_extent_lookup[str(5)] + scale_extent_lookup[str(6)], 
-                                                            'memory/scale_3_extents')
+                                                            output_merged)
             erased = arcpy.analysis.Erase(scale_level_3_features, merged_upper_extents, 'memory/scale_3_erase')
             arcpy.management.DeleteFeatures(scale_level_3_features)
             arcpy.management.Append(erased, self.layers['buffered'])
 
         if scale_extent_lookup[str(5)] or scale_extent_lookup[str(6)]:
             scale_level_4_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "4")
-            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(5)] + scale_extent_lookup[str(6)], 'memory/scale_4_extents')
+            output_merged = fr'C:\Users\Stephen.Patterson\Downloads\OPR-P336-FA-26_Sheets - Copy\scale_4_extents.shp'
+            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(5)] + scale_extent_lookup[str(6)], output_merged)
             erased = arcpy.analysis.Erase(scale_level_4_features, merged_upper_extents, 'memory/scale_4_erase')
             arcpy.management.DeleteFeatures(scale_level_4_features)
             arcpy.management.Append(erased, self.layers['buffered'])
 
         if scale_extent_lookup[str(6)]:
             scale_level_5_features = arcpy.management.SelectLayerByAttribute(self.layers['buffered'], "NEW_SELECTION", 'enc_scale = ' + "5")
-            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(6)], 'memory/scale_5_extents')
+            output_merged = fr'C:\Users\Stephen.Patterson\Downloads\OPR-P336-FA-26_Sheets - Copy\scale_5_extents.shp'
+            merged_upper_extents = arcpy.management.Merge(scale_extent_lookup[str(6)], output_merged)
             erased = arcpy.analysis.Erase(scale_level_5_features, merged_upper_extents, 'memory/scale_5_erase')
             arcpy.management.DeleteFeatures(scale_level_5_features)
             arcpy.management.Append(erased, self.layers['buffered'])
