@@ -49,20 +49,24 @@ class MHWBufferEngine(Engine):
 
         with arcpy.da.InsertCursor(self.layers['buffered'], ['SHAPE@', 'disp_scale', 'enc_scale']) as cursor: 
             with arcpy.da.SearchCursor(self.layers['merged'], ['SHAPE@', 'display_scale', 'enc_scale']) as merged_cursor:
+                arcpy.AddMessage(f' - buffering lines')
                 for row in merged_cursor:
                     projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
                     chart_scale = int(row[1]) * self.scale_conversion
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
-                arcpy.AddMessage(f' - buffered lines')
 
             with arcpy.da.SearchCursor(self.layers['LNDARE'], ['SHAPE@', 'display_scale', 'enc_scale']) as land_cursor:
+                arcpy.AddMessage(f' - buffering polygons')
                 for row in land_cursor:
                     projected_geom = row[0].projectAs(arcpy.SpatialReference(5070), 'WGS_1984_(ITRF00)_To_NAD_1983')  # Albers Equal Equal 2011 NAD83
+                    # if projected_geom.area < 21:  # skip small polygons
+                    #     arcpy.AddMessage(f' - not buffering small LNDARE: {projected_geom.area}m')
+                    #     cursor.insertRow([*row])
+                    #     continue
                     chart_scale = int(row[1]) * self.scale_conversion
                     buffered = projected_geom.buffer(chart_scale).projectAs(arcpy.SpatialReference(4326), 'WGS_1984_(ITRF00)_To_NAD_1983')  # buffer and back to WGS84
                     cursor.insertRow([buffered, row[1], row[2]])
-                arcpy.AddMessage(f' - buffered polygons')
 
     def build_area_features(self) -> None:
         """Create layers for all linear coastal features"""

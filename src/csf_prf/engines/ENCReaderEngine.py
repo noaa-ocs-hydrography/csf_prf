@@ -865,7 +865,7 @@ class ENCReaderEngine(Engine):
             if properties['CATMOR'] != 1:
                 return True
         elif objl_name == 'SLCONS':
-            if properties['CONDTN'] != 2 or properties['WATLEV'] != 3:
+            if properties['WATLEV'] not in [3, 4] or properties['CONDTN'] != 2:
                 return True
         elif objl_name == 'UWTROC':  
             if geom_type != 'Point':
