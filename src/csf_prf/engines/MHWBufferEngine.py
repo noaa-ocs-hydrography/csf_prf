@@ -42,7 +42,7 @@ class MHWBufferEngine(Engine):
             output_folder,
             f'buffered_mhw_polygons.shp', 
             'POLYGON', 
-            spatial_reference=arcpy.SpatialReference(4326)  # web mercator
+            spatial_reference=arcpy.SpatialReference(4326)  # WGS84
         )
         arcpy.management.AddField(self.layers['buffered'], 'disp_scale', 'LONG')
         arcpy.management.AddField(self.layers['buffered'], 'enc_scale', 'SHORT')
@@ -126,7 +126,7 @@ class MHWBufferEngine(Engine):
                 sheet_cursor.updateRow([sheet_geom])
 
     def delete_enc_extents(self) -> None:
-        """Remove the 'enc_extents' folder and shapefiles are tool runs"""
+        """Remove the 'enc_extents' folder and shapefiles after tool runs"""
 
         enc_extents_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText) / 'enc_extents'
         if enc_extents_folder.exists():

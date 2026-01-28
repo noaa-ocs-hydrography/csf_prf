@@ -705,6 +705,7 @@ class ENCReaderEngine(Engine):
 
     def set_assigned_invreq(self, feature_type, objl_lookup, invreq_options) -> None:
         """
+        THIS IS NOT USED ANYMORE
         Isolate logic for setting assigned layer 'invreq' column
         :param str feature_type: Point, LineString, or Polygon
         :param dict[str[str|int]] objl_lookup: YAML values from invreq_look.yaml
