@@ -865,6 +865,7 @@ class ENCReaderEngine(Engine):
             if properties['CATMOR'] != 1:
                 return True
         elif objl_name == 'SLCONS':
+            # Priotize WATLEV first
             if properties['WATLEV'] not in [3, 4] or properties['CONDTN'] != 2:
                 return True
         elif objl_name == 'UWTROC':  
