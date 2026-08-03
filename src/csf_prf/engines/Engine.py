@@ -4,6 +4,7 @@ import pathlib
 import os
 import zipfile
 import arcpy
+import copy
 
 from osgeo import ogr
 
@@ -162,24 +163,58 @@ class Engine:
 
     def feature_covered_by_upper_scale(self, feature_json, enc_scale):
         """
-        Determine if a current Point, LineString, or Polygon intersects an upper scale level ENC extent
-        :param dict[str] feature_json: Loaded JSON of current feature
-        :param int enc_scale: Current ENC file scale level
-        :returns boolean: True or False
+        Determine if a current feature intersects an upper scale level ENC extent.
+        Returns a list of remaining feature JSON dicts (0 if covered, 1 if intact/clipped, 
+        or >1 if exploded from a Multi-geometry).
         """
 
-        if feature_json['geometry'] is None:
-            return False
-        feature_geometry = arcpy.AsShape(json.dumps(feature_json['geometry']))
-        inside = False
+        if feature_json.get('geometry') is None:
+            return [feature_json]
 
-        # Review Engine.get_scale_bounds() for more information
-        # TODO LNDARE needs square extent
-        # TODO does supersession need CATCOV or full extent?
-        supersession_polygon = self.scale_bounds[enc_scale]
-        if supersession_polygon and not supersession_polygon.disjoint(feature_geometry):  # not disjoint means intersected
-            inside = True
-        return inside
+        lower_scale_feature = arcpy.AsShape(json.dumps(feature_json['geometry']))
+        upper_scale_extent = self.scale_bounds.get(enc_scale)
+
+        if not upper_scale_extent:
+            return [feature_json]
+
+        if not lower_scale_feature.disjoint(upper_scale_extent):
+            clipped_lower_feature = lower_scale_feature.difference(upper_scale_extent)
+
+            # Check for meaningful spatial extent remaining
+            if clipped_lower_feature and self.is_valid_geometry(clipped_lower_feature):
+                geo_dict = clipped_lower_feature.__geo_interface__
+
+                # If difference turned the shape into a Multi-part geometry, explode it
+                if geo_dict['type'] in ['MultiPolygon', 'MultiLineString']:
+                    exploded_features = []
+                    geom_type = clipped_lower_feature.type  # e.g., 'polygon' or 'polyline'
+
+                    # Iterating over clipped_lower_feature yields arcpy.Array parts
+                    for part in clipped_lower_feature:
+                        # Re-construct an ArcPy Geometry object from the Array part
+                        if geom_type == 'polygon':
+                            part_geom = arcpy.Polygon(part, clipped_lower_feature.spatialReference)
+                        elif geom_type in ['polyline', 'line']:
+                            part_geom = arcpy.Polyline(part, clipped_lower_feature.spatialReference)
+                        else:
+                            continue
+
+                        if self.is_valid_geometry(part_geom):
+                            new_feat = copy.deepcopy(feature_json)
+                            new_feat['geometry'] = part_geom.__geo_interface__
+                            exploded_features.append(new_feat)
+                            
+                    return exploded_features
+
+                else:
+                    # Single part remaining (Polygon, LineString, Point)
+                    feature_json['geometry'] = geo_dict
+                    return [feature_json]
+            else:
+                # Completely covered (or reduced to 0 area/length)
+                return []
+
+        return [feature_json]
         
     def get_all_fields(self, features) -> None:
         """
@@ -376,6 +411,15 @@ class Engine:
 
         with arcpy.da.SearchCursor(feature_class, [[attribute]]) as cursor:
             return sorted({row[0] for row in cursor})
+
+    def is_valid_geometry(self, geom):
+        """Check that geometry retains real spatial dimensions after clipping."""
+
+        if geom.type in ['polygon', 'multipolygon']:
+            return geom.area > 0
+        elif geom.type in ['polyline', 'multiline', 'line']:
+            return geom.length > 0
+        return geom.pointCount > 0
 
     def load_toolbox(self) -> None:
         """Shared method to load the main toolbox"""
