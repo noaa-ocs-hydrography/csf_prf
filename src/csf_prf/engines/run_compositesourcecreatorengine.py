@@ -17,10 +17,9 @@ if __name__ == '__main__':
         'sheets': Param(r"C:\Users\Stephen.Patterson\Downloads\OPR-P358-FA-26_Sheets_07092026 (1)\OPR-P358-FA-26_Sheets_07092026.shp"),
         'junctions': Param(''),
         # 'enc_files': Param(str(str(INPUTS / 'US4GA17M.000') + ';' + str(INPUTS / 'US5SC21M.000'))),
-        'enc_files': Param(str(OUTPUTS / 'US4AK4TM.000')),
-        # 'enc_files': Param(''),
-        # 'output_folder': Param(str(OUTPUTS)),
-        'output_folder': Param(r'C:\Users\Stephen.Patterson\Data\junk'),
+        # 'enc_files': Param(str(OUTPUTS / 'US4AK4TM.000')),
+        'enc_files': Param(''),
+        'output_folder': Param(str(OUTPUTS)),
         'download_geographic_cells': Param(False),
         'caris_export': Param(False),
         'layerfile_export': Param(False)

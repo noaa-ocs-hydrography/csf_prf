@@ -338,28 +338,39 @@ class ENCReaderEngine(Engine):
         arcpy.AddMessage(' - Reading Feature records')
         enc_files = self.get_approved_enc_files()
         intersected = 0
+
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
             enc_scale = pathlib.Path(enc_path).stem[2]
+
             for layer in enc_file:
                 layer.ResetReading()
-                # features_missing_coords = 0
+
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
-                        if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
+
+                        # Returns [] if covered, or a list of 1+ exploded features
+                        processed_features = self.feature_covered_by_upper_scale(feature_json, int(enc_scale))
+
+                        if not processed_features:
                             intersected += 1
                             continue
-                        
-                        feature_json['properties']['SCALE_LVL'] = enc_scale
-                        geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
-                        if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
-                            if self.unapproved(geom_type, feature_json['properties']):
-                                continue
 
-                            feature_json = self.set_none_to_null(feature_json)
-                            feature_json['properties'] = self.convert_illegal_chars(feature_json['properties'])
-                            self.geometries[geom_type]['features'].append({'geojson': feature_json, 'scale': enc_scale})
+                        for feat in processed_features:
+                            feat['properties']['SCALE_LVL'] = enc_scale
+                            geom_type = feat['geometry']['type'] if feat.get('geometry') else False
+
+                            if geom_type in ['Point', 'LineString', 'Polygon'] and feat['geometry']['coordinates']:
+                                if self.unapproved(geom_type, feat['properties']):
+                                    continue
+
+                                feat = self.set_none_to_null(feat)
+                                feat['properties'] = self.convert_illegal_chars(feat['properties'])
+                                self.geometries[geom_type]['features'].append({
+                                    'geojson': feat, 
+                                    'scale': enc_scale
+                                })
                         # elif geom_type == 'MultiPoint':
                         #     # MultiPoints are broken up now to single features with an ENV variable
                         #     feature_template = json.loads(feature.ExportToJson())
@@ -439,35 +450,44 @@ class ENCReaderEngine(Engine):
         arcpy.AddMessage(' - Reading QUAPOS records')
         enc_files = self.get_approved_enc_files()
         intersected = 0
+
         for enc_path in enc_files:
             enc_file = self.open_file(enc_path)
             enc_scale = pathlib.Path(enc_path).stem[2]
+
             for layer in enc_file:
                 layer.ResetReading()
-                # features_missing_coords = 0
+
                 for feature in layer:
                     if feature:
                         feature_json = json.loads(feature.ExportToJson())
-                        if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
+
+                        # Returns a list of 0, 1, or multiple exploded features
+                        processed_features = self.feature_covered_by_upper_scale(feature_json, int(enc_scale))
+                        if not processed_features:
                             intersected += 1
                             continue
 
-                        feature_json['properties']['SCALE_LVL'] = enc_scale
-                        if 'QUAPOS' in feature_json['properties'] and feature_json['properties']['QUAPOS'] is not None:
-                            geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False  
-                            if geom_type in ['Point', 'LineString', 'Polygon'] and feature_json['geometry']['coordinates']:
-                                self.geometries[geom_type]['QUAPOS'].append({'geojson': feature_json, 'scale': enc_scale})
-                            # elif geom_type == 'MultiPoint':  # TODO do we need MultiPoint 'QUAPOS' features?
-                            #     feature_template = json.loads(feature.ExportToJson())
-                            #     feature_template['geometry']['type'] = 'Point'
-                            #     for point in feature.geometry():
-                            #         feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
-                            #         self.geometries['Point']['QUAPOS'].append({'geojson': feature_template})
-                #             else:
-                #                 if geom_type:
-                #                     features_missing_coords += 1
-                # if features_missing_coords > 0:
-                    # arcpy.AddMessage(f"Found ({features_missing_coords}) QUAPOS features but missing coordinates")
+                        # Process all resulting pieces (1 or many)
+                        for feat in processed_features:
+                            feat['properties']['SCALE_LVL'] = enc_scale
+
+                            if feat['properties'].get('QUAPOS') is not None:
+                                geom_type = feat['geometry']['type'] if feat.get('geometry') else False  
+
+                                if geom_type in ['Point', 'LineString', 'Polygon'] and feat['geometry']['coordinates']:
+                                    self.geometries[geom_type]['QUAPOS'].append({'geojson': feat, 'scale': enc_scale})
+                                # elif geom_type == 'MultiPoint':  # TODO do we need MultiPoint 'QUAPOS' features?
+                                #     feature_template = json.loads(feature.ExportToJson())
+                                #     feature_template['geometry']['type'] = 'Point'
+                                #     for point in feature.geometry():
+                                #         feature_template['geometry']['coordinates'] = [point.GetX(), point.GetY()]  # XY
+                                #         self.geometries['Point']['QUAPOS'].append({'geojson': feature_template})
+                    #             else:
+                    #                 if geom_type:
+                    #                     features_missing_coords += 1
+                    # if features_missing_coords > 0:
+                        # arcpy.AddMessage(f"Found ({features_missing_coords}) QUAPOS features but missing coordinates")
         arcpy.AddMessage(f'  - Removed {intersected} supersession QUAPOS features')
 
     def join_quapos_to_features(self) -> None:
@@ -586,6 +606,7 @@ class ENCReaderEngine(Engine):
             cursor_fields = ['SHAPE@'] + sorted_polygon_fields
             with arcpy.da.InsertCursor(polygons_layer, cursor_fields, explicit=True) as polygons_cursor: 
                 large_lndare = 0
+                large_features = []
                 for feature in self.geometries['Polygon'][feature_type]:
                     attribute_values = ['' for i in range(len(cursor_fields))]
                     polygons = feature['geojson']['geometry']['coordinates']
@@ -599,19 +620,23 @@ class ENCReaderEngine(Engine):
                             points.append(arcpy.Point(*polygon[0]))  # close the polygon
                             point_arrays.add(arcpy.Array(points))
                         attribute_values[0] = arcpy.Polygon(point_arrays, arcpy.SpatialReference(4326))
+
+                        for fieldname, attr in list(feature['geojson']['properties'].items()):
+                            field_index = polygons_cursor.fields.index(fieldname)
+                            attribute_values[field_index] = str(attr)
                         
                         # skip LNDARE > 3775
                         objl_string = CLASS_CODES.get(int(feature['geojson']['properties']['OBJL']))[0]
                         if objl_string == 'LNDARE':
                             polygon_area = attribute_values[0].projectAs(arcpy.SpatialReference(102008)).area
                             if polygon_area > 3775:
-                                # arcpy.AddMessage(f'- Skipping LNDARE: {polygon_area}')
+                                # enc_scale = feature['geojson']['properties']['SCALE_LVL']
+                                # arcpy.AddMessage(f'- Skipping Scale {enc_scale} LNDARE with area: {polygon_area}')
+                                large_features.append(attribute_values)
                                 large_lndare += 1
                                 continue
 
-                        for fieldname, attr in list(feature['geojson']['properties'].items()):
-                            field_index = polygons_cursor.fields.index(fieldname)
-                            attribute_values[field_index] = str(attr)
+                        # Insert row if not a large feature
                         polygons_cursor.insertRow(attribute_values)
 
                         # TODO this loads all polygons in a multipolygon
@@ -632,6 +657,8 @@ class ENCReaderEngine(Engine):
                         #     geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
                         #     attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
                         #     polygons_cursor.insertRow([geometry] + attribute_values)
+            if large_features:
+                self.write_out_large_lndare_features(large_features, sorted_polygon_fields)
             arcpy.AddMessage( f' - Removed {large_lndare} LNDARE features with area > 3775m')
             polygons_unassigned_rename = arcpy.management.CopyFeatures(polygons_layer, fr'memory\{feature_type}_polygons_unassigned')
 
@@ -666,30 +693,44 @@ class ENCReaderEngine(Engine):
         """Remove unassigned features that are outside of 1km from Sheets boundary"""
         
         output_folder = self.param_lookup['output_folder'].valueAsText
-        unassigned_buffer = arcpy.analysis.Buffer(self.sheets_layer, os.path.join(output_folder, self.gdb_name + '.geodatabase', 'sheets_buffer'), '1 kilometers')
+        unassigned_buffer = arcpy.analysis.Buffer(
+            self.sheets_layer, 
+            os.path.join(output_folder, self.gdb_name + '.geodatabase', 'sheets_buffer'), 
+            '1 kilometers'
+        )
 
-        # Create list from buffer cursor iterator to use it over and over
-        # Iterator by default would only work once
-        buffer_cursor = [row for row in arcpy.da.UpdateCursor(unassigned_buffer, ["SHAPE@"])]
+        # Filter out any buffer rows with None geometries
+        buffer_cursor = [row for row in arcpy.da.SearchCursor(unassigned_buffer, ["SHAPE@"]) if row[0] is not None]
 
         for geom_type in self.geometries:
             unassigned_deleted = 0
             arcpy.AddMessage(f'Removing {geom_type} unassigned outside of 1km')
             feature_records = self.geometries[geom_type]['features_layers']['unassigned']
             feature_count = arcpy.management.GetCount(feature_records)
-            # arcpy.management.CopyFeatures(feature_records, os.path.join(output_folder, f'{geom_type}_unassigned_copy.shp')) # Output full unassigned dataset
+
             with arcpy.da.UpdateCursor(feature_records, ["SHAPE@"]) as feature_cursor:
                 for row in feature_cursor:
+                    # If feature has null geometry, delete it or mark as not inside
+                    if row[0] is None:
+                        unassigned_deleted += 1
+                        feature_cursor.deleteRow()
+                        continue
+
                     inside = False
                     for buffer_row in buffer_cursor:
-                        disjointed = row[0].disjoint(buffer_row[0])
-                        if not disjointed:
-                            inside = True
-                            break
+                        # Double check buffer shape validity
+                        if buffer_row[0] is not None:
+                            disjointed = row[0].disjoint(buffer_row[0])
+                            if not disjointed:
+                                inside = True
+                                break
+
                     if not inside:
                         unassigned_deleted += 1
                         feature_cursor.deleteRow()
+
             arcpy.AddMessage(f' - Deleted {unassigned_deleted} of {feature_count} unassigned {geom_type} features')
+
         del buffer_cursor
 
     def run_query(self, cursor, sql):
@@ -877,3 +918,26 @@ class ENCReaderEngine(Engine):
             if geom_type == 'LineString':
                 return True
         return False
+
+    def write_out_large_lndare_features(self, large_features: list, sorted_polygon_fields: list[str]) -> None:
+        """Test method to write out large features for review"""
+
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        debug_shp = str(output_folder / 'skipped_large_lndare.shp')
+        
+        debug_fc = arcpy.management.CreateFeatureclass(
+            'memory', 
+            'debug_large_lndare', 
+            'POLYGON', 
+            spatial_reference=arcpy.SpatialReference(4326)
+        )
+        
+        for field in sorted_polygon_fields:
+            arcpy.management.AddField(debug_fc, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
+            
+        with arcpy.da.InsertCursor(debug_fc, ['SHAPE@'] + sorted_polygon_fields, explicit=True) as debug_cursor:
+            for row in large_features:
+                debug_cursor.insertRow(row)
+                
+        arcpy.management.CopyFeatures(debug_fc, debug_shp)
+        arcpy.management.Delete(debug_fc)
