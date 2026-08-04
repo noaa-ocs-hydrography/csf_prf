@@ -541,7 +541,7 @@ class ENCReaderEngine(Engine):
             for field in sorted_point_fields:
                 arcpy.management.AddField(points_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
-            arcpy.AddMessage(' - Building Point features')     
+            arcpy.AddMessage('  - Building Point features')     
             # 1. add geometry to fields
             cursor_fields = ['SHAPE@XY'] + sorted_point_fields
             with arcpy.da.InsertCursor(points_layer, cursor_fields, explicit=True) as point_cursor: 
@@ -575,7 +575,7 @@ class ENCReaderEngine(Engine):
             for field in sorted_line_fields:
                 arcpy.management.AddField(lines_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
-            arcpy.AddMessage(' - Building Line features')
+            arcpy.AddMessage('  - Building Line features')
             cursor_fields = ['SHAPE@JSON'] + sorted_line_fields
             with arcpy.da.InsertCursor(lines_layer, cursor_fields, explicit=True) as line_cursor: 
                 for feature in self.geometries['LineString'][feature_type]:
@@ -602,11 +602,11 @@ class ENCReaderEngine(Engine):
             for field in sorted_polygon_fields:
                 arcpy.management.AddField(polygons_layer, field, 'TEXT', field_length=300, field_is_nullable='NULLABLE')
 
-            arcpy.AddMessage(' - Building Polygon features')
+            arcpy.AddMessage('  - Building Polygon features')
             cursor_fields = ['SHAPE@'] + sorted_polygon_fields
             with arcpy.da.InsertCursor(polygons_layer, cursor_fields, explicit=True) as polygons_cursor: 
                 large_lndare = 0
-                large_features = []
+                # large_features = []
                 for feature in self.geometries['Polygon'][feature_type]:
                     attribute_values = ['' for i in range(len(cursor_fields))]
                     polygons = feature['geojson']['geometry']['coordinates']
@@ -632,7 +632,7 @@ class ENCReaderEngine(Engine):
                             if polygon_area > 3775:
                                 # enc_scale = feature['geojson']['properties']['SCALE_LVL']
                                 # arcpy.AddMessage(f'- Skipping Scale {enc_scale} LNDARE with area: {polygon_area}')
-                                large_features.append(attribute_values)
+                                # large_features.append(attribute_values)
                                 large_lndare += 1
                                 continue
 
@@ -657,9 +657,9 @@ class ENCReaderEngine(Engine):
                         #     geometry = arcpy.Polygon(coord_array, arcpy.SpatialReference(4326))
                         #     attribute_values = [str(attr) for attr in list(feature['geojson']['properties'].values())]
                         #     polygons_cursor.insertRow([geometry] + attribute_values)
-            if large_features:
-                self.write_out_large_lndare_features(large_features, sorted_polygon_fields)
-            arcpy.AddMessage( f' - Removed {large_lndare} LNDARE features with area > 3775m')
+            # if large_features:
+            #     self.write_out_large_lndare_features(large_features, sorted_polygon_fields)
+            arcpy.AddMessage( f'  - Removed {large_lndare} LNDARE {feature_type} records with area > 3775m')
             polygons_unassigned_rename = arcpy.management.CopyFeatures(polygons_layer, fr'memory\{feature_type}_polygons_unassigned')
 
             polygons_assigned = arcpy.management.SelectLayerByLocation(polygons_layer, 'INTERSECT', self.sheets_layer)

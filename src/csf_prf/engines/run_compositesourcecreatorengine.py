@@ -13,8 +13,7 @@ OUTPUTS = pathlib.Path(__file__).parents[3] / 'outputs'
 
 if __name__ == '__main__':
     param_lookup = {
-        # 'sheets': Param(str(INPUTS / 'test_shapefiles' / 'G322_Sheets_01302024.shp')),
-        'sheets': Param(r"C:\Users\Stephen.Patterson\Downloads\OPR-P358-FA-26_Sheets_07092026 (1)\OPR-P358-FA-26_Sheets_07092026.shp"),
+        'sheets': Param(str(INPUTS / 'test_shapefiles' / 'G322_Sheets_01302024.shp')),
         'junctions': Param(''),
         # 'enc_files': Param(str(str(INPUTS / 'US4GA17M.000') + ';' + str(INPUTS / 'US5SC21M.000'))),
         # 'enc_files': Param(str(OUTPUTS / 'US4AK4TM.000')),
