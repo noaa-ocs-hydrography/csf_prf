@@ -171,50 +171,44 @@ class Engine:
         if feature_json.get('geometry') is None:
             return [feature_json]
 
-        lower_scale_feature = arcpy.AsShape(json.dumps(feature_json['geometry']))
         upper_scale_extent = self.scale_bounds.get(enc_scale)
-
         if not upper_scale_extent:
             return [feature_json]
 
-        if not lower_scale_feature.disjoint(upper_scale_extent):
-            clipped_lower_feature = lower_scale_feature.difference(upper_scale_extent)
+        lower_scale_feature = arcpy.AsShape(json.dumps(feature_json['geometry']))
 
-            # Check for meaningful spatial extent remaining
-            if clipped_lower_feature and self.is_valid_geometry(clipped_lower_feature):
-                geo_dict = clipped_lower_feature.__geo_interface__
+        # If entirely disjoint (no contact), return intact
+        if lower_scale_feature.disjoint(upper_scale_extent):
+            return [feature_json]
 
-                # If difference turned the shape into a Multi-part geometry, explode it
-                if geo_dict['type'] in ['MultiPolygon', 'MultiLineString']:
-                    exploded_features = []
-                    geom_type = clipped_lower_feature.type  # e.g., 'polygon' or 'polyline'
+        # Perform set difference (removes parts covered by upper scale)
+        clipped_lower_feature = lower_scale_feature.difference(upper_scale_extent)
 
-                    # Iterating over clipped_lower_feature yields arcpy.Array parts
-                    for part in clipped_lower_feature:
-                        # Re-construct an ArcPy Geometry object from the Array part
-                        if geom_type == 'polygon':
-                            part_geom = arcpy.Polygon(part, clipped_lower_feature.spatialReference)
-                        elif geom_type in ['polyline', 'line']:
-                            part_geom = arcpy.Polyline(part, clipped_lower_feature.spatialReference)
-                        else:
-                            continue
+        # Check if any geometry remains after clipping
+        if clipped_lower_feature and self.is_valid_geometry(clipped_lower_feature):
+            geo_dict = clipped_lower_feature.__geo_interface__
 
-                        if self.is_valid_geometry(part_geom):
-                            new_feat = copy.deepcopy(feature_json)
-                            new_feat['geometry'] = part_geom.__geo_interface__
-                            exploded_features.append(new_feat)
-                            
-                    return exploded_features
+            # Explode multi-part geometries (MultiPolygon, MultiLineString, MultiPoint)
+            if geo_dict['type'].startswith('Multi'):
+                exploded_features = []
+                geom_type = clipped_lower_feature.type.lower()
 
-                else:
-                    # Single part remaining (Polygon, LineString, Point)
-                    feature_json['geometry'] = geo_dict
-                    return [feature_json]
-            else:
-                # Completely covered (or reduced to 0 area/length)
-                return []
+                for part in clipped_lower_feature:
+                    if geom_type == 'polygon':
+                        part_geom = arcpy.Polygon(part, clipped_lower_feature.spatialReference)
+                    elif geom_type in ['polyline', 'line']:
+                        part_geom = arcpy.Polyline(part, clipped_lower_feature.spatialReference)
+                    elif geom_type == 'point':
+                        part_geom = arcpy.PointGeometry(part, clipped_lower_feature.spatialReference)
+                    else:
+                        continue
 
-        return [feature_json]
+                    if self.is_valid_geometry(part_geom):
+                        new_feat = copy.deepcopy(feature_json)
+                        new_feat['geometry'] = part_geom.__geo_interface__
+                        exploded_features.append(new_feat)
+                        
+                return exploded_features
         
     def get_all_fields(self, features) -> None:
         """

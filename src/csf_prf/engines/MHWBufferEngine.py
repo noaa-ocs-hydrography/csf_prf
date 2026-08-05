@@ -333,14 +333,21 @@ class MHWBufferEngine(Engine):
         for feature in layer:
             if feature:
                 feature_json = json.loads(feature.ExportToJson())
-                if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
+                
+                processed_features = self.feature_covered_by_upper_scale(feature_json, int(enc_scale))
+
+                if not processed_features:
                     self.intersected += 1
                     continue
-                geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
-                if geom_type == 'LineString':
-                    feature_json['properties']['DISPLAY_SCALE'] = display_scale
-                    feature_json['properties']['ENC_SCALE'] = enc_scale
-                    self.features['COALNE'].append(feature_json)
+
+                for feat in processed_features:
+                    geom_type = feat['geometry']['type'] if feat.get('geometry') else False
+                    
+                    # Check for single LineString or exploded MultiLineString segments
+                    if geom_type in ['LineString', 'MultiLineString']:
+                        feat['properties']['DISPLAY_SCALE'] = display_scale
+                        feat['properties']['ENC_SCALE'] = enc_scale
+                        self.features['COALNE'].append(feat)
 
     def store_lndare_features(self, layer: list[dict], enc_scale: str, display_scale: str) -> None:
         """Collect all LNDARE features"""
@@ -360,20 +367,28 @@ class MHWBufferEngine(Engine):
         for feature in layer:
             if feature:
                 feature_json = json.loads(feature.ExportToJson())
-                if self.feature_covered_by_upper_scale(feature_json, int(enc_scale)):
+                
+                processed_features = self.feature_covered_by_upper_scale(feature_json, int(enc_scale))
+
+                if not processed_features:
                     self.intersected += 1
                     continue
-                geom_type = feature_json['geometry']['type'] if feature_json['geometry'] else False
-                if geom_type == 'LineString':
-                    feature_json['properties']['DISPLAY_SCALE'] = display_scale
-                    feature_json['properties']['ENC_SCALE'] = enc_scale
-                    props = feature_json['properties']
-                    if 'CATSLC' in props:
-                        if props['CATSLC'] == 4:
-                            if props['WATLEV'] == 2:
-                                self.features['SLCONS'].append(feature_json)
-                            elif props['WATLEV'] in ['', None, 'None']:  # Blank only
-                                if props['CONDTN'] in ['', None, 'None', 1, 3, 4, 5]:  # skip 2
-                                    self.features['SLCONS'].append(feature_json)
-                        else: # != 4
-                            self.features['SLCONS'].append(feature_json)
+
+                for feat in processed_features:
+                    geom_type = feat['geometry']['type'] if feat.get('geometry') else False
+                    
+                    # Check for single LineString or exploded MultiLineString segments
+                    if geom_type in ['LineString', 'MultiLineString']:
+                        feat['properties']['DISPLAY_SCALE'] = display_scale
+                        feat['properties']['ENC_SCALE'] = enc_scale
+                        props = feat['properties']
+                        
+                        if 'CATSLC' in props:
+                            if props['CATSLC'] == 4:
+                                if props['WATLEV'] == 2:
+                                    self.features['SLCONS'].append(feat)
+                                elif props['WATLEV'] in ['', None, 'None']:  # Blank only
+                                    if props['CONDTN'] in ['', None, 'None', 1, 3, 4, 5]:  # skip 2
+                                        self.features['SLCONS'].append(feat)
+                            else:  # != 4
+                                self.features['SLCONS'].append(feat)
