@@ -25,3 +25,4 @@
 1.6.0 - (1/14/2026) Enabled download and use of scale 6 ENC files
 1.6.1 - (1/23/2026) Switched supersession to PairwiseErase to not use an Advanced license
 1.6.2 - (1/29/2026) Added SLCONS features with WATLEV of 4
+1.6.3 - (10/5/2026) Disabled Geographic Cell download option

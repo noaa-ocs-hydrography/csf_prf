@@ -100,6 +100,7 @@ class CompositeSourceCreator:
             datatype="GPBoolean",
             parameterType="Optional",
             direction="Input",
+            enabled=False  # TODO disabled until Compass replaces DREG
         )
         caris_export = arcpy.Parameter(
             displayName="Create CARIS ready Geopackage?",
