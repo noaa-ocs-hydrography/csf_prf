@@ -67,6 +67,10 @@ def deploy_csf_to_pydro():
 def increment_version():
     """Pull code version and write it to the README in Dev"""
 
+    import sys
+    CSFPRF = pathlib.Path(__file__).parents[1] / 'src'
+    print(CSFPRF)
+    sys.path.append(str(CSFPRF))
     from csf_prf import __version__ as version
 
     with open(REPO_FOLDER.parents[0] / 'README' / 'README.md', 'r') as reader:
