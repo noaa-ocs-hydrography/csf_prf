@@ -1,12 +1,18 @@
 import requests
 import arcpy
-import re
+import sys
 import zipfile
 import pathlib
-import shutil
+import urllib3
 
 from collections import defaultdict
-from bs4 import BeautifulSoup
+
+CSFPRF_MODULE = pathlib.Path(__file__).parents[1] / 'src'
+sys.path.append(str(CSFPRF_MODULE))
+
+from csf_prf.helpers.tools import get_config_item
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 
 OUTPUTS = pathlib.Path(__file__).parents[1] / 'outputs'
@@ -45,25 +51,51 @@ def download_gc_zips(gc_zips: dict[str, list[str]], session: requests.Session = 
             count += 1
             arcpy.AddMessage(f" - Downloading GC {count}: {basefilename} for {enc}")
 
-            # 2. Case A: Direct Windows UNC Network Share access (\\nos.noaa\...)
-            # On the NOAA network, direct file copy is significantly faster than HTTP
-            if src_path.exists():
-                shutil.copy2(src_path, output_file)
+            url = path_str
+            try:
+                with session.get(url, stream=True) as response:
+                    response.raise_for_status()
+                    with open(output_file, "wb") as f:
+                        # 64 KB chunks are much faster than 128 bytes
+                        for chunk in response.iter_content(chunk_size=65536):
+                            f.write(chunk)
+            except requests.RequestException as e:
+                arcpy.AddWarning(f"Failed to download {basefilename}: {e}")
 
-            # 3. Case B: HTTP / Web API Download (Fallback)
-            else:
-                # If using your DREG_API endpoint or a direct URL:
-                # e.g., url = dreg_api.replace('{Path}', str(src_path.parent)).replace('{BaseFileName}', basefilename)
-                url = path_str
-                try:
-                    with session.get(url, stream=True) as response:
-                        response.raise_for_status()
-                        with open(output_file, "wb") as f:
-                            # 64 KB chunks are much faster than 128 bytes
-                            for chunk in response.iter_content(chunk_size=65536):
-                                f.write(chunk)
-                except requests.RequestException as e:
-                    arcpy.AddWarning(f"Failed to download {basefilename}: {e}")
+
+def get_token():
+    """
+    Connected to churnpi ArcGIS Server token service
+    :returns str: ArcGIS Server token
+    """
+
+    token_url = get_config_item('GC', 'AGS_TOKEN')
+    key = get_config_item('GC', 'CSF_USER_KEY')
+    auth = get_config_item('GC', 'CSF_USER_AUTH')
+    translate_auth = get_translated_csf_auth(key, auth)
+
+    payload = {
+        "username": "CSF_PRF_User",
+        "password": translate_auth,
+        "client": "requestip",
+        "expiration": 60,   # In minutes
+        "f": "json"
+    }
+    response = requests.post(token_url, data=payload, verify=False)
+    response.raise_for_status()
+    data = response.json()
+    if "error" in data:
+        raise Exception(f"Token generation error: {data['error']['message']}")
+        
+    return data["token"]
+
+
+def get_translated_csf_auth(key, auth):
+    """Obtain MCD information"""
+
+    from cryptography.fernet import Fernet
+    setup = Fernet(key)
+    return setup.decrypt(auth).decode()
 
 
 def unzip_enc_files(file_ending: str = "shp") -> None:
@@ -96,81 +128,48 @@ def unzip_enc_files(file_ending: str = "shp") -> None:
     for gc_file in output_folder.rglob('*.zip'):
         arcpy.AddMessage(f' - Remove unzipped: {gc_file.name}')
         gc_file.unlink()
-        
 
-def query_dreg_links(enc_id: str) -> list[str]:
+
+def query_compass_service(enc_id: str) -> list[str]:
     print(f'Querying GC files for ENC: {enc_id}')
 
-    enc_gc_url = "https://ocs-vs-appd7.nos.noaa/arcgis/rest/services/Joel_Harrington/ENC_GCData_InWork/FeatureServer/0"
-    fields = ["Cell", "DREGLink"]
-
-    with arcpy.da.SearchCursor(enc_gc_url, fields, where_clause=f"Cell = '{enc_id}'") as cursor:
-        data = defaultdict(list)
-        for cell, dreg_link in cursor:
-            data[cell].append(dreg_link)
+    compass_url = get_config_item('GC', 'COMPASS_SERVICE')  # need to be on VPN
+    token = get_token()
+    params = {
+        "where": f"product='{enc_id}' AND source_type='GC' AND is_enc=True",
+        "outFields": "product,source_path,source_type,source_number,is_enc",  # TODO remove Product and is_enc?
+        "returnGeometry": "false",
+        "f": "json",
+        "token": token
+    }
+    # Query with requests to use token
+    response = requests.post(compass_url, data=params, verify=False)
+    response.raise_for_status()
+    json_data = response.json()
+    data = defaultdict(list)
+    for feature in json_data.get("features", []):
+        attrs = feature.get("attributes", {})
+        source_path = attrs.get("source_path").split('\\')
+        source_type = attrs.get("source_type")
+        source_number = attrs.get("source_number")
+        updated_source_path = f"{source_path[0]}/{source_path[1]}"
+        # http://ocs-mcd-webapps2.nos.noaa/converted_data/2024/GC/GC11603/GC_11603_shape.zip
+        zip_path = f"{updated_source_path}/{source_type}{source_number}/{source_type}_{source_number}_shape.zip"
+        direct_link = f"{get_config_item('GC', 'FILE_SERVER')}/{zip_path}"
+        data[enc_id].append(direct_link)
     return data
-
-
-def query_gc_zip_links(dreg_links: dict[str, list[str]]) -> dict[str, list[str]]:
-    gc_zips = {}
-    session = requests.Session()
-    session.verify = False  # Reuse session with SSL bypass
-
-    for enc_id, urls in dreg_links.items():
-        print(f'- ENC - {enc_id} has {len(urls)} GC files')
-        gc_zips[enc_id] = []
-
-        for url in urls:
-            if not url:
-                continue
-
-            try:
-                resp = session.get(url, timeout=15)
-                resp.raise_for_status()
-                soup = BeautifulSoup(resp.text, "html.parser")
-
-                file_path = None
-
-                # Method 1: Look for a table cell/label containing "Digital file"
-                label_tag = soup.find(lambda tag: tag.name in ["th", "td", "strong", "b", "span", "dt"] 
-                                      and "Digital file" in tag.get_text())
-
-                if label_tag:
-                    if label_tag.name in ["th", "td"]:
-                        next_cell = label_tag.find_next_sibling("td")
-                        if next_cell:
-                            file_path = next_cell.get_text(strip=True)
-                    
-                    if not file_path:
-                        next_node = label_tag.find_next_sibling()
-                        if next_node:
-                            file_path = next_node.get_text(strip=True)
-
-                # Method 2 (Fallback): Regex search across the whole text for the NOAA UNC zip path
-                if not file_path:
-                    match = re.search(r"(\\\\nos\.noaa\\[^\r\n<>\"']+\.zip)", resp.text, re.IGNORECASE)
-                    if match:
-                        file_path = match.group(1).strip()
-
-                if file_path:
-                    gc_zips[enc_id].append(file_path)
-                else:
-                    print(f"[{enc_id}] 'Digital file' not found at: {url}")
-
-            except requests.RequestException as e:
-                print(f"[{enc_id}] Failed to load {url}: {e}")
-
-    return gc_zips
 
 
 def run() -> None:
     enc_list = ['US3DE01M', 'US3EC08M']
     for enc in enc_list:
-        dreg_links = query_dreg_links(enc)
-        gc_links = query_gc_zip_links(dreg_links)
-        download_gc_zips(gc_links)
-        unzip_enc_files()
+        dreg_links = query_compass_service(enc)
+        download_gc_zips(dreg_links)
+    unzip_enc_files()
 
 
 if __name__ == "__main__":
+    import time
+    start = time.time()
     run()
+    print(f'Done: {(time.time() - start)/60} minutes')
