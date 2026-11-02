@@ -8,7 +8,12 @@ import yaml
 import glob
 import os
 import pyodbc
+import warnings
 
+from urllib3.exceptions import InsecureRequestWarning
+warnings.simplefilter('ignore', InsecureRequestWarning)
+
+from collections import defaultdict
 from csf_prf.engines.Engine import Engine
 from csf_prf.engines.class_code_lookup import class_codes as CLASS_CODES
 arcpy.env.overwriteOutput = True
@@ -206,69 +211,46 @@ class ENCReaderEngine(Engine):
                 if len(invalid_field_names) > 0:
                     arcpy.AddMessage(f' - fields with invalid values: {invalid_field_names}')
 
-    def download_gc(self, number, download_inputs) -> None:
+    def download_gc_zips(self, gc_zips: dict[str, list[str]], output_folder: pathlib.Path) -> None:
         """
-        Download a specific geograhic cell associated with an ENC
-        :param int number: Current GC file count
-        :param list[list] download_inputs:  Prepared array of output_folder, enc, path, basefilename 
-        """
-
-        output_folder, enc, path, basefilename = download_inputs
-
-        geographic_cells = output_folder / 'geographic_cells'
-        enc_folder = geographic_cells / enc
-        enc_folder.mkdir(parents=True, exist_ok=True)
-        dreg_api = self.get_config_item('GC', 'DREG_API').replace('{Path}', path).replace('{BaseFileName}', basefilename)
-        output_file = enc_folder / basefilename
-
-        already_downloaded = [file for file in geographic_cells.rglob(basefilename)]
-        if not already_downloaded:
-            arcpy.AddMessage(f' - Downloading GC {number+1}: {basefilename}')
-            enc_zip = requests.get(dreg_api)
-            with open(output_file, 'wb') as file:
-                for chunk in enc_zip.iter_content(chunk_size=128):
-                    file.write(chunk)
-        else:
-            arcpy.AddMessage(f' - Already downloaded GC: {basefilename}')
-
-    def download_gcs(self, gc_rows) -> None:
-        """
-        Download any GCs for current ENC files
-        :param list[()] gc_rows: Query results of GCs and which ENC
+        Downloads or copies all GC zip files for each ENC cell.
+        :param gc_zips: Dictionary of {enc_id: [list of UNC paths or URLs]}
+        :param output_folder: Base pathlib.Path (e.g., OUTPUTS)
         """
 
-        enc_paths = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
-        gc_lookup = {}
-        for enc in enc_paths:
-            gc_lookup[pathlib.Path(enc).stem] = []
-        for gc in gc_rows:
-            # ['BaseFileName', 'iecode', 'status', 'Path]
-            enc_name = gc[1]
-            if enc_name in gc_lookup.keys():
-                gc_lookup[enc_name].append(gc)
-        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        geographic_cells = output_folder / "geographic_cells"
+        count = 0
 
-        # processors = int(multiprocessing.cpu_count() * .75)
-        for enc in gc_lookup.keys():
-            if len(gc_lookup[enc]) > 0:
-                arcpy.AddMessage(f'ENC {enc} has {len(gc_lookup[enc])} GCs')
-            for number, gc in enumerate(gc_lookup[enc]):
-                download_inputs = [output_folder, enc, gc[3], gc[0]]
-                self.download_gc(number, download_inputs)
-            # TODO make DownloadGCS class and make Pool in __main__ section
-            # multiprocessing.set_executable(os.path.join(sys.exec_prefix, 'pythonw.exe'))
-            # deep_water = multiprocessing.Pool(processes=processors)
-            # download_inputs = [[output_folder, enc, gc[3], gc[0]] for gc in gc_lookup[enc]]
-            # deep_water.map(download_gc, download_inputs)
-            # deep_water.close()
-            # deep_water.join()
+        session = requests.Session()
+        session.verify = False
 
-        self.unzip_enc_files(str(output_folder / 'geographic_cells'), '.shp')
+        for enc, zip_paths in gc_zips.items():
+            enc_folder = geographic_cells / enc
+            enc_folder.mkdir(parents=True, exist_ok=True)
 
-        gc_folder = output_folder / 'geographic_cells'
-        for gc_file in gc_folder.rglob('*.zip'):
-            arcpy.AddMessage(f' - Remove unzipped: {gc_file.name}')
-            gc_file.unlink()
+            for path_str in zip_paths:
+                if not path_str:
+                    continue
+
+                gc_zip_path = pathlib.Path(path_str)
+                gc_zip = gc_zip_path.name
+                output_file = enc_folder / gc_zip.replace('_shape', '').replace('_', '')
+
+                count += 1
+                arcpy.AddMessage(f"  - {enc} GC {count}: {gc_zip}")
+
+                url = path_str
+                try:
+                    with session.get(url, stream=True) as response:
+                        response.raise_for_status()
+                        with open(output_file, "wb") as f:
+                            # 64 KB chunks are much faster than 128 bytes
+                            for chunk in response.iter_content(chunk_size=65536):
+                                f.write(chunk)
+                    # Create property of all current GC names
+                    self.gc_files.add(output_file.stem)
+                except requests.RequestException as e:
+                    arcpy.AddWarning(f"Failed to download {gc_zip}: {e}")
 
     def export_enc_layers(self) -> None:
         """
@@ -374,7 +356,7 @@ class ENCReaderEngine(Engine):
                 #     arcpy.AddMessage(f"Found ({features_missing_coords}) features but missing coordinates")
         arcpy.AddMessage(f'  - Removed {intersected} supersession features')
 
-    def get_translated_mcd_auth(self, key, auth):
+    def get_translated_auth(self, key, auth):
         """Obtain MCD information"""
 
         from cryptography.fernet import Fernet
@@ -398,9 +380,11 @@ class ENCReaderEngine(Engine):
             gc_name = pathlib.Path(shapefile).parents[0].stem
             shp_pth = str(shapefile)
             if gc_name in self.gc_files:
-                if shp_pth.endswith('p1.shp'):
+                # DREG used p1.shp and l1.shp
+                # Compass uses pt.shp and ln.shp
+                if shp_pth.endswith('pt.shp') or shp_pth.endswith('point.shp'):
                     point_files.append(shp_pth)
-                elif shp_pth.endswith('l1.shp'):
+                elif shp_pth.endswith('ln.shp') or shp_pth.endswith('line.shp'):
                     line_files.append(shp_pth)
                 else:
                     arcpy.AddMessage(f'Found other GC: {shp_pth}')
@@ -414,13 +398,22 @@ class ENCReaderEngine(Engine):
         """Start the process to download any GCs associated with input ENCs"""
         
         arcpy.AddMessage('Checking for Geographic Cells')
-        cursor = self.get_cursor()
-        sql = self.get_sql('GetRelatedENC')
-        # TODO create new method for string replacement if needed, ie: list of ENC #'s for where clause
-        return self.run_query(cursor, sql)
+        enc_paths = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
+        output_folder = pathlib.Path(self.param_lookup['output_folder'].valueAsText)
+        for enc in enc_paths:
+            end_id = pathlib.Path(enc).stem
+            gc_zips_data = self.query_compass_service(end_id)
+            self.download_gc_zips(gc_zips_data, output_folder)
+        self.unzip_enc_files(output_folder, '.shp')
+
+        # Delete zip files after extraction
+        for gc_file in output_folder.rglob('*.zip'):
+            arcpy.AddMessage(f'  - Remove unzipped: {gc_file.name}')
+            gc_file.unlink()
 
     def get_sql(self, file_name: str) -> str:
         """
+        NOT USED ANYMORE
         Retrieve SQL query in string format
         :returns str: Query string
         """
@@ -432,6 +425,32 @@ class ENCReaderEngine(Engine):
                 with open(path, 'r') as sql:
                     return sql.read()   
         raise ENCReaderException(f'SQL file not found: {file_name}.sql')
+
+    def get_token(self):
+        """
+        Connected to churnpi ArcGIS Server token service
+        :returns str: ArcGIS Server token
+        """
+
+        token_url = self.get_config_item('GC', 'AGS_TOKEN')
+        key = self.get_config_item('GC', 'CSF_USER_KEY')
+        auth = self.get_config_item('GC', 'CSF_USER_AUTH')
+        translate_auth = self.get_translated_auth(key, auth)
+
+        payload = {
+            "username": "CSF_PRF_User",
+            "password": translate_auth,
+            "client": "requestip",
+            "expiration": 60,   # In minutes
+            "f": "json"
+        }
+        response = requests.post(token_url, data=payload, verify=False)
+        response.raise_for_status()
+        data = response.json()
+        if "error" in data:
+            raise Exception(f"Token generation error: {data['error']['message']}")
+            
+        return data["token"]
 
     def get_vector_records(self) -> None:
         """Read and store all vector records with QUAPOS from ENC file"""
@@ -662,6 +681,36 @@ class ENCReaderEngine(Engine):
             for feature in self.geometries[feature_type]:
                 arcpy.AddMessage(f"\n - {feature['type']}:{feature['geojson']}")
 
+    def query_compass_service(self, enc_id: str) -> list[str]:
+        """Query Compass AGS REST Service for related GC information"""
+
+        arcpy.AddMessage(f' - Querying GC files for ENC: {enc_id}')
+        compass_url = self.get_config_item('GC', 'COMPASS_SERVICE')  # need to be on VPN
+        token = self.get_token()
+        params = {
+            "where": f"product='{enc_id}' AND source_type='GC' AND is_enc=True",
+            "outFields": "source_path,source_type,source_number",  # TODO remove Product and is_enc?
+            "returnGeometry": "false",
+            "f": "json",
+            "token": token
+        }
+        # Query with requests to use token
+        response = requests.post(compass_url, data=params, verify=False)
+        response.raise_for_status()
+        json_data = response.json()
+        data = defaultdict(list)
+        for feature in json_data.get("features", []):
+            attrs = feature.get("attributes", {})
+            source_path = attrs.get("source_path").split('\\')
+            source_type = attrs.get("source_type")
+            source_number = attrs.get("source_number")
+            updated_source_path = f"{source_path[0]}/{source_path[1]}"
+            # http://ocs-mcd-webapps2.nos.noaa/converted_data/2024/GC/GC11603/GC_11603_shape.zip
+            zip_path = f"{updated_source_path}/{source_type}{source_number}/{source_type}_{source_number}_shape.zip"
+            direct_link = f"{self.get_config_item('GC', 'FILE_SERVER')}/{zip_path}"
+            data[enc_id].append(direct_link)
+        return data
+
     def remove_unassigned_buffer(self) -> None:
         """Remove unassigned features that are outside of 1km from Sheets boundary"""
         
@@ -795,25 +844,10 @@ class ENCReaderEngine(Engine):
                         row[1] = invreq_options.get(14)
                     updateCursor.updateRow(row)
 
-    def store_gc_names(self, gc_rows) -> None:
-        """Create property of all current GC names"""
-
-        enc_paths = self.param_lookup['enc_files'].valueAsText.replace("'", "").split(';')
-        enc_names = [pathlib.Path(enc).stem for enc in enc_paths]
-        for gc in gc_rows:
-            # ['BaseFileName', 'iecode', 'status', 'Path]
-            # GC_name.zip, ENC name, review status, Year\GC
-            gc_name = gc[0].replace('.zip', '')
-            enc_name = gc[1]
-            if enc_name in enc_names:
-                self.gc_files.add(gc_name)
-    
     def start(self) -> None:
         if self.param_lookup['download_geographic_cells'].value:
             try:
-                rows = self.get_gc_data()
-                self.store_gc_names(rows)
-                self.download_gcs(rows)
+                self.get_gc_data()
                 self.merge_gc_features()
                 self.filter_gc_features()
             except pyodbc.OperationalError as e:
