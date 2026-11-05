@@ -900,7 +900,8 @@ class ENCReaderEngine(Engine):
                 return True
         elif objl_name == 'SLCONS':
             # Priotize WATLEV first
-            if properties['WATLEV'] not in [3, 4] or properties['CONDTN'] != 2:
+            # CONDTN value of 'None' is allowed
+            if properties['WATLEV'] not in [3, 4] or properties['CONDTN'] not in [2, None]:
                 return True
         elif objl_name == 'UWTROC':  
             if geom_type != 'Point':

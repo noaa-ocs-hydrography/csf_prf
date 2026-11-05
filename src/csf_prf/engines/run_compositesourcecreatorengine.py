@@ -19,7 +19,7 @@ if __name__ == '__main__':
         'enc_files': Param(str(str(INPUTS / 'US5SC21M.000'))),
         # 'enc_files': Param(''),
         'output_folder': Param(str(OUTPUTS)),
-        'download_geographic_cells': Param(True),
+        'download_geographic_cells': Param(False),
         'caris_export': Param(False),
         'layerfile_export': Param(False)
     }
