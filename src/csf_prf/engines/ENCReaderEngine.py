@@ -228,20 +228,18 @@ class ENCReaderEngine(Engine):
             enc_folder = geographic_cells / enc
             enc_folder.mkdir(parents=True, exist_ok=True)
 
-            for path_str in zip_paths:
-                if not path_str:
+            for dreg_zip in zip_paths:
+                if not dreg_zip:
                     continue
 
-                gc_zip_path = pathlib.Path(path_str)
-                gc_zip = gc_zip_path.name
-                output_file = enc_folder / gc_zip.replace('_shape', '').replace('_', '')
-
+                gc_zip = dreg_zip.split('name=')[1]
+                output_file = enc_folder / gc_zip
+                
                 count += 1
                 arcpy.AddMessage(f"  - {enc} GC {count}: {gc_zip}")
 
-                url = path_str
                 try:
-                    with session.get(url, stream=True) as response:
+                    with session.get(dreg_zip, stream=True) as response:
                         response.raise_for_status()
                         with open(output_file, "wb") as f:
                             # 64 KB chunks are much faster than 128 bytes
@@ -382,9 +380,9 @@ class ENCReaderEngine(Engine):
             if gc_name in self.gc_files:
                 # DREG used p1.shp and l1.shp
                 # Compass uses pt.shp and ln.shp
-                if shp_pth.endswith('pt.shp') or shp_pth.endswith('point.shp'):
+                if shp_pth.endswith('p1.shp'):
                     point_files.append(shp_pth)
-                elif shp_pth.endswith('ln.shp') or shp_pth.endswith('line.shp'):
+                elif shp_pth.endswith('l1.shp'):
                     line_files.append(shp_pth)
                 else:
                     arcpy.AddMessage(f'Found other GC: {shp_pth}')
@@ -688,7 +686,7 @@ class ENCReaderEngine(Engine):
         compass_url = self.get_config_item('GC', 'COMPASS_SERVICE')  # need to be on VPN
         token = self.get_token()
         params = {
-            "where": f"product='{enc_id}' AND source_type='GC' AND is_enc=True",
+            "where": self.get_config_item('GC', 'COMPASS_QUERY').replace('{enc_id}', enc_id),
             "outFields": "source_path,source_type,source_number",  # TODO remove Product and is_enc?
             "returnGeometry": "false",
             "f": "json",
@@ -701,14 +699,12 @@ class ENCReaderEngine(Engine):
         data = defaultdict(list)
         for feature in json_data.get("features", []):
             attrs = feature.get("attributes", {})
-            source_path = attrs.get("source_path").split('\\')
+            source_path = attrs.get("source_path")
             source_type = attrs.get("source_type")
             source_number = attrs.get("source_number")
-            updated_source_path = f"{source_path[0]}/{source_path[1]}"
-            # http://ocs-mcd-webapps2.nos.noaa/converted_data/2024/GC/GC11603/GC_11603_shape.zip
-            zip_path = f"{updated_source_path}/{source_type}{source_number}/{source_type}_{source_number}_shape.zip"
-            direct_link = f"{self.get_config_item('GC', 'FILE_SERVER')}/{zip_path}"
-            data[enc_id].append(direct_link)
+            dreg_api_link = self.get_config_item('GC', 'DREG_API').replace(
+                '{path}', source_path).replace('{gc_id}', source_type + source_number)
+            data[enc_id].append(dreg_api_link)
         return data
 
     def remove_unassigned_buffer(self) -> None:
