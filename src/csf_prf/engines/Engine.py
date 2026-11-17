@@ -511,8 +511,8 @@ class Engine:
         os.environ["S57_CSV"] = str(INPUTS / 'lookups')
         os.environ["OGR_S57_OPTIONS"] = "SPLIT_MULTIPOINT=ON,LIST_AS_STRING=ON,PRESERVE_EMPTY_NUMBERS=ON,ADD_SOUNDG_DEPTH=ON"    
 
-    def unzip_enc_files(self, output_folder, file_ending) -> None:
-        """Unzip all zip fileis in a folder"""
+    def unzip_enc_files(self, output_folder: pathlib.Path, file_ending: str) -> None:
+        """Unzip all zip files is in a folder"""
 
         for zipped_file in pathlib.Path(output_folder).rglob('*.zip'):
             unzipped_file = str(zipped_file).replace('zip', file_ending)
