@@ -28,3 +28,4 @@
 1.6.3 - (10/5/2026) Disabled Geographic Cell download option
 1.7.0 - (11/2/2026) Switched GC download from DREG to Compass
 1.7.1 - (11/5/2026) Allowed SLCONS features with CONDTN equal to null
+1.7.2 - (11/17/2026) Download GC files from existing DREG api
